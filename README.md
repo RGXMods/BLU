@@ -1,17 +1,27 @@
-Ace3 example with options panel and slash commands.
-- https://www.wowace.com/projects/ace3/pages/getting-started
-- https://wowpedia.fandom.com/wiki/Ace3_for_Dummies
+[![](https://img.shields.io/static/v1?label=Donate&message=CashApp&color=brightgreen)](https://bit.ly/3fyxxSU)
 
-![](https://github.com/ketho-wow/HelloAce/raw/master/preview.png)
+v0.0.2
+------------------------------
 
-### Folder name
-⚠️ If you downloaded it as a zip, rename the `HelloAce-master` folder to `HelloAce`
+**BLU - Better Level Up!**
 
-### About embeds
-The Ace3 libs are hard-embedded (hardcoded) for simplicity.
+------------------------------
 
-When updating your addons it's recommended to have the packager pull the latest Ace3 libs when packaging, i.e. soft-embedding. This requires a [PackageMeta File](https://github.com/BigWigsMods/packager/wiki/Preparing-the-PackageMeta-File).
+UPDATE DESCRIPTION HERE <----------------
 
-To still have your own local Ace3 libs without checking them out to the repository:
-* Use the Ace3 libs standalone by dropping the [Ace3](https://www.wowace.com/projects/ace3) addon in the `AddOns` folder and specifying `## OptionalDeps: Ace3` in your TOC.
-* Or put the Ace3 libs in the `Libs` folder and exclude it from the repository with [.gitignore](https://git-scm.com/docs/gitignore).
+------------------------------
+
+- This addon works in DRAGONFLIGHT!
+
+- This addon works in CLASSIC WOW!
+
+- This addon works in CLASSIC WotLK!
+
+------------------------------
+<div align="center">
+
+**BLU Download Links:**  UPDATE LINKS v---------------
+
+[Curse](https://www.curseforge.com/wow/addons/kh3lu-kingdom-hearts-3-level-up "This link takes you to the Curseforge.com website, you may download it here and help support the developers.") * [GitHub](https://github.com/donniedice/KH3LU "This link takes you to the GitHub.com website, you may download it here.") * [Tukui](https://www.tukui.org/addons.php?id=226 "This link takes you to the Tukui.org website, you may download it here.") * [Wago](https://addons.wago.io/addons/kh3lu "This link takes you to the Wago.io website, you may download it here and help support the developers.") * [WoWInterface](https://wowinterface.com/downloads/info26254-KH3LU-KingdomHearts3LevelUp.html "This link takes you to the WoWInterface.com website, you may download it here.")
+
+</div>

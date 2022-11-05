@@ -1,3 +1,6 @@
+--v0.0.2
+
+
 BLU.defaults = {
 	profile = {
 		LevelSoundSelect = 1, -- final fantasy

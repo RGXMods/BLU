@@ -1,4 +1,4 @@
---v0.0.2
+--v0.0.3
 
 BLU = LibStub("AceAddon-3.0"):NewAddon("BLU", "AceEvent-3.0", "AceConsole-3.0")
 local AC = LibStub("AceConfig-3.0")

@@ -1,10 +1,17 @@
 ## Interface: 11403
-## Version: 0.0.3
-## Title: |cffffffffBetter|r Level Up!
+## Version: 0.0.4
+## Title: |c2d4b92ffBetter|r Level Up!
 ## Notes: Grats!
 ## Author: DonnieDice
 ## SavedVariables: BLUDB
 ## OptionalDeps: Ace3 # if a user wants to run Ace3 standalone
+
+## X-Category: UI Media, Questing & Leveling, Audio & Video, Miscellaneous
+## X-Website: https://github.com/donniedice/BLU
+## X-Curse-Project-ID: 697841
+## X-Tukui-ProjectID: 257
+## X-Wago-ID: vEGPgWK1
+## X-WoWI-ID: 26465
 
 Libs\LibStub\LibStub.lua
 Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml

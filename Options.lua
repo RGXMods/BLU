@@ -1,11 +1,11 @@
---v0.0.3
+--v0.0.4
 
 
 BLU.defaults = {
 	profile = {
-		LevelSoundSelect = 1, -- final fantasy
+		LevelSoundSelect = 1, -- Default
 		MuteLevelDefault = false,
-		RepSoundSelect = 1, -- final fantasy
+		RepSoundSelect = 1, -- Default
 		MuteRepDefault = false,
 	},
 }
@@ -29,7 +29,7 @@ BLU.options = {
 					type = "select",
 					order = 1,
 					name = "",
-					values = {"Final Fantasy", "Kingdom Hearts 3", "Maplestory", "Fortnite", "League of Legends", "Minecraft", "Modern Warfare 2", "Morrowind", "Old School Runescape", "Pokemon", "Path of Exile", "Sonic The Hedgehog", "Super Mario Bros 3", "Skyrim", "Warcraft 3"},
+					values = {"Default", "Final Fantasy", "Fortnite", "Kingdom Hearts 3", "League of Legends", "Maplestory", "Minecraft", "Modern Warfare 2", "Morrowind", "Old School Runescape", "Path of Exile", "Pokemon", "Skyrim", "Sonic The Hedgehog", "Super Mario Bros 3", "Warcraft 3"},
 				},
 				MuteLevelDefault = {
 					type = "toggle",
@@ -55,7 +55,7 @@ BLU.options = {
 					type = "select",
 					order = 1,
 					name = "",
-					values = {"Final Fantasy", "Kingdom Hearts 3", "Maplestory", "Fortnite", "League of Legends", "Minecraft", "Modern Warfare 2", "Morrowind", "Old School Runescape", "Pokemon", "Path of Exile", "Sonic The Hedgehog", "Super Mario Bros 3", "Skyrim", "Warcraft 3"},
+					values = {"Default", "Final Fantasy", "Fortnite", "Kingdom Hearts 3", "League of Legends", "Maplestory", "Minecraft", "Modern Warfare 2", "Morrowind", "Old School Runescape", "Path of Exile", "Pokemon", "Skyrim", "Sonic The Hedgehog", "Super Mario Bros 3", "Warcraft 3"},
 				},
 				MuteRepDefault = {
 					type = "toggle",

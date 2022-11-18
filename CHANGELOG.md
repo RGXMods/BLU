@@ -1,4 +1,4 @@
-v0.0.3
+v0.0.4
 
-- Added   - Multiple Version Support
-- Initial - Code Push
+- Added   - Default Sound option
+- Fixed   - Sound menu alphabetized

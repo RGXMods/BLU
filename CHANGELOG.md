@@ -1,4 +1,5 @@
-v0.0.4
+v0.0.5
 
-- Added   - Default Sound option
-- Fixed   - Sound menu alphabetized
+- Fixed - Issue with Default Rep Sound not muting
+- Fixed - Moved all sounds from channel "Master" to "SFX"
+  (BLU should now mute when Disabling in-game sounds with CTRL+S)

@@ -1,4 +1,4 @@
---v0.0.5
+--v0.0.6
 
 
 BLU.defaults = {
@@ -29,7 +29,7 @@ BLU.options = {
 					type = "select",
 					order = 1,
 					name = "",
-					values = {"Default", "Final Fantasy", "Fortnite", "Kingdom Hearts 3", "League of Legends", "Maplestory", "Minecraft", "Modern Warfare 2", "Morrowind", "Old School Runescape", "Path of Exile", "Pokemon", "Skyrim", "Sonic The Hedgehog", "Super Mario Bros 3", "Warcraft 3"},
+					values = {"Default", "EverQuest", "Final Fantasy", "Fortnite", "Kingdom Hearts 3", "League of Legends", "Maplestory", "Minecraft", "Modern Warfare 2", "Morrowind", "Old School Runescape", "Path of Exile", "Pokemon", "Skyrim", "Sonic The Hedgehog", "Super Mario Bros 3", "Warcraft 3"},
 				},
 				MuteLevelDefault = {
 					type = "toggle",
@@ -55,7 +55,7 @@ BLU.options = {
 					type = "select",
 					order = 1,
 					name = "",
-					values = {"Default", "Final Fantasy", "Fortnite", "Kingdom Hearts 3", "League of Legends", "Maplestory", "Minecraft", "Modern Warfare 2", "Morrowind", "Old School Runescape", "Path of Exile", "Pokemon", "Skyrim", "Sonic The Hedgehog", "Super Mario Bros 3", "Warcraft 3"},
+					values = {"Default", "EverQuest", "Final Fantasy", "Fortnite", "Kingdom Hearts 3", "League of Legends", "Maplestory", "Minecraft", "Modern Warfare 2", "Morrowind", "Old School Runescape", "Path of Exile", "Pokemon", "Skyrim", "Sonic The Hedgehog", "Super Mario Bros 3", "Warcraft 3"},
 				},
 				MuteRepDefault = {
 					type = "toggle",

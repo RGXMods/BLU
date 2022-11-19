@@ -1,4 +1,4 @@
---v0.0.4
+--v0.0.6
 
 BLU = LibStub("AceAddon-3.0"):NewAddon("BLU", "AceEvent-3.0", "AceConsole-3.0")
 local AC = LibStub("AceConfig-3.0")
@@ -33,34 +33,36 @@ function BLU:PLAYER_LEVEL_UP(self, event, ...)
 	if BLU.db.profile.LevelSoundSelect == 1 then
 	PlaySoundFile(569593)
 elseif BLU.db.profile.LevelSoundSelect == 2 then
-	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FFLU.ogg", "SFX")
+	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\EQLU.ogg", "SFX")
 elseif BLU.db.profile.LevelSoundSelect == 3 then
-	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FNLU.ogg", "SFX")
+	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FFLU.ogg", "SFX")
 elseif BLU.db.profile.LevelSoundSelect == 4 then
-	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\KH3LU.ogg", "SFX")
+	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FNLU.ogg", "SFX")
 elseif BLU.db.profile.LevelSoundSelect == 5 then
-	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoLLU.ogg", "SFX")
+	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\KH3LU.ogg", "SFX")
 elseif BLU.db.profile.LevelSoundSelect == 6 then
-	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MSLU.ogg", "SFX")
+	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoLLU.ogg", "SFX")
 elseif BLU.db.profile.LevelSoundSelect == 7 then
-	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MCLU.ogg", "SFX")
+	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MSLU.ogg", "SFX")
 elseif BLU.db.profile.LevelSoundSelect == 8 then
-	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MW2LU.ogg", "SFX")
+	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MCLU.ogg", "SFX")
 elseif BLU.db.profile.LevelSoundSelect == 9 then
-	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MWLU.ogg", "SFX")
+	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MW2LU.ogg", "SFX")
 elseif BLU.db.profile.LevelSoundSelect == 10 then
-	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\OSRSLU.ogg", "SFX")
+	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MWLU.ogg", "SFX")
 elseif BLU.db.profile.LevelSoundSelect == 11 then
-	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PoELU.ogg", "SFX")
+	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\OSRSLU.ogg", "SFX")
 elseif BLU.db.profile.LevelSoundSelect == 12 then
-	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PkmnLU.ogg", "SFX")
+	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PoELU.ogg", "SFX")
 elseif BLU.db.profile.LevelSoundSelect == 13 then
-	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SRLU.ogg", "SFX")
+	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PkmnLU.ogg", "SFX")
 elseif BLU.db.profile.LevelSoundSelect == 14 then
-	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SHHLU.ogg", "SFX")
+	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SRLU.ogg", "SFX")
 elseif BLU.db.profile.LevelSoundSelect == 15 then
-	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SMB3LU.ogg", "SFX")
+	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SHHLU.ogg", "SFX")
 elseif BLU.db.profile.LevelSoundSelect == 16 then
+	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SMB3LU.ogg", "SFX")
+elseif BLU.db.profile.LevelSoundSelect == 17 then
 	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\WC3LU.ogg", "SFX")
 end
 end
@@ -92,37 +94,39 @@ Event_Frame_B:SetScript("OnEvent",function()
 	       local _,_,newstanding,_,_,_,_,_,isheader,_,hasrep,_,_,faction=GetFactionInfo(i);
 	       if faction and (not isheader or hasrep) and (newstanding or 0)>0 then-- Make sure we have the info we need and standing isn't UNKNOWN (0)
 	           local oldstanding=TrackedFactions[faction];
-						 if oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 1 then
+						 		if oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 1 then
 	                PlaySoundFile(568016)
-	           elseif oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 2 then
+								elseif oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 2 then
+									PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\EQLU.ogg", "SFX")
+	           		elseif oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 3 then
 	                PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FFLU.ogg", "SFX")
-								elseif oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 3 then
-			             PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FNLU.ogg", "SFX")
 								elseif oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 4 then
-									PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\KH3LU.ogg", "SFX")
+			             PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FNLU.ogg", "SFX")
 								elseif oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 5 then
-									PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoLLU.ogg", "SFX")
+									PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\KH3LU.ogg", "SFX")
 								elseif oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 6 then
-									PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MSLU.ogg", "SFX")
+									PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoLLU.ogg", "SFX")
 								elseif oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 7 then
-									PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MCLU.ogg", "SFX")
+									PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MSLU.ogg", "SFX")
 								elseif oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 8 then
-									PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MW2LU.ogg", "SFX")
+									PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MCLU.ogg", "SFX")
 								elseif oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 9 then
-									PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MWLU.ogg", "SFX")
+									PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MW2LU.ogg", "SFX")
 								elseif oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 10 then
-									PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\OSRSLU.ogg", "SFX")
+									PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MWLU.ogg", "SFX")
 								elseif oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 11 then
-									PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PoELU.ogg", "SFX")
+									PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\OSRSLU.ogg", "SFX")
 								elseif oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 12 then
-									PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PkmnLU.ogg", "SFX")
+									PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PoELU.ogg", "SFX")
 								elseif oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 13 then
-									PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SRLU.ogg", "SFX")
+									PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PkmnLU.ogg", "SFX")
 								elseif oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 14 then
-									PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SHHLU.ogg", "SFX")
+									PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SRLU.ogg", "SFX")
 								elseif oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 15 then
-									PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SMB3LU.ogg", "SFX")
+									PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SHHLU.ogg", "SFX")
 								elseif oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 16 then
+									PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SMB3LU.ogg", "SFX")
+								elseif oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 17 then
 									PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\WC3LU.ogg", "SFX")
 	           end
 

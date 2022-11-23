@@ -1,5 +1,3 @@
-v0.0.8
+v0.0.9
 
-- Fixed   - Spelling errors
-- Added   - To-Do List to README
-- Added   - Test Sound Buttons
+- Added - Sounds/Mute for DragonFlight Renown Reputation Rank-Ups!

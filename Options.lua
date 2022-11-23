@@ -1,16 +1,14 @@
---v0.0.8
-
-
+--v0.0.9
 BLU.defaults = {
 	profile = {
-		LevelSoundSelect = 1, -- Default
+		LevelSoundSelect = 1,
 		MuteLevelDefault = false,
-		RepSoundSelect = 1, -- Default
+		RepSoundSelect = 1,
 		MuteRepDefault = false,
+		RenownSoundSelect = 1,
+		MuteRenownDefault = false,
 	},
 }
-
--- https://www.wowace.com/projects/ace3/pages/ace-config-3-0-options-tables
 BLU.options = {
 	type = "group",
 	name = "Sound Settings",
@@ -21,7 +19,6 @@ BLU.options = {
 			order = 1,
 			name = "Level Up!",
 			inline = true,
-			-- getters/setters can be inherited through the table tree
 			get = "GetValue",
 			set = "SetValue",
 			args = {
@@ -43,7 +40,6 @@ BLU.options = {
 					order = 3,
 					name = "Mute Default",
 					desc = "Mute Default Level Up Sound",
-					-- inline getter/setter example
 					get = function(info) return BLU.db.profile.MuteLevelDefault end,
 					set = function(info, value) BLU.db.profile.MuteLevelDefault = value end,
 				},
@@ -54,7 +50,6 @@ BLU.options = {
 			order = 2,
 			name = "Rep Up!",
 			inline = true,
-			-- getters/setters can be inherited through the table tree
 			get = "GetValue",
 			set = "SetValue",
 			args = {
@@ -76,25 +71,47 @@ BLU.options = {
 					order = 3,
 					name = "Mute Default",
 					desc = "Mute Default Rep Up Sound",
-					-- inline getter/setter example
 					get = function(info) return BLU.db.profile.MuteRepDefault end,
 					set = function(info, value) BLU.db.profile.MuteRepDefault = value end,
 				},
 			},
 		},
+		group3 = {
+			type = "group",
+			order = 3,
+			name = "Renown Up!",
+			inline = true,
+			get = "GetValue",
+			set = "SetValue",
+			args = {
+				RenownSoundSelect = {
+					type = "select",
+					order = 1,
+					name = "",
+					values = {"Default", "EverQuest", "Final Fantasy", "Fortnite", "Kingdom Hearts 3", "League of Legends", "Legend of Zelda", "Maplestory", "Minecraft", "Modern Warfare 2", "Morrowind", "Old School Runescape", "Path of Exile", "Pokemon", "Skyrim", "Sonic The Hedgehog", "Super Mario Bros 3", "Warcraft 3", "Witcher 3"},
+				},
+				TestRenownSound = {
+					type = "execute",
+					order = 2,
+					name = "Test Renown Sound",
+					desc = "Test Currently Selected Sound File",
+					func = TestRenownSound,
+					},
+				MuteRenownDefault = {
+					type = "toggle",
+					order = 3,
+					name = "Mute Default",
+					desc = "Mute Default Level Up Sound",
+					get = function(info) return BLU.db.profile.MuteRenownDefault end,
+					set = function(info, value) BLU.db.profile.MuteRenownDefault = value end,
+				},
+			},
+		},
 	},
 }
-
-
-
-
-
--- for documentation on the info table
--- https://www.wowace.com/projects/ace3/pages/ace-config-3-0-options-tables#title-4-1
 function BLU:GetValue(info)
 	return self.db.profile[info[#info]]
 end
-
 function BLU:SetValue(info, value)
 	self.db.profile[info[#info]] = value
 end

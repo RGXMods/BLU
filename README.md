@@ -1,6 +1,6 @@
 [![](https://img.shields.io/static/v1?label=Donate&message=CashApp&color=brightgreen)](https://bit.ly/3fyxxSU)
 
-v0.0.6
+v0.0.7
 ------------------------------
 
 **BLU - Better Level Up!**
@@ -30,6 +30,59 @@ Play sounds from other games when you gain reputation ranks!
 - This addon works in CLASSIC WotLK!
 
 ------------------------------
+
+**Current list of available game sounds**
+- Default (WoW)
+- EverQuest
+- Final Fantasy
+- Fortnite
+- Kingdom Hearts 3
+- League of Legends
+- Legend of Zelda
+- Maplestory
+- Minecraft
+- Modern Warfare 2
+- Morrowind
+- Old School Runescape
+- Path of Exile
+- Pokemon
+- Skyrim
+- Sonic The Hedgehog
+- Super Mario Bros 3
+- Warcraft 3
+- Witcher 3
+
+------------------------------
+
+***Cumulative Changelog***
+
+**v0.0.7**
+- Changed - Addon Name Color
+- Added   - Witcher 3 Choir Sound!
+- Added   - Legend of Zelda Sound!
+- Fixed   - Code for Sound Mute Triggers
+- Updated - Ace3 Libs
+- Fixed   - Adjusted Gain on several sound files
+- Added   - Sound list to README
+- Added   - Cumulative CHANGELOG to README
+
+**v0.0.6**
+- Added - EverQuest Level Up Sound!
+
+**v0.0.5**
+- Fixed - Issue with Default Rep Sound not muting
+- Fixed - Moved all sounds from channel "Master" to "SFX"
+  (BLU should now mute when Disabling in-game sounds with CTRL+S)
+
+**v0.0.4**
+- Added   - Default Sound option
+- Fixed   - Sound menu alphabetized
+
+**v0.0.3**
+- Initial Release
+
+------------------------------
+
 <div align="center">
 
 **BLU Download Links:**

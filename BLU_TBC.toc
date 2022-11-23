@@ -1,6 +1,6 @@
 ## Interface: 20504
-## Version: 0.0.6
-## Title: |c2d4b92ffBetter|r Level Up!
+## Version: 0.0.7
+## Title: |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel|r |cff05dffaU|r|cffffffffp!
 ## Notes: Grats!
 ## Author: DonnieDice
 ## SavedVariables: BLUDB

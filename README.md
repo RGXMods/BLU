@@ -1,6 +1,6 @@
 [![](https://img.shields.io/static/v1?label=Donate&message=CashApp&color=brightgreen)](https://bit.ly/3fyxxSU)
 
-v0.0.7
+v0.0.8
 ------------------------------
 
 **BLU - Better Level Up!**
@@ -54,7 +54,21 @@ Play sounds from other games when you gain reputation ranks!
 
 ------------------------------
 
-***Cumulative Changelog***
+***To-Do List***
+Fix Sound Mute Trigger
+  (Currently activates on PLAYER_STARTED_MOVING)
+Sounds/Mute for Achievements
+Sounds/Mute for Quest-Turn-Ins
+Sounds/Mute for Honor Rank-Ups
+
+------------------------------
+
+***Cumulative CHANGELOG***
+
+**v0.0.8**
+- Fixed   - Spelling errors
+- Added   - To-Do List to README
+- Added   - Test Sound Buttons
 
 **v0.0.7**
 - Changed - Addon Name Color
@@ -72,7 +86,7 @@ Play sounds from other games when you gain reputation ranks!
 **v0.0.5**
 - Fixed - Issue with Default Rep Sound not muting
 - Fixed - Moved all sounds from channel "Master" to "SFX"
-  (BLU should now mute when Disabling in-game sounds with CTRL+S)
+          *(BLU should now mute when Disabling in-game sounds with CTRL+S)*
 
 **v0.0.4**
 - Added   - Default Sound option

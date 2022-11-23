@@ -1,4 +1,4 @@
---v0.0.7
+--v0.0.8
 
 
 BLU.defaults = {
@@ -31,9 +31,16 @@ BLU.options = {
 					name = "",
 					values = {"Default", "EverQuest", "Final Fantasy", "Fortnite", "Kingdom Hearts 3", "League of Legends", "Legend of Zelda", "Maplestory", "Minecraft", "Modern Warfare 2", "Morrowind", "Old School Runescape", "Path of Exile", "Pokemon", "Skyrim", "Sonic The Hedgehog", "Super Mario Bros 3", "Warcraft 3", "Witcher 3"},
 				},
+				TestLevelSound = {
+					type = "execute",
+					order = 2,
+					name = "Test Level Sound",
+					desc = "Test Currently Selected Sound File",
+					func = TestLevelSound,
+					},
 				MuteLevelDefault = {
 					type = "toggle",
-					order = 2,
+					order = 3,
 					name = "Mute Default",
 					desc = "Mute Default Level Up Sound",
 					-- inline getter/setter example
@@ -57,9 +64,16 @@ BLU.options = {
 					name = "",
 					values = {"Default", "EverQuest", "Final Fantasy", "Fortnite", "Kingdom Hearts 3", "League of Legends", "Legend of Zelda", "Maplestory", "Minecraft", "Modern Warfare 2", "Morrowind", "Old School Runescape", "Path of Exile", "Pokemon", "Skyrim", "Sonic The Hedgehog", "Super Mario Bros 3", "Warcraft 3", "Witcher 3"},
 				},
+				TestRepSound = {
+					type = "execute",
+					order = 2,
+					name = "Test Rep Sound",
+					desc = "Test Currently Selected Sound File",
+					func = TestRepSound,
+					},
 				MuteRepDefault = {
 					type = "toggle",
-					order = 2,
+					order = 3,
 					name = "Mute Default",
 					desc = "Mute Default Rep Up Sound",
 					-- inline getter/setter example
@@ -70,6 +84,8 @@ BLU.options = {
 		},
 	},
 }
+
+
 
 
 

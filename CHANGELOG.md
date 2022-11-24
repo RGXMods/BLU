@@ -1,4 +1,3 @@
-v0.0.10
+v0.0.11
 
-- Fixed - README
-- Added - Sounds/Mute for Quest Completion
+- Added - Sounds/Mute for Achievements Earned!

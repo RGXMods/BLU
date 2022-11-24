@@ -1,4 +1,4 @@
---v0.0.10
+--v0.0.11
 BLU.defaults = {
 	profile = {
 		LevelSoundSelect = 1,
@@ -9,6 +9,8 @@ BLU.defaults = {
 		MuteRenownDefault = false,
 		QuestSoundSelect = 1,
 		MuteQuestDefault = false,
+		AchievementSoundSelect = 1,
+		MuteAchievementDefault = false,
 	},
 }
 BLU.options = {
@@ -137,6 +139,37 @@ BLU.options = {
 					desc = "Mute Default Level Up Sound",
 					get = function(info) return BLU.db.profile.MuteQuestDefault end,
 					set = function(info, value) BLU.db.profile.MuteQuestDefault = value end,
+				},
+			},
+		},
+		group5 = {
+			type = "group",
+			order = 5,
+			name = "Achievement Earned!",
+			inline = true,
+			get = "GetValue",
+			set = "SetValue",
+			args = {
+				AchievementSoundSelect = {
+					type = "select",
+					order = 1,
+					name = "",
+					values = {"Default", "EverQuest", "Final Fantasy", "Fortnite", "Kingdom Hearts 3", "League of Legends", "Legend of Zelda", "Maplestory", "Minecraft", "Modern Warfare 2", "Morrowind", "Old School Runescape", "Path of Exile", "Pokemon", "Skyrim", "Sonic The Hedgehog", "Super Mario Bros 3", "Warcraft 3", "Witcher 3"},
+				},
+				TestAchievementSound = {
+					type = "execute",
+					order = 2,
+					name = "Test Achievement Sound",
+					desc = "Test Currently Selected Sound File",
+					func = TestAchievementSound,
+					},
+				MuteAchievementDefault = {
+					type = "toggle",
+					order = 3,
+					name = "Mute Default",
+					desc = "Mute Default Achievement Earned Sound",
+					get = function(info) return BLU.db.profile.MuteAchievementDefault end,
+					set = function(info, value) BLU.db.profile.MuteAchievementDefault = value end,
 				},
 			},
 		},

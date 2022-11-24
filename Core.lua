@@ -1,4 +1,4 @@
---v0.0.9
+--v0.0.10
 BLU = LibStub("AceAddon-3.0"):NewAddon("BLU", "AceEvent-3.0", "AceConsole-3.0")
 local AC = LibStub("AceConfig-3.0")
 local ACD = LibStub("AceConfigDialog-3.0")
@@ -14,6 +14,8 @@ function BLU:OnInitialize()
 end
 function BLU:OnEnable()
 	self:RegisterEvent("PLAYER_LEVEL_UP")
+	self:RegisterEvent("QUEST_TURNED_IN")
+	self:RegisterEvent("MAJOR_FACTION_RENOWN_LEVEL_CHANGED")
 end
 function BLU:PLAYER_LEVEL_UP(self, event, ...)
 	if BLU.db.profile.LevelSoundSelect == 1 then
@@ -53,6 +55,47 @@ elseif BLU.db.profile.LevelSoundSelect == 17 then
 elseif BLU.db.profile.LevelSoundSelect == 18 then
 	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\WC3LU.ogg", "SFX")
 elseif BLU.db.profile.LevelSoundSelect == 19 then
+	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\W3LU.ogg", "SFX")
+	end
+end
+function BLU:QUEST_TURNED_IN(self, event, ...)
+	if BLU.db.profile.QuestSoundSelect == 1 then
+	PlaySoundFile(567439)
+	elseif BLU.db.profile.QuestSoundSelect == 2 then
+	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\EQLU.ogg", "SFX")
+	elseif BLU.db.profile.QuestSoundSelect == 3 then
+	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FFLU.ogg", "SFX")
+	elseif BLU.db.profile.QuestSoundSelect == 4 then
+	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FNLU.ogg", "SFX")
+	elseif BLU.db.profile.QuestSoundSelect == 5 then
+	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\KH3LU.ogg", "SFX")
+	elseif BLU.db.profile.QuestSoundSelect == 6 then
+	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoLLU.ogg", "SFX")
+	elseif BLU.db.profile.QuestSoundSelect == 7 then
+	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoZN64.ogg", "SFX")
+	elseif BLU.db.profile.QuestSoundSelect == 8 then
+	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MSLU.ogg", "SFX")
+	elseif BLU.db.profile.QuestSoundSelect == 9 then
+	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MCLU.ogg", "SFX")
+	elseif BLU.db.profile.QuestSoundSelect == 10 then
+	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MW2LU.ogg", "SFX")
+	elseif BLU.db.profile.QuestSoundSelect == 11 then
+	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MWLU.ogg", "SFX")
+	elseif BLU.db.profile.QuestSoundSelect == 12 then
+	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\OSRSLU.ogg", "SFX")
+	elseif BLU.db.profile.QuestSoundSelect == 13 then
+	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PoELU.ogg", "SFX")
+	elseif BLU.db.profile.QuestSoundSelect == 14 then
+	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PkmnLU.ogg", "SFX")
+	elseif BLU.db.profile.QuestSoundSelect == 15 then
+	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SRLU.ogg", "SFX")
+	elseif BLU.db.profile.QuestSoundSelect == 16 then
+	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SHHLU.ogg", "SFX")
+	elseif BLU.db.profile.QuestSoundSelect == 17 then
+	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SMB3LU.ogg", "SFX")
+	elseif BLU.db.profile.QuestSoundSelect == 18 then
+	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\WC3LU.ogg", "SFX")
+	elseif BLU.db.profile.QuestSoundSelect == 19 then
 	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\W3LU.ogg", "SFX")
 	end
 end
@@ -110,11 +153,8 @@ Event_Frame_Rep:SetScript("OnEvent",
 	       end
 	   end
 end);
-local Event_Frame_Renown = CreateFrame("Frame")
-Event_Frame_Renown:RegisterEvent("MAJOR_FACTION_RENOWN_LEVEL_CHANGED")
-Event_Frame_Renown:SetScript("OnEvent",
-		function(self, event, ...)
-			if BLU.db.profile.RenownSoundSelect == 1 then
+function BLU:MAJOR_FACTION_RENOWN_LEVEL_CHANGED(self, event, ...)
+		if BLU.db.profile.RenownSoundSelect == 1 then
 			PlaySoundFile(569593)
 		elseif BLU.db.profile.RenownSoundSelect == 2 then
 			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\EQLU.ogg", "SFX")
@@ -153,7 +193,7 @@ Event_Frame_Renown:SetScript("OnEvent",
 		elseif BLU.db.profile.RenownSoundSelect == 19 then
 			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\W3LU.ogg", "SFX")
 		end
-end)
+end
 function TestLevelSound()
 	if BLU.db.profile.LevelSoundSelect == 1 then
 		PlaySoundFile(569593)
@@ -277,6 +317,47 @@ function TestRenownSound()
 		PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\W3LU.ogg", "SFX")
 	end
 end
+function TestQuestSound()
+	if BLU.db.profile.QuestSoundSelect == 1 then
+		PlaySoundFile(567439)
+	elseif BLU.db.profile.QuestSoundSelect == 2 then
+		PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\EQLU.ogg", "SFX")
+	elseif BLU.db.profile.QuestSoundSelect == 3 then
+		PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FFLU.ogg", "SFX")
+	elseif BLU.db.profile.QuestSoundSelect == 4 then
+		PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FNLU.ogg", "SFX")
+	elseif BLU.db.profile.QuestSoundSelect == 5 then
+		PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\KH3LU.ogg", "SFX")
+	elseif BLU.db.profile.QuestSoundSelect == 6 then
+		PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoLLU.ogg", "SFX")
+	elseif BLU.db.profile.QuestSoundSelect == 7 then
+		PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoZN64.ogg", "SFX")
+	elseif BLU.db.profile.QuestSoundSelect == 8 then
+		PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MSLU.ogg", "SFX")
+	elseif BLU.db.profile.QuestSoundSelect == 9 then
+		PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MCLU.ogg", "SFX")
+	elseif BLU.db.profile.QuestSoundSelect == 10 then
+		PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MW2LU.ogg", "SFX")
+	elseif BLU.db.profile.QuestSoundSelect == 11 then
+		PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MWLU.ogg", "SFX")
+	elseif BLU.db.profile.QuestSoundSelect == 12 then
+		PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\OSRSLU.ogg", "SFX")
+	elseif BLU.db.profile.QuestSoundSelect == 13 then
+		PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PoELU.ogg", "SFX")
+	elseif BLU.db.profile.QuestSoundSelect == 14 then
+		PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PkmnLU.ogg", "SFX")
+	elseif BLU.db.profile.QuestSoundSelect == 15 then
+		PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SRLU.ogg", "SFX")
+	elseif BLU.db.profile.QuestSoundSelect == 16 then
+		PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SHHLU.ogg", "SFX")
+	elseif BLU.db.profile.QuestSoundSelect == 17 then
+		PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SMB3LU.ogg", "SFX")
+	elseif BLU.db.profile.QuestSoundSelect == 18 then
+		PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\WC3LU.ogg", "SFX")
+	elseif BLU.db.profile.QuestSoundSelect == 19 then
+		PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\W3LU.ogg", "SFX")
+	end
+end
 local Event_Frame_Mute_Level=CreateFrame("Frame");
 Event_Frame_Mute_Level:RegisterEvent("PLAYER_STARTED_MOVING");
 Event_Frame_Mute_Level:SetScript("OnEvent",function()
@@ -301,6 +382,13 @@ if BLU.db.profile.MuteRenownDefault == true then
 	MuteSoundFile(4745445)
 	end
 end);
+local Event_Frame_Mute_Quest=CreateFrame("Frame");
+Event_Frame_Mute_Quest:RegisterEvent("PLAYER_STARTED_MOVING");
+Event_Frame_Mute_Quest:SetScript("OnEvent",function()
+if BLU.db.profile.MuteQuestDefault == true then
+	MuteSoundFile(567439)
+	end
+end);
 local Event_Frame_Unmute_Level=CreateFrame("Frame");
 Event_Frame_Unmute_Level:RegisterEvent("PLAYER_STARTED_MOVING");
 Event_Frame_Unmute_Level:SetScript("OnEvent",function()
@@ -323,6 +411,13 @@ if BLU.db.profile.MuteRenownDefault == false then
 	UnmuteSoundFile(4745441)
 	UnmuteSoundFile(4745443)
 	UnmuteSoundFile(4745445)
+	end
+end);
+local Event_Frame_Unmute_Quest=CreateFrame("Frame");
+Event_Frame_Unmute_Quest:RegisterEvent("PLAYER_STARTED_MOVING");
+Event_Frame_Unmute_Quest:SetScript("OnEvent",function()
+if BLU.db.profile.MuteQuestDefault == false then
+	UnmuteSoundFile(567439)
 	end
 end);
 function BLU:SlashCommand(input, editbox)

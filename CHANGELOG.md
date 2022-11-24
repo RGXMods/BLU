@@ -1,3 +1,4 @@
-v0.0.9
+v0.0.10
 
-- Added - Sounds/Mute for DragonFlight Renown Reputation Rank-Ups!
+- Fixed - README
+- Added - Sounds/Mute for Quest Completion

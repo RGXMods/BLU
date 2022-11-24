@@ -1,19 +1,27 @@
 [![](https://img.shields.io/static/v1?label=Donate&message=CashApp&color=brightgreen)](https://bit.ly/3fyxxSU)
 
-v0.0.9
+v0.0.10
 ------------------------------
 
 **BLU - Better Level Up!**
 
 ------------------------------
 
-Mute default level up sound.
+Mute default Level-Up sound.
 
-Mute default reputation rank up sound.
+Mute default Reputation Rank-Up sound.
 
-Play sounds from other games when you level up!
+Mute default DragonFlight Renown Reputation Rank-Ups.
 
-Play sounds from other games when you gain reputation ranks!
+Mute default Quest Turn-In sound.
+
+Play sounds from other games when you Level Up!
+
+Play sounds from other games when you gain Reputation Ranks!
+
+Play sounds from other games when you gain DragonFlight Renown Reputation Ranks!
+
+Play sounds from other games when you Turn-In Quests!
 
 ------------------------------
 
@@ -56,17 +64,21 @@ Play sounds from other games when you gain reputation ranks!
 
 ***To-Do List***
 
-Fix Sound Mute Trigger (Currently activates on PLAYER_STARTED_MOVING)
+Fix Sound Mute Trigger *(Currently activates on PLAYER_STARTED_MOVING)*
 
 Sounds/Mute for Achievements
 
-Sounds/Mute for Quest-Turn-Ins
-
 Sounds/Mute for Honor Rank-Ups
+
+Info text on Login
 
 ------------------------------
 
 ***Cumulative CHANGELOG***
+
+**v0.0.10**
+- Fixed - README
+- Added - Sounds/Mute for Quest Completion
 
 **v0.0.9**
 - Added - Sounds/Mute for DragonFlight Renown Reputation Rank-Ups!

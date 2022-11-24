@@ -1,4 +1,4 @@
---v0.0.9
+--v0.0.10
 BLU.defaults = {
 	profile = {
 		LevelSoundSelect = 1,
@@ -7,6 +7,8 @@ BLU.defaults = {
 		MuteRepDefault = false,
 		RenownSoundSelect = 1,
 		MuteRenownDefault = false,
+		QuestSoundSelect = 1,
+		MuteQuestDefault = false,
 	},
 }
 BLU.options = {
@@ -104,6 +106,37 @@ BLU.options = {
 					desc = "Mute Default Level Up Sound",
 					get = function(info) return BLU.db.profile.MuteRenownDefault end,
 					set = function(info, value) BLU.db.profile.MuteRenownDefault = value end,
+				},
+			},
+		},
+		group4 = {
+			type = "group",
+			order = 4,
+			name = "Quest Turn-In!",
+			inline = true,
+			get = "GetValue",
+			set = "SetValue",
+			args = {
+				QuestSoundSelect = {
+					type = "select",
+					order = 1,
+					name = "",
+					values = {"Default", "EverQuest", "Final Fantasy", "Fortnite", "Kingdom Hearts 3", "League of Legends", "Legend of Zelda", "Maplestory", "Minecraft", "Modern Warfare 2", "Morrowind", "Old School Runescape", "Path of Exile", "Pokemon", "Skyrim", "Sonic The Hedgehog", "Super Mario Bros 3", "Warcraft 3", "Witcher 3"},
+				},
+				TestQuestSound = {
+					type = "execute",
+					order = 2,
+					name = "Test Quest Sound",
+					desc = "Test Currently Selected Sound File",
+					func = TestQuestSound,
+					},
+				MuteQuestDefault = {
+					type = "toggle",
+					order = 3,
+					name = "Mute Default",
+					desc = "Mute Default Level Up Sound",
+					get = function(info) return BLU.db.profile.MuteQuestDefault end,
+					set = function(info, value) BLU.db.profile.MuteQuestDefault = value end,
 				},
 			},
 		},

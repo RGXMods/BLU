@@ -1,6 +1,6 @@
 [![](https://img.shields.io/static/v1?label=Donate&message=CashApp&color=brightgreen)](https://bit.ly/3fyxxSU)
 
-v0.0.11
+v0.0.12
 ------------------------------
 
 **BLU - Better Level Up!**
@@ -70,20 +70,38 @@ Play sounds from other games when you Earn Achievements!
 
 Fix Sound Mute Trigger *(Currently activates on PLAYER_STARTED_MOVING)*
 
-Sounds/Mute for Honor Rank-Ups
+Sounds/Mute for Honor Rank-Ups!
 
 Info text on Login
+
+Add more sounds!
+
+Sounds/Mute for Pet Battle Level-Up!
+
+Sounds/Mute for Pet Battle Victories!
+
+Sounds/Mute for Hunter Pet Level-Up!
+
+Sounds/Mute for BattleGround Victories!
+
+Sounds/Mute for Accepting Quests!
 
 ------------------------------
 
 ***Cumulative CHANGELOG***
+
+**v0.0.12**
+- Added - Play Button Image for Sound Tests
+- Fixed - Text Display issues
+- Fixed - Moved Sounds from Channel 'SFX' to Channel 'MASTER'
+  (You can now control the volume of BLU with the Master Volume slider)
 
 **v0.0.11**
 - Added - Sounds/Mute for Achievements Earned!
 
 **v0.0.10**
 - Fixed - README
-- Added - Sounds/Mute for Quest Completion
+- Added - Sounds/Mute for Quest Completion!
 
 **v0.0.9**
 - Added - Sounds/Mute for DragonFlight Renown Reputation Rank-Ups!

@@ -1,6 +1,6 @@
 [![](https://img.shields.io/static/v1?label=Donate&message=CashApp&color=brightgreen)](https://bit.ly/3fyxxSU)
 
-v0.0.12
+v0.0.13
 ------------------------------
 
 **BLU - Better Level Up!**
@@ -89,6 +89,11 @@ Sounds/Mute for Accepting Quests!
 ------------------------------
 
 ***Cumulative CHANGELOG***
+
+**v0.0.13**
+- Fixed - MAJOR_FACTION_RENOWN_LEVEL_CHANGED error in WotLK/BC/SoM
+- Split - Code Base for Retail/Classic Clients
+
 
 **v0.0.12**
 - Added - Play Button Image for Sound Tests

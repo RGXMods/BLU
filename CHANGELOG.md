@@ -1,6 +1,4 @@
-v0.0.12
+v0.0.13
 
-- Added - Play Button Image for Sound Tests
-- Fixed - Text Display issues
-- Fixed - Moved Sounds from Channel 'SFX' to Channel 'MASTER'
-  (You can now control the volume of BLU with the Master Volume slider)
+- Fixed - MAJOR_FACTION_RENOWN_LEVEL_CHANGED error in WotLK/BC/SoM
+- Split - Code Base for Retail/Classic Clients

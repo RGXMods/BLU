@@ -1,5 +1,5 @@
 ## Interface: 20504
-## Version: 0.0.12
+## Version: 0.0.13
 ## Title: |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel|r |cff05dffaU|r|cffffffffp!
 ## Notes: Grats!
 ## Author: DonnieDice
@@ -30,5 +30,5 @@ Libs\AceComm-3.0\AceComm-3.0.xml
 Libs\AceTab-3.0\AceTab-3.0.xml
 Libs\AceSerializer-3.0\AceSerializer-3.0.xml
 
-Core.lua
-Options.lua
+Core_c.lua
+Options_c.lua

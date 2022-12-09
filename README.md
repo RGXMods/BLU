@@ -1,6 +1,6 @@
 [![](https://img.shields.io/static/v1?label=Donate&message=CashApp&color=brightgreen)](https://bit.ly/3fyxxSU)
 
-v0.0.14
+v0.0.15
 ------------------------------
 
 **BLU - Better Level Up!**
@@ -9,25 +9,30 @@ v0.0.14
 **Thank you for Downloading BLU! Enter '/blu' to Select Level Up Sounds!**
 ------------------------------
 
-Mute default Level-Up sound.
+Mute default Achievement Earned Sound.
 
-Mute default Reputation Rank-Up sound.
+Mute default Level-Up sound.
 
 Mute default DragonFlight Renown Reputation Rank-Ups.
 
+Mute default Reputation Rank-Up sound.
+
+Mute default Quest Accepted sound.
+
 Mute default Quest Turn-In sound.
 
-Mute default Achievement Earned Sound.
+Play sounds from other games when you Earn Achievements!
 
 Play sounds from other games when you Level Up!
 
+Play sounds from other games when you gain DragonFlight Renown Reputation Ranks!
+
 Play sounds from other games when you gain Reputation Ranks!
 
-Play sounds from other games when you gain DragonFlight Renown Reputation Ranks!
+Play sounds from other games when you Accept Quests!
 
 Play sounds from other games when you Turn-In Quests!
 
-Play sounds from other games when you Earn Achievements!
 
 ------------------------------
 
@@ -36,6 +41,8 @@ Play sounds from other games when you Earn Achievements!
 ***If you're a fan of my other sound addons, this will be the one maintained going forward!***
 
 ------------------------------
+
+**NOTE:**
 
 ***When I add new sounds to this addon, they are added in alphabetical order.***
 
@@ -80,8 +87,6 @@ Play sounds from other games when you Earn Achievements!
 
 ***To-Do List***
 
-Fix Sound Mute Trigger *(Currently activates on PLAYER_STARTED_MOVING)*
-
 Sounds/Mute for Honor Rank-Ups!
 
 Add more sounds!
@@ -94,36 +99,47 @@ Sounds/Mute for Hunter Pet Level-Up!
 
 Sounds/Mute for BattleGround Victories!
 
-Sounds/Mute for Accepting Quests!
-
 ------------------------------
 
 ***Cumulative CHANGELOG***
 
+**v0.0.15**
+- Added   - Sounds/Mute for Quest Accepted!
+- Fixed   - Organized Code structure
+- Fixed   - Alphabetized Options Menu
+- Fixed   - Code for Sound Mute Triggers
+          *(Now activates on GLOBAL_MOUSE_DOWN)*
+- Changed - Code for Sound Mute Triggers
+          *(Combined all code for Mute Triggers into Single Function)*
+- Fixed   - README Structure
+- Added   - Notation to Source Code
+- Changed - Code for Reputation Rank Up Sound Trigger
+
+
 **v0.0.14**
-- Added - Fly For Fun Level Up Sound!
-- Added - DotA 2 Rank Up Sound!
-- Added - Info text on Login
+- Added   - Fly For Fun Level Up Sound!
+- Added   - DotA 2 Rank Up Sound!
+- Added   - Info text on Login
 
 **v0.0.13**
-- Fixed - MAJOR_FACTION_RENOWN_LEVEL_CHANGED error in WotLK/BC/SoM
-- Split - Code Base for Retail/Classic Clients
+- Fixed   - MAJOR_FACTION_RENOWN_LEVEL_CHANGED error in WotLK/BC/SoM
+- Split   - Code Base for Retail/Classic Clients
 
 **v0.0.12**
-- Added - Play Button Image for Sound Tests
-- Fixed - Text Display issues
-- Fixed - Moved Sounds from Channel 'SFX' to Channel 'MASTER'
-  (You can now control the volume of BLU with the Master Volume slider)
+- Added   - Play Button Image for Sound Tests
+- Fixed   - Text Display issues
+- Fixed   - Moved Sounds from Channel 'SFX' to Channel 'MASTER'
+          *(You can now control the volume of BLU with the Master Volume slider)*
 
 **v0.0.11**
-- Added - Sounds/Mute for Achievements Earned!
+- Added   - Sounds/Mute for Achievements Earned!
 
 **v0.0.10**
-- Fixed - README
-- Added - Sounds/Mute for Quest Completion!
+- Fixed   - README
+- Added   - Sounds/Mute for Quest Completion!
 
 **v0.0.9**
-- Added - Sounds/Mute for DragonFlight Renown Reputation Rank-Ups!
+- Added   - Sounds/Mute for DragonFlight Renown Reputation Rank-Ups!
 
 **v0.0.8**
 - Fixed   - Spelling errors

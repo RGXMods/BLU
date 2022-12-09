@@ -1,10 +1,12 @@
 [![](https://img.shields.io/static/v1?label=Donate&message=CashApp&color=brightgreen)](https://bit.ly/3fyxxSU)
 
-v0.0.13
+v0.0.14
 ------------------------------
 
 **BLU - Better Level Up!**
 
+------------------------------
+**Thank you for Downloading BLU! Enter '/blu' to Select Level Up Sounds!**
 ------------------------------
 
 Mute default Level-Up sound.
@@ -35,6 +37,14 @@ Play sounds from other games when you Earn Achievements!
 
 ------------------------------
 
+***When I add new sounds to this addon, they are added in alphabetical order.***
+
+***This changes the Selection Order in the code for Options.lua.***
+
+***You may have to re-select a previously selected sound after Addon Updates.***
+
+------------------------------
+
 - This addon works in DRAGONFLIGHT!
 
 - This addon works in CLASSIC WOW!
@@ -45,8 +55,10 @@ Play sounds from other games when you Earn Achievements!
 
 **Current list of available game sounds**
 - Default (WoW)
+- DotA 2
 - EverQuest
 - Final Fantasy
+- Fly For Fun
 - Fortnite
 - Kingdom Hearts 3
 - League of Legends
@@ -72,8 +84,6 @@ Fix Sound Mute Trigger *(Currently activates on PLAYER_STARTED_MOVING)*
 
 Sounds/Mute for Honor Rank-Ups!
 
-Info text on Login
-
 Add more sounds!
 
 Sounds/Mute for Pet Battle Level-Up!
@@ -90,10 +100,14 @@ Sounds/Mute for Accepting Quests!
 
 ***Cumulative CHANGELOG***
 
+**v0.0.14**
+- Added - Fly For Fun Level Up Sound!
+- Added - DotA 2 Rank Up Sound!
+- Added - Info text on Login
+
 **v0.0.13**
 - Fixed - MAJOR_FACTION_RENOWN_LEVEL_CHANGED error in WotLK/BC/SoM
 - Split - Code Base for Retail/Classic Clients
-
 
 **v0.0.12**
 - Added - Play Button Image for Sound Tests

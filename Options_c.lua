@@ -1,12 +1,10 @@
---v0.0.13
+--v0.0.14
 BLU.defaults = {
 	profile = {
 		LevelSoundSelect = 1,
 		MuteLevelDefault = false,
 		RepSoundSelect = 1,
 		MuteRepDefault = false,
-		RenownSoundSelect = 1,
-		MuteRenownDefault = false,
 		QuestSoundSelect = 1,
 		MuteQuestDefault = false,
 		AchievementSoundSelect = 1,
@@ -30,7 +28,7 @@ BLU.options = {
 					type = "select",
 					order = 1,
 					name = "",
-					values = {"Default", "EverQuest", "Final Fantasy", "Fortnite", "Kingdom Hearts 3", "League of Legends", "Legend of Zelda", "Maplestory", "Minecraft", "Modern Warfare 2", "Morrowind", "Old School Runescape", "Path of Exile", "Pokemon", "Skyrim", "Sonic The Hedgehog", "Super Mario Bros 3", "Warcraft 3", "Witcher 3"},
+					values = {"Default", "DotA 2", "EverQuest", "Final Fantasy", "Fly For Fun", "Fortnite", "Kingdom Hearts 3", "League of Legends", "Legend of Zelda", "Maplestory", "Minecraft", "Modern Warfare 2", "Morrowind", "Old School Runescape", "Path of Exile", "Pokemon", "Skyrim", "Sonic The Hedgehog", "Super Mario Bros 3", "Warcraft 3", "Witcher 3"},
 				},
 				TestLevelSound = {
 					type = "execute",
@@ -64,7 +62,7 @@ BLU.options = {
 					type = "select",
 					order = 1,
 					name = "",
-					values = {"Default", "EverQuest", "Final Fantasy", "Fortnite", "Kingdom Hearts 3", "League of Legends", "Legend of Zelda", "Maplestory", "Minecraft", "Modern Warfare 2", "Morrowind", "Old School Runescape", "Path of Exile", "Pokemon", "Skyrim", "Sonic The Hedgehog", "Super Mario Bros 3", "Warcraft 3", "Witcher 3"},
+					values = {"Default", "DotA 2", "EverQuest", "Final Fantasy", "Fly For Fun", "Fortnite", "Kingdom Hearts 3", "League of Legends", "Legend of Zelda", "Maplestory", "Minecraft", "Modern Warfare 2", "Morrowind", "Old School Runescape", "Path of Exile", "Pokemon", "Skyrim", "Sonic The Hedgehog", "Super Mario Bros 3", "Warcraft 3", "Witcher 3"},
 				},
 				TestRepSound = {
 					type = "execute",
@@ -98,7 +96,7 @@ BLU.options = {
 					type = "select",
 					order = 1,
 					name = "",
-					values = {"Default", "EverQuest", "Final Fantasy", "Fortnite", "Kingdom Hearts 3", "League of Legends", "Legend of Zelda", "Maplestory", "Minecraft", "Modern Warfare 2", "Morrowind", "Old School Runescape", "Path of Exile", "Pokemon", "Skyrim", "Sonic The Hedgehog", "Super Mario Bros 3", "Warcraft 3", "Witcher 3"},
+					values = {"Default", "DotA 2", "EverQuest", "Final Fantasy", "Fly For Fun", "Fortnite", "Kingdom Hearts 3", "League of Legends", "Legend of Zelda", "Maplestory", "Minecraft", "Modern Warfare 2", "Morrowind", "Old School Runescape", "Path of Exile", "Pokemon", "Skyrim", "Sonic The Hedgehog", "Super Mario Bros 3", "Warcraft 3", "Witcher 3"},
 				},
 				TestQuestSound = {
 					type = "execute",
@@ -132,7 +130,7 @@ BLU.options = {
 					type = "select",
 					order = 1,
 					name = "",
-					values = {"Default", "EverQuest", "Final Fantasy", "Fortnite", "Kingdom Hearts 3", "League of Legends", "Legend of Zelda", "Maplestory", "Minecraft", "Modern Warfare 2", "Morrowind", "Old School Runescape", "Path of Exile", "Pokemon", "Skyrim", "Sonic The Hedgehog", "Super Mario Bros 3", "Warcraft 3", "Witcher 3"},
+					values = {"Default", "DotA 2", "EverQuest", "Final Fantasy", "Fly For Fun", "Fortnite", "Kingdom Hearts 3", "League of Legends", "Legend of Zelda", "Maplestory", "Minecraft", "Modern Warfare 2", "Morrowind", "Old School Runescape", "Path of Exile", "Pokemon", "Skyrim", "Sonic The Hedgehog", "Super Mario Bros 3", "Warcraft 3", "Witcher 3"},
 				},
 				TestAchievementSound = {
 					type = "execute",

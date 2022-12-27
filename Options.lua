@@ -1,8 +1,10 @@
---v0.0.15
+--v0.0.16
 BLU.defaults = {
 	profile = {
 		AchievementSoundSelect = 1,
 		MuteAchievementDefault = false,
+		HonorSoundSelect = 1,
+		MuteHonorDefault = false,
 		LevelSoundSelect = 1,
 		MuteLevelDefault = false,
 		RenownSoundSelect = 1,
@@ -57,6 +59,40 @@ BLU.options = {
 		group2 = {
 			type = "group",
 			order = 2,
+			name = "Honor Rank Up!",
+			inline = true,
+			get = "GetValue",
+			set = "SetValue",
+			args = {
+				HonorSoundSelect = {
+					type = "select",
+					order = 1,
+					name = "",
+					values = {"Default", "DotA 2", "EverQuest", "Final Fantasy", "Fly For Fun", "Fortnite", "Kingdom Hearts 3", "League of Legends", "Legend of Zelda", "Maplestory", "Minecraft", "Modern Warfare 2", "Morrowind", "Old School Runescape", "Path of Exile", "Pokemon", "Skyrim", "Sonic The Hedgehog", "Super Mario Bros 3", "Warcraft 3", "Witcher 3"},
+				},
+				TestHonorSound = {
+					type = "execute",
+					order = 2,
+					image = "Interface\\Addons\\BLU\\Images\\PLAY.blp",
+						imageWidth = 20,
+						imageHeight = 20,
+					name = "",
+					desc = "",
+					func = TestHonorSound,
+					},
+				MuteHonorDefault = {
+					type = "toggle",
+					order = 3,
+					name = "Mute Default",
+					desc = "Mute Default Honor Rank Up Sound",
+					get = function(info) return BLU.db.profile.MuteHonorDefault end,
+					set = function(info, value) BLU.db.profile.MuteHonorDefault = value end,
+				},
+			},
+		},
+		group3 = {
+			type = "group",
+			order = 3,
 			name = "Level-Up!",
 			inline = true,
 			get = "GetValue",
@@ -88,9 +124,9 @@ BLU.options = {
 				},
 			},
 		},
-		group3 = {
+		group4 = {
 			type = "group",
-			order = 3,
+			order = 4,
 			name = "Renown Rank-Up!",
 			inline = true,
 			get = "GetValue",
@@ -122,9 +158,9 @@ BLU.options = {
 				},
 			},
 		},
-		group4 = {
+		group5 = {
 			type = "group",
-			order = 4,
+			order = 5,
 			name = "Reputation Rank-Up!",
 			inline = true,
 			get = "GetValue",
@@ -156,9 +192,9 @@ BLU.options = {
 				},
 			},
 		},
-		group5 = {
+		group6 = {
 			type = "group",
-			order = 5,
+			order = 6,
 			name = "Quest Accepted!",
 			inline = true,
 			get = "GetValue",
@@ -190,9 +226,9 @@ BLU.options = {
 				},
 			},
 		},
-		group6 = {
+		group7 = {
 			type = "group",
-			order = 6,
+			order = 7,
 			name = "Quest Turn-In!",
 			inline = true,
 			get = "GetValue",

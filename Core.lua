@@ -1,4 +1,4 @@
---v0.0.15
+--v0.0.16
 ------------------------------------------------------Options/Profiles/Database
 BLU = LibStub("AceAddon-3.0"):NewAddon("BLU", "AceEvent-3.0", "AceConsole-3.0")
 local AC = LibStub("AceConfig-3.0")
@@ -20,6 +20,7 @@ end
 function BLU:OnEnable()
 	self:RegisterEvent("ACHIEVEMENT_EARNED")
 	self:RegisterEvent("GLOBAL_MOUSE_DOWN")
+	self:RegisterEvent("HONOR_LEVEL_UPDATE")
 	self:RegisterEvent("MAJOR_FACTION_RENOWN_LEVEL_CHANGED")
 	self:RegisterEvent("PLAYER_LEVEL_UP")
 	self:RegisterEvent("PLAYER_LOGIN")
@@ -126,6 +127,98 @@ function TestAchievementSound()
 	end
 end
 -------------------------------------------------------------Achievement Earned
+------------------------------------------------------------------Honor Rank Up
+function BLU:HONOR_LEVEL_UPDATE(self, event, ...)
+	if BLU.db.profile.HonorSoundSelect == 1 then
+			PlaySoundFile(1489546)
+		elseif BLU.db.profile.HonorSoundSelect == 2 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\DotA2LU.ogg", "MASTER")
+		elseif BLU.db.profile.HonorSoundSelect == 3 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\EQLU.ogg", "MASTER")
+		elseif BLU.db.profile.HonorSoundSelect == 4 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FFLU.ogg", "MASTER")
+		elseif BLU.db.profile.HonorSoundSelect == 5 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FFFLU.ogg", "MASTER")
+		elseif BLU.db.profile.HonorSoundSelect == 6 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FNLU.ogg", "MASTER")
+		elseif BLU.db.profile.HonorSoundSelect == 7 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\KH3LU.ogg", "MASTER")
+		elseif BLU.db.profile.HonorSoundSelect == 8 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoLLU.ogg", "MASTER")
+		elseif BLU.db.profile.HonorSoundSelect == 9 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoZN64.ogg", "MASTER")
+		elseif BLU.db.profile.HonorSoundSelect == 10 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MSLU.ogg", "MASTER")
+		elseif BLU.db.profile.HonorSoundSelect == 11 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MCLU.ogg", "MASTER")
+		elseif BLU.db.profile.HonorSoundSelect == 12 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MW2LU.ogg", "MASTER")
+		elseif BLU.db.profile.HonorSoundSelect == 13 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MWLU.ogg", "MASTER")
+		elseif BLU.db.profile.HonorSoundSelect == 14 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\OSRSLU.ogg", "MASTER")
+		elseif BLU.db.profile.HonorSoundSelect == 15 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PoELU.ogg", "MASTER")
+		elseif BLU.db.profile.HonorSoundSelect == 16 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PkmnLU.ogg", "MASTER")
+		elseif BLU.db.profile.HonorSoundSelect == 17 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SRLU.ogg", "MASTER")
+		elseif BLU.db.profile.HonorSoundSelect == 18 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SHHLU.ogg", "MASTER")
+		elseif BLU.db.profile.HonorSoundSelect == 19 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SMB3LU.ogg", "MASTER")
+		elseif BLU.db.profile.HonorSoundSelect == 20 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\WC3LU.ogg", "MASTER")
+		elseif BLU.db.profile.HonorSoundSelect == 21 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\W3LU.ogg", "MASTER")
+	end
+end
+function TestHonorSound()
+	if BLU.db.profile.HonorSoundSelect == 1 then
+			PlaySoundFile(1489546)
+		elseif BLU.db.profile.HonorSoundSelect == 2 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\DotA2LU.ogg", "MASTER")
+		elseif BLU.db.profile.HonorSoundSelect == 3 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\EQLU.ogg", "MASTER")
+		elseif BLU.db.profile.HonorSoundSelect == 4 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FFLU.ogg", "MASTER")
+		elseif BLU.db.profile.HonorSoundSelect == 5 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FFFLU.ogg", "MASTER")
+		elseif BLU.db.profile.HonorSoundSelect == 6 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FNLU.ogg", "MASTER")
+		elseif BLU.db.profile.HonorSoundSelect == 7 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\KH3LU.ogg", "MASTER")
+		elseif BLU.db.profile.HonorSoundSelect == 8 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoLLU.ogg", "MASTER")
+		elseif BLU.db.profile.HonorSoundSelect == 9 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoZN64.ogg", "MASTER")
+		elseif BLU.db.profile.HonorSoundSelect == 10 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MSLU.ogg", "MASTER")
+		elseif BLU.db.profile.HonorSoundSelect == 11 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MCLU.ogg", "MASTER")
+		elseif BLU.db.profile.HonorSoundSelect == 12 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MW2LU.ogg", "MASTER")
+		elseif BLU.db.profile.HonorSoundSelect == 13 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MWLU.ogg", "MASTER")
+		elseif BLU.db.profile.HonorSoundSelect == 14 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\OSRSLU.ogg", "MASTER")
+		elseif BLU.db.profile.HonorSoundSelect == 15 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PoELU.ogg", "MASTER")
+		elseif BLU.db.profile.HonorSoundSelect == 16 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PkmnLU.ogg", "MASTER")
+		elseif BLU.db.profile.HonorSoundSelect == 17 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SRLU.ogg", "MASTER")
+		elseif BLU.db.profile.HonorSoundSelect == 18 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SHHLU.ogg", "MASTER")
+		elseif BLU.db.profile.HonorSoundSelect == 19 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SMB3LU.ogg", "MASTER")
+		elseif BLU.db.profile.HonorSoundSelect == 20 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\WC3LU.ogg", "MASTER")
+		elseif BLU.db.profile.HonorSoundSelect == 21 then
+			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\W3LU.ogg", "MASTER")
+	end
+end
+------------------------------------------------------------------Honor Rank Up
 -----------------------------------------------------------------------Level Up
 function BLU:PLAYER_LEVEL_UP(self, event, ...)
 	if BLU.db.profile.LevelSoundSelect == 1 then
@@ -603,6 +696,13 @@ function BLU:GLOBAL_MOUSE_DOWN(self, event, ...)
 			UnmuteSoundFile(569143)
 	end
 -----------------------------------------------------Achievement Earned
+----------------------------------------------------------Honor Rank Up
+	if BLU.db.profile.MuteHonorDefault == true then
+			MuteSoundFile(1489546)
+		elseif BLU.db.profile.MuteHonorDefault == false then
+			UnmuteSoundFile(1489546)
+	end
+----------------------------------------------------------Honor Rank Up
 ---------------------------------------------------------------Level Up
 	if BLU.db.profile.MuteLevelDefault == true then
 			MuteSoundFile(569593)

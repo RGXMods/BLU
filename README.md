@@ -1,6 +1,6 @@
 [![](https://img.shields.io/static/v1?label=Donate&message=CashApp&color=brightgreen)](https://bit.ly/3fyxxSU)
 
-v0.0.15
+v0.0.16
 ------------------------------
 
 **BLU - Better Level Up!**
@@ -10,6 +10,8 @@ v0.0.15
 ------------------------------
 
 Mute default Achievement Earned Sound.
+
+Mute default Honor Rank-Up Sound.
 
 Mute default Level-Up sound.
 
@@ -22,6 +24,8 @@ Mute default Quest Accepted sound.
 Mute default Quest Turn-In sound.
 
 Play sounds from other games when you Earn Achievements!
+
+Play sounds from other games when you gain Honor Ranks!
 
 Play sounds from other games when you Level Up!
 
@@ -87,7 +91,6 @@ Play sounds from other games when you Turn-In Quests!
 
 ***To-Do List***
 
-Sounds/Mute for Honor Rank-Ups!
 
 Add more sounds!
 
@@ -102,6 +105,9 @@ Sounds/Mute for BattleGround Victories!
 ------------------------------
 
 ***Cumulative CHANGELOG***
+
+**v0.0.16**
+- Added   - Sounds/Mute for Honor Rank-Ups!
 
 **v0.0.15**
 - Added   - Sounds/Mute for Quest Accepted!

@@ -1,4 +1,4 @@
---v0.0.15
+--v0.0.16
 BLU.defaults = {
 	profile = {
 		AchievementSoundSelect = 1,
@@ -52,7 +52,7 @@ BLU.options = {
 				},
 			},
 		},
-		group2 = {
+		group3 = {
 			type = "group",
 			order = 2,
 			name = "Level-Up!",

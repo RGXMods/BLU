@@ -1,3 +1,3 @@
-v0.0.16
+v0.0.17
 
-- Added - Sounds/Mute for Honor Rank-Ups!
+- Updated - .TOC for WotLK Ulduar Patch

@@ -1,10 +1,11 @@
 ## Interface: 100100
-## Version: 0.0.18
+## Version: 0.0.19
 ## Title: |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel|r |cff05dffaU|r|cffffffffp!
 ## Notes: Grats!
 ## Author: DonnieDice
 ## SavedVariables: BLUDB
 ## OptionalDeps: Ace3 # if a user wants to run Ace3 standalone
+## IconTexture: Interface\AddOns\BLU\Images\icon
 
 ## X-Category: UI Media, Questing & Leveling, Audio & Video, Miscellaneous
 ## X-Website: https://github.com/donniedice/BLU

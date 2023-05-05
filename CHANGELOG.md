@@ -1,4 +1,4 @@
-v0.0.18
+v0.0.19
 
-- Updated - .TOC for "Embers of Neltharion" Patch
-- Added   - Icon for AddOn List
+- Fixed   - Issue with AddOn List Icon
+- Updated - Ace3 Libs (r1294)

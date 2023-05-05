@@ -1,6 +1,6 @@
 [![](https://img.shields.io/static/v1?label=Donate&message=CashApp&color=brightgreen)](https://bit.ly/3fyxxSU)
 
-v0.0.17
+v0.0.18
 ------------------------------
 
 **BLU - Better Level Up!**
@@ -105,6 +105,10 @@ Sounds/Mute for BattleGround Victories!
 ------------------------------
 
 ***Cumulative CHANGELOG***
+
+**v0.0.18**
+- Updated - .TOC for "Embers of Neltharion" Patch
+- Added   - Icon for AddOn List
 
 **v0.0.17**
 - Updated - .TOC for WotLK Ulduar Patch

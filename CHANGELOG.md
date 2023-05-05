@@ -1,3 +1,4 @@
-v0.0.17
+v0.0.18
 
-- Updated - .TOC for WotLK Ulduar Patch
+- Updated - .TOC for "Embers of Neltharion" Patch
+- Added   - Icon for AddOn List

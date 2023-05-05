@@ -1,4 +1,4 @@
---v0.0.17
+--v0.0.18
 BLU.defaults = {
 	profile = {
 		AchievementSoundSelect = 1,

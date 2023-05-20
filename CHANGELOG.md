@@ -1,4 +1,8 @@
-v0.0.19
+v1.0.0
 
-- Fixed   - Issue with AddOn List Icon
-- Updated - Ace3 Libs (r1294)
+- Changed - Entire code base rewritten
+- Added   - Sounds/Mute for Trade Post Activity Completed!
+- Added   - Sounds/Mute for Battle-Pet Level-Ups!
+- Added   - Color for readability
+- Added   - Usage details in AddOn Notes
+- Changed - Squished Cumulative CHANGELOG in README

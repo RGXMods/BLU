@@ -1,8 +1,33 @@
---v0.0.19
+--v1.0.0
+local soundOptions = {
+    "Default",
+    "DotA 2",
+    "EverQuest",
+    "Final Fantasy",
+    "Fly For Fun",
+    "Fortnite",
+    "Kingdom Hearts 3",
+    "League of Legends",
+    "Legend of Zelda",
+    "Maplestory",
+    "Minecraft",
+    "Modern Warfare 2",
+    "Morrowind",
+    "Old School Runescape",
+    "Path of Exile",
+    "Pokemon",
+    "Skyrim",
+    "Sonic The Hedgehog",
+    "Super Mario Bros 3",
+    "Warcraft 3",
+    "Witcher 3"
+};
 BLU.defaults = {
 	profile = {
 		AchievementSoundSelect = 1,
 		MuteAchievementDefault = false,
+		HonorSoundSelect = 1,
+		MuteHonorDefault = false,
 		LevelSoundSelect = 1,
 		MuteLevelDefault = false,
 		RepSoundSelect = 1,
@@ -15,13 +40,13 @@ BLU.defaults = {
 }
 BLU.options = {
 	type = "group",
-	name = "Sound Settings",
+	name = "|cff05dffaBLU|r |cffffffff|| |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel|r |cff05dffaU|r|cffffffffp! - v1.0.0|r",
 	handler = BLU,
 	args = {
 		group1 = {
 			type = "group",
 			order = 1,
-			name = "Achievement Earned!",
+			name = "|cffffffffAchievement Earned!|r",
 			inline = true,
 			get = "GetValue",
 			set = "SetValue",
@@ -30,7 +55,7 @@ BLU.options = {
 					type = "select",
 					order = 1,
 					name = "",
-					values = {"Default", "DotA 2", "EverQuest", "Final Fantasy", "Fly For Fun", "Fortnite", "Kingdom Hearts 3", "League of Legends", "Legend of Zelda", "Maplestory", "Minecraft", "Modern Warfare 2", "Morrowind", "Old School Runescape", "Path of Exile", "Pokemon", "Skyrim", "Sonic The Hedgehog", "Super Mario Bros 3", "Warcraft 3", "Witcher 3"},
+					values = soundOptions,
 				},
 				TestAchievementSound = {
 					type = "execute",
@@ -45,8 +70,8 @@ BLU.options = {
 				MuteAchievementDefault = {
 					type = "toggle",
 					order = 3,
-					name = "Mute Default",
-					desc = "Mute Default Achievement Earned Sound",
+					name = "|cffffffffMute Default|r",
+					desc = "|cff05dffaMute Default Achievement Earned Sound|r",
 					get = function(info) return BLU.db.profile.MuteAchievementDefault end,
 					set = function(info, value) BLU.db.profile.MuteAchievementDefault = value end,
 				},
@@ -54,8 +79,42 @@ BLU.options = {
 		},
 		group3 = {
 			type = "group",
-			order = 2,
-			name = "Level-Up!",
+			order = 3,
+			name = "|cffffffffHonor Rank-Up!|r",
+			inline = true,
+			get = "GetValue",
+			set = "SetValue",
+			args = {
+				HonorSoundSelect = {
+					type = "select",
+					order = 1,
+					name = "",
+					values = soundOptions,
+				},
+				TestHonorSound = {
+					type = "execute",
+					order = 2,
+					image = "Interface\\Addons\\BLU\\Images\\PLAY.blp",
+						imageWidth = 20,
+						imageHeight = 20,
+					name = "",
+					desc = "",
+					func = TestHonorSound,
+					},
+				MuteHonorDefault = {
+					type = "toggle",
+					order = 3,
+					name = "|cffffffffMute Default|r",
+					desc = "|cff05dffaMute Default Honor Rank Up Sound|r",
+					get = function(info) return BLU.db.profile.MuteHonorDefault end,
+					set = function(info, value) BLU.db.profile.MuteHonorDefault = value end,
+				},
+			},
+		},
+		group4 = {
+			type = "group",
+			order = 4,
+			name = "|cffffffffLevel-Up!|r",
 			inline = true,
 			get = "GetValue",
 			set = "SetValue",
@@ -64,7 +123,7 @@ BLU.options = {
 					type = "select",
 					order = 1,
 					name = "",
-					values = {"Default", "DotA 2", "EverQuest", "Final Fantasy", "Fly For Fun", "Fortnite", "Kingdom Hearts 3", "League of Legends", "Legend of Zelda", "Maplestory", "Minecraft", "Modern Warfare 2", "Morrowind", "Old School Runescape", "Path of Exile", "Pokemon", "Skyrim", "Sonic The Hedgehog", "Super Mario Bros 3", "Warcraft 3", "Witcher 3"},
+					values = soundOptions,
 				},
 				TestLevelSound = {
 					type = "execute",
@@ -79,17 +138,17 @@ BLU.options = {
 				MuteLevelDefault = {
 					type = "toggle",
 					order = 3,
-					name = "Mute Default",
-					desc = "Mute Default Level Up Sound",
+					name = "|cffffffffMute Default|r",
+					desc = "|cff05dffaMute Default Level Up Sound|r",
 					get = function(info) return BLU.db.profile.MuteLevelDefault end,
 					set = function(info, value) BLU.db.profile.MuteLevelDefault = value end,
 				},
 			},
 		},
-		group4 = {
+		group6 = {
 			type = "group",
-			order = 4,
-			name = "Reputation Rank-Up!",
+			order = 6,
+			name = "|cffffffffReputation Rank-Up!|r",
 			inline = true,
 			get = "GetValue",
 			set = "SetValue",
@@ -98,7 +157,7 @@ BLU.options = {
 					type = "select",
 					order = 1,
 					name = "",
-					values = {"Default", "DotA 2", "EverQuest", "Final Fantasy", "Fly For Fun", "Fortnite", "Kingdom Hearts 3", "League of Legends", "Legend of Zelda", "Maplestory", "Minecraft", "Modern Warfare 2", "Morrowind", "Old School Runescape", "Path of Exile", "Pokemon", "Skyrim", "Sonic The Hedgehog", "Super Mario Bros 3", "Warcraft 3", "Witcher 3"},
+					values = soundOptions,
 				},
 				TestRepSound = {
 					type = "execute",
@@ -113,17 +172,17 @@ BLU.options = {
 				MuteRepDefault = {
 					type = "toggle",
 					order = 3,
-					name = "Mute Default",
-					desc = "Mute Default Rep Up Sound",
+					name = "|cffffffffMute Default|r",
+					desc = "|cff05dffaMute Default Rep-Up Sound|r",
 					get = function(info) return BLU.db.profile.MuteRepDefault end,
 					set = function(info, value) BLU.db.profile.MuteRepDefault = value end,
 				},
 			},
 		},
-		group5 = {
+		group7 = {
 			type = "group",
-			order = 5,
-			name = "Quest Accepted!",
+			order = 7,
+			name = "|cff05dffaQuest Accepted|r",
 			inline = true,
 			get = "GetValue",
 			set = "SetValue",
@@ -132,7 +191,7 @@ BLU.options = {
 					type = "select",
 					order = 1,
 					name = "",
-					values = {"Default", "DotA 2", "EverQuest", "Final Fantasy", "Fly For Fun", "Fortnite", "Kingdom Hearts 3", "League of Legends", "Legend of Zelda", "Maplestory", "Minecraft", "Modern Warfare 2", "Morrowind", "Old School Runescape", "Path of Exile", "Pokemon", "Skyrim", "Sonic The Hedgehog", "Super Mario Bros 3", "Warcraft 3", "Witcher 3"},
+					values = soundOptions,
 				},
 				TestQuestAcceptSound = {
 					type = "execute",
@@ -147,17 +206,17 @@ BLU.options = {
 				MuteQuestAcceptDefault = {
 					type = "toggle",
 					order = 3,
-					name = "Mute Default",
-					desc = "Mute Default Quest Accepted Sound",
+					name = "|cff05dffaMute Default|r",
+					desc = "|cffffffffMute Default Quest Accepted Sound|r",
 					get = function(info) return BLU.db.profile.MuteQuestAcceptDefault end,
 					set = function(info, value) BLU.db.profile.MuteQuestAcceptDefault = value end,
 				},
 			},
 		},
-		group6 = {
+		group8 = {
 			type = "group",
-			order = 6,
-			name = "Quest Turn-In!",
+			order = 8,
+			name = "|cffffffffQuest Turn-In!|r",
 			inline = true,
 			get = "GetValue",
 			set = "SetValue",
@@ -166,7 +225,7 @@ BLU.options = {
 					type = "select",
 					order = 1,
 					name = "",
-					values = {"Default", "DotA 2", "EverQuest", "Final Fantasy", "Fly For Fun", "Fortnite", "Kingdom Hearts 3", "League of Legends", "Legend of Zelda", "Maplestory", "Minecraft", "Modern Warfare 2", "Morrowind", "Old School Runescape", "Path of Exile", "Pokemon", "Skyrim", "Sonic The Hedgehog", "Super Mario Bros 3", "Warcraft 3", "Witcher 3"},
+					values = soundOptions,
 				},
 				TestQuestSound = {
 					type = "execute",
@@ -181,8 +240,8 @@ BLU.options = {
 				MuteQuestDefault = {
 					type = "toggle",
 					order = 3,
-					name = "Mute Default",
-					desc = "Mute Default Level Up Sound",
+					name = "|cffffffffMute Default|r",
+					desc = "|cff05dffaMute Default Quest Turn-In Sound|r",
 					get = function(info) return BLU.db.profile.MuteQuestDefault end,
 					set = function(info, value) BLU.db.profile.MuteQuestDefault = value end,
 				},

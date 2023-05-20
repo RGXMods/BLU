@@ -1,7 +1,7 @@
 ## Interface: 30402
-## Version: 0.0.19
+## Version: 1.0.0
 ## Title: |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel|r |cff05dffaU|r|cffffffffp!
-## Notes: Grats!
+## Notes: Play sounds from other games!  |n|r    |cff05dffa/blu -|r Open options panel
 ## Author: DonnieDice
 ## SavedVariables: BLUDB
 ## OptionalDeps: Ace3 # if a user wants to run Ace3 standalone

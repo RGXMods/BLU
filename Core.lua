@@ -1,768 +1,239 @@
---v0.0.19
-------------------------------------------------------Options/Profiles/Database
+--v1.0.0
 BLU = LibStub("AceAddon-3.0"):NewAddon("BLU", "AceEvent-3.0", "AceConsole-3.0")
 local AC = LibStub("AceConfig-3.0")
 local ACD = LibStub("AceConfigDialog-3.0")
 function BLU:OnInitialize()
-	self.db = LibStub("AceDB-3.0"):New("BLUDB", self.defaults, true)
-	AC:RegisterOptionsTable("BLU_Options", self.options)
-	self.optionsFrame = ACD:AddToBlizOptions("BLU_Options", "Better Level Up!")
-	local profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
-	AC:RegisterOptionsTable("BLU_Profiles", profiles)
-	ACD:AddToBlizOptions("BLU_Profiles", "Profiles", "Better Level Up!")
----------------------------------------------------------Slash Commands
-	self:RegisterChatCommand("lu", "SlashCommand")
-	self:RegisterChatCommand("blu", "SlashCommand")
----------------------------------------------------------Slash Commands
+  self.db = LibStub("AceDB-3.0"):New("BLUDB", self.defaults, true)
+  AC:RegisterOptionsTable("BLU_Options", self.options)
+  self.optionsFrame = ACD:AddToBlizOptions("BLU_Options", "Better Level Up!")
+  profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
+  AC:RegisterOptionsTable("BLU_Profiles", profiles)
+  ACD:AddToBlizOptions("BLU_Profiles", "Profiles", "Better Level Up!")
+  self:RegisterChatCommand("lu", "SlashCommand")
+  self:RegisterChatCommand("blu", "SlashCommand")
 end
-------------------------------------------------------Options/Profiles/Database
-----------------------------------------------------------------Register Events
 function BLU:OnEnable()
 	self:RegisterEvent("ACHIEVEMENT_EARNED")
 	self:RegisterEvent("GLOBAL_MOUSE_DOWN")
 	self:RegisterEvent("HONOR_LEVEL_UPDATE")
 	self:RegisterEvent("MAJOR_FACTION_RENOWN_LEVEL_CHANGED")
 	self:RegisterEvent("PLAYER_LEVEL_UP")
+  self:RegisterEvent("PET_BATTLE_LEVEL_CHANGED");
 	self:RegisterEvent("PLAYER_LOGIN")
 	self:RegisterEvent("QUEST_ACCEPTED")
 	self:RegisterEvent("QUEST_TURNED_IN")
 	self:RegisterEvent("UPDATE_FACTION")
+  self:RegisterEvent("PERKS_ACTIVITY_COMPLETED");
 end
-----------------------------------------------------------------Register Events
-------------------------------------------------------------------Login Message
 function BLU:PLAYER_LOGIN(...)
 	DEFAULT_CHAT_FRAME:AddMessage("|cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel|r |cff05dffaU|r|cffffffffp!: |cff05dffaThank you for Downloading BLU!|r Enter '|cff05dffa/blu|r' to Select |cff05dffaL|revel |cff05dffaU|rp Sounds!");
 	DEFAULT_CHAT_FRAME:AddMessage("|cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel|r |cff05dffaU|r|cffffffffp!: |cffdc143cNOTE|r: You may have to re-select a previously selected sound after |cffdc143cA|rddon |cffdc143cU|rpdates.");
 end
-------------------------------------------------------------------Login Message
--------------------------------------------------------------Achievement Earned
+local sounds = {
+	[2] = "Interface\\Addons\\BLU\\Sounds\\DotA2LU.ogg",
+	[3] = "Interface\\Addons\\BLU\\Sounds\\EQLU.ogg",
+	[4] = "Interface\\Addons\\BLU\\Sounds\\FFLU.ogg",
+	[5] = "Interface\\Addons\\BLU\\Sounds\\FFFLU.ogg",
+	[6] = "Interface\\Addons\\BLU\\Sounds\\FNLU.ogg",
+	[7] = "Interface\\Addons\\BLU\\Sounds\\KH3LU.ogg",
+	[8] = "Interface\\Addons\\BLU\\Sounds\\LoLLU.ogg",
+	[9] = "Interface\\Addons\\BLU\\Sounds\\LoZN64.ogg",
+	[10] = "Interface\\Addons\\BLU\\Sounds\\MSLU.ogg",
+	[11] = "Interface\\Addons\\BLU\\Sounds\\MCLU.ogg",
+	[12] = "Interface\\Addons\\BLU\\Sounds\\MW2LU.ogg",
+	[13] = "Interface\\Addons\\BLU\\Sounds\\MWLU.ogg",
+	[14] = "Interface\\Addons\\BLU\\Sounds\\OSRSLU.ogg",
+	[15] = "Interface\\Addons\\BLU\\Sounds\\PoELU.ogg",
+	[16] = "Interface\\Addons\\BLU\\Sounds\\PkmnLU.ogg",
+	[17] = "Interface\\Addons\\BLU\\Sounds\\SRLU.ogg",
+	[18] = "Interface\\Addons\\BLU\\Sounds\\SHHLU.ogg",
+	[19] = "Interface\\Addons\\BLU\\Sounds\\SMB3LU.ogg",
+	[20] = "Interface\\Addons\\BLU\\Sounds\\WC3LU.ogg",
+	[21] = "Interface\\Addons\\BLU\\Sounds\\W3LU.ogg",
+}
 function BLU:ACHIEVEMENT_EARNED(self, event, ...)
-	if BLU.db.profile.AchievementSoundSelect == 1 then
-			PlaySoundFile(569143)
-		elseif BLU.db.profile.AchievementSoundSelect == 2 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\DotA2LU.ogg", "MASTER")
-		elseif BLU.db.profile.AchievementSoundSelect == 3 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\EQLU.ogg", "MASTER")
-		elseif BLU.db.profile.AchievementSoundSelect == 4 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FFLU.ogg", "MASTER")
-		elseif BLU.db.profile.AchievementSoundSelect == 5 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FFFLU.ogg", "MASTER")
-		elseif BLU.db.profile.AchievementSoundSelect == 6 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FNLU.ogg", "MASTER")
-		elseif BLU.db.profile.AchievementSoundSelect == 7 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\KH3LU.ogg", "MASTER")
-		elseif BLU.db.profile.AchievementSoundSelect == 8 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoLLU.ogg", "MASTER")
-		elseif BLU.db.profile.AchievementSoundSelect == 9 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoZN64.ogg", "MASTER")
-		elseif BLU.db.profile.AchievementSoundSelect == 10 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MSLU.ogg", "MASTER")
-		elseif BLU.db.profile.AchievementSoundSelect == 11 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MCLU.ogg", "MASTER")
-		elseif BLU.db.profile.AchievementSoundSelect == 12 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MW2LU.ogg", "MASTER")
-		elseif BLU.db.profile.AchievementSoundSelect == 13 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MWLU.ogg", "MASTER")
-		elseif BLU.db.profile.AchievementSoundSelect == 14 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\OSRSLU.ogg", "MASTER")
-		elseif BLU.db.profile.AchievementSoundSelect == 15 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PoELU.ogg", "MASTER")
-		elseif BLU.db.profile.AchievementSoundSelect == 16 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PkmnLU.ogg", "MASTER")
-		elseif BLU.db.profile.AchievementSoundSelect == 17 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SRLU.ogg", "MASTER")
-		elseif BLU.db.profile.AchievementSoundSelect == 18 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SHHLU.ogg", "MASTER")
-		elseif BLU.db.profile.AchievementSoundSelect == 19 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SMB3LU.ogg", "MASTER")
-		elseif BLU.db.profile.AchievementSoundSelect == 20 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\WC3LU.ogg", "MASTER")
-		elseif BLU.db.profile.AchievementSoundSelect == 21 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\W3LU.ogg", "MASTER")
-	end
+    local sound = sounds[BLU.db.profile.AchievementSoundSelect]
+    if sound then
+        PlaySoundFile(sound, "MASTER")
+    elseif BLU.db.profile.AchievementSoundSelect then
+        PlaySoundFile(569143)
+    end
 end
 function TestAchievementSound()
-	if BLU.db.profile.AchievementSoundSelect == 1 then
-			PlaySoundFile(569143)
-		elseif BLU.db.profile.AchievementSoundSelect == 2 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\DotA2LU.ogg", "MASTER")
-		elseif BLU.db.profile.AchievementSoundSelect == 3 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\EQLU.ogg", "MASTER")
-		elseif BLU.db.profile.AchievementSoundSelect == 4 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FFLU.ogg", "MASTER")
-		elseif BLU.db.profile.AchievementSoundSelect == 5 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FFFLU.ogg", "MASTER")
-		elseif BLU.db.profile.AchievementSoundSelect == 6 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FNLU.ogg", "MASTER")
-		elseif BLU.db.profile.AchievementSoundSelect == 7 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\KH3LU.ogg", "MASTER")
-		elseif BLU.db.profile.AchievementSoundSelect == 8 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoLLU.ogg", "MASTER")
-		elseif BLU.db.profile.AchievementSoundSelect == 9 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoZN64.ogg", "MASTER")
-		elseif BLU.db.profile.AchievementSoundSelect == 10 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MSLU.ogg", "MASTER")
-		elseif BLU.db.profile.AchievementSoundSelect == 11 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MCLU.ogg", "MASTER")
-		elseif BLU.db.profile.AchievementSoundSelect == 12 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MW2LU.ogg", "MASTER")
-		elseif BLU.db.profile.AchievementSoundSelect == 13 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MWLU.ogg", "MASTER")
-		elseif BLU.db.profile.AchievementSoundSelect == 14 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\OSRSLU.ogg", "MASTER")
-		elseif BLU.db.profile.AchievementSoundSelect == 15 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PoELU.ogg", "MASTER")
-		elseif BLU.db.profile.AchievementSoundSelect == 16 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PkmnLU.ogg", "MASTER")
-		elseif BLU.db.profile.AchievementSoundSelect == 17 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SRLU.ogg", "MASTER")
-		elseif BLU.db.profile.AchievementSoundSelect == 18 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SHHLU.ogg", "MASTER")
-		elseif BLU.db.profile.AchievementSoundSelect == 19 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SMB3LU.ogg", "MASTER")
-		elseif BLU.db.profile.AchievementSoundSelect == 20 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\WC3LU.ogg", "MASTER")
-		elseif BLU.db.profile.AchievementSoundSelect == 21 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\W3LU.ogg", "MASTER")
-	end
+    local sound = sounds[BLU.db.profile.AchievementSoundSelect]
+    if sound then
+        PlaySoundFile(sound, "MASTER")
+    elseif BLU.db.profile.AchievementSoundSelect then
+        PlaySoundFile(569143)
+    end
 end
--------------------------------------------------------------Achievement Earned
-------------------------------------------------------------------Honor Rank Up
+function BLU:PET_BATTLE_LEVEL_CHANGED(self, event, ...)
+    local sound = sounds[BLU.db.profile.BattlePetLevelSoundSelect]
+    if sound then
+        PlaySoundFile(sound, "MASTER")
+    elseif BLU.db.profile.BattlePetLevelSoundSelect then
+        PlaySoundFile(642841)
+    end
+end
+function TestBattlePetLevelSound()
+    local sound = sounds[BLU.db.profile.BattlePetLevelSoundSelect]
+    if sound then
+        PlaySoundFile(sound, "MASTER")
+    elseif BLU.db.profile.BattlePetLevelSoundSelect then
+        PlaySoundFile(642841)
+    end
+end
 function BLU:HONOR_LEVEL_UPDATE(self, event, ...)
-	if BLU.db.profile.HonorSoundSelect == 1 then
-			PlaySoundFile(1489546)
-		elseif BLU.db.profile.HonorSoundSelect == 2 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\DotA2LU.ogg", "MASTER")
-		elseif BLU.db.profile.HonorSoundSelect == 3 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\EQLU.ogg", "MASTER")
-		elseif BLU.db.profile.HonorSoundSelect == 4 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FFLU.ogg", "MASTER")
-		elseif BLU.db.profile.HonorSoundSelect == 5 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FFFLU.ogg", "MASTER")
-		elseif BLU.db.profile.HonorSoundSelect == 6 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FNLU.ogg", "MASTER")
-		elseif BLU.db.profile.HonorSoundSelect == 7 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\KH3LU.ogg", "MASTER")
-		elseif BLU.db.profile.HonorSoundSelect == 8 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoLLU.ogg", "MASTER")
-		elseif BLU.db.profile.HonorSoundSelect == 9 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoZN64.ogg", "MASTER")
-		elseif BLU.db.profile.HonorSoundSelect == 10 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MSLU.ogg", "MASTER")
-		elseif BLU.db.profile.HonorSoundSelect == 11 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MCLU.ogg", "MASTER")
-		elseif BLU.db.profile.HonorSoundSelect == 12 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MW2LU.ogg", "MASTER")
-		elseif BLU.db.profile.HonorSoundSelect == 13 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MWLU.ogg", "MASTER")
-		elseif BLU.db.profile.HonorSoundSelect == 14 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\OSRSLU.ogg", "MASTER")
-		elseif BLU.db.profile.HonorSoundSelect == 15 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PoELU.ogg", "MASTER")
-		elseif BLU.db.profile.HonorSoundSelect == 16 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PkmnLU.ogg", "MASTER")
-		elseif BLU.db.profile.HonorSoundSelect == 17 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SRLU.ogg", "MASTER")
-		elseif BLU.db.profile.HonorSoundSelect == 18 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SHHLU.ogg", "MASTER")
-		elseif BLU.db.profile.HonorSoundSelect == 19 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SMB3LU.ogg", "MASTER")
-		elseif BLU.db.profile.HonorSoundSelect == 20 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\WC3LU.ogg", "MASTER")
-		elseif BLU.db.profile.HonorSoundSelect == 21 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\W3LU.ogg", "MASTER")
-	end
+    local sound = sounds[BLU.db.profile.HonorSoundSelect]
+    if sound then
+        PlaySoundFile(sound, "MASTER")
+    elseif BLU.db.profile.HonorSoundSelect then
+        PlaySoundFile(1489546)
+    end
 end
 function TestHonorSound()
-	if BLU.db.profile.HonorSoundSelect == 1 then
-			PlaySoundFile(1489546)
-		elseif BLU.db.profile.HonorSoundSelect == 2 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\DotA2LU.ogg", "MASTER")
-		elseif BLU.db.profile.HonorSoundSelect == 3 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\EQLU.ogg", "MASTER")
-		elseif BLU.db.profile.HonorSoundSelect == 4 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FFLU.ogg", "MASTER")
-		elseif BLU.db.profile.HonorSoundSelect == 5 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FFFLU.ogg", "MASTER")
-		elseif BLU.db.profile.HonorSoundSelect == 6 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FNLU.ogg", "MASTER")
-		elseif BLU.db.profile.HonorSoundSelect == 7 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\KH3LU.ogg", "MASTER")
-		elseif BLU.db.profile.HonorSoundSelect == 8 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoLLU.ogg", "MASTER")
-		elseif BLU.db.profile.HonorSoundSelect == 9 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoZN64.ogg", "MASTER")
-		elseif BLU.db.profile.HonorSoundSelect == 10 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MSLU.ogg", "MASTER")
-		elseif BLU.db.profile.HonorSoundSelect == 11 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MCLU.ogg", "MASTER")
-		elseif BLU.db.profile.HonorSoundSelect == 12 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MW2LU.ogg", "MASTER")
-		elseif BLU.db.profile.HonorSoundSelect == 13 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MWLU.ogg", "MASTER")
-		elseif BLU.db.profile.HonorSoundSelect == 14 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\OSRSLU.ogg", "MASTER")
-		elseif BLU.db.profile.HonorSoundSelect == 15 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PoELU.ogg", "MASTER")
-		elseif BLU.db.profile.HonorSoundSelect == 16 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PkmnLU.ogg", "MASTER")
-		elseif BLU.db.profile.HonorSoundSelect == 17 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SRLU.ogg", "MASTER")
-		elseif BLU.db.profile.HonorSoundSelect == 18 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SHHLU.ogg", "MASTER")
-		elseif BLU.db.profile.HonorSoundSelect == 19 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SMB3LU.ogg", "MASTER")
-		elseif BLU.db.profile.HonorSoundSelect == 20 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\WC3LU.ogg", "MASTER")
-		elseif BLU.db.profile.HonorSoundSelect == 21 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\W3LU.ogg", "MASTER")
-	end
+    local sound = sounds[BLU.db.profile.HonorSoundSelect]
+    if sound then
+        PlaySoundFile(sound, "MASTER")
+    elseif BLU.db.profile.HonorSoundSelect then
+        PlaySoundFile(1489546)
+    end
 end
-------------------------------------------------------------------Honor Rank Up
------------------------------------------------------------------------Level Up
 function BLU:PLAYER_LEVEL_UP(self, event, ...)
-	if BLU.db.profile.LevelSoundSelect == 1 then
-			PlaySoundFile(569593)
-		elseif BLU.db.profile.LevelSoundSelect == 2 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\DotA2LU.ogg", "MASTER")
-		elseif BLU.db.profile.LevelSoundSelect == 3 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\EQLU.ogg", "MASTER")
-		elseif BLU.db.profile.LevelSoundSelect == 4 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FFLU.ogg", "MASTER")
-		elseif BLU.db.profile.LevelSoundSelect == 5 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FFFLU.ogg", "MASTER")
-		elseif BLU.db.profile.LevelSoundSelect == 6 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FNLU.ogg", "MASTER")
-		elseif BLU.db.profile.LevelSoundSelect == 7 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\KH3LU.ogg", "MASTER")
-		elseif BLU.db.profile.LevelSoundSelect == 8 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoLLU.ogg", "MASTER")
-		elseif BLU.db.profile.LevelSoundSelect == 9 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoZN64.ogg", "MASTER")
-		elseif BLU.db.profile.LevelSoundSelect == 10 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MSLU.ogg", "MASTER")
-		elseif BLU.db.profile.LevelSoundSelect == 11 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MCLU.ogg", "MASTER")
-		elseif BLU.db.profile.LevelSoundSelect == 12 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MW2LU.ogg", "MASTER")
-		elseif BLU.db.profile.LevelSoundSelect == 13 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MWLU.ogg", "MASTER")
-		elseif BLU.db.profile.LevelSoundSelect == 14 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\OSRSLU.ogg", "MASTER")
-		elseif BLU.db.profile.LevelSoundSelect == 15 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PoELU.ogg", "MASTER")
-		elseif BLU.db.profile.LevelSoundSelect == 16 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PkmnLU.ogg", "MASTER")
-		elseif BLU.db.profile.LevelSoundSelect == 17 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SRLU.ogg", "MASTER")
-		elseif BLU.db.profile.LevelSoundSelect == 18 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SHHLU.ogg", "MASTER")
-		elseif BLU.db.profile.LevelSoundSelect == 19 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SMB3LU.ogg", "MASTER")
-		elseif BLU.db.profile.LevelSoundSelect == 20 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\WC3LU.ogg", "MASTER")
-		elseif BLU.db.profile.LevelSoundSelect == 21 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\W3LU.ogg", "MASTER")
-	end
+    local sound = sounds[BLU.db.profile.LevelSoundSelect]
+    if sound then
+        PlaySoundFile(sound, "MASTER")
+    elseif BLU.db.profile.LevelSoundSelect then
+        PlaySoundFile(569593)
+    end
 end
 function TestLevelSound()
-	if BLU.db.profile.LevelSoundSelect == 1 then
-			PlaySoundFile(569593)
-		elseif BLU.db.profile.LevelSoundSelect == 2 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\DotA2LU.ogg", "MASTER")
-		elseif BLU.db.profile.LevelSoundSelect == 3 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\EQLU.ogg", "MASTER")
-		elseif BLU.db.profile.LevelSoundSelect == 4 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FFLU.ogg", "MASTER")
-		elseif BLU.db.profile.LevelSoundSelect == 5 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FFFLU.ogg", "MASTER")
-		elseif BLU.db.profile.LevelSoundSelect == 6 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FNLU.ogg", "MASTER")
-		elseif BLU.db.profile.LevelSoundSelect == 7 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\KH3LU.ogg", "MASTER")
-		elseif BLU.db.profile.LevelSoundSelect == 8 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoLLU.ogg", "MASTER")
-		elseif BLU.db.profile.LevelSoundSelect == 9 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoZN64.ogg", "MASTER")
-		elseif BLU.db.profile.LevelSoundSelect == 10 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MSLU.ogg", "MASTER")
-		elseif BLU.db.profile.LevelSoundSelect == 11 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MCLU.ogg", "MASTER")
-		elseif BLU.db.profile.LevelSoundSelect == 12 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MW2LU.ogg", "MASTER")
-		elseif BLU.db.profile.LevelSoundSelect == 13 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MWLU.ogg", "MASTER")
-		elseif BLU.db.profile.LevelSoundSelect == 14 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\OSRSLU.ogg", "MASTER")
-		elseif BLU.db.profile.LevelSoundSelect == 15 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PoELU.ogg", "MASTER")
-		elseif BLU.db.profile.LevelSoundSelect == 16 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PkmnLU.ogg", "MASTER")
-		elseif BLU.db.profile.LevelSoundSelect == 17 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SRLU.ogg", "MASTER")
-		elseif BLU.db.profile.LevelSoundSelect == 18 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SHHLU.ogg", "MASTER")
-		elseif BLU.db.profile.LevelSoundSelect == 19 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SMB3LU.ogg", "MASTER")
-		elseif BLU.db.profile.LevelSoundSelect == 20 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\WC3LU.ogg", "MASTER")
-		elseif BLU.db.profile.LevelSoundSelect == 21 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\W3LU.ogg", "MASTER")
-	end
+    local sound = sounds[BLU.db.profile.LevelSoundSelect]
+    if sound then
+        PlaySoundFile(sound, "MASTER")
+    elseif BLU.db.profile.LevelSoundSelect then
+        PlaySoundFile(569593)
+    end
 end
------------------------------------------------------------------------Level Up
-----------------------------------------------------------------------Renown Up
 function BLU:MAJOR_FACTION_RENOWN_LEVEL_CHANGED(self, event, ...)
-		if BLU.db.profile.RenownSoundSelect == 1 then
-				PlaySoundFile(569593)
-			elseif BLU.db.profile.RenownSoundSelect == 2 then
-				PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\DotA2LU.ogg", "MASTER")
-			elseif BLU.db.profile.RenownSoundSelect == 3 then
-				PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\EQLU.ogg", "MASTER")
-			elseif BLU.db.profile.RenownSoundSelect == 4 then
-				PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FFLU.ogg", "MASTER")
-			elseif BLU.db.profile.RenownSoundSelect == 5 then
-				PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FFFLU.ogg", "MASTER")
-			elseif BLU.db.profile.RenownSoundSelect == 6 then
-				PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FNLU.ogg", "MASTER")
-			elseif BLU.db.profile.RenownSoundSelect == 7 then
-				PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\KH3LU.ogg", "MASTER")
-			elseif BLU.db.profile.RenownSoundSelect == 8 then
-				PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoLLU.ogg", "MASTER")
-			elseif BLU.db.profile.RenownSoundSelect == 9 then
-				PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoZN64.ogg", "MASTER")
-			elseif BLU.db.profile.RenownSoundSelect == 10 then
-				PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MSLU.ogg", "MASTER")
-			elseif BLU.db.profile.RenownSoundSelect == 11 then
-				PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MCLU.ogg", "MASTER")
-			elseif BLU.db.profile.RenownSoundSelect == 12 then
-				PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MW2LU.ogg", "MASTER")
-			elseif BLU.db.profile.RenownSoundSelect == 13 then
-				PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MWLU.ogg", "MASTER")
-			elseif BLU.db.profile.RenownSoundSelect == 14 then
-				PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\OSRSLU.ogg", "MASTER")
-			elseif BLU.db.profile.RenownSoundSelect == 15 then
-				PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PoELU.ogg", "MASTER")
-			elseif BLU.db.profile.RenownSoundSelect == 16 then
-				PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PkmnLU.ogg", "MASTER")
-			elseif BLU.db.profile.RenownSoundSelect == 17 then
-				PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SRLU.ogg", "MASTER")
-			elseif BLU.db.profile.RenownSoundSelect == 18 then
-				PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SHHLU.ogg", "MASTER")
-			elseif BLU.db.profile.RenownSoundSelect == 19 then
-				PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SMB3LU.ogg", "MASTER")
-			elseif BLU.db.profile.RenownSoundSelect == 20 then
-				PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\WC3LU.ogg", "MASTER")
-			elseif BLU.db.profile.RenownSoundSelect == 21 then
-				PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\W3LU.ogg", "MASTER")
-		end
+    local sound = sounds[BLU.db.profile.RenownSoundSelect]
+    if sound then
+        PlaySoundFile(sound, "MASTER")
+    elseif BLU.db.profile.RenownSoundSelect then
+        PlaySoundFile(4745441)
+    end
 end
 function TestRenownSound()
-	if BLU.db.profile.RenownSoundSelect == 1 then
-			PlaySoundFile(4745441)
-		elseif BLU.db.profile.RenownSoundSelect == 2 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\DotA2LU.ogg", "MASTER")
-		elseif BLU.db.profile.RenownSoundSelect == 3 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\EQLU.ogg", "MASTER")
-		elseif BLU.db.profile.RenownSoundSelect == 4 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FFLU.ogg", "MASTER")
-		elseif BLU.db.profile.RenownSoundSelect == 5 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FFFLU.ogg", "MASTER")
-		elseif BLU.db.profile.RenownSoundSelect == 6 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FNLU.ogg", "MASTER")
-		elseif BLU.db.profile.RenownSoundSelect == 7 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\KH3LU.ogg", "MASTER")
-		elseif BLU.db.profile.RenownSoundSelect == 8 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoLLU.ogg", "MASTER")
-		elseif BLU.db.profile.RenownSoundSelect == 9 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoZN64.ogg", "MASTER")
-		elseif BLU.db.profile.RenownSoundSelect == 10 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MSLU.ogg", "MASTER")
-		elseif BLU.db.profile.RenownSoundSelect == 11 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MCLU.ogg", "MASTER")
-		elseif BLU.db.profile.RenownSoundSelect == 12 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MW2LU.ogg", "MASTER")
-		elseif BLU.db.profile.RenownSoundSelect == 13 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MWLU.ogg", "MASTER")
-		elseif BLU.db.profile.RenownSoundSelect == 14 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\OSRSLU.ogg", "MASTER")
-		elseif BLU.db.profile.RenownSoundSelect == 15 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PoELU.ogg", "MASTER")
-		elseif BLU.db.profile.RenownSoundSelect == 16 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PkmnLU.ogg", "MASTER")
-		elseif BLU.db.profile.RenownSoundSelect == 17 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SRLU.ogg", "MASTER")
-		elseif BLU.db.profile.RenownSoundSelect == 18 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SHHLU.ogg", "MASTER")
-		elseif BLU.db.profile.RenownSoundSelect == 19 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SMB3LU.ogg", "MASTER")
-		elseif BLU.db.profile.RenownSoundSelect == 20 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\WC3LU.ogg", "MASTER")
-		elseif BLU.db.profile.RenownSoundSelect == 21 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\W3LU.ogg", "MASTER")
-	end
+    local sound = sounds[BLU.db.profile.RenownSoundSelect]
+    if sound then
+        PlaySoundFile(sound, "MASTER")
+    elseif BLU.db.profile.RenownSoundSelect then
+        PlaySoundFile(4745441)
+    end
 end
-----------------------------------------------------------------------Renown Up
-------------------------------------------------------------------Reputation Up
-local TrackedFactions={};
-function BLU:UPDATE_FACTION(self, event, ...)
-	   for i=1,GetNumFactions() do
-	       local _,_,newstanding,_,_,_,_,_,isheader,_,hasrep,_,_,faction=GetFactionInfo(i);
-	       if faction and (not isheader or hasrep) and (newstanding or 0)>0 then
-	           local oldstanding=TrackedFactions[faction];
-						 		if oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 1 then
-	                	PlaySoundFile(568016)
-									elseif oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 2 then
-										PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\DotA2LU.ogg", "MASTER")
-									elseif oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 3 then
-										PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\EQLU.ogg", "MASTER")
-	           			elseif oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 4 then
-	                	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FFLU.ogg", "MASTER")
-									elseif oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 5 then
-										PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FFFLU.ogg", "MASTER")
-									elseif oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 6 then
-			             	PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FNLU.ogg", "MASTER")
-									elseif oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 7 then
-										PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\KH3LU.ogg", "MASTER")
-									elseif oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 8 then
-										PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoLLU.ogg", "MASTER")
-									elseif oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 9 then
-										PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoZN64.ogg", "MASTER")
-									elseif oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 10 then
-										PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MSLU.ogg", "MASTER")
-									elseif oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 11 then
-										PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MCLU.ogg", "MASTER")
-									elseif oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 12 then
-										PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MW2LU.ogg", "MASTER")
-									elseif oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 13 then
-										PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MWLU.ogg", "MASTER")
-									elseif oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 14 then
-										PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\OSRSLU.ogg", "MASTER")
-									elseif oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 15 then
-										PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PoELU.ogg", "MASTER")
-									elseif oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 16 then
-										PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PkmnLU.ogg", "MASTER")
-									elseif oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 17 then
-										PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SRLU.ogg", "MASTER")
-									elseif oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 18 then
-										PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SHHLU.ogg", "MASTER")
-									elseif oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 19 then
-										PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SMB3LU.ogg", "MASTER")
-									elseif oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 20 then
-										PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\WC3LU.ogg", "MASTER")
-									elseif oldstanding and oldstanding<newstanding and BLU.db.profile.RepSoundSelect == 21 then
-										PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\W3LU.ogg", "MASTER")
-	           		end
-	           TrackedFactions[faction]=newstanding;
-	       end
-	   end
+local TrackedFactions = {}
+function BLU:UPDATE_FACTION(event, ...)
+    for i = 1, GetNumFactions() do
+        local _, _, newstanding, _, _, _, _, _, isheader, _, hasrep, _, _, faction = GetFactionInfo(i)
+        if faction and (not isheader or hasrep) and (newstanding or 0) > 0 then
+            local oldstanding = TrackedFactions[faction]
+            if oldstanding and oldstanding < newstanding and BLU.db.profile.RepSoundSelect then
+                local sound = sounds[BLU.db.profile.RepSoundSelect]
+                if sound then
+                    PlaySoundFile(sound, "MASTER")
+                elseif BLU.db.profile.RepSoundSelect then
+                    PlaySoundFile(568016)
+                end
+            end
+            TrackedFactions[faction] = newstanding
+        end
+    end
 end
 function TestRepSound()
-	if BLU.db.profile.RepSoundSelect == 1 then
-			PlaySoundFile(568016)
-		elseif BLU.db.profile.RepSoundSelect == 2 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\DotA2LU.ogg", "MASTER")
-		elseif BLU.db.profile.RepSoundSelect == 3 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\EQLU.ogg", "MASTER")
-		elseif BLU.db.profile.RepSoundSelect == 4 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FFLU.ogg", "MASTER")
-		elseif BLU.db.profile.RepSoundSelect == 5 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FFFLU.ogg", "MASTER")
-		elseif BLU.db.profile.RepSoundSelect == 6 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FNLU.ogg", "MASTER")
-		elseif BLU.db.profile.RepSoundSelect == 7 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\KH3LU.ogg", "MASTER")
-		elseif BLU.db.profile.RepSoundSelect == 8 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoLLU.ogg", "MASTER")
-		elseif BLU.db.profile.RepSoundSelect == 9 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoZN64.ogg", "MASTER")
-		elseif BLU.db.profile.RepSoundSelect == 10 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MSLU.ogg", "MASTER")
-		elseif BLU.db.profile.RepSoundSelect == 11 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MCLU.ogg", "MASTER")
-		elseif BLU.db.profile.RepSoundSelect == 12 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MW2LU.ogg", "MASTER")
-		elseif BLU.db.profile.RepSoundSelect == 13 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MWLU.ogg", "MASTER")
-		elseif BLU.db.profile.RepSoundSelect == 14 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\OSRSLU.ogg", "MASTER")
-		elseif BLU.db.profile.RepSoundSelect == 15 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PoELU.ogg", "MASTER")
-		elseif BLU.db.profile.RepSoundSelect == 16 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PkmnLU.ogg", "MASTER")
-		elseif BLU.db.profile.RepSoundSelect == 17 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SRLU.ogg", "MASTER")
-		elseif BLU.db.profile.RepSoundSelect == 18 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SHHLU.ogg", "MASTER")
-		elseif BLU.db.profile.RepSoundSelect == 19 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SMB3LU.ogg", "MASTER")
-		elseif BLU.db.profile.RepSoundSelect == 20 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\WC3LU.ogg", "MASTER")
-		elseif BLU.db.profile.RepSoundSelect == 21 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\W3LU.ogg", "MASTER")
-	end
+    local sound = sounds[BLU.db.profile.RepSoundSelect]
+    if sound then
+        PlaySoundFile(sound, "MASTER")
+    elseif BLU.db.profile.RepSoundSelect then
+        PlaySoundFile(568016)
+    end
 end
-------------------------------------------------------------------Reputation Up
------------------------------------------------------------------Quest Accepted
 function BLU:QUEST_ACCEPTED(self, event, ...)
-	if BLU.db.profile.QuestAcceptSoundSelect == 1 then
-			PlaySoundFile(567400)
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 2 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\DotA2LU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 3 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\EQLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 4 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FFLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 5 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FFFLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 6 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FNLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 7 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\KH3LU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 8 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoLLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 9 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoZN64.ogg", "MASTER")
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 10 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MSLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 11 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MCLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 12 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MW2LU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 13 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MWLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 14 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\OSRSLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 15 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PoELU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 16 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PkmnLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 17 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SRLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 18 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SHHLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 19 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SMB3LU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 20 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\WC3LU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 21 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\W3LU.ogg", "MASTER")
-	end
+    local sound = sounds[BLU.db.profile.QuestAcceptSoundSelect]
+    if sound then
+        PlaySoundFile(sound, "MASTER")
+    elseif BLU.db.profile.QuestAcceptSoundSelect then
+        PlaySoundFile(567400)
+    end
 end
 function TestQuestAcceptSound()
-	if BLU.db.profile.QuestAcceptSoundSelect == 1 then
-			PlaySoundFile(567400)
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 2 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\DotA2LU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 3 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\EQLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 4 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FFLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 5 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FFFLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 6 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FNLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 7 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\KH3LU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 8 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoLLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 9 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoZN64.ogg", "MASTER")
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 10 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MSLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 11 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MCLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 12 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MW2LU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 13 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MWLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 14 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\OSRSLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 15 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PoELU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 16 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PkmnLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 17 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SRLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 18 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SHHLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 19 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SMB3LU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 20 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\WC3LU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestAcceptSoundSelect == 21 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\W3LU.ogg", "MASTER")
-	end
+    local sound = sounds[BLU.db.profile.QuestAcceptSoundSelect]
+    if sound then
+        PlaySoundFile(sound, "MASTER")
+    elseif BLU.db.profile.QuestAcceptSoundSelect then
+        PlaySoundFile(567400)
+    end
 end
------------------------------------------------------------------Quest Accepted
-------------------------------------------------------------------Quest Turn-In
 function BLU:QUEST_TURNED_IN(self, event, ...)
-	if BLU.db.profile.QuestSoundSelect == 1 then
-			PlaySoundFile(567439)
-		elseif BLU.db.profile.QuestSoundSelect == 2 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\DotA2LU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestSoundSelect == 3 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\EQLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestSoundSelect == 4 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FFLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestSoundSelect == 5 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FFFLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestSoundSelect == 6 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FNLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestSoundSelect == 7 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\KH3LU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestSoundSelect == 8 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoLLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestSoundSelect == 9 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoZN64.ogg", "MASTER")
-		elseif BLU.db.profile.QuestSoundSelect == 10 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MSLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestSoundSelect == 11 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MCLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestSoundSelect == 12 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MW2LU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestSoundSelect == 13 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MWLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestSoundSelect == 14 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\OSRSLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestSoundSelect == 15 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PoELU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestSoundSelect == 16 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PkmnLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestSoundSelect == 17 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SRLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestSoundSelect == 18 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SHHLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestSoundSelect == 19 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SMB3LU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestSoundSelect == 20 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\WC3LU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestSoundSelect == 21 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\W3LU.ogg", "MASTER")
-	end
+    local sound = sounds[BLU.db.profile.QuestSoundSelect]
+    if sound then
+        PlaySoundFile(sound, "MASTER")
+    elseif BLU.db.profile.QuestSoundSelect then
+        PlaySoundFile(567439)
+    end
 end
 function TestQuestSound()
-	if BLU.db.profile.QuestSoundSelect == 1 then
-			PlaySoundFile(567439)
-		elseif BLU.db.profile.QuestSoundSelect == 2 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\DotA2LU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestSoundSelect == 3 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\EQLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestSoundSelect == 4 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FFLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestSoundSelect == 5 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FFFLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestSoundSelect == 6 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\FNLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestSoundSelect == 7 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\KH3LU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestSoundSelect == 8 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoLLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestSoundSelect == 9 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\LoZN64.ogg", "MASTER")
-		elseif BLU.db.profile.QuestSoundSelect == 10 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MSLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestSoundSelect == 11 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MCLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestSoundSelect == 12 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MW2LU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestSoundSelect == 13 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\MWLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestSoundSelect == 14 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\OSRSLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestSoundSelect == 15 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PoELU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestSoundSelect == 16 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\PkmnLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestSoundSelect == 17 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SRLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestSoundSelect == 18 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SHHLU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestSoundSelect == 19 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\SMB3LU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestSoundSelect == 20 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\WC3LU.ogg", "MASTER")
-		elseif BLU.db.profile.QuestSoundSelect == 21 then
-			PlaySoundFile("Interface\\Addons\\BLU\\Sounds\\W3LU.ogg", "MASTER")
-	end
+    local sound = sounds[BLU.db.profile.QuestSoundSelect]
+    if sound then
+        PlaySoundFile(sound, "MASTER")
+    elseif BLU.db.profile.QuestSoundSelect then
+        PlaySoundFile(567439)
+    end
 end
-------------------------------------------------------------------Quest Turn-In
-------------------------------------------------------------------Mute Defaults
+function BLU:PERKS_ACTIVITY_COMPLETED(self, event, ...)
+    local sound = sounds[BLU.db.profile.PostSoundSelect]
+    if sound then
+        PlaySoundFile(sound, "MASTER")
+    elseif BLU.db.profile.PostSoundSelect then
+        PlaySoundFile(4956064)
+    end
+end
+function TestPostSound()
+    local sound = sounds[BLU.db.profile.PostSoundSelect]
+    if sound then
+        PlaySoundFile(sound, "MASTER")
+    elseif BLU.db.profile.PostSoundSelect then
+        PlaySoundFile(4956064)
+    end
+end
+local soundFileSettings = {
+    [569143] = "MuteAchievementDefault",
+		[1489546] = "MuteHonorDefault",
+    [569593] = "MuteLevelDefault",
+    [642841] = "MuteBattlePetLevelDefault",
+		[4745441] = "MuteRenownDefault",
+    [568016] = "MuteRepDefault",
+    [567400] = "MuteQuestAcceptDefault",
+    [567439] = "MuteQuestDefault",
+    [4956064] = "MutePostDefault",
+}
 function BLU:GLOBAL_MOUSE_DOWN(self, event, ...)
------------------------------------------------------Achievement Earned
-	if BLU.db.profile.MuteAchievementDefault == true then
-			MuteSoundFile(569143)
-		elseif BLU.db.profile.MuteAchievementDefault == false then
-			UnmuteSoundFile(569143)
-	end
------------------------------------------------------Achievement Earned
-----------------------------------------------------------Honor Rank Up
-	if BLU.db.profile.MuteHonorDefault == true then
-			MuteSoundFile(1489546)
-		elseif BLU.db.profile.MuteHonorDefault == false then
-			UnmuteSoundFile(1489546)
-	end
-----------------------------------------------------------Honor Rank Up
----------------------------------------------------------------Level Up
-	if BLU.db.profile.MuteLevelDefault == true then
-			MuteSoundFile(569593)
-		elseif BLU.db.profile.MuteLevelDefault == false then
-			UnmuteSoundFile(569593)
-	end
----------------------------------------------------------------Level Up
---------------------------------------------------------------Renown Up
-	if BLU.db.profile.MuteRenownDefault == true then
-			MuteSoundFile(213204)
-			MuteSoundFile(4745441)
-			MuteSoundFile(4745443)
-			MuteSoundFile(4745445)
-		elseif BLU.db.profile.MuteRenownDefault == false then
-			UnmuteSoundFile(213204)
-			UnmuteSoundFile(4745441)
-			UnmuteSoundFile(4745443)
-			UnmuteSoundFile(4745445)
-	end
---------------------------------------------------------------Renown Up
-----------------------------------------------------------Reputation Up
-	if BLU.db.profile.MuteRepDefault == true then
-			MuteSoundFile(568016)
-		elseif BLU.db.profile.MuteRepDefault == false then
-			UnmuteSoundFile(568016)
-	end
-----------------------------------------------------------Reputation Up
----------------------------------------------------------Quest Accepted
-	if BLU.db.profile.MuteQuestAcceptDefault == true then
-			MuteSoundFile(567400)
-		elseif BLU.db.profile.MuteQuestAcceptDefault == false then
-			UnmuteSoundFile(567400)
-	end
----------------------------------------------------------Quest Accepted
-----------------------------------------------------------Quest Turn-In
-	if BLU.db.profile.MuteQuestDefault == true then
-			MuteSoundFile(567439)
-		elseif BLU.db.profile.MuteQuestDefault == false then
-			UnmuteSoundFile(567439)
-	end
-----------------------------------------------------------Quest Turn-In
+    for soundFileID, settingName in pairs(soundFileSettings) do
+        if BLU.db.profile[settingName] then
+            MuteSoundFile(soundFileID)
+        else
+            UnmuteSoundFile(soundFileID)
+        end
+    end
 end
-------------------------------------------------------------------Mute Defaults
---------------------------------------------------------Slash Command Functions
--------------------------------------------------------------Enable BLU
 function BLU:SlashCommand(input, editbox)
-	if input == "enable" then
-			self:Enable()
-			self:Print("Enabled.")
--------------------------------------------------------------Enable BLU
-------------------------------------------------------------Disable BLU
-		elseif input == "disable" then
-			self:Disable()
-			self:Print("Disabled.")
-------------------------------------------------------------Disable BLU
------------------------------------------------------------Open Options
-		else
-		InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
-		InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
-	end
------------------------------------------------------------Open Options
+    if input == "enable" then
+        self:Enable()
+        self:Print("Enabled.")
+    elseif input == "disable" then
+        self:Disable()
+        self:Print("Disabled.")
+    else
+        InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
+        InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
+    end
 end
---------------------------------------------------------Slash Command Functions

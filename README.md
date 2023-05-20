@@ -1,29 +1,27 @@
 [![](https://img.shields.io/static/v1?label=Donate&message=CashApp&color=brightgreen)](https://bit.ly/3fyxxSU)
 
-v0.0.19
+v1.0.0
 ------------------------------
 
 **BLU - Better Level Up!**
 
 ------------------------------
+
+<div align="center">
+
+**Officially Launched BLU|Better Level Up! v1.0.0**
+**[10,000 BLU downloads]**
+**[40,000 account total]**
+
+</div>
+
+------------------------------
 **Thank you for Downloading BLU! Enter '/blu' to Select Level Up Sounds!**
 ------------------------------
 
-Mute default Achievement Earned Sound.
-
-Mute default Honor Rank-Up Sound.
-
-Mute default Level-Up sound.
-
-Mute default DragonFlight Renown Reputation Rank-Ups.
-
-Mute default Reputation Rank-Up sound.
-
-Mute default Quest Accepted sound.
-
-Mute default Quest Turn-In sound.
-
 Play sounds from other games when you Earn Achievements!
+
+Play sounds from other games when you Level Up Battle-Pets!
 
 Play sounds from other games when you gain Honor Ranks!
 
@@ -37,6 +35,7 @@ Play sounds from other games when you Accept Quests!
 
 Play sounds from other games when you Turn-In Quests!
 
+Play sounds from other games when you Complete Trading Post Activities!
 
 ------------------------------
 
@@ -91,102 +90,25 @@ Play sounds from other games when you Turn-In Quests!
 
 ***To-Do List***
 
-
 Add more sounds!
-
-Sounds/Mute for Pet Battle Level-Up!
 
 Sounds/Mute for Pet Battle Victories!
 
-Sounds/Mute for Hunter Pet Level-Up!
-
 Sounds/Mute for BattleGround Victories!
+
+Re-write without Ace3 libs!
 
 ------------------------------
 
 ***Cumulative CHANGELOG***
 
-**v0.0.19**
-- Fixed   - Issue with AddOn List Icon
-- Updated - Ace3 Libs (r1294)
-
-**v0.0.18**
-- Updated - .TOC for "Embers of Neltharion" Patch
-- Added   - Icon for AddOn List
-
-**v0.0.17**
-- Updated - .TOC for WotLK Ulduar Patch
-
-**v0.0.16**
-- Added   - Sounds/Mute for Honor Rank-Ups!
-
-**v0.0.15**
-- Added   - Sounds/Mute for Quest Accepted!
-- Fixed   - Organized Code structure
-- Fixed   - Alphabetized Options Menu
-- Fixed   - Code for Sound Mute Triggers
-          *(Now activates on GLOBAL_MOUSE_DOWN)*
-- Changed - Code for Sound Mute Triggers
-          *(Combined all code for Mute Triggers into Single Function)*
-- Fixed   - README Structure
-- Added   - Notation to Source Code
-- Changed - Code for Reputation Rank Up Sound Trigger
-
-
-**v0.0.14**
-- Added   - Fly For Fun Level Up Sound!
-- Added   - DotA 2 Rank Up Sound!
-- Added   - Info text on Login
-
-**v0.0.13**
-- Fixed   - MAJOR_FACTION_RENOWN_LEVEL_CHANGED error in WotLK/BC/SoM
-- Split   - Code Base for Retail/Classic Clients
-
-**v0.0.12**
-- Added   - Play Button Image for Sound Tests
-- Fixed   - Text Display issues
-- Fixed   - Moved Sounds from Channel 'SFX' to Channel 'MASTER'
-          *(You can now control the volume of BLU with the Master Volume slider)*
-
-**v0.0.11**
-- Added   - Sounds/Mute for Achievements Earned!
-
-**v0.0.10**
-- Fixed   - README
-- Added   - Sounds/Mute for Quest Completion!
-
-**v0.0.9**
-- Added   - Sounds/Mute for DragonFlight Renown Reputation Rank-Ups!
-
-**v0.0.8**
-- Fixed   - Spelling errors
-- Added   - To-Do List to README
-- Added   - Test Sound Buttons
-
-**v0.0.7**
-- Changed - Addon Name Color
-- Added   - Witcher 3 Choir Sound!
-- Added   - Legend of Zelda Sound!
-- Fixed   - Code for Sound Mute Triggers
-- Updated - Ace3 Libs
-- Fixed   - Adjusted Gain on several sound files
-- Added   - Sound list to README
-- Added   - Cumulative CHANGELOG to README
-
-**v0.0.6**
-- Added - EverQuest Level Up Sound!
-
-**v0.0.5**
-- Fixed - Issue with Default Rep Sound not muting
-- Fixed - Moved all sounds from channel "Master" to "SFX"
-          *(BLU should now mute when Disabling in-game sounds with CTRL+S)*
-
-**v0.0.4**
-- Added   - Default Sound option
-- Fixed   - Sound menu alphabetized
-
-**v0.0.3**
-- Initial Release
+**v1.0.0**
+- Changed - Entire code base rewritten
+- Added   - Sounds/Mute for Trade Post Activity Completed!
+- Added   - Sounds/Mute for Battle-Pet Level-Ups!
+- Added   - Color for readability
+- Added   - Usage details in AddOn Notes
+- Changed - Squished Cumulative CHANGELOG in README
 
 ------------------------------
 

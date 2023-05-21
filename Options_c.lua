@@ -18,6 +18,7 @@ local soundOptions = {
     "Pokemon",
     "Skyrim",
     "Sonic The Hedgehog",
+    "Spryo The Dragon",
     "Super Mario Bros 3",
     "Warcraft 3",
     "Witcher 3"
@@ -80,7 +81,7 @@ BLU.options = {
 		group3 = {
 			type = "group",
 			order = 3,
-			name = "|cffffffffHonor Rank-Up!|r",
+			name = "|cff05dffaHonor Rank-Up!|r",
 			inline = true,
 			get = "GetValue",
 			set = "SetValue",
@@ -104,8 +105,8 @@ BLU.options = {
 				MuteHonorDefault = {
 					type = "toggle",
 					order = 3,
-					name = "|cffffffffMute Default|r",
-					desc = "|cff05dffaMute Default Honor Rank Up Sound|r",
+					name = "|cff05dffaMute Default|r",
+					desc = "Mute Default Honor Rank Up Sound",
 					get = function(info) return BLU.db.profile.MuteHonorDefault end,
 					set = function(info, value) BLU.db.profile.MuteHonorDefault = value end,
 				},
@@ -148,7 +149,7 @@ BLU.options = {
 		group6 = {
 			type = "group",
 			order = 6,
-			name = "|cffffffffReputation Rank-Up!|r",
+			name = "|cff05dffaReputation Rank-Up!|r",
 			inline = true,
 			get = "GetValue",
 			set = "SetValue",
@@ -172,8 +173,8 @@ BLU.options = {
 				MuteRepDefault = {
 					type = "toggle",
 					order = 3,
-					name = "|cffffffffMute Default|r",
-					desc = "|cff05dffaMute Default Rep-Up Sound|r",
+					name = "|cff05dffaMute Default|r",
+					desc = "Mute Default Rep-Up Sound",
 					get = function(info) return BLU.db.profile.MuteRepDefault end,
 					set = function(info, value) BLU.db.profile.MuteRepDefault = value end,
 				},
@@ -182,7 +183,7 @@ BLU.options = {
 		group7 = {
 			type = "group",
 			order = 7,
-			name = "|cff05dffaQuest Accepted|r",
+			name = "|cffffffffQuest Accepted|r",
 			inline = true,
 			get = "GetValue",
 			set = "SetValue",
@@ -206,8 +207,8 @@ BLU.options = {
 				MuteQuestAcceptDefault = {
 					type = "toggle",
 					order = 3,
-					name = "|cff05dffaMute Default|r",
-					desc = "|cffffffffMute Default Quest Accepted Sound|r",
+					name = "|cffffffffMute Default|r",
+					desc = "|cff05dffafMute Default Quest Accepted Sound|r",
 					get = function(info) return BLU.db.profile.MuteQuestAcceptDefault end,
 					set = function(info, value) BLU.db.profile.MuteQuestAcceptDefault = value end,
 				},
@@ -216,7 +217,7 @@ BLU.options = {
 		group8 = {
 			type = "group",
 			order = 8,
-			name = "|cffffffffQuest Turn-In!|r",
+			name = "|cff05dffaQuest Turn-In!|r",
 			inline = true,
 			get = "GetValue",
 			set = "SetValue",
@@ -240,8 +241,8 @@ BLU.options = {
 				MuteQuestDefault = {
 					type = "toggle",
 					order = 3,
-					name = "|cffffffffMute Default|r",
-					desc = "|cff05dffaMute Default Quest Turn-In Sound|r",
+					name = "|cff05dffaMute Default|r",
+					desc = "Mute Default Quest Turn-In Sound",
 					get = function(info) return BLU.db.profile.MuteQuestDefault end,
 					set = function(info, value) BLU.db.profile.MuteQuestDefault = value end,
 				},

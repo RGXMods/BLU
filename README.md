@@ -1,6 +1,6 @@
 [![](https://img.shields.io/static/v1?label=Donate&message=CashApp&color=brightgreen)](https://bit.ly/3fyxxSU)
 
-v1.0.0
+v1.0.1
 ------------------------------
 
 **BLU - Better Level Up!**
@@ -82,6 +82,7 @@ Play sounds from other games when you Complete Trading Post Activities!
 - Pokemon
 - Skyrim
 - Sonic The Hedgehog
+- Spyro The Dragon
 - Super Mario Bros 3
 - Warcraft 3
 - Witcher 3
@@ -101,6 +102,11 @@ Re-write without Ace3 libs!
 ------------------------------
 
 ***Cumulative CHANGELOG***
+
+**v1.0.1**
+- Fixed   - Moved all Default Sounds to MASTER Sound Channel
+- Fixed   - Issues with colors [Both Versions]
+- Added   - 1UP Sound from Spyro The Dragon
 
 **v1.0.0**
 - Changed - Entire code base rewritten

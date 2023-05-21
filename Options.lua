@@ -1,4 +1,4 @@
---v1.0.0
+--v1.0.1
 local soundOptions = {
     "Default",
     "DotA 2",
@@ -18,6 +18,7 @@ local soundOptions = {
     "Pokemon",
     "Skyrim",
     "Sonic The Hedgehog",
+    "Spyro The Dragon",
     "Super Mario Bros 3",
     "Warcraft 3",
     "Witcher 3"
@@ -154,7 +155,7 @@ BLU.options = {
 		group4 = {
 			type = "group",
 			order = 4,
-			name = "|cffffffffLevel-Up!|r",
+			name = "|cff05dffaLevel-Up!|r",
 			inline = true,
 			get = "GetValue",
 			set = "SetValue",
@@ -178,8 +179,8 @@ BLU.options = {
 				MuteLevelDefault = {
 					type = "toggle",
 					order = 3,
-					name = "|cffffffffMute Default|r",
-					desc = "|cff05dffaMute Default Level Up Sound|r",
+					name = "|cff05dffaMute Default|r",
+					desc = "Mute Default Level Up Sound",
 					get = function(info) return BLU.db.profile.MuteLevelDefault end,
 					set = function(info, value) BLU.db.profile.MuteLevelDefault = value end,
 				},
@@ -188,7 +189,7 @@ BLU.options = {
 		group5 = {
 			type = "group",
 			order = 5,
-			name = "|cff05dffaRenown Rank-Up!|r",
+			name = "|cffffffffRenown Rank-Up!|r",
 			inline = true,
 			get = "GetValue",
 			set = "SetValue",
@@ -212,8 +213,8 @@ BLU.options = {
 				MuteRenownDefault = {
 					type = "toggle",
 					order = 3,
-					name = "|cff05dffaMute Default|r",
-					desc = "Mute Default Level Up Sound",
+					name = "|cffffffffMute Default|r",
+					desc = "|cff05dffaMute Default Level Up Sound|r",
 					get = function(info) return BLU.db.profile.MuteRenownDefault end,
 					set = function(info, value) BLU.db.profile.MuteRenownDefault = value end,
 				},
@@ -222,7 +223,7 @@ BLU.options = {
 		group6 = {
 			type = "group",
 			order = 6,
-			name = "|cffffffffReputation Rank-Up!|r",
+			name = "|cff05dffaReputation Rank-Up!|r",
 			inline = true,
 			get = "GetValue",
 			set = "SetValue",
@@ -246,8 +247,8 @@ BLU.options = {
 				MuteRepDefault = {
 					type = "toggle",
 					order = 3,
-					name = "|cffffffffMute Default|r",
-					desc = "|cff05dffaMute Default Rep-Up Sound|r",
+					name = "|cff05dffaMute Default|r",
+					desc = "Mute Default Rep-Up Sound",
 					get = function(info) return BLU.db.profile.MuteRepDefault end,
 					set = function(info, value) BLU.db.profile.MuteRepDefault = value end,
 				},
@@ -256,7 +257,7 @@ BLU.options = {
 		group7 = {
 			type = "group",
 			order = 7,
-			name = "|cff05dffaQuest Accepted|r",
+			name = "|cffffffffQuest Accepted|r",
 			inline = true,
 			get = "GetValue",
 			set = "SetValue",
@@ -280,8 +281,8 @@ BLU.options = {
 				MuteQuestAcceptDefault = {
 					type = "toggle",
 					order = 3,
-					name = "|cff05dffaMute Default|r",
-					desc = "|cffffffffMute Default Quest Accepted Sound|r",
+					name = "|cffffffffMute Default|r",
+					desc = "|cff05dffaMute Default Quest Accepted Sound|r",
 					get = function(info) return BLU.db.profile.MuteQuestAcceptDefault end,
 					set = function(info, value) BLU.db.profile.MuteQuestAcceptDefault = value end,
 				},
@@ -290,7 +291,7 @@ BLU.options = {
 		group8 = {
 			type = "group",
 			order = 8,
-			name = "|cffffffffQuest Turn-In!|r",
+			name = "|cff05dffaQuest Turn-In!|r",
 			inline = true,
 			get = "GetValue",
 			set = "SetValue",
@@ -314,8 +315,8 @@ BLU.options = {
 				MuteQuestDefault = {
 					type = "toggle",
 					order = 3,
-					name = "|cffffffffMute Default|r",
-					desc = "|cff05dffaMute Default Quest Turn-In Sound|r",
+					name = "|cff05dffaMute Default|r",
+					desc = "Mute Default Quest Turn-In Sound",
 					get = function(info) return BLU.db.profile.MuteQuestDefault end,
 					set = function(info, value) BLU.db.profile.MuteQuestDefault = value end,
 				},
@@ -324,7 +325,7 @@ BLU.options = {
     group9 = {
 			type = "group",
 			order = 9,
-			name = "|cff05dffaTrade Post Activity Completed!|r",
+			name = "|cffffffffTrade Post Activity Completed!|r",
 			inline = true,
 			get = "GetValue",
 			set = "SetValue",
@@ -348,8 +349,8 @@ BLU.options = {
 				MutePostDefault = {
 					type = "toggle",
 					order = 3,
-					name = "|cff05dffaMute Default|r",
-					desc = "Mute Default Trade Post Activity Completed Sound",
+					name = "|cffffffffMute Default|r",
+					desc = "|cff05dffaMute Default Trade Post Activity Completed Sound|r",
 					get = function(info) return BLU.db.profile.MutePostDefault end,
 					set = function(info, value) BLU.db.profile.MutePostDefault = value end,
 				},

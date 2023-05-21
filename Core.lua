@@ -1,4 +1,4 @@
---v1.0.0
+--v1.0.1
 BLU = LibStub("AceAddon-3.0"):NewAddon("BLU", "AceEvent-3.0", "AceConsole-3.0")
 local AC = LibStub("AceConfig-3.0")
 local ACD = LibStub("AceConfigDialog-3.0")
@@ -47,16 +47,17 @@ local sounds = {
 	[16] = "Interface\\Addons\\BLU\\Sounds\\PkmnLU.ogg",
 	[17] = "Interface\\Addons\\BLU\\Sounds\\SRLU.ogg",
 	[18] = "Interface\\Addons\\BLU\\Sounds\\SHHLU.ogg",
-	[19] = "Interface\\Addons\\BLU\\Sounds\\SMB3LU.ogg",
-	[20] = "Interface\\Addons\\BLU\\Sounds\\WC3LU.ogg",
-	[21] = "Interface\\Addons\\BLU\\Sounds\\W3LU.ogg",
+  [19] = "Interface\\Addons\\BLU\\Sounds\\STDLU.ogg",
+	[20] = "Interface\\Addons\\BLU\\Sounds\\SMB3LU.ogg",
+	[21] = "Interface\\Addons\\BLU\\Sounds\\WC3LU.ogg",
+	[22] = "Interface\\Addons\\BLU\\Sounds\\W3LU.ogg",
 }
 function BLU:ACHIEVEMENT_EARNED(self, event, ...)
     local sound = sounds[BLU.db.profile.AchievementSoundSelect]
     if sound then
         PlaySoundFile(sound, "MASTER")
     elseif BLU.db.profile.AchievementSoundSelect then
-        PlaySoundFile(569143)
+        PlaySoundFile(569143, 'MASTER')
     end
 end
 function TestAchievementSound()
@@ -64,7 +65,7 @@ function TestAchievementSound()
     if sound then
         PlaySoundFile(sound, "MASTER")
     elseif BLU.db.profile.AchievementSoundSelect then
-        PlaySoundFile(569143)
+        PlaySoundFile(569143, 'MASTER')
     end
 end
 function BLU:PET_BATTLE_LEVEL_CHANGED(self, event, ...)
@@ -72,7 +73,7 @@ function BLU:PET_BATTLE_LEVEL_CHANGED(self, event, ...)
     if sound then
         PlaySoundFile(sound, "MASTER")
     elseif BLU.db.profile.BattlePetLevelSoundSelect then
-        PlaySoundFile(642841)
+        PlaySoundFile(642841, 'MASTER')
     end
 end
 function TestBattlePetLevelSound()
@@ -80,7 +81,7 @@ function TestBattlePetLevelSound()
     if sound then
         PlaySoundFile(sound, "MASTER")
     elseif BLU.db.profile.BattlePetLevelSoundSelect then
-        PlaySoundFile(642841)
+        PlaySoundFile(642841, 'MASTER')
     end
 end
 function BLU:HONOR_LEVEL_UPDATE(self, event, ...)
@@ -88,7 +89,7 @@ function BLU:HONOR_LEVEL_UPDATE(self, event, ...)
     if sound then
         PlaySoundFile(sound, "MASTER")
     elseif BLU.db.profile.HonorSoundSelect then
-        PlaySoundFile(1489546)
+        PlaySoundFile(1489546, 'MASTER')
     end
 end
 function TestHonorSound()
@@ -96,7 +97,7 @@ function TestHonorSound()
     if sound then
         PlaySoundFile(sound, "MASTER")
     elseif BLU.db.profile.HonorSoundSelect then
-        PlaySoundFile(1489546)
+        PlaySoundFile(1489546, 'MASTER')
     end
 end
 function BLU:PLAYER_LEVEL_UP(self, event, ...)
@@ -104,7 +105,7 @@ function BLU:PLAYER_LEVEL_UP(self, event, ...)
     if sound then
         PlaySoundFile(sound, "MASTER")
     elseif BLU.db.profile.LevelSoundSelect then
-        PlaySoundFile(569593)
+        PlaySoundFile(569593, 'MMASTER')
     end
 end
 function TestLevelSound()
@@ -112,7 +113,7 @@ function TestLevelSound()
     if sound then
         PlaySoundFile(sound, "MASTER")
     elseif BLU.db.profile.LevelSoundSelect then
-        PlaySoundFile(569593)
+        PlaySoundFile(569593, 'MASTER')
     end
 end
 function BLU:MAJOR_FACTION_RENOWN_LEVEL_CHANGED(self, event, ...)
@@ -120,7 +121,7 @@ function BLU:MAJOR_FACTION_RENOWN_LEVEL_CHANGED(self, event, ...)
     if sound then
         PlaySoundFile(sound, "MASTER")
     elseif BLU.db.profile.RenownSoundSelect then
-        PlaySoundFile(4745441)
+        PlaySoundFile(4745441, 'MASTER')
     end
 end
 function TestRenownSound()
@@ -128,7 +129,7 @@ function TestRenownSound()
     if sound then
         PlaySoundFile(sound, "MASTER")
     elseif BLU.db.profile.RenownSoundSelect then
-        PlaySoundFile(4745441)
+        PlaySoundFile(4745441, 'MASTER')
     end
 end
 local TrackedFactions = {}
@@ -142,7 +143,7 @@ function BLU:UPDATE_FACTION(event, ...)
                 if sound then
                     PlaySoundFile(sound, "MASTER")
                 elseif BLU.db.profile.RepSoundSelect then
-                    PlaySoundFile(568016)
+                    PlaySoundFile(568016, 'MASTER')
                 end
             end
             TrackedFactions[faction] = newstanding
@@ -154,7 +155,7 @@ function TestRepSound()
     if sound then
         PlaySoundFile(sound, "MASTER")
     elseif BLU.db.profile.RepSoundSelect then
-        PlaySoundFile(568016)
+        PlaySoundFile(568016, 'MASTER')
     end
 end
 function BLU:QUEST_ACCEPTED(self, event, ...)
@@ -162,7 +163,7 @@ function BLU:QUEST_ACCEPTED(self, event, ...)
     if sound then
         PlaySoundFile(sound, "MASTER")
     elseif BLU.db.profile.QuestAcceptSoundSelect then
-        PlaySoundFile(567400)
+        PlaySoundFile(567400, 'MASTER')
     end
 end
 function TestQuestAcceptSound()
@@ -170,7 +171,7 @@ function TestQuestAcceptSound()
     if sound then
         PlaySoundFile(sound, "MASTER")
     elseif BLU.db.profile.QuestAcceptSoundSelect then
-        PlaySoundFile(567400)
+        PlaySoundFile(567400, 'MASTER')
     end
 end
 function BLU:QUEST_TURNED_IN(self, event, ...)
@@ -178,7 +179,7 @@ function BLU:QUEST_TURNED_IN(self, event, ...)
     if sound then
         PlaySoundFile(sound, "MASTER")
     elseif BLU.db.profile.QuestSoundSelect then
-        PlaySoundFile(567439)
+        PlaySoundFile(567439, 'MASTER')
     end
 end
 function TestQuestSound()
@@ -186,7 +187,7 @@ function TestQuestSound()
     if sound then
         PlaySoundFile(sound, "MASTER")
     elseif BLU.db.profile.QuestSoundSelect then
-        PlaySoundFile(567439)
+        PlaySoundFile(567439, 'MASTER')
     end
 end
 function BLU:PERKS_ACTIVITY_COMPLETED(self, event, ...)
@@ -194,7 +195,7 @@ function BLU:PERKS_ACTIVITY_COMPLETED(self, event, ...)
     if sound then
         PlaySoundFile(sound, "MASTER")
     elseif BLU.db.profile.PostSoundSelect then
-        PlaySoundFile(4956064)
+        PlaySoundFile(4956064, 'MASTER')
     end
 end
 function TestPostSound()
@@ -202,7 +203,7 @@ function TestPostSound()
     if sound then
         PlaySoundFile(sound, "MASTER")
     elseif BLU.db.profile.PostSoundSelect then
-        PlaySoundFile(4956064)
+        PlaySoundFile(4956064, 'MASTER')
     end
 end
 local soundFileSettings = {

@@ -1,4 +1,4 @@
---v1.0.0
+--v1.0.2
 local soundOptions = {
     "Default",
     "DotA 2",
@@ -7,9 +7,12 @@ local soundOptions = {
     "Fly For Fun",
     "Fortnite",
     "Kingdom Hearts 3",
+    "Kirby [1]",
+    "Kirby [2]",
     "League of Legends",
     "Legend of Zelda",
     "Maplestory",
+    "Metal Gear Solid",
     "Minecraft",
     "Modern Warfare 2",
     "Morrowind",
@@ -27,8 +30,6 @@ BLU.defaults = {
 	profile = {
 		AchievementSoundSelect = 1,
 		MuteAchievementDefault = false,
-		HonorSoundSelect = 1,
-		MuteHonorDefault = false,
 		LevelSoundSelect = 1,
 		MuteLevelDefault = false,
 		RepSoundSelect = 1,
@@ -41,7 +42,7 @@ BLU.defaults = {
 }
 BLU.options = {
 	type = "group",
-	name = "|cff05dffaBLU|r |cffffffff|| |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel|r |cff05dffaU|r|cffffffffp! - v1.0.0|r",
+	name = "|cff05dffaBLU|r |cffffffff|| |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel|r |cff05dffaU|r|cffffffffp! - v1.0.2|r",
 	handler = BLU,
 	args = {
 		group1 = {
@@ -78,44 +79,10 @@ BLU.options = {
 				},
 			},
 		},
-		group3 = {
+		group2 = {
 			type = "group",
-			order = 3,
-			name = "|cff05dffaHonor Rank-Up!|r",
-			inline = true,
-			get = "GetValue",
-			set = "SetValue",
-			args = {
-				HonorSoundSelect = {
-					type = "select",
-					order = 1,
-					name = "",
-					values = soundOptions,
-				},
-				TestHonorSound = {
-					type = "execute",
-					order = 2,
-					image = "Interface\\Addons\\BLU\\Images\\PLAY.blp",
-						imageWidth = 20,
-						imageHeight = 20,
-					name = "",
-					desc = "",
-					func = TestHonorSound,
-					},
-				MuteHonorDefault = {
-					type = "toggle",
-					order = 3,
-					name = "|cff05dffaMute Default|r",
-					desc = "Mute Default Honor Rank Up Sound",
-					get = function(info) return BLU.db.profile.MuteHonorDefault end,
-					set = function(info, value) BLU.db.profile.MuteHonorDefault = value end,
-				},
-			},
-		},
-		group4 = {
-			type = "group",
-			order = 4,
-			name = "|cffffffffLevel-Up!|r",
+			order = 2,
+			name = "|cff05dffaLevel-Up!|r",
 			inline = true,
 			get = "GetValue",
 			set = "SetValue",
@@ -139,17 +106,17 @@ BLU.options = {
 				MuteLevelDefault = {
 					type = "toggle",
 					order = 3,
-					name = "|cffffffffMute Default|r",
-					desc = "|cff05dffaMute Default Level Up Sound|r",
+					name = "|cff05dffaMute Default|r",
+					desc = "|cffffffffMute Default Level Up Sound|r",
 					get = function(info) return BLU.db.profile.MuteLevelDefault end,
 					set = function(info, value) BLU.db.profile.MuteLevelDefault = value end,
 				},
 			},
 		},
-		group6 = {
+		group3 = {
 			type = "group",
-			order = 6,
-			name = "|cff05dffaReputation Rank-Up!|r",
+			order = 3,
+			name = "|cffffffffReputation Rank-Up!|r",
 			inline = true,
 			get = "GetValue",
 			set = "SetValue",
@@ -173,17 +140,17 @@ BLU.options = {
 				MuteRepDefault = {
 					type = "toggle",
 					order = 3,
-					name = "|cff05dffaMute Default|r",
-					desc = "Mute Default Rep-Up Sound",
+					name = "|cffffffffMute Default|r",
+					desc = "|cff05dffaMute Default Rep-Up Sound|r",
 					get = function(info) return BLU.db.profile.MuteRepDefault end,
 					set = function(info, value) BLU.db.profile.MuteRepDefault = value end,
 				},
 			},
 		},
-		group7 = {
+		group4 = {
 			type = "group",
-			order = 7,
-			name = "|cffffffffQuest Accepted|r",
+			order = 4,
+			name = "|cff05dffaQuest Accepted|r",
 			inline = true,
 			get = "GetValue",
 			set = "SetValue",
@@ -207,17 +174,17 @@ BLU.options = {
 				MuteQuestAcceptDefault = {
 					type = "toggle",
 					order = 3,
-					name = "|cffffffffMute Default|r",
-					desc = "|cff05dffafMute Default Quest Accepted Sound|r",
+					name = "|cff05dffaMute Default|r",
+					desc = "|cfffffffffMute Default Quest Accepted Sound|r",
 					get = function(info) return BLU.db.profile.MuteQuestAcceptDefault end,
 					set = function(info, value) BLU.db.profile.MuteQuestAcceptDefault = value end,
 				},
 			},
 		},
-		group8 = {
+		group5 = {
 			type = "group",
-			order = 8,
-			name = "|cff05dffaQuest Turn-In!|r",
+			order = 5,
+			name = "|cffffffffQuest Turn-In!|r",
 			inline = true,
 			get = "GetValue",
 			set = "SetValue",
@@ -241,8 +208,8 @@ BLU.options = {
 				MuteQuestDefault = {
 					type = "toggle",
 					order = 3,
-					name = "|cff05dffaMute Default|r",
-					desc = "Mute Default Quest Turn-In Sound",
+					name = "|cffffffffMute Default|r",
+					desc = "|cff05dffaMute Default Quest Turn-In Sound|r",
 					get = function(info) return BLU.db.profile.MuteQuestDefault end,
 					set = function(info, value) BLU.db.profile.MuteQuestDefault = value end,
 				},

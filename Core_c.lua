@@ -1,4 +1,4 @@
---v1.0.0
+--v1.0.2
 BLU = LibStub("AceAddon-3.0"):NewAddon("BLU", "AceEvent-3.0", "AceConsole-3.0")
 local AC = LibStub("AceConfig-3.0")
 local ACD = LibStub("AceConfigDialog-3.0")
@@ -15,7 +15,6 @@ end
 function BLU:OnEnable()
 	self:RegisterEvent("ACHIEVEMENT_EARNED")
 	self:RegisterEvent("GLOBAL_MOUSE_DOWN")
-	self:RegisterEvent("HONOR_LEVEL_UPDATE")
 	self:RegisterEvent("PLAYER_LEVEL_UP")
 	self:RegisterEvent("PLAYER_LOGIN")
 	self:RegisterEvent("QUEST_ACCEPTED")
@@ -33,28 +32,31 @@ local sounds = {
 	[5] = "Interface\\Addons\\BLU\\Sounds\\FFFLU.ogg",
 	[6] = "Interface\\Addons\\BLU\\Sounds\\FNLU.ogg",
 	[7] = "Interface\\Addons\\BLU\\Sounds\\KH3LU.ogg",
-	[8] = "Interface\\Addons\\BLU\\Sounds\\LoLLU.ogg",
-	[9] = "Interface\\Addons\\BLU\\Sounds\\LoZN64.ogg",
-	[10] = "Interface\\Addons\\BLU\\Sounds\\MSLU.ogg",
-	[11] = "Interface\\Addons\\BLU\\Sounds\\MCLU.ogg",
-	[12] = "Interface\\Addons\\BLU\\Sounds\\MW2LU.ogg",
-	[13] = "Interface\\Addons\\BLU\\Sounds\\MWLU.ogg",
-	[14] = "Interface\\Addons\\BLU\\Sounds\\OSRSLU.ogg",
-	[15] = "Interface\\Addons\\BLU\\Sounds\\PoELU.ogg",
-	[16] = "Interface\\Addons\\BLU\\Sounds\\PkmnLU.ogg",
-  [17] = "Interface\\Addons\\BLU\\Sounds\\SRLU.ogg",
-	[18] = "Interface\\Addons\\BLU\\Sounds\\SHHLU.ogg",
-  [19] = "Interface\\Addons\\BLU\\Sounds\\STDLU.ogg",
-	[20] = "Interface\\Addons\\BLU\\Sounds\\SMB3LU.ogg",
-	[21] = "Interface\\Addons\\BLU\\Sounds\\WC3LU.ogg",
-	[22] = "Interface\\Addons\\BLU\\Sounds\\W3LU.ogg",
+  [8] = "Interface\\Addons\\BLU\\Sounds\\KLU1.ogg",
+  [9] = "Interface\\Addons\\BLU\\Sounds\\KLU2.ogg",
+	[10] = "Interface\\Addons\\BLU\\Sounds\\LoLLU.ogg",
+	[11] = "Interface\\Addons\\BLU\\Sounds\\LoZN64.ogg",
+	[12] = "Interface\\Addons\\BLU\\Sounds\\MSLU.ogg",
+  [13] = "Interface\\Addons\\BLU\\Sounds\\MGSLU.ogg",
+	[14] = "Interface\\Addons\\BLU\\Sounds\\MCLU.ogg",
+	[15] = "Interface\\Addons\\BLU\\Sounds\\MW2LU.ogg",
+	[16] = "Interface\\Addons\\BLU\\Sounds\\MWLU.ogg",
+	[17] = "Interface\\Addons\\BLU\\Sounds\\OSRSLU.ogg",
+	[18] = "Interface\\Addons\\BLU\\Sounds\\PoELU.ogg",
+	[19] = "Interface\\Addons\\BLU\\Sounds\\PkmnLU.ogg",
+	[20] = "Interface\\Addons\\BLU\\Sounds\\SRLU.ogg",
+	[21] = "Interface\\Addons\\BLU\\Sounds\\SHHLU.ogg",
+  [22] = "Interface\\Addons\\BLU\\Sounds\\STDLU.ogg",
+	[23] = "Interface\\Addons\\BLU\\Sounds\\SMB3LU.ogg",
+	[24] = "Interface\\Addons\\BLU\\Sounds\\WC3LU.ogg",
+	[25] = "Interface\\Addons\\BLU\\Sounds\\W3LU.ogg",
 }
 function BLU:ACHIEVEMENT_EARNED(self, event, ...)
     local sound = sounds[BLU.db.profile.AchievementSoundSelect]
     if sound then
         PlaySoundFile(sound, "MASTER")
     elseif BLU.db.profile.AchievementSoundSelect then
-        PlaySoundFile(569143, 'MASTER')
+        PlaySoundFile(569143, "MASTER")
     end
 end
 function TestAchievementSound()
@@ -62,23 +64,7 @@ function TestAchievementSound()
     if sound then
         PlaySoundFile(sound, "MASTER")
     elseif BLU.db.profile.AchievementSoundSelect then
-        PlaySoundFile(569143, 'MASTER')
-    end
-end
-function BLU:HONOR_LEVEL_UPDATE(self, event, ...)
-    local sound = sounds[BLU.db.profile.HonorSoundSelect]
-    if sound then
-        PlaySoundFile(sound, "MASTER")
-    elseif BLU.db.profile.HonorSoundSelect then
-        PlaySoundFile(1489546, 'MASTER')
-    end
-end
-function TestHonorSound()
-    local sound = sounds[BLU.db.profile.HonorSoundSelect]
-    if sound then
-        PlaySoundFile(sound, "MASTER")
-    elseif BLU.db.profile.HonorSoundSelect then
-        PlaySoundFile(1489546, 'MASTER')
+        PlaySoundFile(569143, "MASTER")
     end
 end
 function BLU:PLAYER_LEVEL_UP(self, event, ...)
@@ -86,7 +72,7 @@ function BLU:PLAYER_LEVEL_UP(self, event, ...)
     if sound then
         PlaySoundFile(sound, "MASTER")
     elseif BLU.db.profile.LevelSoundSelect then
-        PlaySoundFile(569593, 'MASTER')
+        PlaySoundFile(569593, "MASTER")
     end
 end
 function TestLevelSound()
@@ -94,7 +80,7 @@ function TestLevelSound()
     if sound then
         PlaySoundFile(sound, "MASTER")
     elseif BLU.db.profile.LevelSoundSelect then
-        PlaySoundFile(569593, 'MASTER')
+        PlaySoundFile(569593, "MASTER")
     end
 end
 local TrackedFactions = {}
@@ -108,7 +94,7 @@ function BLU:UPDATE_FACTION(event, ...)
                 if sound then
                     PlaySoundFile(sound, "MASTER")
                 elseif BLU.db.profile.RepSoundSelect then
-                    PlaySoundFile(568016, 'MASTER')
+                    PlaySoundFile(568016, "MASTER")
                 end
             end
             TrackedFactions[faction] = newstanding
@@ -120,7 +106,7 @@ function TestRepSound()
     if sound then
         PlaySoundFile(sound, "MASTER")
     elseif BLU.db.profile.RepSoundSelect then
-        PlaySoundFile(568016, 'MASTER')
+        PlaySoundFile(568016, "MASTER")
     end
 end
 function BLU:QUEST_ACCEPTED(self, event, ...)
@@ -128,7 +114,7 @@ function BLU:QUEST_ACCEPTED(self, event, ...)
     if sound then
         PlaySoundFile(sound, "MASTER")
     elseif BLU.db.profile.QuestAcceptSoundSelect then
-        PlaySoundFile(567400, 'MASTER')
+        PlaySoundFile(567400, "MASTER")
     end
 end
 function TestQuestAcceptSound()
@@ -136,7 +122,7 @@ function TestQuestAcceptSound()
     if sound then
         PlaySoundFile(sound, "MASTER")
     elseif BLU.db.profile.QuestAcceptSoundSelect then
-        PlaySoundFile(567400, 'MASTER')
+        PlaySoundFile(567400, "MASTER")
     end
 end
 function BLU:QUEST_TURNED_IN(self, event, ...)
@@ -144,7 +130,7 @@ function BLU:QUEST_TURNED_IN(self, event, ...)
     if sound then
         PlaySoundFile(sound, "MASTER")
     elseif BLU.db.profile.QuestSoundSelect then
-        PlaySoundFile(567439, 'MASTER')
+        PlaySoundFile(567439, "MASTER")
     end
 end
 function TestQuestSound()
@@ -152,12 +138,11 @@ function TestQuestSound()
     if sound then
         PlaySoundFile(sound, "MASTER")
     elseif BLU.db.profile.QuestSoundSelect then
-        PlaySoundFile(567439, 'MASTER')
+        PlaySoundFile(567439, "MASTER")
     end
 end
 local soundFileSettings = {
     [569143] = "MuteAchievementDefault",
-		[1489546] = "MuteHonorDefault",
     [569593] = "MuteLevelDefault",
     [568016] = "MuteRepDefault",
     [567400] = "MuteQuestAcceptDefault",

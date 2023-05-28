@@ -1,4 +1,4 @@
---v1.0.1
+--v1.0.2
 local soundOptions = {
     "Default",
     "DotA 2",
@@ -7,9 +7,12 @@ local soundOptions = {
     "Fly For Fun",
     "Fortnite",
     "Kingdom Hearts 3",
+    "Kirby [1]",
+    "Kirby [2]",
     "League of Legends",
     "Legend of Zelda",
     "Maplestory",
+    "Metal Gear Solid",
     "Minecraft",
     "Modern Warfare 2",
     "Morrowind",
@@ -18,7 +21,7 @@ local soundOptions = {
     "Pokemon",
     "Skyrim",
     "Sonic The Hedgehog",
-    "Spyro The Dragon",
+    "Spryo The Dragon",
     "Super Mario Bros 3",
     "Warcraft 3",
     "Witcher 3"
@@ -47,7 +50,7 @@ BLU.defaults = {
 }
 BLU.options = {
 	type = "group",
-	name = "|cff05dffaBLU|r |cffffffff|| |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel|r |cff05dffaU|r|cffffffffp! - v1.0.0|r",
+	name = "|cff05dffaBLU|r |cffffffff|| |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel|r |cff05dffaU|r|cffffffffp! - v1.0.2|r",
 	handler = BLU,
 	args = {
 		group1 = {

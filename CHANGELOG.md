@@ -1,5 +1,10 @@
-v1.0.1
+v1.0.2
 
-- Fixed   - Moved all Default Sounds to MASTER Sound Channel
-- Fixed   - Issues with colors [Both Versions]
-- Added   - 1UP Sound from Spyro The Dragon
+- Fixed   - Version Number in Options Panel
+- Fixed   - Issue with sound channels
+- Fixed   - Colors for WotLK/Classic/TBC versions
+- Removed - Honor Rank Up! Sounds/Mutes from WotLK/Classic/TBC
+- Added   - Retail Only information to README
+- Added   - Deja Vu - Quizz Victory Sound from Metal Gear Solid V!
+- Added   - Got a Star! Sound from Kirby!
+- Added   - Treasure! Sound from Kirby!

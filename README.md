@@ -1,6 +1,6 @@
 [![](https://img.shields.io/static/v1?label=Donate&message=CashApp&color=brightgreen)](https://bit.ly/3fyxxSU)
 
-v1.0.1
+v1.0.2
 ------------------------------
 
 **BLU - Better Level Up!**
@@ -21,13 +21,13 @@ v1.0.1
 
 Play sounds from other games when you Earn Achievements!
 
-Play sounds from other games when you Level Up Battle-Pets!
+Play sounds from other games when you Level Up Battle-Pets! [R]
 
-Play sounds from other games when you gain Honor Ranks!
+Play sounds from other games when you gain Honor Ranks! [R]
 
 Play sounds from other games when you Level Up!
 
-Play sounds from other games when you gain DragonFlight Renown Reputation Ranks!
+Play sounds from other games when you gain DragonFlight Renown Reputation Ranks! [R]
 
 Play sounds from other games when you gain Reputation Ranks!
 
@@ -35,7 +35,10 @@ Play sounds from other games when you Accept Quests!
 
 Play sounds from other games when you Turn-In Quests!
 
-Play sounds from other games when you Complete Trading Post Activities!
+Play sounds from other games when you Complete Trading Post Activities! [R]
+
+
+[R] = Retail Only
 
 ------------------------------
 
@@ -102,6 +105,16 @@ Re-write without Ace3 libs!
 ------------------------------
 
 ***Cumulative CHANGELOG***
+
+**v1.0.2**
+- Fixed   - Version Number in Options Panel
+- Fixed   - Issue with sound channels
+- Fixed   - Colors for WotLK/Classic/TBC versions
+- Removed - Honor Rank Up! Sounds/Mutes from WotLK/Classic/TBC
+- Added   - Retail Only information to README
+- Added   - Deja Vu - Quizz Victory Sound from Metal Gear Solid V!
+- Added   - Got a Star! Sound from Kirby!
+- Added   - Treasure! Sound from Kirby!
 
 **v1.0.1**
 - Fixed   - Moved all Default Sounds to MASTER Sound Channel

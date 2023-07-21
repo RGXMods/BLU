@@ -1,4 +1,4 @@
---v1.0.2
+--v1.0.3
 local soundOptions = {
     "Default",
     "DotA 2",
@@ -50,7 +50,7 @@ BLU.defaults = {
 }
 BLU.options = {
 	type = "group",
-	name = "|cff05dffaBLU|r |cffffffff|| |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel|r |cff05dffaU|r|cffffffffp! - v1.0.2|r",
+	name = "|cff05dffaBLU|r |cffffffff|| |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel|r |cff05dffaU|r|cffffffffp! - v1.0.3|r",
 	handler = BLU,
 	args = {
 		group1 = {

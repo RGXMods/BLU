@@ -1,6 +1,6 @@
 [![](https://img.shields.io/static/v1?label=Donate&message=CashApp&color=brightgreen)](https://bit.ly/3fyxxSU)
 
-v1.0.2
+v1.0.3
 ------------------------------
 
 **BLU - Better Level Up!**
@@ -74,9 +74,11 @@ Play sounds from other games when you Complete Trading Post Activities! [R]
 - Fly For Fun
 - Fortnite
 - Kingdom Hearts 3
+- Kirby
 - League of Legends
 - Legend of Zelda
 - Maplestory
+- Metal Gear Solid 5
 - Minecraft
 - Modern Warfare 2
 - Morrowind
@@ -105,6 +107,10 @@ Re-write without Ace3 libs!
 ------------------------------
 
 ***Cumulative CHANGELOG***
+
+**v1.0.3**
+- Updated - TOC for Fractures in Time
+- Fixed   - Added Kirby and MGS to README
 
 **v1.0.2**
 - Fixed   - Version Number in Options Panel

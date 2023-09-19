@@ -1,4 +1,4 @@
-v1.0.3
+v1.0.4
 
-- Updated - TOC for Fractures in Time
-- Fixed   - Added Kirby and MGS to README
+- Updated - TOC for Hardcore (Classic)
+- Updated - TOC for Fury Incarnate(Retail)

@@ -1,6 +1,6 @@
 [![](https://img.shields.io/static/v1?label=Donate&message=CashApp&color=brightgreen)](https://bit.ly/3fyxxSU)
 
-v1.0.3
+v1.0.4
 ------------------------------
 
 **BLU - Better Level Up!**
@@ -107,6 +107,10 @@ Re-write without Ace3 libs!
 ------------------------------
 
 ***Cumulative CHANGELOG***
+
+**v1.0.4**
+- Updated - TOC for Hardcore (Classic)
+- Updated - TOC for Fury Incarnate(Retail)
 
 **v1.0.3**
 - Updated - TOC for Fractures in Time

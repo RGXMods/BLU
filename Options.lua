@@ -1,6 +1,7 @@
---v1.0.5
+--v1.0.6
 local soundOptions = {
   "Default",
+  "Altered Beast",
   "Assassin's Creed",
   "Castlevania",
   "Diablo 2",
@@ -73,7 +74,7 @@ BLU.defaults = {
 }
 BLU.options = {
 	type = "group",
-	name = "|cff05dffaBLU|r |cffffffff|| |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel|r |cff05dffaU|r|cffffffffp! - v1.0.5|r",
+	name = "|cff05dffaBLU|r |cffffffff|| |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel|r |cff05dffaU|r|cffffffffp! - v1.0.6|r",
 	handler = BLU,
 	args = {
 		group1 = {

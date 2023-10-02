@@ -1,6 +1,6 @@
 [![](https://img.shields.io/static/v1?label=Donate&message=CashApp&color=brightgreen)](https://bit.ly/3fyxxSU)
 
-v1.0.5
+v1.0.6
 ------------------------------
 
 **BLU - Better Level Up!**
@@ -93,7 +93,7 @@ Play sounds from other games when you Complete Trading Post Activities! [R]
 - Pokemon
 - Ragnarok Online
 - Shining Force II
-- Shining Force III[1]
+- Shining Force III
 - Skyrim
 - Sonic The Hedgehog
 - Spyro The Dragon
@@ -117,6 +117,9 @@ Re-write without Ace3 libs!
 
 ***Cumulative CHANGELOG***
 
+**v1.0.6**
+- Fixed - Sound Name/FileName Ordering
+
 **v1.0.5**
 
 - Added - "Level up!" Sound from Assassin's Creed Odyssey
@@ -130,37 +133,6 @@ Re-write without Ace3 libs!
 - Added - "Promotion!" Sound from Shining Force II
 - Added - x11 "unknown jingle" Sounds from Shining Force III
 - Added - "Level up!" Sound from Witcher 3
-
-**v1.0.4**
-- Updated - TOC for Hardcore (Classic)
-- Updated - TOC for Fury Incarnate(Retail)
-
-**v1.0.3**
-- Updated - TOC for Fractures in Time
-- Fixed   - Added Kirby and MGS to README
-
-**v1.0.2**
-- Fixed   - Version Number in Options Panel
-- Fixed   - Issue with sound channels
-- Fixed   - Colors for WotLK/Classic/TBC versions
-- Removed - Honor Rank Up! Sounds/Mutes from WotLK/Classic/TBC
-- Added   - Retail Only information to README
-- Added   - Deja Vu - Quizz Victory Sound from Metal Gear Solid V!
-- Added   - Got a Star! Sound from Kirby!
-- Added   - Treasure! Sound from Kirby!
-
-**v1.0.1**
-- Fixed   - Moved all Default Sounds to MASTER Sound Channel
-- Fixed   - Issues with colors [Both Versions]
-- Added   - 1UP Sound from Spyro The Dragon
-
-**v1.0.0**
-- Changed - Entire code base rewritten
-- Added   - Sounds/Mute for Trade Post Activity Completed!
-- Added   - Sounds/Mute for Battle-Pet Level-Ups!
-- Added   - Color for readability
-- Added   - Usage details in AddOn Notes
-- Changed - Squished Cumulative CHANGELOG in README
 
 ------------------------------
 

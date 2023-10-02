@@ -1,6 +1,6 @@
 [![](https://img.shields.io/static/v1?label=Donate&message=CashApp&color=brightgreen)](https://bit.ly/3fyxxSU)
 
-v1.0.4
+v1.0.5
 ------------------------------
 
 **BLU - Better Level Up!**
@@ -9,9 +9,6 @@ v1.0.4
 
 <div align="center">
 
-**Officially Launched BLU|Better Level Up! v1.0.0**
-**[10,000 BLU downloads]**
-**[40,000 account total]**
 
 </div>
 
@@ -68,11 +65,20 @@ Play sounds from other games when you Complete Trading Post Activities! [R]
 
 **Current list of available game sounds**
 - Default (WoW)
+- Assassin's Creed
+- Castlevania
+- Diablo 2
+- Dragon Quest
 - DotA 2
 - EverQuest
+- Fallout - New Vegas
+- Fallout 3
 - Final Fantasy
+- Fire Emblem
+- Fire Emblem - Awakening
 - Fly For Fun
 - Fortnite
+- GTA - San Andreas
 - Kingdom Hearts 3
 - Kirby
 - League of Legends
@@ -85,6 +91,9 @@ Play sounds from other games when you Complete Trading Post Activities! [R]
 - Old School Runescape
 - Path of Exile
 - Pokemon
+- Ragnarok Online
+- Shining Force II
+- Shining Force III[1]
 - Skyrim
 - Sonic The Hedgehog
 - Spyro The Dragon
@@ -107,6 +116,20 @@ Re-write without Ace3 libs!
 ------------------------------
 
 ***Cumulative CHANGELOG***
+
+**v1.0.5**
+
+- Added - "Level up!" Sound from Assassin's Creed Odyssey
+- Added - "Level up!" Sound from Diablo 2
+- Added - "Level up!" Sound from Dragon Quest
+- Added - "Level up!" Sound from Fallout: New Vegas
+- Added - "Level up!" Sound from Fallout 3
+- Added - "Level up!" Sound from Fire Emblem: Awakening
+- Added - "Level up!" Sound from Fire Emblem
+- Added - "Mission Complete!" Sound from Grand Theft Auto: San Andreas
+- Added - "Promotion!" Sound from Shining Force II
+- Added - x11 "unknown jingle" Sounds from Shining Force III
+- Added - "Level up!" Sound from Witcher 3
 
 **v1.0.4**
 - Updated - TOC for Hardcore (Classic)

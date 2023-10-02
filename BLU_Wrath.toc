@@ -1,5 +1,5 @@
 ## Interface: 30402
-## Version: 1.0.4
+## Version: 1.0.5
 ## Title: |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel|r |cff05dffaU|r|cffffffffp!
 ## Notes: Play sounds from other games!  |n|r    |cff05dffa/blu -|r Open options panel
 ## Author: DonnieDice

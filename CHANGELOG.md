@@ -1,3 +1,4 @@
-v1.0.6
+v1.0.7
 
-- Fixed - SoundName/FileName Ordering
+- Updated - TOC for Fall of the Lich King
+- Updated - Ace3 Libs

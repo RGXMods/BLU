@@ -1,6 +1,6 @@
 [![](https://img.shields.io/static/v1?label=Donate&message=CashApp&color=brightgreen)](https://bit.ly/3fyxxSU)
 
-v1.0.6
+v1.0.7
 ------------------------------
 
 **BLU - Better Level Up!**
@@ -18,13 +18,13 @@ v1.0.6
 
 Play sounds from other games when you Earn Achievements!
 
-Play sounds from other games when you Level Up Battle-Pets! [R]
+[R] Play sounds from other games when you Level Up Battle-Pets!
 
-Play sounds from other games when you gain Honor Ranks! [R]
+[R] Play sounds from other games when you gain Honor Ranks!
 
 Play sounds from other games when you Level Up!
 
-Play sounds from other games when you gain DragonFlight Renown Reputation Ranks! [R]
+[R] Play sounds from other games when you gain DragonFlight Renown Reputation Ranks!
 
 Play sounds from other games when you gain Reputation Ranks!
 
@@ -32,7 +32,7 @@ Play sounds from other games when you Accept Quests!
 
 Play sounds from other games when you Turn-In Quests!
 
-Play sounds from other games when you Complete Trading Post Activities! [R]
+[R] Play sounds from other games when you Complete Trading Post Activities!
 
 
 [R] = Retail Only
@@ -116,6 +116,10 @@ Re-write without Ace3 libs!
 ------------------------------
 
 ***Cumulative CHANGELOG***
+
+**v1.0.7**
+- Updated - TOC for Fall of the Lich King
+- Updated - Ace3 Libs
 
 **v1.0.6**
 - Fixed - Sound Name/FileName Ordering

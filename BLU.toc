@@ -1,5 +1,5 @@
 ## Interface: 100107
-## Version: 1.0.6
+## Version: 1.0.7
 ## Title: |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel|r |cff05dffaU|r|cffffffffp!
 ## Notes: Play sounds from other games!  |n|r    |cff05dffa/blu -|r Open options panel
 ## Author: DonnieDice

@@ -1,6 +1,6 @@
 [![](https://img.shields.io/static/v1?label=Donate&message=CashApp&color=brightgreen)](https://bit.ly/3fyxxSU)
 
-v1.0.7
+v1.0.8
 ------------------------------
 
 **BLU - Better Level Up!**
@@ -117,6 +117,12 @@ Re-write without Ace3 libs!
 
 ***Cumulative CHANGELOG***
 
+**v1.0.8**
+- Updated - README - Removed TUKUI
+- Added - Author Name to ##Notes
+- Fixed - Version Number in Options.lua for Classic
+- Added - Notation to Core_c.lua and Core.lua
+
 **v1.0.7**
 - Updated - TOC for Fall of the Lich King
 - Updated - Ace3 Libs
@@ -124,26 +130,12 @@ Re-write without Ace3 libs!
 **v1.0.6**
 - Fixed - Sound Name/FileName Ordering
 
-**v1.0.5**
-
-- Added - "Level up!" Sound from Assassin's Creed Odyssey
-- Added - "Level up!" Sound from Diablo 2
-- Added - "Level up!" Sound from Dragon Quest
-- Added - "Level up!" Sound from Fallout: New Vegas
-- Added - "Level up!" Sound from Fallout 3
-- Added - "Level up!" Sound from Fire Emblem: Awakening
-- Added - "Level up!" Sound from Fire Emblem
-- Added - "Mission Complete!" Sound from Grand Theft Auto: San Andreas
-- Added - "Promotion!" Sound from Shining Force II
-- Added - x11 "unknown jingle" Sounds from Shining Force III
-- Added - "Level up!" Sound from Witcher 3
-
 ------------------------------
 
 <div align="center">
 
 **BLU Download Links:**
 
-[Curse](https://www.curseforge.com/wow/addons/blu-better-level-up "This link takes you to the Curseforge.com website, you may download it here and help support the developers.") * [GitHub](https://github.com/donniedice/BLU "This link takes you to the GitHub.com website, you may download it here.") * [Tukui](https://www.tukui.org/addons.php?id=257 "This link takes you to the Tukui.org website, you may download it here.") * [Wago](https://addons.wago.io/addons/blu "This link takes you to the Wago.io website, you may download it here and help support the developers.") * [WoWInterface](https://www.wowinterface.com/downloads/info26465-BLU-BetterLevelUp.html "This link takes you to the WoWInterface.com website, you may download it here.")
+[Curse](https://www.curseforge.com/wow/addons/blu-better-level-up "This link takes you to the Curseforge.com website, you may download it here and help support the developers.") * [GitHub](https://github.com/donniedice/BLU "This link takes you to the GitHub.com website, you may download it here.") * [Wago](https://addons.wago.io/addons/blu "This link takes you to the Wago.io website, you may download it here and help support the developers.") * [WoWInterface](https://www.wowinterface.com/downloads/info26465-BLU-BetterLevelUp.html "This link takes you to the WoWInterface.com website, you may download it here.")
 
 </div>

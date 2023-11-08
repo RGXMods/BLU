@@ -1,6 +1,6 @@
 [![](https://img.shields.io/static/v1?label=Donate&message=CashApp&color=brightgreen)](https://bit.ly/3fyxxSU)
 
-v1.0.8
+v1.0.9
 ------------------------------
 
 **BLU - Better Level Up!**
@@ -117,6 +117,9 @@ Re-write without Ace3 libs!
 
 ***Cumulative CHANGELOG***
 
+**v1.0.9**
+- Updated - TOC for Guardians of the Dream (10.2) [ver.100200]
+
 **v1.0.8**
 - Updated - README - Removed TUKUI
 - Added - Author Name to ##Notes
@@ -126,9 +129,6 @@ Re-write without Ace3 libs!
 **v1.0.7**
 - Updated - TOC for Fall of the Lich King
 - Updated - Ace3 Libs
-
-**v1.0.6**
-- Fixed - Sound Name/FileName Ordering
 
 ------------------------------
 

@@ -1,4 +1,4 @@
---v1.0.9
+--v1.0.10
 -- BLU is an addon that provides sound effects for various events in World of Warcraft.
 -- This file contains the core functionality of the addon, including event registration and sound playback.
 -- The addon uses Ace3 libraries for configuration and database management.

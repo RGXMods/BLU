@@ -1,5 +1,3 @@
-v1.0.10
-
-- Updated - ToC for _classic_era_ - Season of Discovery (1.15.0.52610) [ToC.11500]
-- Updated - ToC for _retail_ - Seeds of Renewal (10.2.5.53162) [ToC.100205]
-- Updated - Ace3 Libs (Release-r1320)
+v1.0.11
+- Updated - ToC for _classic_era_ - Season of Discovery (1.15.1.53623) [ToC.11501]
+- Updated - ToC for _retail_ - Splunderstorm (10.2.6.53840) [ToC.100206]

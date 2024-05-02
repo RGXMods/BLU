@@ -1,4 +1,4 @@
---v1.0.12
+--v2.0.0
 local soundOptions = {
   "Default",
   "Altered Beast",
@@ -66,12 +66,17 @@ BLU.defaults = {
 }
 BLU.options = {
 	type = "group",
-	name = "|cff05dffaBLU|r |cffffffff|| |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel|r |cff05dffaU|r|cffffffffp! - v1.0.12|r",
+	name = "",
 	handler = BLU,
 	args = {
 		group1 = {
-			type = "group",
+			type = "header",
 			order = 1,
+			name = "|cff05dffaBLU|r |cffffffff|| |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel|r |cff05dffaU|r|cffffffffp!|r",
+		},
+		group2 = {
+			type = "group",
+			order = 2,
 			name = "|cffffffffAchievement Earned!|r",
 			inline = true,
 			get = "GetValue",
@@ -103,9 +108,9 @@ BLU.options = {
 				},
 			},
 		},
-		group2 = {
+		group3 = {
 			type = "group",
-			order = 2,
+			order = 3,
 			name = "|cff05dffaLevel-Up!|r",
 			inline = true,
 			get = "GetValue",
@@ -137,9 +142,9 @@ BLU.options = {
 				},
 			},
 		},
-		group3 = {
+		group4 = {
 			type = "group",
-			order = 3,
+			order = 4,
 			name = "|cffffffffReputation Rank-Up!|r",
 			inline = true,
 			get = "GetValue",
@@ -171,9 +176,9 @@ BLU.options = {
 				},
 			},
 		},
-		group4 = {
+		group5 = {
 			type = "group",
-			order = 4,
+			order = 5,
 			name = "|cff05dffaQuest Accepted|r",
 			inline = true,
 			get = "GetValue",
@@ -199,15 +204,15 @@ BLU.options = {
 					type = "toggle",
 					order = 3,
 					name = "|cff05dffaMute Default|r",
-					desc = "|cfffffffffMute Default Quest Accepted Sound|r",
+					desc = "|cffffffffMute Default Quest Accepted Sound|r",
 					get = function(info) return BLU.db.profile.MuteQuestAcceptDefault end,
 					set = function(info, value) BLU.db.profile.MuteQuestAcceptDefault = value end,
 				},
 			},
 		},
-		group5 = {
+		group6 = {
 			type = "group",
-			order = 5,
+			order = 6,
 			name = "|cffffffffQuest Turn-In!|r",
 			inline = true,
 			get = "GetValue",
@@ -238,6 +243,11 @@ BLU.options = {
 					set = function(info, value) BLU.db.profile.MuteQuestDefault = value end,
 				},
 			},
+		},
+		group7 = {
+			type = "header",
+			order = 7,
+			name = "|cff8080ff2.0.0|r",
 		},
 	},
 }

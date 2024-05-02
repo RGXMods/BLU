@@ -1,6 +1,6 @@
 [![](https://img.shields.io/static/v1?label=Donate&message=CashApp&color=brightgreen)](https://bit.ly/3fyxxSU)
 
-v1.0.12
+v2.0.0
 ------------------------------
 
 **BLU - Better Level Up!**
@@ -116,6 +116,11 @@ Re-write without Ace3 libs!
 ------------------------------
 
 ***Cumulative CHANGELOG***
+
+**v2.0.0**
+- Removed - Achievements section from [Core_v.lua]
+- Added   - Version# to ToC #Title
+- Added   - Formatting code for Options Panel
 
 **v1.0.12**
 - Added   - ToC for _classic_ - Cataclysm Classic (4.4.0.54501) [ToC.40400]

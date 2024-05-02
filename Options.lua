@@ -1,4 +1,4 @@
---v1.0.12
+--v2.0.0
 local soundOptions = {
   "Default",
   "Altered Beast",
@@ -74,12 +74,17 @@ BLU.defaults = {
 }
 BLU.options = {
 	type = "group",
-	name = "|cff05dffaBLU|r |cffffffff|| |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel|r |cff05dffaU|r|cffffffffp! - v1.0.12|r",
+	name = "",
 	handler = BLU,
 	args = {
 		group1 = {
-			type = "group",
+			type = "header",
 			order = 1,
+			name = "|cff05dffaBLU|r |cffffffff|| |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel|r |cff05dffaU|r|cffffffffp!|r",
+		},
+		group2 = {
+			type = "group",
+			order = 2,
 			name = "|cffffffffAchievement Earned!|r",
 			inline = true,
 			get = "GetValue",
@@ -111,43 +116,43 @@ BLU.options = {
 				},
 			},
 		},
-    group2 = {
-      type = "group",
-      order = 2,
-      name = "|cff05dffaBattle Pet Level-Up!|r",
-      inline = true,
-      get = "GetValue",
-      set = "SetValue",
-      args = {
-        BattlePetLevelSoundSelect = {
-          type = "select",
-          order = 1,
-          name = "",
-          values = soundOptions,
-        },
-        TestBattlePetLevelSound = {
-          type = "execute",
-          order = 2,
-          image = "Interface\\Addons\\BLU\\Images\\PLAY.blp",
-            imageWidth = 20,
-            imageHeight = 20,
-          name = "",
-          desc = "",
-          func = TestBattlePetLevelSound,
-          },
-        MuteLevelDefault = {
-          type = "toggle",
-          order = 3,
-          name = "|cff05dffaMute Default|r",
-          desc = "Mute Default Battle Pet Level Up Sound",
-          get = function(info) return BLU.db.profile.MuteBattlePetLevelDefault end,
-          set = function(info, value) BLU.db.profile.MuteBattlePetLevelDefault = value end,
-        },
-      },
-    },
 		group3 = {
+		type = "group",
+		order = 3,
+		name = "|cff05dffaBattle Pet Level-Up!|r",
+		inline = true,
+		get = "GetValue",
+		set = "SetValue",
+		args = {
+			BattlePetLevelSoundSelect = {
+				type = "select",
+				order = 1,
+				name = "",
+				values = soundOptions,
+			},
+			TestBattlePetLevelSound = {
+				type = "execute",
+				order = 2,
+				image = "Interface\\Addons\\BLU\\Images\\PLAY.blp",
+					imageWidth = 20,
+					imageHeight = 20,
+				name = "",
+				desc = "",
+				func = TestBattlePetLevelSound,
+			},
+			MuteLevelDefault = {
+					type = "toggle",
+					order = 3,
+					name = "|cff05dffaMute Default|r",
+					desc = "Mute Default Battle Pet Level Up Sound",
+					get = function(info) return BLU.db.profile.MuteBattlePetLevelDefault end,
+					set = function(info, value) BLU.db.profile.MuteBattlePetLevelDefault = value end,
+				},
+			},
+		},
+		group4 = {
 			type = "group",
-			order = 3,
+			order = 4,
 			name = "|cffffffffHonor Rank-Up!|r",
 			inline = true,
 			get = "GetValue",
@@ -179,9 +184,9 @@ BLU.options = {
 				},
 			},
 		},
-		group4 = {
+		group5 = {
 			type = "group",
-			order = 4,
+			order = 5,
 			name = "|cff05dffaLevel-Up!|r",
 			inline = true,
 			get = "GetValue",
@@ -213,9 +218,9 @@ BLU.options = {
 				},
 			},
 		},
-		group5 = {
+		group6 = {
 			type = "group",
-			order = 5,
+			order = 6,
 			name = "|cffffffffRenown Rank-Up!|r",
 			inline = true,
 			get = "GetValue",
@@ -247,9 +252,9 @@ BLU.options = {
 				},
 			},
 		},
-		group6 = {
+		group7 = {
 			type = "group",
-			order = 6,
+			order = 7,
 			name = "|cff05dffaReputation Rank-Up!|r",
 			inline = true,
 			get = "GetValue",
@@ -281,9 +286,9 @@ BLU.options = {
 				},
 			},
 		},
-		group7 = {
+		group8 = {
 			type = "group",
-			order = 7,
+			order = 8,
 			name = "|cffffffffQuest Accepted|r",
 			inline = true,
 			get = "GetValue",
@@ -315,9 +320,9 @@ BLU.options = {
 				},
 			},
 		},
-		group8 = {
+		group9 = {
 			type = "group",
-			order = 8,
+			order = 9,
 			name = "|cff05dffaQuest Turn-In!|r",
 			inline = true,
 			get = "GetValue",
@@ -349,9 +354,9 @@ BLU.options = {
 				},
 			},
 		},
-    group9 = {
+    	group10 = {
 			type = "group",
-			order = 9,
+			order = 10,
 			name = "|cffffffffTrade Post Activity Completed!|r",
 			inline = true,
 			get = "GetValue",
@@ -382,6 +387,11 @@ BLU.options = {
 					set = function(info, value) BLU.db.profile.MutePostDefault = value end,
 				},
 			},
+		},
+		group11 = {
+			type = "header",
+			order = 11,
+			name = "|cff8080ff2.0.0|r",
 		},
 	},
 }

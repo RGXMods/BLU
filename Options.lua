@@ -1,4 +1,4 @@
---v1.0.11
+--v1.0.12
 local soundOptions = {
   "Default",
   "Altered Beast",
@@ -74,7 +74,7 @@ BLU.defaults = {
 }
 BLU.options = {
 	type = "group",
-	name = "|cff05dffaBLU|r |cffffffff|| |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel|r |cff05dffaU|r|cffffffffp! - v1.0.11|r",
+	name = "|cff05dffaBLU|r |cffffffff|| |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel|r |cff05dffaU|r|cffffffffp! - v1.0.12|r",
 	handler = BLU,
 	args = {
 		group1 = {

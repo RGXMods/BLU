@@ -1,4 +1,4 @@
---v1.0.11
+--v1.0.12
 -- BLU is an addon that provides sound effects for various events in World of Warcraft.
 -- This file contains the core functionality of the addon, including event registration and sound playback.
 -- The addon uses Ace3 libraries for configuration and database management.
@@ -44,14 +44,14 @@ function BLU:OnEnable()
     self:RegisterEvent("ACHIEVEMENT_EARNED")
     self:RegisterEvent("GLOBAL_MOUSE_DOWN")
     self:RegisterEvent("PLAYER_LEVEL_UP")
-    self:RegisterEvent("PLAYER_LOGIN")
+    self:RegisterEvent("PLAYER_ENTERING_WORLD")
     self:RegisterEvent("QUEST_ACCEPTED")
     self:RegisterEvent("QUEST_TURNED_IN")
     self:RegisterEvent("UPDATE_FACTION")
 end
 
 -- Display a message in the chat window when the player logs in.
-function BLU:PLAYER_LOGIN(...)
+function BLU:PLAYER_ENTERING_WORLD(...)
     DEFAULT_CHAT_FRAME:AddMessage("|cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel|r |cff05dffaU|r|cffffffffp!: |cff05dffaThank you for Downloading BLU!|r Enter '|cff05dffa/blu|r' to Select |cff05dffaL|revel |cff05dffaU|rp Sounds!")
     DEFAULT_CHAT_FRAME:AddMessage("|cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel|r |cff05dffaU|r|cffffffffp!: |cffdc143cNOTE|r: You may have to re-select a previously selected sound after |cffdc143cA|rddon |cffdc143cU|rpdates.")
 end

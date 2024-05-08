@@ -1,46 +1,23 @@
---v2.0.0
+--v2.1.1
 -- BLU is an addon that provides sound effects for various events in World of Warcraft.
 -- This file contains the core functionality of the addon, including event registration and sound playback.
 -- The addon uses Ace3 libraries for configuration and database management.
 -- The sounds are stored in the "Sounds" folder within the addon directory.
 -- The addon can be configured using the "/blu" or "/lu" chat commands.
-
--- Create a new instance of the BLU addon using the AceAddon-3.0 library.
 BLU = LibStub("AceAddon-3.0"):NewAddon("BLU", "AceEvent-3.0", "AceConsole-3.0")
-
--- Create instances of the AceConfig-3.0 and AceConfigDialog-3.0 libraries for configuration options.
 local AC = LibStub("AceConfig-3.0")
 local ACD = LibStub("AceConfigDialog-3.0")
-
--- Initialize the addon.
 function BLU:OnInitialize()
-  -- Create a new database for the addon using the AceDB-3.0 library.
   self.db = LibStub("AceDB-3.0"):New("BLUDB", self.defaults, true)
-  
-  -- Register the options table for the addon.
   AC:RegisterOptionsTable("BLU_Options", self.options)
-  
-  -- Add the options table to the Blizzard options menu.
   self.optionsFrame = ACD:AddToBlizOptions("BLU_Options", "Better Level Up!")
-  
-  -- Get the options table for the database.
   profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
-  
-  -- Register the options table for the database.
   AC:RegisterOptionsTable("BLU_Profiles", profiles)
-  
-  -- Add the options table to the Blizzard options menu.
   ACD:AddToBlizOptions("BLU_Profiles", "Profiles", "Better Level Up!")
-  
-  -- Register chat commands for the addon.
   self:RegisterChatCommand("lu", "SlashCommand")
   self:RegisterChatCommand("blu", "SlashCommand")
 end
-
--- Enable the addon.
 function BLU:OnEnable()
-    
-  -- Register events for the addon.
     self:RegisterEvent("GLOBAL_MOUSE_DOWN")
     self:RegisterEvent("PLAYER_LEVEL_UP")
     self:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -48,14 +25,13 @@ function BLU:OnEnable()
     self:RegisterEvent("QUEST_TURNED_IN")
     self:RegisterEvent("UPDATE_FACTION")
 end
-
--- Display a message in the chat window when the player logs in.
 function BLU:PLAYER_ENTERING_WORLD(...)
     DEFAULT_CHAT_FRAME:AddMessage("|cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel|r |cff05dffaU|r|cffffffffp!: |cff05dffaThank you for Downloading BLU!|r Enter '|cff05dffa/blu|r' to Select |cff05dffaL|revel |cff05dffaU|rp Sounds!")
     DEFAULT_CHAT_FRAME:AddMessage("|cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel|r |cff05dffaU|r|cffffffffp!: |cffdc143cNOTE|r: You may have to re-select a previously selected sound after |cffdc143cA|rddon |cffdc143cU|rpdates.")
 end
-
--- Table containing the file paths for all of the sound files used by the addon, indexed by a number representing the sound's ID.
+local function RandomSoundID()
+    return math.random(1, 49)
+end
 local sounds = {
   [2] = "Interface\\Addons\\BLU\\Sounds\\ABLU.ogg",
   [3] = "Interface\\Addons\\BLU\\Sounds\\ACLU.ogg",
@@ -106,107 +82,98 @@ local sounds = {
   [48] = "Interface\\Addons\\BLU\\Sounds\\W3LU.ogg",
   [49] = "Interface\\Addons\\BLU\\Sounds\\W3QLU.ogg",
 }
-
-
--- Play a sound effect when the player levels up.
+local function PlaySoundByID(soundID)
+    local sound = sounds[soundID]
+    if sound then
+        PlaySoundFile(sound, "MASTER")
+    end
+end
+local function SelectSound(soundID)
+    if soundID == 50 then
+        soundID = RandomSoundID()
+    end
+    return soundID
+end
 function BLU:PLAYER_LEVEL_UP(self, event, ...)
-    local sound = sounds[BLU.db.profile.LevelSoundSelect]
-    if sound then
-        PlaySoundFile(sound, "MASTER")
-    elseif BLU.db.profile.LevelSoundSelect then
+    local soundID = BLU.db.profile.LevelSoundSelect
+    if soundID == 1 then
         PlaySoundFile(569593, "MASTER")
+    else
+        PlaySoundByID(SelectSound(soundID))
     end
 end
-
--- Test the sound effect associated with the level up event.
 function TestLevelSound()
-    local sound = sounds[BLU.db.profile.LevelSoundSelect]
-    if sound then
-        PlaySoundFile(sound, "MASTER")
-    elseif BLU.db.profile.LevelSoundSelect then
+    local soundID = BLU.db.profile.LevelSoundSelect
+    if soundID == 1 then
         PlaySoundFile(569593, "MASTER")
+    else
+        PlaySoundByID(SelectSound(soundID))
     end
 end
-
--- Play a sound effect when the player gains reputation with a faction.
 local TrackedFactions = {}
 function BLU:UPDATE_FACTION(event, ...)
-    for i = 1, GetNumFactions() do
-        local _, _, newstanding, _, _, _, _, _, isheader, _, hasrep, _, _, faction = GetFactionInfo(i)
-        if faction and (not isheader or hasrep) and (newstanding or 0) > 0 then
-            local oldstanding = TrackedFactions[faction]
-            if oldstanding and oldstanding < newstanding and BLU.db.profile.RepSoundSelect then
-                local sound = sounds[BLU.db.profile.RepSoundSelect]
-                if sound then
-                    PlaySoundFile(sound, "MASTER")
-                elseif BLU.db.profile.RepSoundSelect then
-                    PlaySoundFile(568016, "MASTER")
+    if soundID == 1 then
+        PlaySoundFile(568016, "MASTER")
+    else
+        for i = 1, GetNumFactions() do
+            local _, _, newstanding, _, _, _, _, _, isheader, _, hasrep, _, _, faction = GetFactionInfo(i)
+            if faction and (not isheader or hasrep) and (newstanding or 0) > 0 then
+                local oldstanding = TrackedFactions[faction]
+                if oldstanding and oldstanding < newstanding and BLU.db.profile.RepSoundSelect then
+                    local soundID = BLU.db.profile.RepSoundSelect
+                    PlaySoundByID(SelectSound(soundID))
                 end
+                TrackedFactions[faction] = newstanding
             end
-            TrackedFactions[faction] = newstanding
         end
     end
 end
-
--- Test the sound effect associated with the reputation event.
 function TestRepSound()
-    local sound = sounds[BLU.db.profile.RepSoundSelect]
-    if sound then
-        PlaySoundFile(sound, "MASTER")
-    elseif BLU.db.profile.RepSoundSelect then
+    local soundID = BLU.db.profile.RepSoundSelect
+    if soundID == 1 then
         PlaySoundFile(568016, "MASTER")
+    else
+        PlaySoundByID(SelectSound(soundID))
     end
 end
-
--- Play a sound effect when the player accepts a quest.
 function BLU:QUEST_ACCEPTED(self, event, ...)
-    local sound = sounds[BLU.db.profile.QuestAcceptSoundSelect]
-    if sound then
-        PlaySoundFile(sound, "MASTER")
-    elseif BLU.db.profile.QuestAcceptSoundSelect then
+    local soundID = BLU.db.profile.QuestAcceptSoundSelect
+    if soundID == 1 then
         PlaySoundFile(567400, "MASTER")
+    else
+        PlaySoundByID(SelectSound(soundID))
     end
 end
-
--- Test the sound effect associated with the quest accept event.
 function TestQuestAcceptSound()
-    local sound = sounds[BLU.db.profile.QuestAcceptSoundSelect]
-    if sound then
-        PlaySoundFile(sound, "MASTER")
-    elseif BLU.db.profile.QuestAcceptSoundSelect then
+    local soundID = BLU.db.profile.QuestAcceptSoundSelect
+    if soundID == 1 then
         PlaySoundFile(567400, "MASTER")
+    else
+        PlaySoundByID(SelectSound(soundID))
     end
 end
-
--- Play a sound effect when the player turns in a quest.
 function BLU:QUEST_TURNED_IN(self, event, ...)
-    local sound = sounds[BLU.db.profile.QuestSoundSelect]
-    if sound then
-        PlaySoundFile(sound, "MASTER")
-    elseif BLU.db.profile.QuestSoundSelect then
+    local soundID = BLU.db.profile.QuestSoundSelect
+    if soundID == 1 then
         PlaySoundFile(567439, "MASTER")
+    else
+        PlaySoundByID(SelectSound(soundID))
     end
 end
-
--- Test the sound effect associated with the quest turned in event.
 function TestQuestSound()
-    local sound = sounds[BLU.db.profile.QuestSoundSelect]
-    if sound then
-        PlaySoundFile(sound, "MASTER")
-    elseif BLU.db.profile.QuestSoundSelect then
+    local soundID = BLU.db.profile.QuestSoundSelect
+    if soundID == 1 then
         PlaySoundFile(567439, "MASTER")
+    else
+        PlaySoundByID(SelectSound(soundID))
     end
 end
-
--- Define a table of sound file IDs and their corresponding settings.
 local soundFileSettings = {
     [569593] = "MuteLevelDefault",
     [568016] = "MuteRepDefault",
     [567400] = "MuteQuestAcceptDefault",
     [567439] = "MuteQuestDefault",
 }
-
--- Mute or unmute sound files based on their corresponding settings.
 function BLU:GLOBAL_MOUSE_DOWN(self, event, ...)
     for soundFileID, settingName in pairs(soundFileSettings) do
         if BLU.db.profile[settingName] then
@@ -216,8 +183,6 @@ function BLU:GLOBAL_MOUSE_DOWN(self, event, ...)
         end
     end
 end
-
--- Slash command handler for the addon.
 function BLU:SlashCommand(input, editbox)
     if input == "enable" then
         self:Enable()
@@ -226,7 +191,6 @@ function BLU:SlashCommand(input, editbox)
         self:Disable()
         self:Print("Disabled.")
     else
-        -- Display the options menu for the addon.
         InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
         InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
     end

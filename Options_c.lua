@@ -1,4 +1,4 @@
---v2.0.0
+local VersionNumber = "2.1.1"
 local soundOptions = {
   "Default",
   "Altered Beast",
@@ -48,20 +48,21 @@ local soundOptions = {
   "Super Mario Bros 3",
   "Warcraft 3",
   "Witcher 3 [1]",
-  "Witcher 3 [2]"
+  "Witcher 3 [2]",
+  "Random",
 };
 BLU.defaults = {
 	profile = {
-		AchievementSoundSelect = 1,
-		MuteAchievementDefault = false,
-		LevelSoundSelect = 1,
-		MuteLevelDefault = false,
-		RepSoundSelect = 1,
-		MuteRepDefault = false,
-		QuestAcceptSoundSelect = 1,
-		MuteQuestAcceptDefault = false,
-		QuestSoundSelect = 1,
-		MuteQuestDefault = false,
+		AchievementSoundSelect = 22,
+		MuteAchievementDefault = true,
+		LevelSoundSelect = 17,
+		MuteLevelDefault = true,
+		RepSoundSelect = 26,
+		MuteRepDefault = true,
+		QuestAcceptSoundSelect = 19,
+		MuteQuestAcceptDefault = true,
+		QuestSoundSelect = 18,
+		MuteQuestDefault = true,
 	},
 }
 BLU.options = {
@@ -247,7 +248,7 @@ BLU.options = {
 		group7 = {
 			type = "header",
 			order = 7,
-			name = "|cff8080ff2.0.0|r",
+			name = "|cff8080ff" .. VersionNumber .. "|r",
 		},
 	},
 }

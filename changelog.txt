@@ -1,3 +1,5 @@
+v3.0.1-------------------------------------------------------------------
+- Fixed   - Broken image [preview.png] - [README.md]
 v3.0.0-------------------------------------------------------------------
 - Added   - Palworld Chime - [PWLU.ogg]
 - Added   - 10 Second Mute on Login - [Core.lua]

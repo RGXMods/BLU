@@ -1,0 +1,179 @@
+v3.0.0-------------------------------------------------------------------
+- Added   - Palworld Chime - [PWLU.ogg]
+- Added   - 10 Second Mute on Login - [Core.lua]
+- Fixed   - Trade Post Activity Completed! - SoundID[2066672] - [Core.lua]
+- Fixed   - Renown Rank-Up! - SoundID[4745441] - [Core.lua]
+- Fixed   - Broken image [preview.png] - [README.md]
+- Added   - [changelog.txt]
+- Renamed - [CHANGELOG.md] - [CHANGES.md]
+- Fixed   - TradePostActivity soundID - [Core.lua]
+- Added   - [] - [Default] [Random] - [Options.lua]
+- Added   - [] - [Default] [Random] - [Options_c.lua]
+- Added   - [] - [Default] [Random] - [Options_v.lua]
+- Updated - Replaced () with [] - SoundList - [Options.lua]
+- Updated - Replaced () with [] - SoundList - [Options_c.lua]
+- Updated - Replaced () with [] - SoundList - [Options._vlua]
+- Added   - ## Email - [BLU.toc]
+- Added   - ## Email - [BLU_Cata.toc]
+- Added   - ## Email - [BLU_Vanilla.toc]
+- Updated - ## Version - [BLU.toc]
+- Updated - ## Version - [BLU_Cata.toc]
+- Updated - ## Version - [BLU_Vanilla.toc] 
+- Updated   - Local Variable 'VersionNumber - [Options.lua]
+- Updated   - Local Variable 'VersionNumber - [Options_c.lua]
+- Updated   - Local Variable 'VersionNumber - [Options_v.lua]
+- Updated - Version Number - [.pkgmeta]
+- Updated - Version Number - [CHANGES.md]
+- Updated - Version Number - [README.md]
+- Updated - Version Number - [Core.lua]
+- Updated - Version Number - [Core_c.lua]
+- Updated - Version Number - [Core_v.lua]
+- Updated - Version Number - [Options.lua]
+- Updated - Version Number - [Options_c.lua]
+- Updated - Version Number - [Options_v.lua]
+- Removed - Annotation - [Core.lua]
+- Removed - Annotation - [Core_c.lua]
+- Removed - Annotation - [Core_v.lua]
+v2.1.1-------------------------------------------------------------------
+- Updated - ToC for _retail_ - Dark Heart (10.2.7.54604) [ToC.100207]
+- Updated - Ace3 Libs - Ace3-Release-[r1341]
+- Added   - Modified 'default config' - [Options.lua]
+- Removed - 'CUMULATIVE CHANGELOG' section - [README.md]
+- Added   - 'Random' - SoundList - [README.MD]
+- Updated - ## Version - [BLU.toc]
+- Updated - ## Version - [BLU_Cata.toc]
+- Updated - ## Version - [BLU_Vanilla.toc] 
+- Added   - Code for RandomSound - [Core.lua]
+- Added   - Code for RandomSound - [Options.lua]
+- Added   - Code for RandomSound - [Core_c.lua]
+- Added   - Code for RandomSound - [Options_c.lua]
+- Added   - Code for RandomSound - [Core_v.lua]
+- Added   - Code for RandomSound - [Options_v.lua]
+- Added   - Local Variable 'VersionNumber - [Options.lua]
+- Added   - Local Variable 'VersionNumber - [Options_c.lua]
+- Added   - Local Variable 'VersionNumber - [Options_v.lua]
+- Updated - Version Number - [.pkgmeta]
+- Updated - Version Number - [CHANGELOG.md]
+- Updated - Version Number - [README.md]
+- Updated - Version Number - [Core.lua]
+- Updated - Version Number - [Core_c.lua]
+- Updated - Version Number - [Core_v.lua]
+- Updated - Version Number - [Options.lua]
+- Updated - Version Number - [Options_c.lua]
+- Updated - Version Number - [Options_v.lua]
+- Removed - Annotation - [Core.lua]
+- Removed - Annotation - [Core_c.lua]
+- Removed - Annotation - [Core_v.lua]
+v2.0.0-------------------------------------------------------------------
+- Removed - Achievements section from [Core_v.lua]
+- Added - Version# to ToC #Title
+- Added - Formatting code for Options Panel
+v1.0.12-------------------------------------------------------------------
+- Added   - ToC for _classic_ - Cataclysm Classic (4.4.0.54501) [ToC.40400]
+- Updated - ToC for _classic_era_ - Season of Discovery (1.15.2.54332) [ToC.11502]
+- Updated - ToC for _retail_ - Dragonflight Season 4 (10.2.6.54499) [ToC.100206]
+- Removed - The Burning Crusade ToC - [BLU_TBC.toc]
+- Removed - Wrath of The Lich King ToC - [BLU_Wrath.toc]
+v1.0.11-------------------------------------------------------------------
+- Updated - ToC for _classic_era_ - Season of Discovery (1.15.1.53623) [ToC.11501]
+- Updated - ToC for _retail_ - Splunderstorm (10.2.6.53840) [ToC.100206]
+v1.0.10-------------------------------------------------------------------
+- Updated - ToC for _classic_era_ - Season of Discovery (1.15.0.52610) [ToC.11500]
+- Updated - ToC for _retail_ - Seeds of Renewal (10.2.5.53162) [ToC.100205]
+- Updated - Ace3 Libs (Release-r1320)
+v1.0.7-------------------------------------------------------------------
+- Updated - TOC for Fall of the Lich King
+- Updated - Ace3 Libs
+v1.0.3-------------------------------------------------------------------
+- Updated - TOC for Fractures in Time
+- Fixed   - Added Kirby and MGS to README
+v1.0.2-------------------------------------------------------------------
+- Fixed   - Version Number in Options Panel
+- Fixed   - Issue with sound channels
+- Fixed   - Colors for WotLK/Classic/TBC versions
+- Removed - Honor Rank Up! Sounds/Mutes from WotLK/Classic/TBC
+- Added   - Retail Only information to README
+- Added   - Deja Vu - Quizz Victory Sound from Metal Gear Solid V!
+- Added   - Got a Star! Sound from Kirby!
+- Added   - Treasure! Sound from Kirby!
+v1.0.1-------------------------------------------------------------------
+- Fixed   - Moved all Default Sounds to MASTER Sound Channel
+- Fixed   - Issues with colors [Both Versions]
+- Added   - 1UP Sound from Spyro The Dragon
+v1.0.0-------------------------------------------------------------------
+- Changed - Entire code base rewritten
+- Added   - Sounds/Mute for Trade Post Activity Completed!
+- Added   - Sounds/Mute for Battle-Pet Level-Ups!
+- Added   - Color for readability
+- Added   - Usage details in AddOn Notes
+- Changed - Squished Cumulative CHAN
+v0.0.19-------------------------------------------------------------------
+- Fixed   - Issue with AddOn List Icon
+- Updated - Ace3 Libs (r1294)
+v0.0.18-------------------------------------------------------------------
+- Updated - .TOC for "Embers of Neltharion" Patch
+- Added   - Icon for AddOn List
+v0.0.17-------------------------------------------------------------------
+- Updated - .TOC for WotLK Ulduar Patch
+v0.0.16-------------------------------------------------------------------
+- Added - Sounds/Mute for Honor Rank-Ups!
+v0.0.15-------------------------------------------------------------------
+- Added - Sounds/Mute for Quest Accepted!
+- Fixed - Organized Code structure
+- Fixed - Alphabetized Options Menu
+- Fixed - Code for Sound Mute Triggers
+        (Now activates on GLOBAL_MOUSE_DOWN)
+- Changed - Code for Sound Mute Triggers
+        (Combined all code for Mute Triggers into Single Function)
+- Fixed - README Structure
+- Added - Notation to Source Code
+- Changed - Code for Reputation Rank Up Sound Trigger
+v0.0.14-------------------------------------------------------------------
+- Added - Fly For Fun Level Up Sound!
+- Added - DotA 2 Rank Up Sound!
+- Added - Info text on Login
+v0.0.13-------------------------------------------------------------------
+- Fixed - MAJOR_FACTION_RENOWN_LEVEL_CHANGED error in WotLK/BC/SoM
+- Split - Code Base for Retail/Classic Clients
+v0.0.12-------------------------------------------------------------------
+- Added - Play Button Image for Sound Tests
+- Fixed - Text Display issues
+- Fixed - Moved Sounds from Channel 'SFX' to Channel 'MASTER'
+  (You can now control the volume of BLU with the Master Volume slider)
+v0.0.11-------------------------------------------------------------------
+- Added - Sounds/Mute for Achievements Earned!
+v0.0.10-------------------------------------------------------------------
+- Fixed - README
+- Added - Sounds/Mute for Quest Completion
+v0.0.9-------------------------------------------------------------------
+- Added - Sounds/Mute for DragonFlight Renown Reputation Rank-Ups!
+v0.0.8-------------------------------------------------------------------
+- Fixed   - Spelling errors
+- Added   - To-Do List to README
+- Added   - Test Sound Buttons
+v0.0.7-------------------------------------------------------------------
+- Changed - Addon Name Color
+- Added   - Witcher 3 Choir Sound!
+- Added   - Legend of Zelda Sound!
+- Fixed   - Code for Sound Mute Triggers
+- Updated - Ace3 Libs
+- Fixed   - Adjusted Gain on several sound files
+- Added   - Sound list to README
+- Added   - Cumulative CHANGELOG to README
+v0.0.6-------------------------------------------------------------------
+- Added - EverQuest Level Up Sound!
+v0.0.5-------------------------------------------------------------------
+- Fixed - Issue with Default Rep Sound not muting
+- Fixed - Moved all sounds from channel "Master" to "SFX"
+  (BLU should now mute when Disabling in-game sounds with CTRL+S)
+v0.0.4-------------------------------------------------------------------
+- Added  - Default Sound option
+- Fixed  - Sound menu alphabetized
+v0.0.3-------------------------------------------------------------------
+- Initial Release
+v0.0.2-------------------------------------------------------------------
+- Initial Push
+v0.0.1-------------------------------------------------------------------
+- Repo Creation
+
+

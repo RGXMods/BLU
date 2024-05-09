@@ -1,6 +1,6 @@
 [![](https://img.shields.io/static/v1?label=Donate&message=CashApp&color=brightgreen)](https://bit.ly/3fyxxSU)
 
-v2.1.1
+v3.0.0
 ------------------------------
 
 **BLU - Better Level Up!**
@@ -8,7 +8,7 @@ v2.1.1
 ------------------------------
 
 <div align="center">
-(https://media.forgecdn.net/attachments/858/810/untitled.png)
+![](https://github.com/donniedice/BLU/raw/master/Images/preview.png)
 </div>
 
 ------------------------------
@@ -63,7 +63,8 @@ Play sounds from other games when you Turn-In Quests!
 ------------------------------
 
 **Current list of available game sounds**
-- Default (WoW)
+- Default
+- Random
 - Assassin's Creed
 - Castlevania
 - Diablo 2
@@ -88,6 +89,7 @@ Play sounds from other games when you Turn-In Quests!
 - Modern Warfare 2
 - Morrowind
 - Old School Runescape
+- Palworld
 - Path of Exile
 - Pokemon
 - Ragnarok Online
@@ -99,7 +101,6 @@ Play sounds from other games when you Turn-In Quests!
 - Super Mario Bros 3
 - Warcraft 3
 - Witcher 3
-- Random
 
 ------------------------------
 

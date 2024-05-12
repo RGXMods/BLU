@@ -1,3 +1,3 @@
-v3.0.1
+v3.1.1
 
-- Fixed   - Broken image [preview.png] - [README.md]
+- Fixed   - Loudness Normalization pass on all Audio Tracks [-12db]

@@ -1,6 +1,6 @@
 ## Interface: 11502
-## Version: 3.1.4
-## Title: - |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel|r |cff05dffaU|r|cffffffffp!|r - |cff8080ff3.1.4|r 
+## Version: 3.1.5
+## Title: - |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel|r |cff05dffaU|r|cffffffffp!|r - |cff8080ff3.1.5|r 
 ## Notes: Play sounds from other games!  |n|r  |cff05dffa/blu -|r Open options panel  |n|r   |cff05dffaBy Uivi US-BleedingHollow|r
 ## Author: DonnieDice
 ## Email: 60427166+donniedice@users.noreply.github.com
@@ -31,5 +31,5 @@ Libs\AceComm-3.0\AceComm-3.0.xml
 Libs\AceTab-3.0\AceTab-3.0.xml
 Libs\AceSerializer-3.0\AceSerializer-3.0.xml
 
-core_v.lua
-options_v.lua
+data\core_v.lua
+data\options_v.lua

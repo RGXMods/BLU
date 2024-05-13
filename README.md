@@ -1,12 +1,12 @@
 [![](https://img.shields.io/static/v1?label=Donate&message=CashApp&color=brightgreen)](https://bit.ly/3fyxxSU)
 
-v3.1.4
+v3.1.5
 ------------------------------
 
 **BLU - Better Level Up!**
 
 ------------------------------
-![](https://github.com/donniedice/BLU/blob/main/Images/preview.png)
+![](https://github.com/donniedice/BLU/blob/main/images/preview.png)
 ------------------------------
 **Thank you for Downloading BLU! Enter '/blu' to Select Level Up Sounds!**
 ------------------------------

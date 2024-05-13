@@ -1,18 +1,20 @@
 # To-Do List
 
-- [ ] When adding sounds - update Random Math
+When adding sounds - update Random Math
 -------------------------------------------------
-- [ ] Add color to sub-menu text
+- [x] Fix broken image in [README.md]
+-------------------------------------------------
 - [ ] Human Readable SoundFile Names
 - [ ] Save options without click trigger?
-- [ ] BETTER MENU SOUNDS! - The AddOn.
-- [ ] integrate soundpacks
-- [ ] sub-menues for extra sounds of same 
-- [ ] Sounds for Other event triggers
-- [ ] Test-Sound button on drop-down and sub-menues
+- [ ] Sounds for other event triggers
 - [ ] Sub-menus for gameName in drop-down
 - [ ] More redundancy for Loudness Prevention and double sound triggers on startup
+-------------------------------------------------
+- [ ] Test-Sound button on drop-down and sub-menues
+- [ ] Integrate soundPacks
+- [ ] BETTER MENU SOUNDS! - The AddOn.
 - [ ] Add more sounds!
 - [ ] Sounds/Mute for Pet Battle Victories!
 - [ ] Sounds/Mute for BattleGround Victories!
 - [ ] Re-write without Ace3 libs!
+- [ ] Add color to sub-menu text

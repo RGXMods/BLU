@@ -1,6 +1,6 @@
 [![](https://img.shields.io/static/v1?label=Donate&message=CashApp&color=brightgreen)](https://bit.ly/3fyxxSU)
 
-v3.1.2
+v3.1.3
 ------------------------------
 
 **BLU - Better Level Up!**

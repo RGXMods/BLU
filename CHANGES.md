@@ -1,3 +1,8 @@
-v3.1.1
+v3.1.2
 
-- Fixed   - Loudness Normalization pass on all Audio Tracks [-12db]
+- Added   - [TODO.md]
+- Added   - Folder - [/data]
+- Moved   - Core / Option Files - [/data]
+- Changed - Caps to lowercase - Core / Options Files
+- Changed - Caps to lowercase - Data Folders
+

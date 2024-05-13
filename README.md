@@ -1,6 +1,6 @@
 [![](https://img.shields.io/static/v1?label=Donate&message=CashApp&color=brightgreen)](https://bit.ly/3fyxxSU)
 
-v3.1.1
+v3.1.2
 ------------------------------
 
 **BLU - Better Level Up!**
@@ -47,6 +47,10 @@ Play sounds from other games when you Turn-In Quests!
 ***This changes the Selection Order in the code for Options.lua.***
 
 ***You may have to re-select a previously selected sound after Addon Updates.***
+
+--
+
+***Double Quest Accept Sound is a WoW:Classic bug***
 
 ------------------------------
 

@@ -1,6 +1,6 @@
 [![](https://img.shields.io/static/v1?label=Donate&message=CashApp&color=brightgreen)](https://bit.ly/3fyxxSU)
 
-v3.1.5
+v3.1.6
 ------------------------------
 
 **BLU - Better Level Up!**
@@ -65,6 +65,7 @@ Play sounds from other games when you Turn-In Quests!
 **Current list of available game sounds**
 - Default
 - Random
+- Altered Beast
 - Assassin's Creed
 - Castlevania
 - Diablo 2

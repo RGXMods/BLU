@@ -1,4 +1,4 @@
---v4.0.0
+--v4.0.1
 -- BLU is an addon that provides sound effects for various events in World of Warcraft.
 -- This file contains the core functionality of the addon, including event registration and sound playback.
 -- The addon uses Ace3 libraries for configuration and database management.
@@ -319,26 +319,25 @@ local allSounds = {
     defaultQuestAcceptSounds,
     defaultQuestSounds,
 }
-local function RandomSoundID(volumeLevel)
+local function RandomSoundID()
     local validSoundIDs = {}
-    for i = 1, #allSounds do
+    for i, _ in pairs(sounds) do
         if i ~= 2 then
             table.insert(validSoundIDs, i)
         end
     end
     local randomIndex = math.random(1, #validSoundIDs)
-    local soundID = validSoundIDs[randomIndex]
-    return soundID
+    return validSoundIDs[randomIndex]
 end
-local function SelectSound(soundID, volumeLevel)
+local function SelectSound(soundID)
     if soundID == 2 then
-        soundID = RandomSoundID(volumeLevel)
+        soundID = RandomSoundID()
     end
     return soundID
 end
 function BLU:PLAYER_LEVEL_UP(self, event, ...)
     if functionsHalted then return end
-    local soundID = SelectSound(BLU.db.profile.LevelSoundSelect, BLU.db.profile.LevelVolume)
+    local soundID = SelectSound(BLU.db.profile.LevelSoundSelect)
     local volumeLevel = BLU.db.profile.LevelVolume
     local soundFile
     if volumeLevel == 0 then
@@ -354,7 +353,7 @@ function BLU:PLAYER_LEVEL_UP(self, event, ...)
     end
 end
 function TestLevelSound()
-    local soundID = SelectSound(BLU.db.profile.LevelSoundSelect, BLU.db.profile.LevelVolume)
+    local soundID = SelectSound(BLU.db.profile.LevelSoundSelect)
     local volumeLevel = BLU.db.profile.LevelVolume
     local soundFile
     if volumeLevel == 0 then
@@ -377,7 +376,7 @@ function BLU:UPDATE_FACTION(event, ...)
         if faction and (not isheader or hasrep) and (newstanding or 0) > 0 then
             local oldstanding = TrackedFactions[faction]
             if oldstanding and oldstanding < newstanding and BLU.db.profile.RepSoundSelect then
-                local soundID = SelectSound(BLU.db.profile.RepSoundSelect, BLU.db.profile.RepVolume)
+                local soundID = SelectSound(BLU.db.profile.RepSoundSelect)
                 local volumeLevel = BLU.db.profile.RepVolume
                 local soundFile
                 if volumeLevel == 0 then
@@ -395,7 +394,7 @@ function BLU:UPDATE_FACTION(event, ...)
     end
 end
 function TestRepSound()
-    local soundID = SelectSound(BLU.db.profile.RepSoundSelect, BLU.db.profile.RepVolume)
+    local soundID = SelectSound(BLU.db.profile.RepSoundSelect)
     local volumeLevel = BLU.db.profile.RepVolume
     local soundFile
     if volumeLevel == 0 then
@@ -412,7 +411,7 @@ function TestRepSound()
 end
 function BLU:QUEST_ACCEPTED(self, event, ...)
     if functionsHalted then return end
-    local soundID = SelectSound(BLU.db.profile.QuestAcceptSoundSelect, BLU.db.profile.QuestAcceptVolume)
+    local soundID = SelectSound(BLU.db.profile.QuestAcceptSoundSelect)
     local volumeLevel = BLU.db.profile.QuestAcceptVolume
     local soundFile
     if volumeLevel == 0 then
@@ -420,7 +419,6 @@ function BLU:QUEST_ACCEPTED(self, event, ...)
     end
     if soundID == 1 then
         soundFile = defaultQuestAcceptSounds[volumeLevel]
-        print("defaultQuestAcceptSounds: ", soundFile)
     else
         soundFile = sounds[soundID][volumeLevel]
     end
@@ -429,7 +427,7 @@ function BLU:QUEST_ACCEPTED(self, event, ...)
     end
 end
 function TestQuestAcceptSound()
-    local soundID = SelectSound(BLU.db.profile.QuestAcceptSoundSelect, BLU.db.profile.QuestAcceptVolume)
+    local soundID = SelectSound(BLU.db.profile.QuestAcceptSoundSelect)
     local volumeLevel = BLU.db.profile.QuestAcceptVolume
     local soundFile
     if volumeLevel == 0 then
@@ -446,7 +444,7 @@ function TestQuestAcceptSound()
 end
 function BLU:QUEST_TURNED_IN(self, event, ...)
     if functionsHalted then return end
-    local soundID = SelectSound(BLU.db.profile.QuestSoundSelect, BLU.db.profile.QuestVolume)
+    local soundID = SelectSound(BLU.db.profile.QuestSoundSelect)
     local volumeLevel = BLU.db.profile.QuestVolume
     local soundFile
     if volumeLevel == 0 then
@@ -464,7 +462,7 @@ function BLU:QUEST_TURNED_IN(self, event, ...)
     end
 end
 function TestQuestSound()
-    local soundID = SelectSound(BLU.db.profile.QuestSoundSelect, BLU.db.profile.QuestVolume)
+    local soundID = SelectSound(BLU.db.profile.QuestSoundSelect)
     local volumeLevel = BLU.db.profile.QuestVolume
     local soundFile
     if volumeLevel == 0 then

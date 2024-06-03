@@ -1,4 +1,4 @@
-local VersionNumber = "4.0.0"
+local VersionNumber = "4.0.1"
 local soundOptions = {
     "[Default]",
     "[Random]",
@@ -54,15 +54,15 @@ local soundOptions = {
 }
 BLU.defaults = {
     profile = {
-        AchievementSoundSelect = 22,
+        AchievementSoundSelect = 23,
         AchievementVolume = 2.0,
-        LevelSoundSelect = 17,
+        LevelSoundSelect = 18,
         LevelVolume = 2.0,
-        RepSoundSelect = 26,
+        RepSoundSelect = 27,
         RepVolume = 2.0,
-        QuestAcceptSoundSelect = 19,
+        QuestAcceptSoundSelect = 20,
         QuestAcceptVolume = 2.0,
-        QuestSoundSelect = 18,
+        QuestSoundSelect = 19,
         QuestVolume = 2.0,
     },
 }

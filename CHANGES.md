@@ -1,11 +1,6 @@
-v4.0.0
+v4.0.1
 
-- Updated - Nearly complete re-write - [core.lua] - [options.lua]
-- Added   - Volume Sliders - [options.lua]
-- Added   - High/Med/Low Volume SoundFiles for Every sound - [/sounds]
-- Fixed   - Channels/Frequency - [/sounds]
-- Fixed   - Default/Random positions - [options.lua]
-- Added   - Default event sounds muted by default - [core.lua]
-- Removed - Global mouse down event for mute trigger - [core.lua]
-- Removed - Tick boxs for Mute Default - [options.lua]
-- Added   - Local variables for new sounds - [core.lua]
+- Fixed   - Default Settings - [options.lua]
+- Removed - Left-Over Debugg Code - [core.lua]
+- Fixed   - Errors in random sound selection - [core.lua]
+- Fixed   - Wording Consistency - [options.lua]

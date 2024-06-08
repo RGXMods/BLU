@@ -1,4 +1,4 @@
---v4.0.1
+--v4.0.2
 -- BLU is an addon that provides sound effects for various events in World of Warcraft.
 -- This file contains the core functionality of the addon, including event registration and sound playback.
 -- The addon uses Ace3 libraries for configuration and database management.
@@ -26,8 +26,6 @@ function BLU:OnEnable()
     self:RegisterEvent("UPDATE_FACTION")
 end
 function BLU:PLAYER_ENTERING_WORLD(...)
-    DEFAULT_CHAT_FRAME:AddMessage("|cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel|r |cff05dffaU|r|cffffffffp!: |cff05dffaThank you for Downloading BLU!|r Enter '|cff05dffa/blu|r' to Select |cff05dffaL|revel |cff05dffaU|rp Sounds!")
-    DEFAULT_CHAT_FRAME:AddMessage("|cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel|r |cff05dffaU|r|cffffffffp!: |cffdc143cNOTE|r: You may have to re-select a previously selected sound after |cffdc143cA|rddon |cffdc143cU|rpdates.")
     C_Timer.After(15, function()
         functionsHalted = false
     end)
@@ -373,7 +371,8 @@ function BLU:UPDATE_FACTION(event, ...)
     if functionsHalted then return end
     for i = 1, GetNumFactions() do
         local _, _, newstanding, _, _, _, _, _, isheader, _, hasrep, _, _, faction = GetFactionInfo(i)
-        if faction and (not isheader or hasrep) and (newstanding or 0) > 0 then
+        if not faction then return nil end
+        if (not isheader or hasrep) and (newstanding or 0) > 0 then
             local oldstanding = TrackedFactions[faction]
             if oldstanding and oldstanding < newstanding and BLU.db.profile.RepSoundSelect then
                 local soundID = SelectSound(BLU.db.profile.RepSoundSelect)

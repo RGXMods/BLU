@@ -1,7 +1,11 @@
-v4.0.3
-
-- Removed - Double calls to 'self' - event functions - [core.lua], [core_c.lua], [core_v.lua]
-- Fixed   - Integrated Default sounds - [Random] - [core.lua], [core_c.lua], [core_v.lua]
-- Fixed   - Extra commas from allSounds table - [core.lua], [core_c.lua], [core_v.lua]
-- Added   - Feature updates - volume sliders - [README.md]
-- Updated - Classic bug PSA wording - [README.md]
+- Removed - Version # - [CHANGES.md]
+- Removed - Version # - [.pkgmeta]
+- Removed - Version # - [README.md]
+- Removed - Version # - [core.lua], [core_c.lua], [core_v.lua]
+- Removed - Annotation - [core.lua], [core_c.lua], [core_v.lua]
+- Updated - [release.yml] - [.github/workflows]
+- Added   - [sounds.lua] - [/data]
+- Moved   - Sound table decalaration - [sounds.lua]
+- Added   - [data/sounds.lua] - [BLU.toc], [BLU_Cata.toc], [BLU_Vanilla.toc]
+- Fixed   - DefaultSounds - [Random] selection integration - [core.lua], [core_c.lua], [core_v.lua]
+- Added   - Sectioning for readability - [data/allFiles]

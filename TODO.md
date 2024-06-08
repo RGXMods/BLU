@@ -1,6 +1,7 @@
 # To-Do List
 
 -------------------------------------------------
+- [ ] Re-add enter world message - option to turn off
 - [ ] Sounds for other event triggers
 - [ ] Sub-menus for gameName in drop-down
 -------------------------------------------------

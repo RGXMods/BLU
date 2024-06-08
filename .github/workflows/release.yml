@@ -27,9 +27,9 @@ jobs:
       - name: Extract Version from TOC
         id: extract_version
         run: |
-          version=$(grep -oP '^## Version: \K(.*)' TOC)
-          echo "version=$version" >> $GITHUB_ENV
-        
+          version=$(grep -oP '^## Version: \K(.*)' ./TOC)
+          echo "::set-output name=version::$version"
+
       - name: Package and Release
         uses: BigWigsMods/packager@master
 

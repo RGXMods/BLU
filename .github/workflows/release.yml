@@ -27,7 +27,7 @@ jobs:
       - name: Extract Version from TOC
         id: extract_version
         run: |
-          version=$(grep -oP '^## Version: \K(.*)' ./TOC)
+          version=$(grep -oP '^## Version: \K(.*)' ./BLU.toc)
           echo "::set-output name=version::$version"
 
       - name: Package and Release

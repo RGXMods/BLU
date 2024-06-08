@@ -1,6 +1,6 @@
 [![](https://img.shields.io/static/v1?label=Donate&message=CashApp&color=brightgreen)](https://bit.ly/3fyxxSU)
 
-v4.0.2
+v4.0.3
 ------------------------------
 
 **BLU - Better Level Up!**
@@ -9,6 +9,10 @@ v4.0.2
 ![](https://github.com/donniedice/BLU/blob/main/images/preview.png)
 ------------------------------
 **Thank you for Downloading BLU! Enter '/blu' to Select Level Up Sounds!**
+------------------------------
+
+***All sounds now feature independent volume adjustment capability!***
+
 ------------------------------
 
 Play sounds from other games when you Earn Achievements!
@@ -50,7 +54,7 @@ Play sounds from other games when you Turn-In Quests!
 
 --
 
-***Double Quest Accept Sound is a WoW:Classic bug***
+***Double Quest Accept Sound in WoW: Classic is a game bug, not related to BLU.***
 
 ------------------------------
 

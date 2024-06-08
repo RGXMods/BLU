@@ -1,4 +1,4 @@
-local VersionNumber = "4.0.2"
+local VersionNumber = "4.0.3"
 local soundOptions = {
     "[Default]",
     "[Random]",

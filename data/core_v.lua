@@ -1,4 +1,4 @@
---v4.0.2
+--v4.0.3
 -- BLU is an addon that provides sound effects for various events in World of Warcraft.
 -- This file contains the core functionality of the addon, including event registration and sound playback.
 -- The addon uses Ace3 libraries for configuration and database management.
@@ -310,18 +310,22 @@ local sounds = {
         [3] = "Interface\\Addons\\BLU\\sounds\\witcher_3-2_high.ogg"
     },
 }
-local allSounds = {
-    sounds,
+local defaultSounds = {
     defaultLevelSounds,
     defaultRepSounds,
     defaultQuestAcceptSounds,
-    defaultQuestSounds,
+    defaultQuestSounds
 }
 local function RandomSoundID()
     local validSoundIDs = {}
     for i, _ in pairs(sounds) do
         if i ~= 2 then
             table.insert(validSoundIDs, i)
+        end
+    end
+    for _, soundList in ipairs(defaultSounds) do
+        for soundID, _ in pairs(soundList) do
+            table.insert(validSoundIDs, soundID)
         end
     end
     local randomIndex = math.random(1, #validSoundIDs)
@@ -333,7 +337,7 @@ local function SelectSound(soundID)
     end
     return soundID
 end
-function BLU:PLAYER_LEVEL_UP(self, event, ...)
+function BLU:PLAYER_LEVEL_UP(event, ...)
     if functionsHalted then return end
     local soundID = SelectSound(BLU.db.profile.LevelSoundSelect)
     local volumeLevel = BLU.db.profile.LevelVolume
@@ -408,7 +412,7 @@ function TestRepSound()
         PlaySoundFile(soundFile, "MASTER")
     end
 end
-function BLU:QUEST_ACCEPTED(self, event, ...)
+function BLU:QUEST_ACCEPTED(event, ...)
     if functionsHalted then return end
     local soundID = SelectSound(BLU.db.profile.QuestAcceptSoundSelect)
     local volumeLevel = BLU.db.profile.QuestAcceptVolume
@@ -441,7 +445,7 @@ function TestQuestAcceptSound()
         PlaySoundFile(soundFile, "MASTER")
     end
 end
-function BLU:QUEST_TURNED_IN(self, event, ...)
+function BLU:QUEST_TURNED_IN(event, ...)
     if functionsHalted then return end
     local soundID = SelectSound(BLU.db.profile.QuestSoundSelect)
     local volumeLevel = BLU.db.profile.QuestVolume

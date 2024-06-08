@@ -1,6 +1,7 @@
-v4.0.2
+v4.0.3
 
-- Added   - [release.yml] - [.github/workflows/]
-- Removed - More left-over debugg code - [core.lua]
-- Removed - Login Chat Spam [core.lua, core_c.lua, core_v.lua]
-- Added   - Check in Rep function - `nil` on no faction - [core.lua, core_c.lua, core_v.lua]
+- Removed - Double calls to 'self' - event functions - [core.lua], [core_c.lua], [core_v.lua]
+- Fixed   - Integrated Default sounds - [Random] - [core.lua], [core_c.lua], [core_v.lua]
+- Fixed   - Extra commas from allSounds table - [core.lua], [core_c.lua], [core_v.lua]
+- Added   - Feature updates - volume sliders - [README.md]
+- Updated - Classic bug PSA wording - [README.md]

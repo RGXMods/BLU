@@ -38,6 +38,12 @@ jobs:
         run: |
           changes=$(cat CHANGES.md)
           echo "changes=$changes" >> $GITHUB_ENV
+        shell: bash
+        env:
+          CF_API_KEY: ${{ secrets.CF_API_KEY }}
+          WOWI_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
+          WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
+          GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create Draft Release
         id: create_release

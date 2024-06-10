@@ -6,7 +6,7 @@ muteSoundIDs = {
     569593, -- Level Up
     642841,
     4745441,
-    568016,
+    568016, -- Reputation (8473)
     567400, -- Quest Accepted
     567439, -- Quest Turned In
     2066672
@@ -17,7 +17,7 @@ muteSoundIDs_c = {
     569143,
     569593, -- Level Up
     642841,
-    568016,
+    568016, -- Reputation (8473)
     567400, -- Quest Accepted
     567439  -- Quest Turned In
 }
@@ -25,7 +25,7 @@ muteSoundIDs_c = {
 --=====================================================================================
 muteSoundIDs_v = {
     569593, -- Level Up
-    568016,
+    568016, -- Reputation (8473)
     567400, -- Quest Accepted
     567439  -- Quest Turned In
 }

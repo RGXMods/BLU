@@ -274,8 +274,7 @@ function BLU:SlashCommand(input, editbox)
         self:Disable()
         self:Print("Disabled.")
     else
-        InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
-        InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
+        Settings.OpenToCategory(self.optionsFrame.name)
     end
 end
 --=====================================================================================

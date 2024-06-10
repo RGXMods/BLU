@@ -27,17 +27,23 @@ jobs:
       - name: Extract Version from TOC
         id: extract_version
         run: |
-          version=$(grep -oP '^## Version: \K(.*)' ./BLU.toc)
-          echo "::set-output name=version::$version"
+            version=$(grep -oP '^## Version: \K(.*)' ./*.toc)
+            echo "::set-output name=version::$version"
 
       - name: Package and Release
         uses: BigWigsMods/packager@master
 
-      - name: Read CHANGES.md
-        id: read_changes
+      - name: Parse Changelog
+        id: parse_changelog
         run: |
-          changes=$(cat CHANGES.md)
-          echo "changes=$changes" >> $GITHUB_ENV
+          changelog=$(cat CHANGES.md)
+          IFS=$'\n'
+          for line in $changelog; do
+            action=$(echo $line | cut -d '-' -f 1 | xargs)
+            description=$(echo $line | cut -d '-' -f 2 | xargs)
+            file=$(echo $line | cut -d '-' -f 3 | xargs | tr -d '[]')
+            echo "Action: $action, Description: $description, File: $file"
+          done
         shell: bash
         env:
           CF_API_KEY: ${{ secrets.CF_API_KEY }}

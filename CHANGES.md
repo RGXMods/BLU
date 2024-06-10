@@ -1,1 +1,2 @@
 - Fixed - Issues with workflow - [release.yml]
+- Fixed - Issues with OpenToCategory deprication - [core.lua], [core_c.lua], [core_v.lua]

@@ -1,3 +1,6 @@
+v4.2.0--------------------------------------------------------------------
+- Changed - Refactor - [core.lua], [core_c.lua], [core_v.lua]
+- Updated - [preview.png]
 v4.1.10-------------------------------------------------------------------
 - Fixed - Issues with workflow - [release.yml]
 - Fixed - Issues with OpenToCategory deprication - [core.lua], [core_c.lua], [core_v.lua]

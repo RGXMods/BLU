@@ -1,9 +1,11 @@
 # To-Do List
 
+- [ ] Fix issues with TWW Reputation Ranks
 -------------------------------------------------
 - [ ] Re-add enter world message - option to turn off
 - [ ] Sounds for other event triggers
 - [ ] Sub-menus for gameName in drop-down
+- [ ] Debug mode
 -------------------------------------------------
 - [ ] Test-Sound button on drop-down and sub-menues
 - [ ] Integrate soundPacks

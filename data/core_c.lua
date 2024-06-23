@@ -1,4 +1,5 @@
 --=====================================================================================
+-- BLU | Better Level Up!
 --=====================================================================================
 BLU = LibStub("AceAddon-3.0"):NewAddon("BLU", "AceEvent-3.0", "AceConsole-3.0")
 --=====================================================================================
@@ -6,7 +7,18 @@ BLU = LibStub("AceAddon-3.0"):NewAddon("BLU", "AceEvent-3.0", "AceConsole-3.0")
 local AC = LibStub("AceConfig-3.0")
 local ACD = LibStub("AceConfigDialog-3.0")
 local functionsHalted = false
+local chatFrameHooked = false
 local TrackedFactions = {}
+local reputationRanks = {
+    "Exalted",
+    "Revered",
+    "Honored",
+    "Friendly",
+    "Neutral",
+    "Unfriendly",
+    "Hostile",
+    "Hated"
+}
 
 --=====================================================================================
 -- Initialization
@@ -36,7 +48,7 @@ function BLU:OnEnable()
     self:RegisterEvent("PLAYER_LEVEL_UP")
     self:RegisterEvent("QUEST_ACCEPTED")
     self:RegisterEvent("QUEST_TURNED_IN")
-    self:RegisterEvent("UPDATE_FACTION")
+    self:HookChatFrame() -- Hook the chat frame here instead of using UPDATE_FACTION
 end
 
 --=====================================================================================
@@ -128,20 +140,19 @@ function BLU:QUEST_TURNED_IN()
     PlaySelectedSound(sound, volumeLevel, defaultSounds[8])
 end
 
-function BLU:UPDATE_FACTION(event, ...)
-    if functionsHalted then return end
-    for i = 1, GetNumFactions() do
-        local _, _, newstanding, _, _, _, _, _, isheader, _, hasrep, _, _, faction = GetFactionInfo(i)
-        if not faction then return nil end
-        if (not isheader or hasrep) and (newstanding or 0) > 0 then
-            local oldstanding = TrackedFactions[faction]
-            if oldstanding and oldstanding < newstanding and BLU.db.profile.RepSoundSelect then
-                local sound = SelectSound(BLU.db.profile.RepSoundSelect)
-                local volumeLevel = BLU.db.profile.RepVolume
-                PlaySelectedSound(sound, volumeLevel, defaultSounds[6])
+function BLU:HookChatFrame()
+    if not chatFrameHooked then
+        ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", function(self, event, msg)
+            for _, rank in ipairs(reputationRanks) do
+                local reputationGainPattern = "You are now " .. rank .. " with (.+)%.?"
+                local factionName = string.match(msg, reputationGainPattern)
+                if factionName then
+                    BLU:HandleReputationRankIncrease(factionName, rank)
+                end
             end
-            TrackedFactions[faction] = newstanding
-        end
+            return false -- Ensure the original message is not blocked
+        end)
+        chatFrameHooked = true
     end
 end
 

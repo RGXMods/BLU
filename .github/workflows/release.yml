@@ -58,6 +58,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
-          draft: true
+          draft: false
           release_name: ${{ steps.extract_version.outputs.version }}
           body: ${{ steps.read_changes.outputs.changes }}

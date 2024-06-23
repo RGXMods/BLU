@@ -1,70 +1,27 @@
-[![](https://img.shields.io/static/v1?label=Donate&message=CashApp&color=brightgreen)](https://bit.ly/3fyxxSU)
+# BLU | Better Level Up!
 
-**BLU - Better Level Up!**
-------------------------------
 ![](https://github.com/donniedice/BLU/blob/main/images/preview.png)
-------------------------------
-**Thank you for Downloading BLU! Enter '/blu' to Select Level Up Sounds!**
-------------------------------
 
-***All sounds now feature independent volume adjustment capability!***
+## Overview
+**BLU | Better Level Up!** changes up the repetitive sounds in World of Warcraft, giving you the option to hear sounds from other games when you level up, complete Trade Post activities, or gain reputation.
 
-------------------------------
+---
 
-Play sounds from other games when you Earn Achievements!
+## Features
+- **Achievements:** Play sounds from other games when you earn achievements.
+- **Battle-Pets:** *(Retail Only)* Play sounds from other games when you level up battle-pets.
+- **Honor Ranks:** *(Retail Only)* Play sounds from other games when you gain honor ranks.
+- **Level Up:** Play sounds from other games when you level up.
+- **DragonFlight Renown:** *(Retail Only)* Play sounds from other games when you gain DragonFlight renown reputation ranks.
+- **Reputation Ranks:** Play sounds from other games when you gain reputation ranks.
+- **Quests:** Play sounds from other games when you accept or turn-in quests.
+- **Trading Post Activities:** *(Retail Only)* Play sounds from other games when you complete trading post activities.
 
-[R] Play sounds from other games when you Level Up Battle-Pets!
+*Note: All sounds feature independent volume adjustment capability.*
 
-[R] Play sounds from other games when you gain Honor Ranks!
+---
 
-Play sounds from other games when you Level Up!
-
-[R] Play sounds from other games when you gain DragonFlight Renown Reputation Ranks!
-
-Play sounds from other games when you gain Reputation Ranks!
-
-Play sounds from other games when you Accept Quests!
-
-Play sounds from other games when you Turn-In Quests!
-
-[R] Play sounds from other games when you Complete Trading Post Activities!
-
-
-[R] = Retail Only
-
-------------------------------
-
-***I've merged all of my other sound addons into this new All-In-One.***
-
-***If you're a fan of my other sound addons, this will be the one maintained going forward!***
-
-------------------------------
-
-**NOTE:**
-
-***When I add new sounds to this addon, they are added in alphabetical order.***
-
-***This changes the Selection Order in the code for Options.lua.***
-
-***You may have to re-select a previously selected sound after Addon Updates.***
-
---
-
-***Double Quest Accept Sound in WoW: Classic is a game bug, not related to BLU.***
-
-------------------------------
-
-- This addon works in DRAGONFLIGHT!
-
-- This addon works in CLASSIC WOW!
-
-- This addon works in CLASSIC CATA!
-
-------------------------------
-
-**Current list of available game sounds**
-- Default
-- Random
+## Available Game Sounds
 - Altered Beast
 - Assassin's Creed
 - Castlevania
@@ -103,24 +60,50 @@ Play sounds from other games when you Turn-In Quests!
 - Warcraft 3
 - Witcher 3
 
-------------------------------
+*Note: When new sounds are added, they are listed in alphabetical order. This may change the selection order in the code for `Options.lua`. You may need to re-select previously selected sounds after updates.*
 
-***To-Do List***
+---
 
-Add more sounds!
+## Compatibility
+- **Dragonflight**
+- **Classic WoW** (Season of Discovery, Classic Hardcore)
+- **Classic Cataclysm**
 
-Sounds/Mute for Pet Battle Victories!
+*Note: Double Quest Accept Sound in WoW: Classic is a game bug, not related to BLU.*
 
-Sounds/Mute for BattleGround Victories!
+---
 
-Re-write without Ace3 libs!
+## Installation
+1. Download the addon from [Curse](https://www.curseforge.com/wow/addons/blu-better-level-up), [GitHub](https://github.com/donniedice/BLU), [Wago](https://addons.wago.io/addons/blu), or [WoWInterface](https://www.wowinterface.com/downloads/info26465-BLU-BetterLevelUp.html).
+2. Extract the downloaded file to your World of Warcraft `Interface/AddOns` directory:
+   - For **Dragonflight**: `World of Warcraft/_retail_/Interface/AddOns`
+   - For **Classic Cataclysm**: `World of Warcraft/_classic_/Interface/AddOns`
+   - For **Classic WoW** (Season of Discovery, Classic Hardcore): `World of Warcraft/_classic_era_/Interface/AddOns`
+3. Restart World of Warcraft and enable the addon in the Addons menu.
 
-------------------------------
+---
 
-<div align="center">
+## Support the Project
 
-**BLU Download Links:**
+### ☕️ Buy Me a Coffee
+If you found this project helpful or enjoyable, you can support my work by buying me a coffee. Your support keeps this project alive and motivates me to create more!
 
-[Curse](https://www.curseforge.com/wow/addons/blu-better-level-up "This link takes you to the Curseforge.com website, you may download it here and help support the developers.") * [GitHub](https://github.com/donniedice/BLU "This link takes you to the GitHub.com website, you may download it here.") * [Wago](https://addons.wago.io/addons/blu "This link takes you to the Wago.io website, you may download it here and help support the developers.") * [WoWInterface](https://www.wowinterface.com/downloads/info26465-BLU-BetterLevelUp.html "This link takes you to the WoWInterface.com website, you may download it here.")
+[![Buy Me a Coffee](https://img.shields.io/badge/☕️-Buy%20Me%20a%20Coffee-orange?style=flat-square&logo=buy-me-a-coffee)](https://www.buymeacoffee.com/donniedice)
 
-</div>
+### Your Support Helps:
+- 🛠️ Maintain and improve the project.
+- 🚀 Add new features.
+- 🐛 Fix bugs.
+- 📚 Write detailed documentation.
+
+Thank you for your support! 🙏
+
+### 💸 Other Ways to Support:
+[![Donate via CashApp](https://img.shields.io/static/v1?label=Donate&message=CashApp&color=brightgreen)](https://bit.ly/3fyxxSU)
+
+### 💬 Stay in Touch:
+- Follow me on [GitHub](https://github.com/donniedice) 🐙
+
+### ⭐️ Show Your Support:
+- Star this project on [GitHub](https://github.com/donniedice/BLU) ⭐️
+- Share it with your friends and colleagues 📢

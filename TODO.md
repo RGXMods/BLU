@@ -1,6 +1,5 @@
 # To-Do List
 
-- [ ] Fix issues with TWW Reputation Ranks
 -------------------------------------------------
 - [ ] Re-add enter world message - option to turn off
 - [ ] Sounds for other event triggers

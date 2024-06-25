@@ -1,4 +1,1 @@
-- Removed - Unused locals - [core.lua, core_c.lua, core_v.lua]
-- Changed - Moved ChatFrameHooks to its own section - [core.lua, core_c.lua, core_v.lua]
-- Changed - Renamed function HookChatFrame - ReputationChatFrameHook - [core.lua, core_c.lua, core_v.lua]
-- Fixed   - Rock in bottom corner of image - [preview.png]
+- Removed - Draft release section - [release.yml]

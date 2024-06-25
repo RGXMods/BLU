@@ -1,3 +1,5 @@
+v4.3.2--------------------------------------------------------------------
+- Removed - Draft release section - [release.yml]
 v4.3.1--------------------------------------------------------------------
 - Removed - Unused locals - [core.lua, core_c.lua, core_v.lua]
 - Changed - Moved ChatFrameHooks to its own section - [core.lua, core_c.lua, core_v.lua]

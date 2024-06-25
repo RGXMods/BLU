@@ -8,7 +8,6 @@ local AC = LibStub("AceConfig-3.0")
 local ACD = LibStub("AceConfigDialog-3.0")
 local functionsHalted = false
 local chatFrameHooked = false
-local TrackedFactions = {}
 local reputationRanks = {
     "Exalted",
     "Revered",
@@ -47,7 +46,7 @@ function BLU:OnEnable()
     self:RegisterEvent("PLAYER_LEVEL_UP")
     self:RegisterEvent("QUEST_ACCEPTED")
     self:RegisterEvent("QUEST_TURNED_IN")
-    self:HookChatFrame() -- Hook the chat frame here instead of using UPDATE_FACTION
+    self:ReputationChatFrameHook() -- chat frame here instead of using UPDATE_FACTION
 end
 
 --=====================================================================================
@@ -118,6 +117,13 @@ function BLU:PLAYER_LEVEL_UP()
     PlaySelectedSound(sound, volumeLevel, defaultSounds[4])
 end
 
+function BLU:ReputationRankIncrease(factionName, newRank)
+    if functionsHalted then return end
+    local sound = SelectSound(self.db.profile.RepSoundSelect)
+    local volumeLevel = self.db.profile.RepVolume
+    PlaySelectedSound(sound, volumeLevel, defaultSounds[6])
+end
+
 function BLU:QUEST_ACCEPTED()
     if functionsHalted then return end
     local sound = SelectSound(BLU.db.profile.QuestAcceptSoundSelect)
@@ -132,14 +138,17 @@ function BLU:QUEST_TURNED_IN()
     PlaySelectedSound(sound, volumeLevel, defaultSounds[8])
 end
 
-function BLU:HookChatFrame()
+--=====================================================================================
+-- ChatFrame Hooks
+--=====================================================================================
+function BLU:ReputationChatFrameHook()
     if not chatFrameHooked then
         ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", function(self, event, msg)
             for _, rank in ipairs(reputationRanks) do
                 local reputationGainPattern = "You are now " .. rank .. " with (.+)%.?"
                 local factionName = string.match(msg, reputationGainPattern)
                 if factionName then
-                    BLU:HandleReputationRankIncrease(factionName, rank)
+                    BLU:ReputationRankIncrease(factionName, rank)
                 end
             end
             return false -- Ensure the original message is not blocked

@@ -8,7 +8,6 @@ local AC = LibStub("AceConfig-3.0")
 local ACD = LibStub("AceConfigDialog-3.0")
 local functionsHalted = false
 local chatFrameHooked = false
-local TrackedFactions = {}
 local reputationRanks = {
     "Exalted",
     "Revered",
@@ -52,7 +51,7 @@ function BLU:OnEnable()
     self:RegisterEvent("PLAYER_LEVEL_UP")
     self:RegisterEvent("QUEST_ACCEPTED")
     self:RegisterEvent("QUEST_TURNED_IN")
-    self:HookChatFrame() -- Hook the chat frame here instead of using UPDATE_FACTION
+    self:ReputationChatFrameHook() -- Hook the chat frame here instead of using UPDATE_FACTION
 end
 
 --=====================================================================================
@@ -151,27 +150,11 @@ function BLU:MAJOR_FACTION_RENOWN_LEVEL_CHANGED()
     PlaySelectedSound(sound, volumeLevel, defaultSounds[5])
 end
 
-function BLU:HandleReputationRankIncrease(factionName, newRank)
+function BLU:ReputationRankIncrease(factionName, newRank)
     if functionsHalted then return end
     local sound = SelectSound(self.db.profile.RepSoundSelect)
     local volumeLevel = self.db.profile.RepVolume
     PlaySelectedSound(sound, volumeLevel, defaultSounds[6])
-end
-
-function BLU:HookChatFrame()
-    if not chatFrameHooked then
-        ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", function(self, event, msg)
-            for _, rank in ipairs(reputationRanks) do
-                local reputationGainPattern = "You are now " .. rank .. " with (.+)%.?"
-                local factionName = string.match(msg, reputationGainPattern)
-                if factionName then
-                    BLU:HandleReputationRankIncrease(factionName, rank)
-                end
-            end
-            return false -- Ensure the original message is not blocked
-        end)
-        chatFrameHooked = true
-    end
 end
 
 function BLU:QUEST_ACCEPTED()
@@ -193,6 +176,25 @@ function BLU:PERKS_ACTIVITY_COMPLETED()
     local sound = SelectSound(BLU.db.profile.PostSoundSelect)
     local volumeLevel = BLU.db.profile.PostVolume
     PlaySelectedSound(sound, volumeLevel, defaultSounds[9])
+end
+
+--=====================================================================================
+-- ChatFrame Hooks
+--=====================================================================================
+function BLU:ReputationChatFrameHook()
+    if not chatFrameHooked then
+        ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", function(self, event, msg)
+            for _, rank in ipairs(reputationRanks) do
+                local reputationGainPattern = "You are now " .. rank .. " with (.+)%.?"
+                local factionName = string.match(msg, reputationGainPattern)
+                if factionName then
+                    BLU:ReputationRankIncrease(factionName, rank)
+                end
+            end
+            return false -- Ensure the original message is not blocked
+        end)
+        chatFrameHooked = true
+    end
 end
 
 --=====================================================================================

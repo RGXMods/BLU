@@ -28,6 +28,7 @@
 - Diablo 2
 - Dragon Quest
 - DotA 2
+- Elden Ring
 - EverQuest
 - Fallout - New Vegas
 - Fallout 3

@@ -20,7 +20,7 @@ end
 
 -- Function to mute specific sounds by their sound IDs
 function BLU:MuteSounds()
-    for _, soundID in ipairs(muteSoundIDs) do
+    for _, soundID in ipairs(muteSoundIDs) do -- Retail
         MuteSoundFile(soundID)
     end
 end
@@ -73,8 +73,8 @@ end
 
 function BLU:ReputationRankIncrease(factionName, newRank)
     if functionsHalted then return end
-    local sound = SelectSound(self.db.profile.RepSoundSelect)
-    local volumeLevel = self.db.profile.RepVolume
+    local sound = SelectSound(BLU.db.profile.RepSoundSelect)
+    local volumeLevel = BLU.db.profile.RepVolume
     PlaySelectedSound(sound, volumeLevel, defaultSounds[6])
 end
 

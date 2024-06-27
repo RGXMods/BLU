@@ -48,8 +48,8 @@ end
 
 function BLU:ReputationRankIncrease(factionName, newRank)
     if functionsHalted then return end
-    local sound = SelectSound(self.db.profile.RepSoundSelect)
-    local volumeLevel = self.db.profile.RepVolume
+    local sound = SelectSound(BLU.db.profile.RepSoundSelect)
+    local volumeLevel = BLU.db.profile.RepVolume
     PlaySelectedSound(sound, volumeLevel, defaultSounds[6])
 end
 

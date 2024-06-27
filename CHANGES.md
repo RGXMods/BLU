@@ -1,2 +1,4 @@
-- Added   - [utils.lua] - [/data] - Global functions and variables
-- Changed - Hardcoded version number - GetAddOnMetadata - [utils.lua] 
+- Fixed - Calls to self in Repuation handler - [core.lua, core_c.lua, core_v.lua]
+- Fixed - Notation MuteSoundIDs_ - [core.lua, core_c.lua, core_v.lua]
+- Fixed - CHANGES.md
+- Fixed - Default sound selections

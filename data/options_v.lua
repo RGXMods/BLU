@@ -3,13 +3,13 @@
 --=====================================================================================
 BLU.defaults = {
     profile = {
-        LevelSoundSelect = 18,
+        LevelSoundSelect = 24,
         LevelVolume = 2.0,
-        RepSoundSelect = 27,
+        RepSoundSelect = 15,
         RepVolume = 2.0,
-        QuestAcceptSoundSelect = 20,
+        QuestAcceptSoundSelect = 26,
         QuestAcceptVolume = 2.0,
-        QuestSoundSelect = 19,
+        QuestSoundSelect = 25,
         QuestVolume = 2.0,
     },
 }

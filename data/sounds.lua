@@ -1,5 +1,8 @@
 --=====================================================================================
+-- Sound IDs
 --=====================================================================================
+
+-- Retail
 muteSoundIDs = {
     569143,  -- Achievement
     1489546, -- Honor
@@ -11,8 +14,8 @@ muteSoundIDs = {
     567439,  -- Quest Turned In
     2066672  -- Trade Post
 }
---=====================================================================================
---=====================================================================================
+
+-- Cataclysm
 muteSoundIDs_c = {
     569143,  -- Achievement
     569593,  -- Level Up
@@ -20,15 +23,17 @@ muteSoundIDs_c = {
     567400,  -- Quest Accepted
     567439   -- Quest Turned In
 }
---=====================================================================================
---=====================================================================================
+
+-- Vanilla
 muteSoundIDs_v = {
     569593,  -- Level Up
     568016,  -- Reputation (8473)
     567400,  -- Quest Accepted
     567439   -- Quest Turned In
 }
+
 --=====================================================================================
+-- Default Sounds
 --=====================================================================================
 defaultSounds = {
     [1] = { -- Achievement
@@ -77,7 +82,9 @@ defaultSounds = {
         [3] = "Interface\\Addons\\BLU\\sounds\\post_default_high.ogg"
     }
 }
+
 --=====================================================================================
+-- Custom Sounds
 --=====================================================================================
 sounds = {
     [3] = {
@@ -111,220 +118,249 @@ sounds = {
         [3] = "Interface\\Addons\\BLU\\sounds\\dota_2_high.ogg"
     },
     [9] = {
+        [1] = "Interface\\Addons\\BLU\\sounds\\elden_ring-1_low.ogg",
+        [2] = "Interface\\Addons\\BLU\\sounds\\elden_ring-1_med.ogg",
+        [3] = "Interface\\Addons\\BLU\\sounds\\elden_ring-1_high.ogg"
+    },
+    [10] = {
+        [1] = "Interface\\Addons\\BLU\\sounds\\elden_ring-2_low.ogg",
+        [2] = "Interface\\Addons\\BLU\\sounds\\elden_ring-2_med.ogg",
+        [3] = "Interface\\Addons\\BLU\\sounds\\elden_ring-2_high.ogg"
+    },
+    [11] = {
+        [1] = "Interface\\Addons\\BLU\\sounds\\elden_ring-3_low.ogg",
+        [2] = "Interface\\Addons\\BLU\\sounds\\elden_ring-3_med.ogg",
+        [3] = "Interface\\Addons\\BLU\\sounds\\elden_ring-3_high.ogg"
+    },
+    [12] = {
+        [1] = "Interface\\Addons\\BLU\\sounds\\elden_ring-4_low.ogg",
+        [2] = "Interface\\Addons\\BLU\\sounds\\elden_ring-4_med.ogg",
+        [3] = "Interface\\Addons\\BLU\\sounds\\elden_ring-4_high.ogg"
+    },
+    [13] = {
+        [1] = "Interface\\Addons\\BLU\\sounds\\elden_ring-5_low.ogg",
+        [2] = "Interface\\Addons\\BLU\\sounds\\elden_ring-5_med.ogg",
+        [3] = "Interface\\Addons\\BLU\\sounds\\elden_ring-5_high.ogg"
+    },
+    [14] = {
+        [1] = "Interface\\Addons\\BLU\\sounds\\elden_ring-6_low.ogg",
+        [2] = "Interface\\Addons\\BLU\\sounds\\elden_ring-6_med.ogg",
+        [3] = "Interface\\Addons\\BLU\\sounds\\elden_ring-6_high.ogg"
+    },
+    [15] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\everquest_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\everquest_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\everquest_high.ogg"
     },
-    [10] = {
+    [16] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\fallout_new_vegas_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\fallout_new_vegas_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\fallout_new_vegas_high.ogg"
     },
-    [11] = {
+    [17] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\fallout_3_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\fallout_3_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\fallout_3_high.ogg"
     },
-    [12] = {
+    [18] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\final_fantasy_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\final_fantasy_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\final_fantasy_high.ogg"
     },
-    [13] = {
+    [19] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\fire_emblem_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\fire_emblem_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\fire_emblem_high.ogg"
     },
-    [14] = {
+    [20] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\fire_emblem_awakening_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\fire_emblem_awakening_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\fire_emblem_awakening_high.ogg"
     },
-    [15] = {
+    [21] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\fly_for_fun_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\fly_for_fun_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\fly_for_fun_high.ogg"
     },
-    [16] = {
+    [22] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\fortnite_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\fortnite_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\fortnite_high.ogg"
     },
-    [17] = {
+    [23] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\gta_san_andreas_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\gta_san_andreas_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\gta_san_andreas_high.ogg"
     },
-    [18] = {
+    [24] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\kingdom_hearts_3_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\kingdom_hearts_3_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\kingdom_hearts_3_high.ogg"
     },
-    [19] = {
+    [25] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\kirby-1_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\kirby-1_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\kirby-1_high.ogg"
     },
-    [20] = {
+    [26] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\kirby-2_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\kirby-2_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\kirby-2_high.ogg"
     },
-    [21] = {
+    [27] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\league_of_legends_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\league_of_legends_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\league_of_legends_high.ogg"
     },
-    [22] = {
+    [28] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\legend_of_zelda_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\legend_of_zelda_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\legend_of_zelda_high.ogg"
     },
-    [23] = {
+    [29] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\maplestory_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\maplestory_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\maplestory_high.ogg"
     },
-    [24] = {
+    [30] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\metalgear_solid_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\metalgear_solid_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\metalgear_solid_high.ogg"
     },
-    [25] = {
+    [31] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\minecraft_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\minecraft_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\minecraft_high.ogg"
     },
-    [26] = {
+    [32] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\modern_warfare_2_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\modern_warfare_2_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\modern_warfare_2_high.ogg"
     },
-    [27] = {
+    [33] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\morrowind_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\morrowind_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\morrowind_high.ogg"
     },
-    [28] = {
+    [34] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\old_school_runescape_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\old_school_runescape_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\old_school_runescape_high.ogg"
     },
-    [29] = {
+    [35] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\palworld_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\palworld_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\palworld_high.ogg"
     },
-    [30] = {
+    [36] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\path_of_exile_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\path_of_exile_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\path_of_exile_high.ogg"
     },
-    [31] = {
+    [37] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\pokemon_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\pokemon_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\pokemon_high.ogg"
     },
-    [32] = {
+    [38] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\ragnarok_online_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\ragnarok_online_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\ragnarok_online_high.ogg"
     },
-    [33] = {
+    [39] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\shining_force_2_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\shining_force_2_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\shining_force_2_high.ogg"
     },
-    [34] = {
+    [40] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\shining_force_3-1_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\shining_force_3-1_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\shining_force_3-1_high.ogg"
     },
-    [35] = {
+    [41] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\shining_force_3-2_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\shining_force_3-2_med.ogg",
-        [3] = "Interface\\Addons\\BLU\\sounds\\shining_force_3-2_haigh.ogg"
+        [3] = "Interface\\Addons\\BLU\\sounds\\shining_force_3-2_high.ogg"
     },
-    [36] = {
+    [42] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\shining_force_3-3_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\shining_force_3-3_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\shining_force_3-3_high.ogg"
     },
-    [37] = {
+    [43] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\shining_force_3-4_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\shining_force_3-4_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\shining_force_3-4_high.ogg"
     },
-    [38] = {
+    [44] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\shining_force_3-5_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\shining_force_3-5_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\shining_force_3-5_high.ogg"
     },
-    [39] = {
+    [45] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\shining_force_3-6_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\shining_force_3-6_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\shining_force_3-6_high.ogg"
     },
-    [40] = {
+    [46] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\shining_force_3-7_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\shining_force_3-7_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\shining_force_3-7_high.ogg"
     },
-    [41] = {
+    [47] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\shining_force_3-8_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\shining_force_3-8_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\shining_force_3-8_high.ogg"
     },
-    [42] = {
+    [48] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\shining_force_3-9_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\shining_force_3-9_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\shining_force_3-9_high.ogg"
     },
-    [43] = {
+    [49] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\shining_force_3-10_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\shining_force_3-10_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\shining_force_3-10_high.ogg"
     },
-    [44] = {
+    [50] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\shining_force_3-11_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\shining_force_3-11_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\shining_force_3-11_high.ogg"
     },
-    [45] = {
+    [51] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\skyrim_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\skyrim_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\skyrim_high.ogg"
     },
-    [46] = {
+    [52] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\sonic_the_hedgehog_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\sonic_the_hedgehog_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\sonic_the_hedgehog_high.ogg"
     },
-    [47] = {
+    [53] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\spyro_the_dragon_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\spyro_the_dragon_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\spyro_the_dragon_high.ogg"
     },
-    [48] = {
+    [54] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\super_mario_bros_3_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\super_mario_bros_3_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\super_mario_bros_3_high.ogg"
     },
-    [49] = {
+    [55] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\warcraft_3_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\warcraft_3_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\warcraft_3_high.ogg"
     },
-    [50] = {
+    [56] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\witcher_3-1_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\witcher_3-1_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\witcher_3-1_high.ogg"
     },
-    [51] = {
+    [57] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\witcher_3-2_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\witcher_3-2_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\witcher_3-2_high.ogg"
-    },
+    }
 }
---=====================================================================================
 --=====================================================================================

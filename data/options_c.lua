@@ -1,7 +1,10 @@
 --=====================================================================================
+-- Version Number
 --=====================================================================================
-local VersionNumber = "4.3.2"
+local VersionNumber = "4.4.0"
+
 --=====================================================================================
+-- Sound Options
 --=====================================================================================
 local soundOptions = {
     "[Default]",
@@ -12,6 +15,12 @@ local soundOptions = {
     "Diablo 2",
     "Dragon Quest",
     "DotA 2",
+    "Elden Ring (1)",
+    "Elden Ring (2)",
+    "Elden Ring (3)",
+    "Elden Ring (4)",
+    "Elden Ring (5)",
+    "Elden Ring (6)",
     "EverQuest",
     "Fallout - New Vegas",
     "Fallout 3",
@@ -50,13 +59,15 @@ local soundOptions = {
     "Shining Force III (11)",
     "Skyrim",
     "Sonic The Hedgehog",
-    "Spryo The Dragon",
+    "Spyro The Dragon",
     "Super Mario Bros 3",
     "Warcraft 3",
     "Witcher 3 (1)",
     "Witcher 3 (2)",
 }
+
 --=====================================================================================
+-- Default Profile Settings
 --=====================================================================================
 BLU.defaults = {
     profile = {
@@ -72,7 +83,9 @@ BLU.defaults = {
         QuestVolume = 2.0,
     },
 }
+
 --=====================================================================================
+-- Options Definition
 --=====================================================================================
 BLU.options = {
     type = "group",

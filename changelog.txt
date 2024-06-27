@@ -1,3 +1,6 @@
+v4.4.1-------------------------------------------------------------------
+- Added   - [utils.lua] - [/data] - Global functions and variables
+- Changed - Hardcoded version number - GetAddOnMetadata - [utils.lua] 
 v4.4.0-------------------------------------------------------------------
 - Added - [elden_ring-1_high.ogg, elden_ring-1_med.ogg, elden_ring-1_low.ogg] - [/sounds]
 - Added - [elden_ring-2_high.ogg, elden_ring-2_med.ogg, elden_ring-2_low.ogg] - [/sounds]

@@ -1,7 +1,2 @@
-- Added - [elden_ring-1_high.ogg, elden_ring-1_med.ogg, elden_ring-1_low.ogg] - [/sounds]
-- Added - [elden_ring-2_high.ogg, elden_ring-2_med.ogg, elden_ring-2_low.ogg] - [/sounds]
-- Added - [elden_ring-3_high.ogg, elden_ring-3_med.ogg, elden_ring-3_low.ogg] - [/sounds]
-- Added - [elden_ring-4_high.ogg, elden_ring-4_med.ogg, elden_ring-4_low.ogg] - [/sounds]
-- Added - [elden_ring-5_high.ogg, elden_ring-5_med.ogg, elden_ring-5_low.ogg] - [/sounds]
-- Added - [elden_ring-6_high.ogg, elden_ring-6_med.ogg, elden_ring-6_low.ogg] - [/sounds]
-- Fixed - Structure, organization, annotation and headers - [*.lua]
+- Added   - [utils.lua] - [/data] - Global functions and variables
+- Changed - Hardcoded version number - GetAddOnMetadata - [utils.lua] 

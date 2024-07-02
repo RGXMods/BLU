@@ -1,4 +1,1 @@
-- Fixed - Calls to self in Repuation handler - [core.lua, core_c.lua, core_v.lua]
-- Fixed - Notation MuteSoundIDs_ - [core.lua, core_c.lua, core_v.lua]
-- Fixed - CHANGES.md
-- Fixed - Default sound selections
+- Added - DebugMode - "/blu debug" to toggle - [utils.lua, core.lua, core_c.lua, core_v.lua]

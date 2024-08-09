@@ -52,7 +52,7 @@ BLU.options = {
                     imageHeight = 20,
                     name = "",
                     desc = "Test Achievement Earned Sound!",
-                    func = TestAchievementSound,
+                    func = function() BLU:TestAchievementSound() end,
                 },
                 AchievementVolume = {
                     type = "range",
@@ -65,14 +65,14 @@ BLU.options = {
                 },
             },
         },
-		group3 = {
-			type = "group",
-			order = 3,
-			name = "|cff05dffaLevel-Up!|r",
-			inline = true,
-			get = "GetValue",
-			set = "SetValue",
-			args = {
+        group3 = {
+            type = "group",
+            order = 3,
+            name = "|cff05dffaLevel-Up!|r",
+            inline = true,
+            get = "GetValue",
+            set = "SetValue",
+            args = {
                 LevelSoundSelect = {
                     type = "select",
                     order = 1,
@@ -87,7 +87,7 @@ BLU.options = {
                     imageHeight = 20,
                     name = "",
                     desc = "",
-                    func = TestLevelSound,
+                    func = function() BLU:TestLevelSound() end,
                 },
                 LevelVolume = {
                     type = "range",
@@ -95,19 +95,19 @@ BLU.options = {
                     name = "|cff05dffaVolume|r",
                     desc = "|cffffffffAdjust Level-Up! Sound Volume|r",
                     min = 0,
-                    max = 3, 
+                    max = 3,
                     step = 1,
                 },
             },
         },
-		group4 = {
-			type = "group",
-			order = 4,
-			name = "|cffffffffReputation Rank-Up!|r",
-			inline = true,
-			get = "GetValue",
-			set = "SetValue",
-			args = {
+        group4 = {
+            type = "group",
+            order = 4,
+            name = "|cffffffffReputation Rank-Up!|r",
+            inline = true,
+            get = "GetValue",
+            set = "SetValue",
+            args = {
                 RepSoundSelect = {
                     type = "select",
                     order = 1,
@@ -122,7 +122,7 @@ BLU.options = {
                     imageHeight = 20,
                     name = "",
                     desc = "",
-                    func = TestRepSound,
+                    func = function() BLU:TestRepSound() end,
                 },
                 RepVolume = {
                     type = "range",
@@ -130,19 +130,19 @@ BLU.options = {
                     name = "|cffffffffVolume|r",
                     desc = "|cff05dffaAdjust Reputation Rank-Up! Sound Volume|r",
                     min = 0,
-                    max = 3, 
+                    max = 3,
                     step = 1,
                 },
             },
         },
-		group5 = {
-			type = "group",
-			order = 5,
-			name = "|cff05dffaQuest Accepted!|r",
-			inline = true,
-			get = "GetValue",
-			set = "SetValue",
-			args = {
+        group5 = {
+            type = "group",
+            order = 5,
+            name = "|cff05dffaQuest Accepted!|r",
+            inline = true,
+            get = "GetValue",
+            set = "SetValue",
+            args = {
                 QuestAcceptSoundSelect = {
                     type = "select",
                     order = 1,
@@ -157,7 +157,7 @@ BLU.options = {
                     imageHeight = 20,
                     name = "",
                     desc = "",
-                    func = TestQuestAcceptSound,
+                    func = function() BLU:TestQuestAcceptSound() end,
                 },
                 QuestAcceptVolume = {
                     type = "range",
@@ -165,19 +165,19 @@ BLU.options = {
                     name = "|cff05dffaVolume|r",
                     desc = "|cffffffffAdjust Quest Accepted! Sound Volume|r",
                     min = 0,
-                    max = 3, 
+                    max = 3,
                     step = 1,
                 },
             },
         },
-		group6 = {
-			type = "group",
-			order = 6,
-			name = "|cffffffffQuest Turn-In!|r",
-			inline = true,
-			get = "GetValue",
-			set = "SetValue",
-			args = {
+        group6 = {
+            type = "group",
+            order = 6,
+            name = "|cffffffffQuest Turn-In!|r",
+            inline = true,
+            get = "GetValue",
+            set = "SetValue",
+            args = {
                 QuestSoundSelect = {
                     type = "select",
                     order = 1,
@@ -192,7 +192,7 @@ BLU.options = {
                     imageHeight = 20,
                     name = "",
                     desc = "",
-                    func = TestQuestSound,
+                    func = function() BLU:TestQuestSound() end,
                 },
                 QuestVolume = {
                     type = "range",
@@ -200,24 +200,26 @@ BLU.options = {
                     name = "|cffffffffVolume|r",
                     desc = "|cff05dffaAdjust Quest Turn-In! Sound Volume|r",
                     min = 0,
-                    max = 3, 
+                    max = 3,
                     step = 1,
                 },
             },
         },
-		group7 = {
-			type = "header",
-			order = 7,
-			name = "|cff8080ff" .. VersionNumber .. "|r",
-		},
-	},
+        group7 = {
+            type = "header",
+            order = 7,
+            name = "|cff8080ff" .. VersionNumber .. "|r",
+        },
+    },
 }
+
 --=====================================================================================
+-- Get and Set Functions
 --=====================================================================================
 function BLU:GetValue(info)
-	return self.db.profile[info[#info]]
+    return self.db.profile[info[#info]]
 end
 
 function BLU:SetValue(info, value)
-	self.db.profile[info[#info]] = value
+    self.db.profile[info[#info]] = value
 end

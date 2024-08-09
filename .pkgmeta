@@ -1,2 +1,2 @@
 package-as: BLU
-manual-changelog: CHANGES.md
+manual-changelog: docs/CHANGES.md

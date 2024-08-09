@@ -60,7 +60,7 @@ BLU.options = {
                     imageHeight = 20,
                     name = "",
                     desc = "Test Achievement Earned Sound!",
-                    func = TestAchievementSound,
+                    func = function() BLU:TestAchievementSound() end,
                 },
                 AchievementVolume = {
                     type = "range",
@@ -96,7 +96,7 @@ BLU.options = {
                     imageHeight = 20,
                     name = "",
                     desc = "Test Battle Pet Level-Up! Sound",
-                    func = TestBattlePetLevelSound,
+                    func = function() BLU:TestBattlePetLevelSound() end,
                 },
                 BattlePetLevelVolume = {
                     type = "range",
@@ -132,7 +132,7 @@ BLU.options = {
                     imageHeight = 20,
                     name = "",
                     desc = "",
-                    func = TestHonorSound,
+                    func = function() BLU:TestHonorSound() end,
                 },
                 HonorVolume = {
                     type = "range",
@@ -167,7 +167,7 @@ BLU.options = {
                     imageHeight = 20,
                     name = "",
                     desc = "",
-                    func = TestLevelSound,
+                    func = function() BLU:TestLevelSound() end,
                 },
                 LevelVolume = {
                     type = "range",
@@ -202,7 +202,7 @@ BLU.options = {
                     imageHeight = 20,
                     name = "",
                     desc = "",
-                    func = TestRenownSound,
+                    func = function() BLU:TestRenownSound() end,
                 },
                 RenownVolume = {
                     type = "range",
@@ -237,7 +237,7 @@ BLU.options = {
                     imageHeight = 20,
                     name = "",
                     desc = "",
-                    func = TestRepSound,
+                    func = function() BLU:TestRepSound() end,
                 },
                 RepVolume = {
                     type = "range",
@@ -272,7 +272,7 @@ BLU.options = {
                     imageHeight = 20,
                     name = "",
                     desc = "",
-                    func = TestQuestAcceptSound,
+                    func = function() BLU:TestQuestAcceptSound() end,
                 },
                 QuestAcceptVolume = {
                     type = "range",
@@ -307,7 +307,7 @@ BLU.options = {
                     imageHeight = 20,
                     name = "",
                     desc = "",
-                    func = TestQuestSound,
+                    func = function() BLU:TestQuestSound() end,
                 },
                 QuestVolume = {
                     type = "range",
@@ -342,7 +342,7 @@ BLU.options = {
                     imageHeight = 20,
                     name = "",
                     desc = "",
-                    func = TestPostSound,
+                    func = function() BLU:TestPostSound() end,
                 },
                 PostVolume = {
                     type = "range",
@@ -367,9 +367,11 @@ BLU.options = {
 -- Get and Set Functions
 --=====================================================================================
 function BLU:GetValue(info)
+    self:PrintDebugMessage("GETTING_VALUE", info[#info])
     return self.db.profile[info[#info]]
 end
 
 function BLU:SetValue(info, value)
+    self:PrintDebugMessage("SETTING_VALUE", info[#info], tostring(value))
     self.db.profile[info[#info]] = value
 end

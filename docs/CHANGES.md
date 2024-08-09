@@ -1,0 +1,24 @@
+- Restructured - Shared event handlers in [core.lua] for better maintainability
+- Renamed - [utils.lua] to [core.lua]
+- Renamed - [core.lua] to [retail.lua]
+- Renamed - [core_c.lua] to [cata.lua]
+- Renamed - [core_v.lua] to [vanilla.lua]
+- Updated - .toc files to reflect new structure
+- Added - More comprehensive debug logging
+- Added - Countdown timer in [core.lua] for PLAYER_ENTERING_WORLD event
+- Updated - Slash command output to include color-coded status messages
+- Updated - Debug logging structure with separate [BLU] and [DEBUG] prefixes
+- Added - Green and red text coloring for "/blu enable" and "/blu disable" commands
+- Improved - Sound playback functions for error handling and debug output
+- Added - Player entering world countdown to debug logs with per-second updates
+- Restructured - Debug message structure for better readability and maintenance
+- Added - Debug message for muting individual sounds on separate lines
+- Removed - Redundant debug messages for addon enable/disable in [core.lua]
+- Fixed - Sound file not found error logging
+- Added - New documentation directory [docs/]
+- Moved - [CHANGES.md] to [docs/CHANGES.md]
+- Moved - [README.md] to [docs/README.md]
+- Moved - [changelog.txt] to [docs/changelog.txt]
+- Added - [docs/guidelines.md] for detailed changelog guidelines
+- Renamed - [TODO.md] to [docs/todo.md] (lowercase)
+- Updated - Ace3 Libs - Release-r1349

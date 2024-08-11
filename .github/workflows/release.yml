@@ -36,7 +36,7 @@ jobs:
       - name: Parse Changelog
         id: parse_changelog
         run: |
-          changelog=$(cat CHANGES.md)
+          changelog=$(cat docs/CHANGES.md)
           IFS=$'\n'
           for line in $changelog; do
             action=$(echo $line | cut -d '-' -f 1 | xargs)

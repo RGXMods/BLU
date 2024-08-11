@@ -11,6 +11,7 @@ end
 --=====================================================================================
 function BLU:MuteSounds()
     for _, soundID in ipairs(muteSoundIDs_v) do
+        self:PrintDebugMessage("MUTE_SOUND", soundID)
         MuteSoundFile(soundID)
     end
 end
@@ -18,17 +19,3 @@ end
 --=====================================================================================
 -- Vanilla Event Handlers
 --=====================================================================================
-function BLU:HandlePlayerLevelUp()
-    if functionsHalted then return end
-    self:PlaySelectedSound("PLAYER_LEVEL_UP", "LevelSoundSelect", "LevelVolume")
-end
-
-function BLU:HandleQuestAccepted()
-    if functionsHalted then return end
-    self:PlaySelectedSound("QUEST_ACCEPTED", "QuestAcceptSoundSelect", "QuestAcceptVolume")
-end
-
-function BLU:HandleQuestTurnedIn()
-    if functionsHalted then return end
-    self:PlaySelectedSound("QUEST_TURNED_IN", "QuestSoundSelect", "QuestVolume")
-end

@@ -48,7 +48,7 @@ function BLU:OnInitialize()
 end
 
 --=====================================================================================
--- Debug Messages
+-- Debug Messages Table
 --=====================================================================================
 local debugMessages = {
     INITIALIZING_ADDON = "Initializing addon.",
@@ -114,8 +114,9 @@ end
 -- Sound Selection Functions
 --=====================================================================================
 
-function BLU:RandomSoundID()
-    self:PrintDebugMessage("SELECTING_RANDOM_SOUND_ID")
+-- Function to select a random sound ID from available sounds
+function RandomSoundID()
+    BLU:PrintDebugMessage("SELECTING_RANDOM_SOUND_ID")
 
     local validSoundIDs = {}
 
@@ -133,63 +134,63 @@ function BLU:RandomSoundID()
         end
     end
 
+    -- Return nil if no valid sound IDs are found
     if #validSoundIDs == 0 then
-        self:PrintDebugMessage("NO_VALID_SOUND_IDS")
+        BLU:PrintDebugMessage("NO_VALID_SOUND_IDS")
         return nil
     end
 
+    -- Select a random sound ID from the list
     local randomIndex = math.random(1, #validSoundIDs)
     local selectedSoundID = validSoundIDs[randomIndex]
 
-    self:PrintDebugMessage("RANDOM_SOUND_ID_SELECTED", selectedSoundID.id)
+    BLU:PrintDebugMessage("RANDOM_SOUND_ID_SELECTED", selectedSoundID.id)
 
     return selectedSoundID
 end
 
-function BLU:SelectSound(soundID)
-    self:PrintDebugMessage("SELECTING_SOUND", tostring(soundID))
+--=====================================================================================
 
+-- Function to select a sound based on the provided sound ID
+function SelectSound(soundID)
+    BLU:PrintDebugMessage("SELECTING_SOUND", tostring(soundID))
+
+    -- If the sound ID is not provided or is set to random (2), return a random sound ID
     if not soundID or soundID == 2 then
-        local randomSoundID = self:RandomSoundID()
+        local randomSoundID = RandomSoundID()
         if randomSoundID then
-            self:PrintDebugMessage("USING_RANDOM_SOUND_ID", randomSoundID.id)
+            BLU:PrintDebugMessage("USING_RANDOM_SOUND_ID", randomSoundID.id)
             return randomSoundID
         end
     end
 
-    self:PrintDebugMessage("USING_SPECIFIED_SOUND_ID", soundID)
+    -- Otherwise, return the specified sound ID
+    BLU:PrintDebugMessage("USING_SPECIFIED_SOUND_ID", soundID)
     return {table = sounds, id = soundID}
 end
 
 --=====================================================================================
--- Play Selected Sound Function
---=====================================================================================
 
-function BLU:PlaySelectedSound(event, soundSelect, volume)
+-- Function to play the selected sound with the specified volume level
+function PlaySelectedSound(sound, volumeLevel, defaultTable)
+    BLU:PrintDebugMessage("PLAYING_SOUND", sound.id, volumeLevel)
 
-    self:PrintDebugMessage(event .. "_TRIGGERED")
-    
-    local sound = self:SelectSound(self.db.profile[soundSelect])
-    local volumeLevel = self.db.profile[volume]
-
-    if not sound or not volumeLevel then
-        self:PrintDebugMessage("INVALID_PARAMETERS", event)
-        return
-    end
-    
+    -- Do not play the sound if the volume level is set to 0
     if volumeLevel == 0 then
-        self:PrintDebugMessage("VOLUME_LEVEL_ZERO")
+        BLU:PrintDebugMessage("VOLUME_LEVEL_ZERO")
         return
     end
 
-    local soundFile = sound.id == 1 and defaultSounds[sound.id][volumeLevel] or sound.table[sound.id][volumeLevel]
+    -- Determine the sound file to play based on the sound ID and volume level
+    local soundFile = sound.id == 1 and defaultTable[volumeLevel] or sound.table[sound.id][volumeLevel]
 
-    self:PrintDebugMessage("SOUND_FILE_TO_PLAY", tostring(soundFile))
+    BLU:PrintDebugMessage("SOUND_FILE_TO_PLAY", tostring(soundFile))
 
+    -- Play the sound file using the "MASTER" sound channel
     if soundFile then
         PlaySoundFile(soundFile, "MASTER")
     else
-        self:PrintDebugMessage("ERROR_SOUND_NOT_FOUND", sound.id)
+        BLU:PrintDebugMessage("ERROR_SOUND_NOT_FOUND", sound.id)
     end
 end
 
@@ -217,24 +218,44 @@ function BLU:HandlePlayerEnteringWorld(...)
 end
 
 function BLU:HandlePlayerLevelUp()
-    if functionsHalted then return end
-    self:PlaySelectedSound("PLAYER_LEVEL_UP", "LevelSoundSelect", "LevelVolume")
+    if functionsHalted then 
+        self:PrintDebugMessage("FUNCTIONS_HALTED")
+        return 
+    end
+    self:PrintDebugMessage("PLAYER_LEVEL_UP")
+    local sound = SelectSound(self.db.profile["LevelSoundSelect"])
+    local volumeLevel = self.db.profile["LevelVolume"]
+    PlaySelectedSound(sound, volumeLevel, defaultSounds[4])
 end
 
 function BLU:HandleQuestAccepted()
-    if functionsHalted then return end
-    self:PlaySelectedSound("QUEST_ACCEPTED", "QuestAcceptSoundSelect", "QuestAcceptVolume")
+    if functionsHalted then 
+        self:PrintDebugMessage("FUNCTIONS_HALTED")
+        return 
+    end
+    self:PrintDebugMessage("QUEST_ACCEPTED")
+    local sound = SelectSound(self.db.profile["QuestAcceptSoundSelect"])
+    local volumeLevel = self.db.profile["QuestAcceptVolume"]
+    PlaySelectedSound(sound, volumeLevel, defaultSounds[7])
 end
 
 function BLU:HandleQuestTurnedIn()
-    if functionsHalted then return end
-    self:PlaySelectedSound("QUEST_TURNED_IN", "QuestSoundSelect", "QuestVolume")
+    if functionsHalted then 
+        self:PrintDebugMessage("FUNCTIONS_HALTED")
+        return 
+    end
+    self:PrintDebugMessage("QUEST_TURNED_IN")
+    local sound = SelectSound(self.db.profile["QuestSoundSelect"])
+    local volumeLevel = self.db.profile["QuestVolume"]
+    PlaySelectedSound(sound, volumeLevel, defaultSounds[8])
 end
 
 function BLU:ReputationRankIncrease(factionName, newRank)
     if functionsHalted then return end
     self:PrintDebugMessage("REPUTATION_RANK_INCREASE", factionName, newRank)
-    self:PlaySelectedSound("REPUTATION_RANK_INCREASE", "RepSoundSelect", "RepVolume")
+    local sound = SelectSound(self.db.profile["RepSoundSelect"])
+    local volumeLevel = self.db.profile["RepVolume"]
+    PlaySelectedSound(sound, volumeLevel, defaultSounds[6])
 end
 
 --=====================================================================================
@@ -243,47 +264,65 @@ end
 
 function BLU:TestAchievementSound()
     self:PrintDebugMessage("TEST_ACHIEVEMENT_SOUND")
-    self:PlaySelectedSound("TEST_ACHIEVEMENT_SOUND", "AchievementSoundSelect", "AchievementVolume")
+    local sound = SelectSound(self.db.profile["AchievementSoundSelect"])
+    local volumeLevel = self.db.profile["AchievementVolume"]
+    PlaySelectedSound(sound, volumeLevel, defaultSounds[1])
 end
 
 function BLU:TestBattlePetLevelSound()
     self:PrintDebugMessage("TEST_BATTLE_PET_LEVEL_SOUND")
-    self:PlaySelectedSound("TEST_BATTLE_PET_LEVEL_SOUND", "BattlePetLevelSoundSelect", "BattlePetLevelVolume")
+    local sound = SelectSound(self.db.profile["BattlePetLevelSoundSelect"])
+    local volumeLevel = self.db.profile["BattlePetLevelVolume"]
+    PlaySelectedSound(sound, volumeLevel, defaultSounds[2])
 end
 
 function BLU:TestHonorSound()
     self:PrintDebugMessage("TEST_HONOR_SOUND")
-    self:PlaySelectedSound("TEST_HONOR_SOUND", "HonorSoundSelect", "HonorVolume")
+    local sound = SelectSound(self.db.profile["HonorSoundSelect"])
+    local volumeLevel = self.db.profile["HonorVolume"]
+    PlaySelectedSound(sound, volumeLevel, defaultSounds[3])
 end
 
 function BLU:TestLevelSound()
     self:PrintDebugMessage("TEST_LEVEL_SOUND")
-    self:PlaySelectedSound("TEST_LEVEL_SOUND", "LevelSoundSelect", "LevelVolume")
+    local sound = SelectSound(self.db.profile["LevelSoundSelect"])
+    local volumeLevel = self.db.profile["LevelVolume"]
+    PlaySelectedSound(sound, volumeLevel, defaultSounds[4])
 end
 
 function BLU:TestRenownSound()
     self:PrintDebugMessage("TEST_RENOWN_SOUND")
-    self:PlaySelectedSound("TEST_RENOWN_SOUND", "RenownSoundSelect", "RenownVolume")
+    local sound = SelectSound(self.db.profile["RenownSoundSelect"])
+    local volumeLevel = self.db.profile["RenownVolume"]
+    PlaySelectedSound(sound, volumeLevel, defaultSounds[5])
 end
 
 function BLU:TestRepSound()
     self:PrintDebugMessage("TEST_REP_SOUND")
-    self:PlaySelectedSound("TEST_REP_SOUND", "RepSoundSelect", "RepVolume")
+    local sound = SelectSound(self.db.profile["RepSoundSelect"])
+    local volumeLevel = self.db.profile["RepVolume"]
+    PlaySelectedSound(sound, volumeLevel, defaultSounds[6])
 end
 
 function BLU:TestQuestAcceptSound()
     self:PrintDebugMessage("TEST_QUEST_ACCEPT_SOUND")
-    self:PlaySelectedSound("TEST_QUEST_ACCEPT_SOUND", "QuestAcceptSoundSelect", "QuestAcceptVolume")
+    local sound = SelectSound(self.db.profile["QuestAcceptSoundSelect"])
+    local volumeLevel = self.db.profile["QuestAcceptVolume"]
+    PlaySelectedSound(sound, volumeLevel, defaultSounds[7])
 end
 
 function BLU:TestQuestSound()
     self:PrintDebugMessage("TEST_QUEST_SOUND")
-    self:PlaySelectedSound("TEST_QUEST_SOUND", "QuestSoundSelect", "QuestVolume")
+    local sound = SelectSound(self.db.profile["QuestSoundSelect"])
+    local volumeLevel = self.db.profile["QuestVolume"]
+    PlaySelectedSound(sound, volumeLevel, defaultSounds[8])
 end
 
 function BLU:TestPostSound()
     self:PrintDebugMessage("TEST_POST_SOUND")
-    self:PlaySelectedSound("TEST_POST_SOUND", "PostSoundSelect", "PostVolume")
+    local sound = SelectSound(self.db.profile["PostSoundSelect"])
+    local volumeLevel = self.db.profile["PostVolume"]
+    PlaySelectedSound(sound, volumeLevel, defaultSounds[9])
 end
 
 --=====================================================================================
@@ -319,6 +358,7 @@ function BLU:RegisterSharedEvents()
     self:RegisterEvent("CHAT_MSG_COMBAT_FACTION_CHANGE", "ReputationRankIncrease")
     self:RegisterEvent("CHAT_MSG_SYSTEM", "ReputationChatFrameHook")
 end
+
 
 --=====================================================================================
 -- Slash Command

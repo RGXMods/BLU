@@ -1,3 +1,12 @@
+v4.6.1-------------------------------------------------------------------
+- Fixed - Removed unused lines - [README.md]
+- Fixed - Location call - [CHANGES.md] - [release.yml]
+- Fixed - Default sounds incorrectly playing the achievement sound [core.lua]
+- Updated - Integrated `debugMessages` table across functions [core.lua, retail.lua, vanilla.lua, cata.lua]
+- Fixed - Debug mode message handling for `/blu` commands [core.lua]
+- Fixed - Standardized `PlaySelectedSound` function across handlers [core.lua, retail.lua, vanilla.lua, cata.lua]
+- Restructured - Debug logging in event handlers [core.lua, retail.lua, vanilla.lua, cata.lua]
+- Updated - Consistency of debug messages across functions [core.lua, retail.lua, vanilla.lua, cata.lua]
 v4.6.0-------------------------------------------------------------------
 - Restructured - Shared event handlers in [core.lua] for better maintainability
 - Renamed - [utils.lua] to [core.lua]
@@ -18,7 +27,6 @@ v4.6.0-------------------------------------------------------------------
 - Fixed - Sound file not found error logging
 - Added - New documentation directory [docs/]
 - Moved - [CHANGES.md] to [docs/CHANGES.md]
-- Moved - [README.md] to [docs/README.md]
 - Moved - [changelog.txt] to [docs/changelog.txt]
 - Added - [docs/guidelines.md] for detailed changelog guidelines
 - Renamed - [TODO.md] to [docs/todo.md] (lowercase)

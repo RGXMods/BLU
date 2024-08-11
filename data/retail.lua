@@ -15,28 +15,58 @@ end
 -- Event Handlers for Retail-specific Events
 --=====================================================================================
 function BLU:HandleRenownLevelChanged()
-    if functionsHalted then return end
-    self:PlaySelectedSound("MAJOR_FACTION_RENOWN_LEVEL_CHANGED", "RenownSoundSelect", "RenownVolume")
+    if functionsHalted then 
+        self:PrintDebugMessage("FUNCTIONS_HALTED")
+        return 
+    end
+    self:PrintDebugMessage("MAJOR_FACTION_RENOWN_LEVEL_CHANGED")
+    local sound = SelectSound(self.db.profile["RenownSoundSelect"])
+    local volumeLevel = self.db.profile["RenownVolume"]
+    PlaySelectedSound(sound, volumeLevel, defaultSounds[5])
 end
 
 function BLU:HandlePerksActivityCompleted()
-    if functionsHalted then return end
-    self:PlaySelectedSound("PERKS_ACTIVITY_COMPLETED", "PostSoundSelect", "PostVolume")
+    if functionsHalted then 
+        self:PrintDebugMessage("FUNCTIONS_HALTED")
+        return 
+    end
+    self:PrintDebugMessage("PERKS_ACTIVITY_COMPLETED")
+    local sound = SelectSound(self.db.profile["PostSoundSelect"])
+    local volumeLevel = self.db.profile["PostVolume"]
+    PlaySelectedSound(sound, volumeLevel, defaultSounds[9])
 end
 
 function BLU:HandlePetBattleLevelChanged()
-    if functionsHalted then return end
-    self:PlaySelectedSound("PET_BATTLE_LEVEL_CHANGED", "BattlePetLevelSoundSelect", "BattlePetLevelVolume")
+    if functionsHalted then 
+        self:PrintDebugMessage("FUNCTIONS_HALTED")
+        return 
+    end
+    self:PrintDebugMessage("PET_BATTLE_LEVEL_CHANGED")
+    local sound = SelectSound(self.db.profile["BattlePetLevelSoundSelect"])
+    local volumeLevel = self.db.profile["BattlePetLevelVolume"]
+    PlaySelectedSound(sound, volumeLevel, defaultSounds[2])
 end
 
 function BLU:HandleAchievementEarned()
-    if functionsHalted then return end
-    self:PlaySelectedSound("ACHIEVEMENT_EARNED", "AchievementSoundSelect", "AchievementVolume")
+    if functionsHalted then 
+        self:PrintDebugMessage("FUNCTIONS_HALTED")
+        return 
+    end
+    self:PrintDebugMessage("ACHIEVEMENT_EARNED")
+    local sound = SelectSound(self.db.profile["AchievementSoundSelect"])
+    local volumeLevel = self.db.profile["AchievementVolume"]
+    PlaySelectedSound(sound, volumeLevel, defaultSounds[1])
 end
 
 function BLU:HandleHonorLevelUpdate()
-    if functionsHalted then return end
-    self:PlaySelectedSound("HONOR_LEVEL_UPDATE", "HonorSoundSelect", "HonorVolume")
+    if functionsHalted then 
+        self:PrintDebugMessage("FUNCTIONS_HALTED")
+        return 
+    end
+    self:PrintDebugMessage("HONOR_LEVEL_UPDATE")
+    local sound = SelectSound(self.db.profile["HonorSoundSelect"])
+    local volumeLevel = self.db.profile["HonorVolume"]
+    PlaySelectedSound(sound, volumeLevel, defaultSounds[3])
 end
 
 --=====================================================================================

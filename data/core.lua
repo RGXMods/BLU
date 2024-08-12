@@ -18,34 +18,6 @@ local DEBUG_PREFIX = "[|cff808080DEBUG|r] "
 functionsHalted = false
 chatFrameHooked = false
 debugMode = false
-reputationRanks = {
-    "|cff05dffaExalted|r",
-    "|cff00ffb3Revered|r",
-    "|cff00ff88Honored|r",
-    "|cff00e012Friendly|r",
-    "|cffffff00Neutral|r",
-    "|cffee6621Unfriendly|r",
-    "|cffff0000Hostile|r",
-    "|cff7d21220Hated|r"
-}
-
---=====================================================================================
--- Initialization
---=====================================================================================
-function BLU:OnInitialize()
-    self.db = LibStub("AceDB-3.0"):New("BLUDB", self.defaults, true)
-    
-    -- Register options
-    AC:RegisterOptionsTable("BLU_Options", self.options)
-    self.optionsFrame = ACD:AddToBlizOptions("BLU_Options", "Better Level Up!")
-    
-    local profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
-    AC:RegisterOptionsTable("BLU_Profiles", profiles)
-    ACD:AddToBlizOptions("BLU_Profiles", "Profiles", "Better Level Up!")
-    
-    -- Register chat commands
-    self:RegisterChatCommand("blu", "SlashCommand")
-end
 
 --=====================================================================================
 -- Debug Messages Table
@@ -57,7 +29,7 @@ local debugMessages = {
     PLAYER_LEVEL_UP = "|cffffff00PLAYER_LEVEL_UP|r event triggered.",
     QUEST_ACCEPTED = "|cffffff00QUEST_ACCEPTED|r event triggered.",
     QUEST_TURNED_IN = "|cffffff00QUEST_TURNED_IN|r event triggered.",
-    REPUTATION_RANK_INCREASE = "|cffffff00REPUTATION_RANK_INCREASE|r event triggered for |cff8080ff%s|r (Rank: |cff8080ff%s|r).",
+    REPUTATION_RANK_INCREASE = "|cffffff00REPUTATION_RANK_INCREASE|r event triggered for rank: |cff00ff00%s|r.",
     MUTE_SOUND = "Muting sound with ID: |cff8080ff%s|r.",
     SOUND_PLAY = "Sound file to play: |cffce9178%s|r.",
     DEBUG_MODE_ENABLED = "Debug mode |cff00e012enabled|r.",
@@ -89,7 +61,8 @@ local debugMessages = {
     TEST_REP_SOUND = "|cffc586c0TestRepSound|r triggered.",
     TEST_QUEST_ACCEPT_SOUND = "|cffc586c0TestQuestAcceptSound|r triggered.",
     TEST_QUEST_SOUND = "|cffc586c0TestQuestSound|r triggered.",
-    TEST_POST_SOUND = "|cffc586c0TestPostSound|r triggered."
+    TEST_POST_SOUND = "|cffc586c0TestPostSound|r triggered.",
+    NO_RANK_FOUND = "|cffff0000No reputation rank increase found in chat message.|r"
 }
 
 --=====================================================================================
@@ -108,6 +81,38 @@ function BLU:PrintDebugMessage(key, ...)
     if debugMode and debugMessages[key] then
         self:DebugMessage(debugMessages[key]:format(...))
     end
+end
+
+--=====================================================================================
+-- Initialization
+--=====================================================================================
+function BLU:OnInitialize()
+    self.db = LibStub("AceDB-3.0"):New("BLUDB", self.defaults, true)
+    
+    -- Register options
+    AC:RegisterOptionsTable("BLU_Options", self.options)
+    self.optionsFrame = ACD:AddToBlizOptions("BLU_Options", "Better Level Up!")
+    
+    local profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
+    AC:RegisterOptionsTable("BLU_Profiles", profiles)
+    ACD:AddToBlizOptions("BLU_Profiles", "Profiles", "Better Level Up!")
+    
+    -- Register chat commands
+    self:RegisterChatCommand("blu", "SlashCommand")
+
+    -- Register shared events
+    self:RegisterSharedEvents()
+end
+
+--=====================================================================================
+-- Event Registration
+--=====================================================================================
+function BLU:RegisterSharedEvents()
+    self:RegisterEvent("PLAYER_ENTERING_WORLD", "HandlePlayerEnteringWorld")
+    self:RegisterEvent("PLAYER_LEVEL_UP", "HandlePlayerLevelUp")
+    self:RegisterEvent("QUEST_ACCEPTED", "HandleQuestAccepted")
+    self:RegisterEvent("QUEST_TURNED_IN", "HandleQuestTurnedIn")
+    self:RegisterEvent("CHAT_MSG_COMBAT_FACTION_CHANGE", "ReputationChatFrameHook")
 end
 
 --=====================================================================================
@@ -250,13 +255,79 @@ function BLU:HandleQuestTurnedIn()
     PlaySelectedSound(sound, volumeLevel, defaultSounds[8])
 end
 
-function BLU:ReputationRankIncrease(factionName, newRank)
-    if functionsHalted then return end
-    self:PrintDebugMessage("REPUTATION_RANK_INCREASE", factionName, newRank)
-    local sound = SelectSound(self.db.profile["RepSoundSelect"])
-    local volumeLevel = self.db.profile["RepVolume"]
+--=====================================================================================
+-- ChatFrame Hooks
+--=====================================================================================
+function BLU:ReputationChatFrameHook()
+    if not chatFrameHooked then
+        ChatFrame_AddMessageEventFilter("CHAT_MSG_COMBAT_FACTION_CHANGE", function(_, _, msg)
+            -- Debugging: Print the incoming message for analysis
+            BLU:DebugMessage("|cffffff00Incoming chat message:|r " .. msg)
+
+            -- Check for rank in the message and trigger the appropriate sound
+            local rankFound = false
+            if string.match(msg, "You are now Exalted with") then
+                BLU:DebugMessage("|cff00ff00Rank found: Exalted|r")
+                BLU:ReputationRankIncrease("Exalted")
+                rankFound = true
+            elseif string.match(msg, "You are now Revered with") then
+                BLU:DebugMessage("|cff00ff00Rank found: Revered|r")
+                BLU:ReputationRankIncrease("Revered")
+                rankFound = true
+            elseif string.match(msg, "You are now Honored with") then
+                BLU:DebugMessage("|cff00ff00Rank found: Honored|r")
+                BLU:ReputationRankIncrease("Honored")
+                rankFound = true
+            elseif string.match(msg, "You are now Friendly with") then
+                BLU:DebugMessage("|cff00ff00Rank found: Friendly|r")
+                BLU:ReputationRankIncrease("Friendly")
+                rankFound = true
+            elseif string.match(msg, "You are now Neutral with") then
+                BLU:DebugMessage("|cff00ff00Rank found: Neutral|r")
+                BLU:ReputationRankIncrease("Neutral")
+                rankFound = true
+            elseif string.match(msg, "You are now Unfriendly with") then
+                BLU:DebugMessage("|cff00ff00Rank found: Unfriendly|r")
+                BLU:ReputationRankIncrease("Unfriendly")
+                rankFound = true
+            elseif string.match(msg, "You are now Hostile with") then
+                BLU:DebugMessage("|cff00ff00Rank found: Hostile|r")
+                BLU:ReputationRankIncrease("Hostile")
+                rankFound = true
+            elseif string.match(msg, "You are now Hated with") then
+                BLU:DebugMessage("|cff00ff00Rank found: Hated|r")
+                BLU:ReputationRankIncrease("Hated")
+                rankFound = true
+            end
+
+            if not rankFound then
+                -- If no rank is found, output a debug message
+                BLU:PrintDebugMessage("NO_RANK_FOUND")
+            end
+
+            -- Ensure the original message is not blocked
+            return false
+        end)
+        chatFrameHooked = true
+    end
+end
+
+
+function BLU:ReputationRankIncrease(rank)
+    if functionsHalted then 
+        self:PrintDebugMessage("FUNCTIONS_HALTED")
+        return 
+    end
+    self:PrintDebugMessage("REPUTATION_RANK_INCREASE", rank)
+    local sound = SelectSound(self.db.profile.RepSoundSelect)
+    if not sound then
+        self:PrintDebugMessage("ERROR_SOUND_NOT_FOUND")
+        return
+    end
+    local volumeLevel = self.db.profile.RepVolume
     PlaySelectedSound(sound, volumeLevel, defaultSounds[6])
 end
+
 
 --=====================================================================================
 -- Test Sound Functions
@@ -324,41 +395,6 @@ function BLU:TestPostSound()
     local volumeLevel = self.db.profile["PostVolume"]
     PlaySelectedSound(sound, volumeLevel, defaultSounds[9])
 end
-
---=====================================================================================
--- ChatFrame Hooks
---=====================================================================================
-
-function BLU:ReputationChatFrameHook()
-    if not chatFrameHooked then
-        ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", function(self, event, msg)
-            for _, rank in ipairs(reputationRanks) do
-                local reputationGainPattern = "You are now " .. rank .. " with (.+)%.?"
-                local factionName = string.match(msg, reputationGainPattern)
-                if factionName then
-                    BLU:ReputationRankIncrease(factionName, rank)
-                end
-            end
-            return false
-        end)
-        chatFrameHooked = true
-        self:PrintDebugMessage("REPUTATION_CHAT_FRAME_HOOKED")
-    end
-end
-
---=====================================================================================
--- Event Registration
---=====================================================================================
-
-function BLU:RegisterSharedEvents()
-    self:RegisterEvent("PLAYER_ENTERING_WORLD", "HandlePlayerEnteringWorld")
-    self:RegisterEvent("PLAYER_LEVEL_UP", "HandlePlayerLevelUp")
-    self:RegisterEvent("QUEST_ACCEPTED", "HandleQuestAccepted")
-    self:RegisterEvent("QUEST_TURNED_IN", "HandleQuestTurnedIn")
-    self:RegisterEvent("CHAT_MSG_COMBAT_FACTION_CHANGE", "ReputationRankIncrease")
-    self:RegisterEvent("CHAT_MSG_SYSTEM", "ReputationChatFrameHook")
-end
-
 
 --=====================================================================================
 -- Slash Command

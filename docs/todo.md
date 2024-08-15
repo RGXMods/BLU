@@ -5,6 +5,13 @@
 - [x] Sounds for other event triggers
 - [ ] Sub-menus for gameName in drop-down
 - [x] Debug mode
+- [ ] Clean up - hella
+- [ ] gitignore and package stuff
+- [ ] Test auto-packaging ace libs
+- [ ] Re-combine - Vanilla/Retail/Cata to [core.lua]
+- [ ] Re-combine - options_c/v to [options.lua]
+- [ ] Achieve above with initialization process
+- [ ] Move debug code and locale - [debug.lua]
 -------------------------------------------------
 - [ ] Test-Sound button on drop-down and sub-menues
 - [ ] Integrate soundPacks
@@ -12,5 +19,6 @@
 - [x] Add more sounds!
 - [ ] Sounds/Mute for Pet Battle Victories!
 - [ ] Sounds/Mute for BattleGround Victories!
-- [ ] Re-write without Ace3 libs!
 - [ ] Add color to sub-menu text
+- [ ] Expand on Rep-Up! - Sounds on per rep basis?
+- [ ] Friendship ranks?????

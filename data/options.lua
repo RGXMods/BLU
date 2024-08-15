@@ -32,12 +32,12 @@ BLU.options = {
     name = "",
     handler = BLU,
     args = {
-        group1 = {
+        header = {
             type = "header",
             order = 1,
             name = "|cff05dffaBLU|r |cffffffff|| |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel|r |cff05dffaU|r|cffffffffp!|r",
         },
-        group2 = {
+        AchievementGroup = {
             type = "group",
             order = 2,
             name = "|cffffffffAchievement Earned!|r",
@@ -66,14 +66,14 @@ BLU.options = {
                     type = "range",
                     order = 3,
                     name = "|cffffffffVolume|r",
-                    desc = "|cff05dffaAdjust Achievement Earned! Sound Volume|r",
+                    desc = "|cff05dffaAdjust Achievement Earned! Sound Volume!|r",
                     min = 0,
                     max = 3,
                     step = 1,
                 },
             },
         },
-        group3 = {
+        BattlePetGroup = {
             type = "group",
             order = 3,
             name = "|cff05dffaBattle Pet Level-Up!|r",
@@ -109,7 +109,7 @@ BLU.options = {
                 },
             },
         },
-        group4 = {
+        HonorGroup = {
             type = "group",
             order = 4,
             name = "|cffffffffHonor Rank-Up!|r",
@@ -131,7 +131,7 @@ BLU.options = {
                     imageWidth = 20,
                     imageHeight = 20,
                     name = "",
-                    desc = "",
+                    desc = "Test Honor Rank-Up! Sound",
                     func = function() BLU:TestHonorSound() end,
                 },
                 HonorVolume = {
@@ -140,12 +140,12 @@ BLU.options = {
                     name = "|cffffffffVolume|r",
                     desc = "|cff05dffaAdjust Honor Rank-Up! Sound Volume|r",
                     min = 0,
-                    max = 3, 
+                    max = 3,
                     step = 1,
                 },
             },
         },
-        group5 = {
+        LevelGroup = {
             type = "group",
             order = 5,
             name = "|cff05dffaLevel-Up!|r",
@@ -166,7 +166,7 @@ BLU.options = {
                     imageWidth = 20,
                     imageHeight = 20,
                     name = "",
-                    desc = "",
+                    desc = "Test Level-Up! Sound",
                     func = function() BLU:TestLevelSound() end,
                 },
                 LevelVolume = {
@@ -175,12 +175,12 @@ BLU.options = {
                     name = "|cff05dffaVolume|r",
                     desc = "|cffffffffAdjust Level-Up! Sound Volume|r",
                     min = 0,
-                    max = 3, 
+                    max = 3,
                     step = 1,
                 },
             },
         },
-        group6 = {
+        RenownGroup = {
             type = "group",
             order = 6,
             name = "|cffffffffRenown Rank-Up!|r",
@@ -201,7 +201,7 @@ BLU.options = {
                     imageWidth = 20,
                     imageHeight = 20,
                     name = "",
-                    desc = "",
+                    desc = "Test Renown Rank-Up! Sound",
                     func = function() BLU:TestRenownSound() end,
                 },
                 RenownVolume = {
@@ -210,12 +210,12 @@ BLU.options = {
                     name = "|cffffffffVolume|r",
                     desc = "|cff05dffaAdjust Renown Rank-Up! Sound Volume|r",
                     min = 0,
-                    max = 3, 
+                    max = 3,
                     step = 1,
                 },
             },
         },
-        group7 = {
+        RepGroup = {
             type = "group",
             order = 7,
             name = "|cff05dffaReputation Rank-Up!|r",
@@ -236,7 +236,7 @@ BLU.options = {
                     imageWidth = 20,
                     imageHeight = 20,
                     name = "",
-                    desc = "",
+                    desc = "Test Reputation Rank-Up! Sound",
                     func = function() BLU:TestRepSound() end,
                 },
                 RepVolume = {
@@ -245,12 +245,12 @@ BLU.options = {
                     name = "|cff05dffaVolume|r",
                     desc = "|cffffffffAdjust Reputation Rank-Up! Sound Volume|r",
                     min = 0,
-                    max = 3, 
+                    max = 3,
                     step = 1,
                 },
             },
         },
-        group8 = {
+        QuestAcceptGroup = {
             type = "group",
             order = 8,
             name = "|cffffffffQuest Accepted!|r",
@@ -271,7 +271,7 @@ BLU.options = {
                     imageWidth = 20,
                     imageHeight = 20,
                     name = "",
-                    desc = "",
+                    desc = "Test Quest Accepted! Sound",
                     func = function() BLU:TestQuestAcceptSound() end,
                 },
                 QuestAcceptVolume = {
@@ -280,12 +280,12 @@ BLU.options = {
                     name = "|cffffffffVolume|r",
                     desc = "|cff05dffaAdjust Quest Accepted! Sound Volume|r",
                     min = 0,
-                    max = 3, 
+                    max = 3,
                     step = 1,
                 },
             },
         },
-        group9 = {
+        QuestCompleteGroup = {
             type = "group",
             order = 9,
             name = "|cff05dffaQuest Complete!|r",
@@ -306,7 +306,7 @@ BLU.options = {
                     imageWidth = 20,
                     imageHeight = 20,
                     name = "",
-                    desc = "",
+                    desc = "Test Quest Complete! Sound",
                     func = function() BLU:TestQuestSound() end,
                 },
                 QuestVolume = {
@@ -315,12 +315,12 @@ BLU.options = {
                     name = "|cff05dffaVolume|r",
                     desc = "|cffffffffAdjust Quest Complete! Sound Volume|r",
                     min = 0,
-                    max = 3, 
+                    max = 3,
                     step = 1,
                 },
             },
         },
-        group10 = {
+        PostActivityGroup = {
             type = "group",
             order = 10,
             name = "|cffffffffTrade Post Activity Complete!|r",
@@ -341,21 +341,21 @@ BLU.options = {
                     imageWidth = 20,
                     imageHeight = 20,
                     name = "",
-                    desc = "",
+                    desc = "Test Trade Post Activity Complete! Sound",
                     func = function() BLU:TestPostSound() end,
                 },
                 PostVolume = {
                     type = "range",
                     order = 3,
-                    name = "|cffffffffVolume|r",
-                    desc = "|cff05dffaAdjust Trade Post Activity Complete! Sound Volume|r",
+                    name = "|cff05dffaVolume|r",
+                    desc = "|cffffffffAdjust Trade Post Activity Complete! Sound Volume|r",
                     min = 0,
-                    max = 3, 
+                    max = 3,
                     step = 1,
                 },
             },
         },
-        group11 = {
+        versionHeader = {
             type = "header",
             order = 11,
             name = "|cff8080ff" .. VersionNumber .. "|r",

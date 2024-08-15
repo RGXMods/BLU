@@ -1,8 +1,9 @@
-name: Package and Release 
+name: Package and Release
+
 on:
   push:
     tags:
-      - '**'
+      - 'v*'  # Triggers only on version tags like v1.0.0, v1.0.0-alpha, etc.
 
 env:
   CF_API_KEY: ${{ secrets.CF_API_KEY }}
@@ -23,30 +24,31 @@ jobs:
         run: |
           git config --global user.name "donniedice"
           git config --global user.email "60427166+donniedice@users.noreply.github.com"
-          
+
+      - name: Set Release Type
+        id: set_release_type
+        run: |
+          TAG_NAME=${{ github.ref }}
+          if [[ "$TAG_NAME" == *"beta"* ]]; then
+            echo "::set-output name=release_type::beta"
+          elif [[ "$TAG_NAME" == *"alpha"* ]]; then
+            echo "::set-output name=release_type::alpha"
+          else
+            echo "::set-output name=release_type::release"
+          fi
+
       - name: Extract Version from TOC
         id: extract_version
         run: |
-            version=$(grep -oP '^## Version: \K(.*)' ./*.toc)
-            echo "::set-output name=version::$version"
+          version=$(grep -oP '^## Version: \K(.*)' ./*.toc)
+          echo "::set-output name=version::$version"
 
       - name: Package and Release
         uses: BigWigsMods/packager@master
+        with:
+          release-type: ${{ steps.set_release_type.outputs.release_type }}
 
       - name: Parse Changelog
-        id: parse_changelog
+        if: ${{ steps.set_release_type.outputs.release_type != 'alpha' }}
         run: |
-          changelog=$(cat docs/CHANGES.md)
-          IFS=$'\n'
-          for line in $changelog; do
-            action=$(echo $line | cut -d '-' -f 1 | xargs)
-            description=$(echo $line | cut -d '-' -f 2 | xargs)
-            file=$(echo $line | cut -d '-' -f 3 | xargs | tr -d '[]')
-            echo "Action: $action, Description: $description, File: $file"
-          done
-        shell: bash
-        env:
-          CF_API_KEY: ${{ secrets.CF_API_KEY }}
-          WOWI_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
-          WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
-          GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
+          # Your existing changelog parsing logic

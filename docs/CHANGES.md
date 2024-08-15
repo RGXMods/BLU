@@ -1,4 +1,3 @@
-- Updated - Refactored `ReputationChatFrameHook` for accurate rank detection - [core.lua]
-- Updated - Improved debug message coloring [core.lua]
-- Updated - Event registration to use `CHAT_MSG_COMBAT_FACTION_CHANGE` for reputation handling - [core.lua]
-- Fixed - Issue with undetected reputation rank increases [core.lua]
+- Updated - `release.yml` for alpha, beta, and stable release handling
+- Added - Tagging support: alpha (`v1.0.0-alpha`), beta (`v1.0.0-beta`), stable (`v1.0.0`)
+- Updated - ToC for _retail_ - The War Within Expansion Release Patch (10.2.0.56110) [ToC.110002]

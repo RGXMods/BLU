@@ -25,18 +25,18 @@ debugMode = false
 local debugMessages = {
     INITIALIZING_ADDON = "Initializing addon.",
     ENABLING_ADDON = "Enabling addon.",
-    PLAYER_ENTERING_WORLD = "|cffffff00PLAYER_ENTERING_WORLD|r event triggered.",
+    PLAYER_LOGIN = "|cffffff00PLAYER_LOGIN|r event triggered.",
     PLAYER_LEVEL_UP = "|cffffff00PLAYER_LEVEL_UP|r event triggered.",
     QUEST_ACCEPTED = "|cffffff00QUEST_ACCEPTED|r event triggered.",
     QUEST_TURNED_IN = "|cffffff00QUEST_TURNED_IN|r event triggered.",
     REPUTATION_RANK_INCREASE = "|cffffff00REPUTATION_RANK_INCREASE|r event triggered for rank: |cff00ff00%s|r.",
     MUTE_SOUND = "Muting sound with ID: |cff8080ff%s|r.",
     SOUND_PLAY = "Sound file to play: |cffce9178%s|r.",
-    DEBUG_MODE_ENABLED = "Debug mode |cff00e012enabled|r.",
+    DEBUG_MODE_ENABLED = "Debug mode |cff00ff00enabled|r.",
     DEBUG_MODE_DISABLED = "Debug mode |cffff0000disabled|r.",
-    ADDON_ENABLED = "Addon |cff00e012enabled|r.",
+    ADDON_ENABLED = "Addon |cff00ff00enabled|r.",
     ADDON_DISABLED = "Addon |cffff0000disabled|r.",
-    OPTIONS_PANEL_OPENED = "Options panel opened.",
+    OPTIONS_PANEL_OPENED = "Options panel |cff00ff00opened|r.",
     SELECTING_RANDOM_SOUND_ID = "Selecting a random sound ID...",
     NO_VALID_SOUND_IDS = "|cffff0000No valid sound IDs found.|r",
     RANDOM_SOUND_ID_SELECTED = "Random sound ID selected: |cff8080ff%s|r",
@@ -49,10 +49,10 @@ local debugMessages = {
     ERROR_SOUND_NOT_FOUND = "|cffff0000Sound file not found for sound ID: |cff8080ff%s|r",
     INVALID_PARAMETERS = "|cffff0000Invalid parameters for event: |cff8080ff%s|r",
     REPUTATION_CHAT_FRAME_HOOKED = "Reputation chat frame hooked.",
-    COUNTDOWN_START = "Starting countdown: |cff00ff0015 seconds|r remaining.",
-    COUNTDOWN_TICK = "|cff00ff00%d seconds|r remaining.",
-    FUNCTIONS_HALTED = "Functions halted for |cff00ff0015 seconds|r.",
-    FUNCTIONS_RESUMED = "Functions resumed after pause.",
+    COUNTDOWN_START = "Starting countdown: |cff8080ff15|r seconds|r remaining.",
+    COUNTDOWN_TICK = "|cff8080ff%d|r seconds|r remaining.",
+    FUNCTIONS_HALTED = "Functions halted for |cff8080ff15|r seconds|r.",
+    FUNCTIONS_RESUMED = "Functions |cff00ff00resumed|r after pause.",
     TEST_ACHIEVEMENT_SOUND = "|cffc586c0TestAchievementSound|r triggered.",
     TEST_BATTLE_PET_LEVEL_SOUND = "|cffc586c0TestBattlePetLevelSound|r triggered.",
     TEST_HONOR_SOUND = "|cffc586c0TestHonorSound|r triggered.",
@@ -108,7 +108,7 @@ end
 -- Event Registration
 --=====================================================================================
 function BLU:RegisterSharedEvents()
-    self:RegisterEvent("PLAYER_ENTERING_WORLD", "HandlePlayerEnteringWorld")
+    self:RegisterEvent("PLAYER_LOGIN", "HandlePlayerEnteringWorld")
     self:RegisterEvent("PLAYER_LEVEL_UP", "HandlePlayerLevelUp")
     self:RegisterEvent("QUEST_ACCEPTED", "HandleQuestAccepted")
     self:RegisterEvent("QUEST_TURNED_IN", "HandleQuestTurnedIn")
@@ -204,20 +204,22 @@ end
 --=====================================================================================
 
 function BLU:HandlePlayerEnteringWorld(...)
-    self:PrintDebugMessage("PLAYER_ENTERING_WORLD")
+    self:PrintDebugMessage("PLAYER_LOGIN")
 
     self:PrintDebugMessage("COUNTDOWN_START")
     local countdownTime = 15
     functionsHalted = true
+
     C_Timer.NewTicker(1, function()
         countdownTime = countdownTime - 1
         self:PrintDebugMessage("COUNTDOWN_TICK", countdownTime)
-    end, 15)
 
-    C_Timer.After(15, function()
-        functionsHalted = false
-        self:PrintDebugMessage("FUNCTIONS_RESUMED")
-    end)
+        -- Check if the countdown has finished
+        if countdownTime <= 0 then
+            functionsHalted = false
+            self:PrintDebugMessage("FUNCTIONS_RESUMED")
+        end
+    end, 15)
 
     self:MuteSounds()
 end
@@ -259,58 +261,62 @@ end
 -- ChatFrame Hooks
 --=====================================================================================
 function BLU:ReputationChatFrameHook()
-    if not chatFrameHooked then
-        ChatFrame_AddMessageEventFilter("CHAT_MSG_COMBAT_FACTION_CHANGE", function(_, _, msg)
-            -- Debugging: Print the incoming message for analysis
-            BLU:DebugMessage("|cffffff00Incoming chat message:|r " .. msg)
+    -- Ensure this hook is only added once
+    if chatFrameHooked then return end
 
-            -- Check for rank in the message and trigger the appropriate sound
-            local rankFound = false
-            if string.match(msg, "You are now Exalted with") then
-                BLU:DebugMessage("|cff00ff00Rank found: Exalted|r")
-                BLU:ReputationRankIncrease("Exalted")
-                rankFound = true
-            elseif string.match(msg, "You are now Revered with") then
-                BLU:DebugMessage("|cff00ff00Rank found: Revered|r")
-                BLU:ReputationRankIncrease("Revered")
-                rankFound = true
-            elseif string.match(msg, "You are now Honored with") then
-                BLU:DebugMessage("|cff00ff00Rank found: Honored|r")
-                BLU:ReputationRankIncrease("Honored")
-                rankFound = true
-            elseif string.match(msg, "You are now Friendly with") then
-                BLU:DebugMessage("|cff00ff00Rank found: Friendly|r")
-                BLU:ReputationRankIncrease("Friendly")
-                rankFound = true
-            elseif string.match(msg, "You are now Neutral with") then
-                BLU:DebugMessage("|cff00ff00Rank found: Neutral|r")
-                BLU:ReputationRankIncrease("Neutral")
-                rankFound = true
-            elseif string.match(msg, "You are now Unfriendly with") then
-                BLU:DebugMessage("|cff00ff00Rank found: Unfriendly|r")
-                BLU:ReputationRankIncrease("Unfriendly")
-                rankFound = true
-            elseif string.match(msg, "You are now Hostile with") then
-                BLU:DebugMessage("|cff00ff00Rank found: Hostile|r")
-                BLU:ReputationRankIncrease("Hostile")
-                rankFound = true
-            elseif string.match(msg, "You are now Hated with") then
-                BLU:DebugMessage("|cff00ff00Rank found: Hated|r")
-                BLU:ReputationRankIncrease("Hated")
-                rankFound = true
-            end
+    ChatFrame_AddMessageEventFilter("CHAT_MSG_COMBAT_FACTION_CHANGE", function(_, _, msg)
+        -- Debugging: Print the incoming message for analysis
+        BLU:DebugMessage("|cffffff00Incoming chat message:|r " .. msg)
 
-            if not rankFound then
-                -- If no rank is found, output a debug message
-                BLU:PrintDebugMessage("NO_RANK_FOUND")
-            end
+        -- Check for rank in the message and trigger the appropriate sound
+        local rankFound = false
+        if string.match(msg, "You are now Exalted with") then
+            BLU:DebugMessage("|cff00ff00Rank found: Exalted|r")
+            BLU:ReputationRankIncrease("Exalted")
+            rankFound = true
+        elseif string.match(msg, "You are now Revered with") then
+            BLU:DebugMessage("|cff00ff00Rank found: Revered|r")
+            BLU:ReputationRankIncrease("Revered")
+            rankFound = true
+        elseif string.match(msg, "You are now Honored with") then
+            BLU:DebugMessage("|cff00ff00Rank found: Honored|r")
+            BLU:ReputationRankIncrease("Honored")
+            rankFound = true
+        elseif string.match(msg, "You are now Friendly with") then
+            BLU:DebugMessage("|cff00ff00Rank found: Friendly|r")
+            BLU:ReputationRankIncrease("Friendly")
+            rankFound = true
+        elseif string.match(msg, "You are now Neutral with") then
+            BLU:DebugMessage("|cff00ff00Rank found: Neutral|r")
+            BLU:ReputationRankIncrease("Neutral")
+            rankFound = true
+        elseif string.match(msg, "You are now Unfriendly with") then
+            BLU:DebugMessage("|cff00ff00Rank found: Unfriendly|r")
+            BLU:ReputationRankIncrease("Unfriendly")
+            rankFound = true
+        elseif string.match(msg, "You are now Hostile with") then
+            BLU:DebugMessage("|cff00ff00Rank found: Hostile|r")
+            BLU:ReputationRankIncrease("Hostile")
+            rankFound = true
+        elseif string.match(msg, "You are now Hated with") then
+            BLU:DebugMessage("|cff00ff00Rank found: Hated|r")
+            BLU:ReputationRankIncrease("Hated")
+            rankFound = true
+        end
 
-            -- Ensure the original message is not blocked
-            return false
-        end)
-        chatFrameHooked = true
-    end
+        if not rankFound then
+            -- If no rank is found, output a debug message
+            BLU:PrintDebugMessage("NO_RANK_FOUND")
+        end
+
+        -- Ensure the original message is not blocked
+        return false
+    end)
+
+    -- Set the flag to prevent re-hooking
+    chatFrameHooked = true
 end
+
 
 
 function BLU:ReputationRankIncrease(rank)

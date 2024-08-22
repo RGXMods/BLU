@@ -47,8 +47,3 @@ jobs:
         uses: BigWigsMods/packager@master
         with:
           release-type: ${{ steps.set_release_type.outputs.release_type }}
-
-      - name: Parse Changelog
-        if: ${{ steps.set_release_type.outputs.release_type != 'alpha' }}
-        run: |
-          # Your existing changelog parsing logic

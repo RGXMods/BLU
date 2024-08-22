@@ -66,7 +66,7 @@
 ---
 
 ## Compatibility
-- **Dragonflight**
+- **The War Within**
 - **Classic WoW** (Season of Discovery, Classic Hardcore)
 - **Classic Cataclysm**
 
@@ -77,7 +77,7 @@
 ## Installation
 1. Download the addon from [Curse](https://www.curseforge.com/wow/addons/blu-better-level-up), [GitHub](https://github.com/donniedice/BLU), [Wago](https://addons.wago.io/addons/blu), or [WoWInterface](https://www.wowinterface.com/downloads/info26465-BLU-BetterLevelUp.html).
 2. Extract the downloaded file to your World of Warcraft `Interface/AddOns` directory:
-   - For **Dragonflight**: `World of Warcraft/_retail_/Interface/AddOns`
+   - For **The War Within**: `World of Warcraft/_retail_/Interface/AddOns`
    - For **Classic Cataclysm**: `World of Warcraft/_classic_/Interface/AddOns`
    - For **Classic WoW** (Season of Discovery, Classic Hardcore): `World of Warcraft/_classic_era_/Interface/AddOns`
 3. Restart World of Warcraft and enable the addon in the Addons menu.

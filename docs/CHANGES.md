@@ -1,3 +1,8 @@
-- Updated - `release.yml` for alpha, beta, and stable release handling
-- Added - Tagging support: alpha (`v1.0.0-alpha`), beta (`v1.0.0-beta`), stable (`v1.0.0`)
-- Updated - ToC for _retail_ - The War Within Expansion Release Patch (10.2.0.56110) [ToC.110002]
+- Fixed - Debug color to green for addon enabled - [core.lua]
+- Fixed - ReputationChatFrameHook duplicate debug messages - [core.lua]
+- Fixed - Combined countdown and functionsHalted into one ticker - [core.lua]
+- Fixed - Debug log color for countdown seconds in ticker - [core.lua]
+- Fixed - Debug message color for "resumed" set to green - [core.lua]
+- Fixed - Debug message color for "opened" set to green - [core.lua]
+- Changed - "Dragonflight" to "The War Within" - [README.md]
+- Fixed - [release.yml]

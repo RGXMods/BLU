@@ -1,4 +1,8 @@
 --=====================================================================================
+-- BLU | Better Level Up! - retail.lua
+--=====================================================================================
+
+--=====================================================================================
 -- Event Registration
 --=====================================================================================
 function BLU:OnEnable()
@@ -9,11 +13,16 @@ function BLU:OnEnable()
     self:RegisterEvent("PET_BATTLE_LEVEL_CHANGED", "HandlePetBattleLevelChanged")
     self:RegisterEvent("ACHIEVEMENT_EARNED", "HandleAchievementEarned")
     self:RegisterEvent("HONOR_LEVEL_UPDATE", "HandleHonorLevelUpdate")
+    self:RegisterEvent("UPDATE_FACTION", "HandleUpdateFaction")
 end
 
 --=====================================================================================
 -- Event Handlers for Retail-specific Events
 --=====================================================================================
+function BLU:HandleUpdateFaction()
+    self:DelveLevelUpChatFrameHook()
+end
+
 function BLU:HandleRenownLevelChanged()
     if functionsHalted then 
         self:PrintDebugMessage("FUNCTIONS_HALTED")
@@ -21,8 +30,7 @@ function BLU:HandleRenownLevelChanged()
     end
     self:PrintDebugMessage("MAJOR_FACTION_RENOWN_LEVEL_CHANGED")
     local sound = SelectSound(self.db.profile["RenownSoundSelect"])
-    local volumeLevel = self.db.profile["RenownVolume"]
-    PlaySelectedSound(sound, volumeLevel, defaultSounds[5])
+    PlaySelectedSound(sound, self.db.profile["RenownVolume"], defaultSounds[5])
 end
 
 function BLU:HandlePerksActivityCompleted()
@@ -32,8 +40,7 @@ function BLU:HandlePerksActivityCompleted()
     end
     self:PrintDebugMessage("PERKS_ACTIVITY_COMPLETED")
     local sound = SelectSound(self.db.profile["PostSoundSelect"])
-    local volumeLevel = self.db.profile["PostVolume"]
-    PlaySelectedSound(sound, volumeLevel, defaultSounds[9])
+    PlaySelectedSound(sound, self.db.profile["PostVolume"], defaultSounds[9])
 end
 
 function BLU:HandlePetBattleLevelChanged()
@@ -43,8 +50,7 @@ function BLU:HandlePetBattleLevelChanged()
     end
     self:PrintDebugMessage("PET_BATTLE_LEVEL_CHANGED")
     local sound = SelectSound(self.db.profile["BattlePetLevelSoundSelect"])
-    local volumeLevel = self.db.profile["BattlePetLevelVolume"]
-    PlaySelectedSound(sound, volumeLevel, defaultSounds[2])
+    PlaySelectedSound(sound, self.db.profile["BattlePetLevelVolume"], defaultSounds[2])
 end
 
 function BLU:HandleAchievementEarned()
@@ -54,8 +60,7 @@ function BLU:HandleAchievementEarned()
     end
     self:PrintDebugMessage("ACHIEVEMENT_EARNED")
     local sound = SelectSound(self.db.profile["AchievementSoundSelect"])
-    local volumeLevel = self.db.profile["AchievementVolume"]
-    PlaySelectedSound(sound, volumeLevel, defaultSounds[1])
+    PlaySelectedSound(sound, self.db.profile["AchievementVolume"], defaultSounds[1])
 end
 
 function BLU:HandleHonorLevelUpdate()
@@ -65,37 +70,27 @@ function BLU:HandleHonorLevelUpdate()
     end
     self:PrintDebugMessage("HONOR_LEVEL_UPDATE")
     local sound = SelectSound(self.db.profile["HonorSoundSelect"])
-    local volumeLevel = self.db.profile["HonorVolume"]
-    PlaySelectedSound(sound, volumeLevel, defaultSounds[3])
+    PlaySelectedSound(sound, self.db.profile["HonorVolume"], defaultSounds[3])
 end
 
 --=====================================================================================
--- ChatFrame Hooks for Delve Level-Up Detection (Brann Bronzebeard)
+-- ChatFrame Hooks for Delve Level-Up Detection
 --=====================================================================================
 function BLU:DelveLevelUpChatFrameHook()
-    -- Ensure this hook is only added once
     if delveChatFrameHooked then return end
 
     ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", function(_, _, msg)
-        -- Debugging: Print the incoming message for analysis
-        BLU:DebugMessage("|cffffff00Incoming chat message:|r " .. msg)
-
-        -- Check if the message is a level-up announcement for Brann Bronzebeard
-        local level = string.match(msg, "Brann Bronzebeard has reached Level (%d+)")
+        self:PrintDebugMessage("Incoming chat message: " .. msg)
+        local level = string.match(msg, "Brann Bronzebeard has reached Level (%d+)%p?")
         if level then
-            BLU:DebugMessage("|cff00ff00Brann Bronzebeard has reached Level " .. level .. "|r")
-            -- Handle the detected level
+            self:PrintDebugMessage("Brann Bronzebeard has reached Level " .. level)
             self:DelveLevelUpDetected(level)
         else
-            -- If the message does not match, output a debug message
-            BLU:PrintDebugMessage("NO_DELVED_LEVEL_FOUND")
+            self:PrintDebugMessage("No Delve Level found in chat message.")
         end
-
-        -- Ensure the original message is not blocked
         return false
     end)
 
-    -- Set the flag to prevent re-hooking
     delveChatFrameHooked = true
 end
 
@@ -108,17 +103,12 @@ function BLU:DelveLevelUpDetected(level)
         return 
     end
     self:PrintDebugMessage("DELVE_LEVEL_UP_DETECTED", level)
-
-    -- Select and play the sound associated with delve level-up
     local sound = SelectSound(self.db.profile.DelveLevelUpSoundSelect)
     if not sound then
         self:PrintDebugMessage("ERROR_SOUND_NOT_FOUND")
         return
     end
-    local volumeLevel = self.db.profile.DelveLevelUpVolume
-    PlaySelectedSound(sound, volumeLevel, defaultSounds[6])
-
-    -- Add any additional logic here, such as triggering specific events or notifications
+    PlaySelectedSound(sound, self.db.profile.DelveLevelUpVolume, defaultSounds[6])
 end
 
 --=====================================================================================

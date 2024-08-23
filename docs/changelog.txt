@@ -1,3 +1,12 @@
+v4.7.1-------------------------------------------------------------------
+- Added - Persistent storage for `debugMode` and `showWelcomeMessage` states - [core.lua]
+- Added - New debug messages for loading and toggling `debugMode` and `showWelcomeMessage` - [core.lua]
+- Updated - Slash commands to support persistent state saving - [core.lua]
+- Updated - `OnInitialize` function to load states with debug messages - [core.lua]
+- Updated - Debugging for `DelveLevelUpChatFrameHook` - [retail.lua]
+- Fixed - Redundant code in debug message handling - [core.lua]
+- Fixed - Color alternation issue in options panel - [core.lua]
+- Added - Timer check to prevent multiple halt function timers - [core.lua]
 v4.7.0-------------------------------------------------------------------
 - Added - Delve Companion Level Up detection and sound configuration - [retail.lua, core.lua]
 - Added - Welcome message on login - [core.lua]

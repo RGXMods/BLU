@@ -1,4 +1,8 @@
 --=====================================================================================
+-- BLU | Better Level Up! - cata.lua
+--=====================================================================================
+
+--=====================================================================================
 -- Event Registration
 --=====================================================================================
 function BLU:OnEnable()
@@ -17,8 +21,7 @@ function BLU:HandleAchievementEarned()
     end
     self:PrintDebugMessage("ACHIEVEMENT_EARNED")
     local sound = SelectSound(self.db.profile["AchievementSoundSelect"])
-    local volumeLevel = self.db.profile["AchievementVolume"]
-    PlaySelectedSound(sound, volumeLevel, defaultSounds[1])
+    PlaySelectedSound(sound, self.db.profile["AchievementVolume"], defaultSounds[1])
 end
 
 --=====================================================================================

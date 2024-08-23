@@ -70,6 +70,58 @@ function BLU:HandleHonorLevelUpdate()
 end
 
 --=====================================================================================
+-- ChatFrame Hooks for Delve Level-Up Detection (Brann Bronzebeard)
+--=====================================================================================
+function BLU:DelveLevelUpChatFrameHook()
+    -- Ensure this hook is only added once
+    if delveChatFrameHooked then return end
+
+    ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", function(_, _, msg)
+        -- Debugging: Print the incoming message for analysis
+        BLU:DebugMessage("|cffffff00Incoming chat message:|r " .. msg)
+
+        -- Check if the message is a level-up announcement for Brann Bronzebeard
+        local level = string.match(msg, "Brann Bronzebeard has reached Level (%d+)")
+        if level then
+            BLU:DebugMessage("|cff00ff00Brann Bronzebeard has reached Level " .. level .. "|r")
+            -- Handle the detected level
+            self:DelveLevelUpDetected(level)
+        else
+            -- If the message does not match, output a debug message
+            BLU:PrintDebugMessage("NO_DELVED_LEVEL_FOUND")
+        end
+
+        -- Ensure the original message is not blocked
+        return false
+    end)
+
+    -- Set the flag to prevent re-hooking
+    delveChatFrameHooked = true
+end
+
+--=====================================================================================
+-- Handle Delve Level-Up Detection
+--=====================================================================================
+function BLU:DelveLevelUpDetected(level)
+    if functionsHalted then 
+        self:PrintDebugMessage("FUNCTIONS_HALTED")
+        return 
+    end
+    self:PrintDebugMessage("DELVE_LEVEL_UP_DETECTED", level)
+
+    -- Select and play the sound associated with delve level-up
+    local sound = SelectSound(self.db.profile.DelveLevelUpSoundSelect)
+    if not sound then
+        self:PrintDebugMessage("ERROR_SOUND_NOT_FOUND")
+        return
+    end
+    local volumeLevel = self.db.profile.DelveLevelUpVolume
+    PlaySelectedSound(sound, volumeLevel, defaultSounds[6])
+
+    -- Add any additional logic here, such as triggering specific events or notifications
+end
+
+--=====================================================================================
 -- Retail-specific Mute Sounds Function
 --=====================================================================================
 function BLU:MuteSounds()

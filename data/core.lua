@@ -18,6 +18,7 @@ local DEBUG_PREFIX = "[|cff808080DEBUG|r] "
 functionsHalted = false
 chatFrameHooked = false
 debugMode = false
+showWelcomeMessage = true -- Toggle for welcome message
 
 --=====================================================================================
 -- Debug Messages Table
@@ -62,7 +63,15 @@ local debugMessages = {
     TEST_QUEST_ACCEPT_SOUND = "|cffc586c0TestQuestAcceptSound|r triggered.",
     TEST_QUEST_SOUND = "|cffc586c0TestQuestSound|r triggered.",
     TEST_POST_SOUND = "|cffc586c0TestPostSound|r triggered.",
-    NO_RANK_FOUND = "|cffff0000No reputation rank increase found in chat message.|r"
+    TEST_DELVESOUND = "|cffc586c0TestDelveLevelUpSound|r triggered.",
+    NO_RANK_FOUND = "|cffff0000No reputation rank increase found in chat message.|r",
+    MAJOR_FACTION_RENOWN_LEVEL_CHANGED = "|cffffff00MAJOR_FACTION_RENOWN_LEVEL_CHANGED|r event triggered.",
+    PERKS_ACTIVITY_COMPLETED = "|cffffff00PERKS_ACTIVITY_COMPLETED|r event triggered.",
+    PET_BATTLE_LEVEL_CHANGED = "|cffffff00PET_BATTLE_LEVEL_CHANGED|r event triggered.",
+    ACHIEVEMENT_EARNED = "|cffffff00ACHIEVEMENT_EARNED|r event triggered.",
+    HONOR_LEVEL_UPDATE = "|cffffff00HONOR_LEVEL_UPDATE|r event triggered.",
+    DELVE_LEVEL_UP_DETECTED = "|cffffff00DELVE_LEVEL_UP_DETECTED|r event triggered for level: |cff00ff00%s|r.",
+    WELCOME_MESSAGE_DISPLAYED = "|cffc586c0Welcome message displayed|r."
 }
 
 --=====================================================================================
@@ -108,7 +117,7 @@ end
 -- Event Registration
 --=====================================================================================
 function BLU:RegisterSharedEvents()
-    self:RegisterEvent("PLAYER_LOGIN", "HandlePlayerEnteringWorld")
+    self:RegisterEvent("PLAYER_ENTERING_WORLD", "HandlePlayerEnteringWorld")
     self:RegisterEvent("PLAYER_LEVEL_UP", "HandlePlayerLevelUp")
     self:RegisterEvent("QUEST_ACCEPTED", "HandleQuestAccepted")
     self:RegisterEvent("QUEST_TURNED_IN", "HandleQuestTurnedIn")
@@ -205,7 +214,6 @@ end
 
 function BLU:HandlePlayerEnteringWorld(...)
     self:PrintDebugMessage("PLAYER_LOGIN")
-
     self:PrintDebugMessage("COUNTDOWN_START")
     local countdownTime = 15
     functionsHalted = true
@@ -222,6 +230,11 @@ function BLU:HandlePlayerEnteringWorld(...)
     end, 15)
 
     self:MuteSounds()
+
+    -- Display the welcome message if enabled
+    if showWelcomeMessage then
+        self:DisplayWelcomeMessage()
+    end
 end
 
 function BLU:HandlePlayerLevelUp()
@@ -255,6 +268,14 @@ function BLU:HandleQuestTurnedIn()
     local sound = SelectSound(self.db.profile["QuestSoundSelect"])
     local volumeLevel = self.db.profile["QuestVolume"]
     PlaySelectedSound(sound, volumeLevel, defaultSounds[8])
+end
+
+--=====================================================================================
+-- Display Welcome Message
+--=====================================================================================
+function BLU:DisplayWelcomeMessage()
+    print(BLU_PREFIX .. "Addon Loaded!")
+    self:PrintDebugMessage("WELCOME_MESSAGE_DISPLAYED")
 end
 
 --=====================================================================================
@@ -317,8 +338,6 @@ function BLU:ReputationChatFrameHook()
     chatFrameHooked = true
 end
 
-
-
 function BLU:ReputationRankIncrease(rank)
     if functionsHalted then 
         self:PrintDebugMessage("FUNCTIONS_HALTED")
@@ -333,7 +352,6 @@ function BLU:ReputationRankIncrease(rank)
     local volumeLevel = self.db.profile.RepVolume
     PlaySelectedSound(sound, volumeLevel, defaultSounds[6])
 end
-
 
 --=====================================================================================
 -- Test Sound Functions
@@ -402,6 +420,13 @@ function BLU:TestPostSound()
     PlaySelectedSound(sound, volumeLevel, defaultSounds[9])
 end
 
+function BLU:TestDelveLevelUpSound()
+    self:PrintDebugMessage("TEST_DELVESOUND")
+    local sound = SelectSound(self.db.profile["DelveLevelUpSoundSelect"])
+    local volumeLevel = self.db.profile["DelveLevelUpVolume"]
+    PlaySelectedSound(sound, volumeLevel, defaultSounds[6])
+end
+
 --=====================================================================================
 -- Slash Command
 --=====================================================================================
@@ -415,6 +440,10 @@ function BLU:SlashCommand(input)
             debugMode = true
             self:PrintDebugMessage("DEBUG_MODE_ENABLED")
         end
+    elseif input == "welcome" then
+        showWelcomeMessage = not showWelcomeMessage
+        local status = showWelcomeMessage and "|cff00ff00enabled|r" or "|cffff0000disabled|r"
+        print(BLU_PREFIX .. "Welcome message " .. status)
     elseif input == "enable" then
         self:Enable()
         print(BLU_PREFIX .. debugMessages["ADDON_ENABLED"])

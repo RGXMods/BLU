@@ -1,5 +1,1 @@
-- Fixed - Issue with `SelectSound` and `PlaySelectedSound` not being properly called in retail-specific event handlers - [retail.lua]
-- Updated - Converted `SelectSound` and `PlaySelectedSound` to methods of the `BLU` object for proper scoping - [retail.lua]
-- Fixed - Error caused by undefined `SelectSound` function in event handlers - [retail.lua]
-- Updated - Debugging for sound selection functions to improve error tracing - [retail.lua]
-- Added - Missing debug messages for `SelectSound` function calls - [retail.lua]
+- Fixed - Re-added 'testSound' functions - [core.lua]

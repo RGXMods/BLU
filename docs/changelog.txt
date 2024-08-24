@@ -1,3 +1,5 @@
+v4.7.4-------------------------------------------------------------------
+- Fixed - Re-added 'testSound' functions - [core.lua]
 v4.7.3-------------------------------------------------------------------
 - Fixed - Issue with `SelectSound` and `PlaySelectedSound` not being properly called in retail-specific event handlers - [retail.lua]
 - Updated - Converted `SelectSound` and `PlaySelectedSound` to methods of the `BLU` object for proper scoping - [retail.lua]

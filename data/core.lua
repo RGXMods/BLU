@@ -234,6 +234,69 @@ function BLU:HandleQuestTurnedIn()
     self:PlaySelectedSound(sound, self.db.profile["QuestVolume"], defaultSounds[8])
 end
 --=====================================================================================
+-- Test Sound Functions
+--=====================================================================================
+
+function BLU:TestAchievementSound()
+    self:PrintDebugMessage("TEST_ACHIEVEMENT_SOUND")
+    local sound = SelectSound(self.db.profile["AchievementSoundSelect"])
+    PlaySelectedSound(sound, self.db.profile["AchievementVolume"], defaultSounds[1])
+end
+
+function BLU:TestBattlePetLevelSound()
+    self:PrintDebugMessage("TEST_BATTLE_PET_LEVEL_SOUND")
+    local sound = SelectSound(self.db.profile["BattlePetLevelSoundSelect"])
+    PlaySelectedSound(sound, self.db.profile["BattlePetLevelVolume"], defaultSounds[2])
+end
+
+function BLU:TestHonorSound()
+    self:PrintDebugMessage("TEST_HONOR_SOUND")
+    local sound = SelectSound(self.db.profile["HonorSoundSelect"])
+    PlaySelectedSound(sound, self.db.profile["HonorVolume"], defaultSounds[3])
+end
+
+function BLU:TestLevelSound()
+    self:PrintDebugMessage("TEST_LEVEL_SOUND")
+    local sound = SelectSound(self.db.profile["LevelSoundSelect"])
+    PlaySelectedSound(sound, self.db.profile["LevelVolume"], defaultSounds[4])
+end
+
+function BLU:TestRenownSound()
+    self:PrintDebugMessage("TEST_RENOWN_SOUND")
+    local sound = SelectSound(self.db.profile["RenownSoundSelect"])
+    PlaySelectedSound(sound, self.db.profile["RenownVolume"], defaultSounds[5])
+end
+
+function BLU:TestRepSound()
+    self:PrintDebugMessage("TEST_REP_SOUND")
+    local sound = SelectSound(self.db.profile["RepSoundSelect"])
+    PlaySelectedSound(sound, self.db.profile["RepVolume"], defaultSounds[6])
+end
+
+function BLU:TestQuestAcceptSound()
+    self:PrintDebugMessage("TEST_QUEST_ACCEPT_SOUND")
+    local sound = SelectSound(self.db.profile["QuestAcceptSoundSelect"])
+    PlaySelectedSound(sound, self.db.profile["QuestAcceptVolume"], defaultSounds[7])
+end
+
+function BLU:TestQuestSound()
+    self:PrintDebugMessage("TEST_QUEST_SOUND")
+    local sound = SelectSound(self.db.profile["QuestSoundSelect"])
+    PlaySelectedSound(sound, self.db.profile["QuestVolume"], defaultSounds[8])
+end
+
+function BLU:TestPostSound()
+    self:PrintDebugMessage("TEST_POST_SOUND")
+    local sound = SelectSound(self.db.profile["PostSoundSelect"])
+    PlaySelectedSound(sound, self.db.profile["PostVolume"], defaultSounds[9])
+end
+
+function BLU:TestDelveLevelUpSound()
+    self:PrintDebugMessage("TEST_DELVESOUND")
+    local sound = SelectSound(self.db.profile["DelveLevelUpSoundSelect"])
+    PlaySelectedSound(sound, self.db.profile["DelveLevelUpVolume"], defaultSounds[6])
+end
+--=====================================================================================
 -- Slash Command
 --=====================================================================================
 function BLU:SlashCommand(input)

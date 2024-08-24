@@ -1,41 +1,17 @@
+-- core.lua
 --=====================================================================================
--- Event Handlers
+-- Sound Selection Functions
 --=====================================================================================
+function BLU:RandomSoundID()
+    self:PrintDebugMessage("SELECTING_RANDOM_SOUND_ID")
 
-function BLU:HandlePlayerLevelUp()
-    if functionsHalted then
-        self:PrintDebugMessage("FUNCTIONS_HALTED")
-        return
-    end
-    self:PrintDebugMessage("PLAYER_LEVEL_UP")
-    local sound = SelectSound(self.db.profile["LevelSoundSelect"])
-    if not sound then
-        self:PrintDebugMessage("ERROR_SOUND_NOT_FOUND")
-        return
-    end
-    local volumeLevel = self.db.profile["LevelVolume"]
-    PlaySelectedSound(sound, volumeLevel, defaultSounds[4])
-end
+    local validSoundIDs = {}
 
-function BLU:HandleQuestAccepted()
-    if functionsHalted then
-        self:PrintDebugMessage("FUNCTIONS_HALTED")
-        return
-    end
-    self:PrintDebugMessage("QUEST_ACCEPTED")
-    local sound = SelectSound(self.db.profile["QuestAcceptSoundSelect"])
-    if not sound then
-        self:PrintDebugMessage("ERROR_SOUND_NOT_FOUND")
-        return
-    end
-    local volumeLevel = self.db.profile["QuestAcceptVolume"]
-    PlaySelectedSound(sound, volumeLevel, defaultSounds[7])
-end
-
-function BLU:HandleQuestTurnedIn()
-    if functionsHalted then
-        self:PrintDebugMessage("FUNCTIONS_HALTED")
-        return
+    -- Collect all custom sound IDs
+    for soundID, soundList in pairs(sounds) do
+        for _, _ in pairs(soundList) do
+            table.insert(validSoundIDs, {table = sounds, id = soundID})
+        end
     end
     self:PrintDebugMessage("QUEST_TURNED_IN")
     local sound = SelectSound(self.db.profile["QuestSoundSelect"])
@@ -62,10 +38,16 @@ function BLU:HandleRenownLevelChanged()
     PlaySelectedSound(sound, volumeLevel, defaultSounds[5])
 end
 
-function BLU:HandlePerksActivityCompleted()
-    if functionsHalted then
-        self:PrintDebugMessage("FUNCTIONS_HALTED")
-        return
+function BLU:SelectSound(soundID)
+    self:PrintDebugMessage("SELECTING_SOUND", tostring(soundID))
+
+    -- If the sound ID is not provided or is set to random (2), return a random sound ID
+    if not soundID or soundID == 2 then
+        local randomSoundID = self:RandomSoundID()
+        if randomSoundID then
+            self:PrintDebugMessage("USING_RANDOM_SOUND_ID", randomSoundID.id)
+            return randomSoundID
+        end
     end
     self:PrintDebugMessage("PERKS_ACTIVITY_COMPLETED")
     local sound = SelectSound(self.db.profile["PostSoundSelect"])
@@ -77,38 +59,40 @@ function BLU:HandlePerksActivityCompleted()
     PlaySelectedSound(sound, volumeLevel, defaultSounds[9])
 end
 
-function BLU:HandlePetBattleLevelChanged()
-    if functionsHalted then
-        self:PrintDebugMessage("FUNCTIONS_HALTED")
+function BLU:PlaySelectedSound(sound, volumeLevel, defaultTable)
+    self:PrintDebugMessage("PLAYING_SOUND", sound.id, volumeLevel)
+
+    -- Do not play the sound if the volume level is set to 0
+    if volumeLevel == 0 then
+        self:PrintDebugMessage("VOLUME_LEVEL_ZERO")
         return
     end
-    self:PrintDebugMessage("PET_BATTLE_LEVEL_CHANGED")
-    local sound = SelectSound(self.db.profile["BattlePetLevelSoundSelect"])
-    if not sound then
-        self:PrintDebugMessage("ERROR_SOUND_NOT_FOUND")
-        return
+
+    -- Determine the sound file to play based on the sound ID and volume level
+    local soundFile
+    if sound and sound.table and sound.id then
+        soundFile = sound.table[sound.id][volumeLevel]
+    elseif defaultTable then
+        soundFile = defaultTable[volumeLevel]
+    end
+
+    self:PrintDebugMessage("SOUND_FILE_TO_PLAY", tostring(soundFile))
+
+    -- Play the sound file using the "MASTER" sound channel
+    if soundFile then
+        PlaySoundFile(soundFile, "MASTER")
+    else
+        self:PrintDebugMessage("ERROR_SOUND_NOT_FOUND", sound.id)
     end
     local volumeLevel = self.db.profile["BattlePetLevelVolume"]
     PlaySelectedSound(sound, volumeLevel, defaultSounds[2])
 end
 
-function BLU:HandleHonorLevelUpdate()
-    if functionsHalted then
-        self:PrintDebugMessage("FUNCTIONS_HALTED")
-        return
-    end
-    self:PrintDebugMessage("HONOR_LEVEL_UPDATE")
-    local sound = SelectSound(self.db.profile["HonorSoundSelect"])
-    if not sound then
-        self:PrintDebugMessage("ERROR_SOUND_NOT_FOUND")
-        return
-    end
-    local volumeLevel = self.db.profile["HonorVolume"]
-    PlaySelectedSound(sound, volumeLevel, defaultSounds[3])
-end
-
-function BLU:HandleAchievementEarned()
-    if functionsHalted then
+--=====================================================================================
+-- Event Handlers
+--=====================================================================================
+function BLU:HandlePlayerLevelUp()
+    if self.functionsHalted then 
         self:PrintDebugMessage("FUNCTIONS_HALTED")
         return
     end
@@ -122,8 +106,8 @@ function BLU:HandleAchievementEarned()
     PlaySelectedSound(sound, volumeLevel, defaultSounds[1])
 end
 
-function BLU:ReputationRankIncrease(rank)
-    if functionsHalted then
+function BLU:HandleQuestAccepted()
+    if self.functionsHalted then 
         self:PrintDebugMessage("FUNCTIONS_HALTED")
         return
     end
@@ -137,78 +121,204 @@ function BLU:ReputationRankIncrease(rank)
     PlaySelectedSound(sound, volumeLevel, defaultSounds[6])
 end
 
+function BLU:HandleQuestTurnedIn()
+    if self.functionsHalted then 
+        self:PrintDebugMessage("FUNCTIONS_HALTED")
+        return 
+    end
+end
+
+function BLU:HandleAchievementEarned()
+    if self.functionsHalted then 
+        self:PrintDebugMessage("FUNCTIONS_HALTED")
+        return 
+    end
+    self:PrintDebugMessage("ACHIEVEMENT_EARNED")
+    local sound = self:SelectSound(self.db.profile["AchievementSoundSelect"])
+    self:PlaySelectedSound(sound, self.db.profile["AchievementVolume"], defaultSounds[1])
+end
+
+function BLU:HandleHonorLevelUpdate()
+    if self.functionsHalted then 
+        self:PrintDebugMessage("FUNCTIONS_HALTED")
+        return 
+    end
+    self:PrintDebugMessage("HONOR_LEVEL_UPDATE")
+    local sound = self:SelectSound(self.db.profile["HonorSoundSelect"])
+    self:PlaySelectedSound(sound, self.db.profile["HonorVolume"], defaultSounds[5])
+end
+
+function BLU:HandleRenownLevelChanged()
+    if self.functionsHalted then 
+        self:PrintDebugMessage("FUNCTIONS_HALTED")
+        return 
+    end
+    self:PrintDebugMessage("MAJOR_FACTION_RENOWN_LEVEL_CHANGED")
+    local sound = self:SelectSound(self.db.profile["RenownSoundSelect"])
+    self:PlaySelectedSound(sound, self.db.profile["RenownVolume"], defaultSounds[6])
+end
+
+function BLU:HandlePetBattleLevelChanged()
+    if self.functionsHalted then 
+        self:PrintDebugMessage("FUNCTIONS_HALTED")
+        return 
+    end
+    self:PrintDebugMessage("PET_BATTLE_LEVEL_CHANGED")
+    local sound = self:SelectSound(self.db.profile["BattlePetLevelSoundSelect"])
+    self:PlaySelectedSound(sound, self.db.profile["BattlePetLevelVolume"], defaultSounds[2])
+end
+
+function BLU:HandlePerksActivityCompleted()
+    if self.functionsHalted then 
+        self:PrintDebugMessage("FUNCTIONS_HALTED")
+        return 
+    end
+    self:PrintDebugMessage("PERKS_ACTIVITY_COMPLETED")
+    local sound = self:SelectSound(self.db.profile["PostSoundSelect"])
+    self:PlaySelectedSound(sound, self.db.profile["PostVolume"], defaultSounds[9])
+end
+
+--=====================================================================================
+-- ChatFrame Hooks
+--=====================================================================================
 function BLU:ReputationChatFrameHook()
-    if not chatFrameHooked then
-        ChatFrame_AddMessageEventFilter("CHAT_MSG_COMBAT_FACTION_CHANGE", function(_, _, msg)
-            BLU:PrintDebugMessage("REPUTATION_CHAT_FRAME_HOOKED")
+    -- Ensure this hook is only added once
+    if self.chatFrameHooked then return end
 
-            local rankFound = false
-            if string.match(msg, "You are now Exalted with") then
-                BLU:PrintDebugMessage("RANK_FOUND_EXALTED")
-                BLU:ReputationRankIncrease("Exalted")
-                rankFound = true
-            elseif string.match(msg, "You are now Revered with") then
-                BLU:PrintDebugMessage("RANK_FOUND_REVERED")
-                BLU:ReputationRankIncrease("Revered")
-                rankFound = true
-            elseif string.match(msg, "You are now Honored with") then
-                BLU:PrintDebugMessage("RANK_FOUND_HONORED")
-                BLU:ReputationRankIncrease("Honored")
-                rankFound = true
-            elseif string.match(msg, "You are now Friendly with") then
-                BLU:PrintDebugMessage("RANK_FOUND_FRIENDLY")
-                BLU:ReputationRankIncrease("Friendly")
-                rankFound = true
-            elseif string.match(msg, "You are now Neutral with") then
-                BLU:PrintDebugMessage("RANK_FOUND_NEUTRAL")
-                BLU:ReputationRankIncrease("Neutral")
-                rankFound = true
-            elseif string.match(msg, "You are now Unfriendly with") then
-                BLU:PrintDebugMessage("RANK_FOUND_UNFRIENDLY")
-                BLU:ReputationRankIncrease("Unfriendly")
-                rankFound = true
-            elseif string.match(msg, "You are now Hostile with") then
-                BLU:PrintDebugMessage("RANK_FOUND_HOSTILE")
-                BLU:ReputationRankIncrease("Hostile")
-                rankFound = true
-            elseif string.match(msg, "You are now Hated with") then
-                BLU:PrintDebugMessage("RANK_FOUND_HATED")
-                BLU:ReputationRankIncrease("Hated")
-                rankFound = true
-            end
-
-            if not rankFound then
-                BLU:PrintDebugMessage("NO_RANK_FOUND")
-            end
-
-            return false
-        end)
-        chatFrameHooked = true
-    end
-end
-
---=====================================================================================
--- Slash Command
---=====================================================================================
-function BLU:SlashCommand(input)
-    if input == "debug" then
-        self:ToggleDebugMode()
-    elseif input == "enable" then
-        self:Enable()
-        print(BLU_PREFIX .. self:PrintDebugMessage("ADDON_ENABLED"))
-    elseif input == "disable" then
-        self:Disable()
-        print(BLU_PREFIX .. self:PrintDebugMessage("ADDON_DISABLED"))
-    else
-        Settings.OpenToCategory(self.optionsFrame.name)
-        if debugMode then
-            self:PrintDebugMessage("OPTIONS_PANEL_OPENED")
+    ChatFrame_AddMessageEventFilter("CHAT_MSG_COMBAT_FACTION_CHANGE", function(_, _, msg)
+        self:DebugMessage("|cffffff00Incoming chat message:|r " .. msg)
+        local rankFound = false
+        if string.match(msg, "You are now Exalted with") or string.match(msg, "Your Warband is now Exalted with") then
+            self:DebugMessage("|cff00ff00Rank found: Exalted|r")
+            self:ReputationRankIncrease("Exalted")
+            rankFound = true
+        elseif string.match(msg, "You are now Revered with") or string.match(msg, "Your Warband is now Revered with") then
+            self:DebugMessage("|cff00ff00Rank found: Revered|r")
+            self:ReputationRankIncrease("Revered")
+            rankFound = true
+        elseif string.match(msg, "You are now Honored with") or string.match(msg, "Your Warband is now Honored with") then
+            self:DebugMessage("|cff00ff00Rank found: Honored|r")
+            self:ReputationRankIncrease("Honored")
+            rankFound = true
+        elseif string.match(msg, "You are now Friendly with") or string.match(msg, "Your Warband is now Friendly with") then
+            self:DebugMessage("|cff00ff00Rank found: Friendly|r")
+            self:ReputationRankIncrease("Friendly")
+            rankFound = true
+        elseif string.match(msg, "You are now Neutral with") or string.match(msg, "Your Warband is now Neutral with") then
+            self:DebugMessage("|cff00ff00Rank found: Neutral|r")
+            self:ReputationRankIncrease("Neutral")
+            rankFound = true
+        elseif string.match(msg, "You are now Unfriendly with") or string.match(msg, "Your Warband is now Unfriendly with") then
+            self:DebugMessage("|cff00ff00Rank found: Unfriendly|r")
+            self:ReputationRankIncrease("Unfriendly")
+            rankFound = true
+        elseif string.match(msg, "You are now Hostile with") or string.match(msg, "Your Warband is now Hostile with") then
+            self:DebugMessage("|cff00ff00Rank found: Hostile|r")
+            self:ReputationRankIncrease("Hostile")
+            rankFound = true
+        elseif string.match(msg, "You are now Hated with") or string.match(msg, "Your Warband is now Hated with") then
+            self:DebugMessage("|cff00ff00Rank found: Hated|r")
+            self:ReputationRankIncrease("Hated")
+            rankFound = true
         end
-    end
+
+        if not rankFound then
+            self:PrintDebugMessage("NO_RANK_FOUND")
+        end
+
+        return false
+    end)
+
+    self.chatFrameHooked = true
 end
 
--- Register the Slash Command
-SLASH_BLUDEBUG1 = "/blu"
-SlashCmdList["BLUDEBUG"] = function(msg)
-    BLU:SlashCommand(msg)
+function BLU:ReputationRankIncrease(rank)
+    if self.functionsHalted then 
+        self:PrintDebugMessage("FUNCTIONS_HALTED")
+        return 
+    end
+    self:PrintDebugMessage("REPUTATION_RANK_INCREASE", rank)
+    local sound = self:SelectSound(self.db.profile.RepSoundSelect)
+    if not sound then
+        self:PrintDebugMessage("ERROR_SOUND_NOT_FOUND")
+        return
+    end
+    local volumeLevel = self.db.profile.RepVolume
+    self:PlaySelectedSound(sound, volumeLevel, defaultSounds[6])
+end
+
+--=====================================================================================
+-- Test Sound Functions
+--=====================================================================================
+function BLU:TestAchievementSound()
+    self:PrintDebugMessage("TEST_ACHIEVEMENT_SOUND")
+    local sound = self:SelectSound(self.db.profile.AchievementSoundSelect)
+    self:PlaySelectedSound(sound, self.db.profile.AchievementVolume, defaultSounds[1])
+end
+
+function BLU:TestBattlePetLevelSound()
+    self:PrintDebugMessage("TEST_BATTLE_PET_LEVEL_SOUND")
+    local sound = self:SelectSound(self.db.profile.BattlePetLevelSoundSelect)
+    self:PlaySelectedSound(sound, self.db.profile.BattlePetLevelVolume, defaultSounds[2])
+end
+
+function BLU:TestDelveLevelUpSound()
+    self:PrintDebugMessage("TEST_DELVESOUND")
+    local sound = self:SelectSound(self.db.profile.DelveLevelUpSoundSelect)
+    self:PlaySelectedSound(sound, self.db.profile.DelveLevelUpVolume, defaultSounds[3])
+end
+
+function BLU:TestHonorSound()
+    self:PrintDebugMessage("TEST_HONOR_SOUND")
+    local sound = self:SelectSound(self.db.profile.HonorSoundSelect)
+    self:PlaySelectedSound(sound, self.db.profile.HonorVolume, defaultSounds[5])
+end
+
+function BLU:TestLevelSound()
+    self:PrintDebugMessage("TEST_LEVEL_SOUND")
+    local sound = self:SelectSound(self.db.profile.LevelSoundSelect)
+    self:PlaySelectedSound(sound, self.db.profile.LevelVolume, defaultSounds[4])
+end
+
+function BLU:TestPostSound()
+    self:PrintDebugMessage("TEST_POST_SOUND")
+    local sound = self:SelectSound(self.db.profile.PostSoundSelect)
+    self:PlaySelectedSound(sound, self.db.profile.PostVolume, defaultSounds[9])
+end
+
+function BLU:TestQuestAcceptSound()
+    self:PrintDebugMessage("TEST_QUEST_ACCEPT_SOUND")
+    local sound = self:SelectSound(self.db.profile.QuestAcceptSoundSelect)
+    self:PlaySelectedSound(sound, self.db.profile.QuestAcceptVolume, defaultSounds[7])
+end
+
+function BLU:TestQuestSound()
+    self:PrintDebugMessage("TEST_QUEST_SOUND")
+    local sound = self:SelectSound(self.db.profile.QuestSoundSelect)
+    self:PlaySelectedSound(sound, self.db.profile.QuestVolume, defaultSounds[8])
+end
+
+function BLU:TestRenownSound()
+    self:PrintDebugMessage("TEST_RENOWN_SOUND")
+    local sound = self:SelectSound(self.db.profile.RenownSoundSelect)
+    self:PlaySelectedSound(sound, self.db.profile.RenownVolume, defaultSounds[6])
+end
+
+function BLU:TestRepSound()
+    self:PrintDebugMessage("TEST_REP_SOUND")
+    local sound = self:SelectSound(self.db.profile.RepSoundSelect)
+    self:PlaySelectedSound(sound, self.db.profile.RepVolume, defaultSounds[6])
+end
+
+--=====================================================================================
+-- Utility Functions
+--=====================================================================================
+function BLU:MuteSounds()
+    -- Placeholder for muting sound logic if needed
+end
+
+function BLU:DisplayWelcomeMessage()
+    -- Display the welcome message in the chat window
+    print(BLU_PREFIX .. L["WELCOME_MESSAGE"])
+    self:PrintDebugMessage("WELCOME_MESSAGE_DISPLAYED")
 end

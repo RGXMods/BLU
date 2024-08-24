@@ -1,3 +1,4 @@
+-- options.lua
 --=====================================================================================
 -- Default Profile Settings
 --=====================================================================================
@@ -207,8 +208,8 @@ BLU.options = {
                 RenownVolume = {
                     type = "range",
                     order = 3,
-                    name = "|cffffffffVolume|r",
-                    desc = "|cff05dffaAdjust Renown Rank-Up! Sound Volume|r",
+                    name = "|cff05dffaVolume|r",
+                    desc = "|cffffffffAdjust Renown Rank-Up! Sound Volume|r",
                     min = 0,
                     max = 3,
                     step = 1,

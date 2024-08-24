@@ -1,3 +1,8 @@
+v4.7.2-------------------------------------------------------------------
+- Added - [localization.lua] - [/data]
+- Moved - Localization table from [core.lua] to [localization.lua]
+- Fixed - Persistent saving of `showWelcomeMessage` toggle to the database - [core.lua]
+- Fixed - Duplicate `DisplayWelcomeMessage` function in [core.lua]
 v4.7.1-------------------------------------------------------------------
 - Added - Persistent storage for `debugMode` and `showWelcomeMessage` states - [core.lua]
 - Added - New debug messages for loading and toggling `debugMode` and `showWelcomeMessage` - [core.lua]

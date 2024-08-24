@@ -1,1 +1,3 @@
-- Fixed - Re-added 'testSound' functions - [core.lua]
+- Fixed - Test sound functions to correctly call `SelectSound` and `PlaySelectedSound` using `self:` for proper scope - [core.lua]
+- Fixed - Error caused by incorrect global calls in test sound functions - [core.lua]
+- Updated - Test sound functions to match the proper format, preventing nil value errors - [core.lua]

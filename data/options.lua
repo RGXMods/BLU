@@ -400,7 +400,7 @@ BLU.options = {
         versionHeader = {
             type = "header",
             order = 12,
-            name = function() return "|cff8080ff" .. (BLU.VersionNumber or "Version Unknown") .. "|r" end,
+            name = "|cff8080ff" .. VersionNumber .. "|r",
         },
     },
 }

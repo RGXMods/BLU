@@ -1,73 +1,88 @@
--- localization.lua
 --=====================================================================================
 -- BLU | Better Level Up! - localization.lua
 --=====================================================================================
-BLU_PREFIX = "[|cff05dffaBLU|r] "
-DEBUG_PREFIX = "[|cff808080DEBUG|r] "
+local colors = {
+    prefix = "|cff05dffa",     -- BLU Prefix Color
+    debug = "|cff808080",      -- Debug Prefix Color
+    success = "|cff00ff00",    -- Success/Enabled/Positive Color
+    error = "|cffff0000",      -- Error/Disabled/Negative Color
+    highlight = "|cff8080ff",  -- Highlighted Text Color
+    info = "|cffffff00",       -- Information/Warning Color
+    test = "|cffc586c0",       -- Test Message Color
+    sound = "|cffce9178"       -- Sound File Path Color
+}
+
+BLU_PREFIX = string.format("[%sBLU|r] ", colors.prefix)
+DEBUG_PREFIX = string.format("[%sDEBUG|r] ", colors.debug)
 
 --=====================================================================================
--- 
+-- Localization Strings
 --=====================================================================================
 L = {
     -- General Text
-    ADDON_DISABLED = "Addon |cffff0000disabled|r.",
-    ADDON_ENABLED = "Addon |cff00ff00enabled|r.",
-    SLASH_COMMAND_HELP = "Use |cff05dffa/blu debug|r to toggle debug mode, |cff05dffa/blu welcome|r to toggle the welcome message, or |cff05dffa/blu|r to open options panel.",
-    WELCOME_MESSAGE = "|cff00ff00Addon Loaded!|r Type |cff05dffa/blu|r to open options panel or |cff05dffa/blu help|r for more commands.",
-    WELCOME_MESSAGE_DISPLAYED = "Welcome message |cff00ff00displayed|r.",
-    
-    -- Debug Messages
-    COUNTDOWN_START = "Starting countdown: |cff8080ff15|r seconds|r remaining.",
-    COUNTDOWN_TICK = "|cff8080ff%d|r seconds|r remaining.",
-    DEBUG_MODE_DISABLED = "Debug mode |cffff0000disabled|r.",
-    DEBUG_MODE_ENABLED = "Debug mode |cff00ff00enabled|r.",
-    DEBUG_MODE_LOADED = "Debug mode loaded: |cff8080ff%s|r.",
-    DEBUG_MODE_TOGGLED = "Debug mode toggled: |cff8080ff%s|r.",
-    DELVE_LEVEL_UP_DETECTED = "|cffffff00DELVE_LEVEL_UP_DETECTED|r event triggered for level: |cff00ff00%s|r.",
-    ENABLING_ADDON = "Enabling addon.",
-    ERROR_SOUND_NOT_FOUND = "|cffff0000Sound file not found for sound ID: |cff8080ff%s|r",
-    FUNCTIONS_HALTED = "Functions halted for |cff8080ff15|r seconds|r.",
-    FUNCTIONS_RESUMED = "Functions |cff00ff00resumed|r after pause.",
-    INITIALIZING_ADDON = "Initializing addon.",
-    INVALID_PARAMETERS = "|cffff0000Invalid parameters for event: |cff8080ff%s|r",
-    MAJOR_FACTION_RENOWN_LEVEL_CHANGED = "|cffffff00MAJOR_FACTION_RENOWN_LEVEL_CHANGED|r event triggered.",
-    MUTE_SOUND = "Muting sound with ID: |cff8080ff%s|r.",
-    NO_RANK_FOUND = "|cffff0000No reputation rank increase found in chat message.|r",
-    NO_VALID_SOUND_IDS = "|cffff0000No valid sound IDs found.|r",
-    OPTIONS_PANEL_OPENED = "Options panel |cff00ff00opened|r.",
-    PERKS_ACTIVITY_COMPLETED = "|cffffff00PERKS_ACTIVITY_COMPLETED|r event triggered.",
-    PET_BATTLE_LEVEL_CHANGED = "|cffffff00PET_BATTLE_LEVEL_CHANGED|r event triggered.",
-    PLAYER_LEVEL_UP = "|cffffff00PLAYER_LEVEL_UP|r event triggered.",
-    PLAYER_LOGIN = "|cffffff00PLAYER_LOGIN|r event triggered.",
-    PLAYING_SOUND = "Playing sound with ID: |cff8080ff%s|r and volume level: |cff8080ff%s|r",
-    QUEST_ACCEPTED = "|cffffff00QUEST_ACCEPTED|r event triggered.",
-    QUEST_TURNED_IN = "|cffffff00QUEST_TURNED_IN|r event triggered.",
-    RANDOM_SOUND_ID_SELECTED = "Random sound ID selected: |cff8080ff%s|r",
-    REPUTATION_CHAT_FRAME_HOOKED = "Reputation chat frame hooked.",
-    REPUTATION_RANK_INCREASE = "|cffffff00REPUTATION_RANK_INCREASE|r event triggered for rank: |cff00ff00%s|r.",
-    SELECTING_RANDOM_SOUND_ID = "Selecting a random sound ID...",
-    SELECTING_SOUND = "Selecting sound with ID: |cff8080ff%s|r",
-    SHOW_WELCOME_MESSAGE_LOADED = "Welcome message setting loaded: |cff8080ff%s|r.",
-    SHOW_WELCOME_MESSAGE_TOGGLED = "Welcome message setting toggled: |cff8080ff%s|r.",
-    SOUND_FILE_TO_PLAY = "Sound file to play: |cffce9178%s|r",
-    TEST_ACHIEVEMENT_SOUND = "|cffc586c0TestAchievementSound|r triggered.",
-    TEST_BATTLE_PET_LEVEL_SOUND = "|cffc586c0TestBattlePetLevelSound|r triggered.",
-    TEST_DELVESOUND = "|cffc586c0TestDelveLevelUpSound|r triggered.",
-    TEST_HONOR_SOUND = "|cffc586c0TestHonorSound|r triggered.",
-    TEST_LEVEL_SOUND = "|cffc586c0TestLevelSound|r triggered.",
-    TEST_POST_SOUND = "|cffc586c0TestPostSound|r triggered.",
-    TEST_QUEST_ACCEPT_SOUND = "|cffc586c0TestQuestAcceptSound|r triggered.",
-    TEST_QUEST_SOUND = "|cffc586c0TestQuestSound|r triggered.",
-    TEST_RENOWN_SOUND = "|cffc586c0TestRenownSound|r triggered.",
-    TEST_REP_SOUND = "|cffc586c0TestRepSound|r triggered.",
-    USING_RANDOM_SOUND_ID = "Using random sound ID: |cff8080ff%s|r",
-    USING_SPECIFIED_SOUND_ID = "Using specified sound ID: |cff8080ff%s|r",
-    VOLUME_LEVEL_ZERO = "|cffff0000Volume level is |cff8080ff0|r, sound not played.|r",
+    ADDON_DISABLED = string.format("Addon %sdisabled|r.", colors.error),
+    ADDON_ENABLED = string.format("Addon %senabled|r.", colors.success),
+    SLASH_COMMAND_HELP = string.format("Use %s/blu debug|r to toggle debug mode, %s/blu welcome|r to toggle the welcome message, or %s/blu|r to open options panel.", colors.prefix, colors.prefix, colors.prefix),
+    WELCOME_MESSAGE = string.format("%sAddon Loaded!|r Type %s/blu|r to open options panel or %s/blu help|r for more commands.", colors.success, colors.prefix, colors.prefix),
+    WELCOME_MESSAGE_DISPLAYED = string.format("Welcome message %sdisplayed|r.", colors.success),
+    WELCOME_MSG_ENABLED = string.format("Welcome message %senabled|r.", colors.success),
+    WELCOME_MSG_DISABLED = string.format("Welcome message %sdisabled|r.", colors.error),
+    DEBUG_MODE_STATUS = "Debug mode %s.",
+    DEBUG_MODE_TOGGLED = string.format("Debug mode toggled: %s%%s|r.", colors.highlight),
+    SHOW_WELCOME_MESSAGE_TOGGLED = string.format("Welcome message toggled: %s%%s|r.", colors.highlight),
+    OPTIONS_REGISTERED = "Options registered successfully.",
 
-    -- Additional Suggestions
-    PROCESSING_SLASH_COMMAND = "Processing slash command: |cff8080ff%s|r.",
-    UNKNOWN_SLASH_COMMAND = "Unknown slash command: |cff8080ff%s|r.",
-    EVENT_REGISTERED = "Event registered: |cff8080ff%s|r.",
-    ERROR_INITIALIZING_ADDON = "|cffff0000Error initializing addon: |cff8080ff%s|r.",
-    MUTING_SOUNDS_FOR_VERSION = "Muting sounds for game version: |cff8080ff%s|r.",
+    -- Event Messages
+    PLAYER_LEVEL_UP = string.format("%sPLAYER_LEVEL_UP|r event triggered.", colors.info),
+    QUEST_ACCEPTED = string.format("%sQUEST_ACCEPTED|r event triggered.", colors.info),
+    QUEST_TURNED_IN = string.format("%sQUEST_TURNED_IN|r event triggered.", colors.info),
+    ACHIEVEMENT_EARNED = string.format("%sACHIEVEMENT_EARNED|r event triggered.", colors.info),
+    HONOR_LEVEL_UPDATE = string.format("%sHONOR_LEVEL_UPDATE|r event triggered.", colors.info),
+    MAJOR_FACTION_RENOWN_LEVEL_CHANGED = string.format("%sMAJOR_FACTION_RENOWN_LEVEL_CHANGED|r event triggered.", colors.info),
+    PET_BATTLE_LEVEL_CHANGED = string.format("%sPET_BATTLE_LEVEL_CHANGED|r event triggered.", colors.info),
+    PERKS_ACTIVITY_COMPLETED = string.format("%sPERKS_ACTIVITY_COMPLETED|r event triggered.", colors.info),
+    PERKS_ACTIVITY_COMPLETED_MSG = string.format("%sPerks Activity Completed:|r %%s", colors.info),
+    PERKS_ACTIVITY_ERROR = string.format("%sError: Activity name not found.|r", colors.error),
+    DELVE_LEVEL_UP_DETECTED = string.format("%sDELVE_LEVEL_UP_DETECTED|r event triggered for level: %s%%s|r.", colors.info, colors.success),
+    BRANN_LEVEL_FOUND = string.format("%sBrann Bronzebeard has reached Level %%s|r.", colors.info),
+    NO_BRANN_LEVEL_FOUND = string.format("%sNo Delve Level found in chat message.|r", colors.error),
+    REPUTATION_RANK_INCREASE = string.format("%sREPUTATION_RANK_INCREASE|r event triggered for rank: %s%%s|r.", colors.info, colors.success),
+
+    -- Debug Messages
+    FUNCTIONS_HALTED = string.format("Functions halted for %s15|r seconds|r.", colors.highlight),
+    FUNCTIONS_RESUMED = string.format("Functions %sresumed|r after pause.", colors.success),
+    NO_RANK_FOUND = string.format("%sNo reputation rank increase found in chat message.|r", colors.error),
+    NO_VALID_SOUND_IDS = string.format("%sNo valid sound IDs found.|r", colors.error),
+    RANDOM_SOUND_ID_SELECTED = string.format("Random sound ID selected: %s%%s|r", colors.highlight),
+    SELECTING_SOUND = string.format("Selecting sound with ID: %s%%s|r", colors.highlight),
+    USING_RANDOM_SOUND_ID = string.format("Using random sound ID: %s%%s|r", colors.highlight),
+    USING_SPECIFIED_SOUND_ID = string.format("Using specified sound ID: %s%%s|r", colors.highlight),
+    PLAYING_SOUND = string.format("Playing sound with ID: %s%%s|r and volume level: %s%%s|r", colors.highlight, colors.highlight),
+    VOLUME_LEVEL_ZERO = string.format("%sVolume level is %s0|r, sound not played.|r", colors.error, colors.highlight),
+    SOUND_FILE_TO_PLAY = string.format("Sound file to play: %s%%s|r", colors.sound),
+    ERROR_SOUND_NOT_FOUND = string.format("%sSound file not found for sound ID: %s%%s|r", colors.error, colors.highlight),
+    PROCESSING_SLASH_COMMAND = string.format("Processing slash command: %s%%s|r.", colors.highlight),
+    UNKNOWN_SLASH_COMMAND = string.format("Unknown slash command: %s%%s|r.", colors.highlight),
+    OPTIONS_PANEL_OPENED = string.format("Options panel %sopened|r.", colors.success),
+    DEBUG_MODE_DISABLED = string.format("%sdisabled|r", colors.error),
+    DEBUG_MODE_ENABLED = string.format("%senabled|r", colors.success),
+    ERROR_UNKNOWN_GAME_VERSION = "Unknown game version detected.",
+    GAME_VERSION = "Detected game version: %s.",
+    MUTING_SOUND = string.format("Muting sound with ID: %s%%s|r", colors.highlight),
+    NO_SOUNDS_TO_MUTE = string.format("%sNo sounds to mute for this game version.|r", colors.error),
+    ERROR_OPTIONS_NOT_INITIALIZED = string.format("%sOptions not initialized properly.|r", colors.error),
+    EVENTS_REGISTERED = "All shared events registered successfully.",
+    HALT_TIMER_RUNNING = string.format("Halt timer already running. %sNo new timer started.|r", colors.info),
+
+    -- New Test Sound Debug Messages
+    TEST_ACHIEVEMENT_SOUND = string.format("%sTestAchievementSound|r triggered.", colors.test),
+    TEST_BATTLE_PET_LEVEL_SOUND = string.format("%sTestBattlePetLevelSound|r triggered.", colors.test),
+    TEST_DELVESOUND = string.format("%sTestDelveLevelUpSound|r triggered.", colors.test),
+    TEST_HONOR_SOUND = string.format("%sTestHonorSound|r triggered.", colors.test),
+    TEST_LEVEL_SOUND = string.format("%sTestLevelSound|r triggered.", colors.test),
+    TEST_POST_SOUND = string.format("%sTestPostSound|r triggered.", colors.test),
+    TEST_QUEST_ACCEPT_SOUND = string.format("%sTestQuestAcceptSound|r triggered.", colors.test),
+    TEST_QUEST_SOUND = string.format("%sTestQuestSound|r triggered.", colors.test),
+    TEST_RENOWN_SOUND = string.format("%sTestRenownSound|r triggered.", colors.test),
+    TEST_REP_SOUND = string.format("%sTestRepSound|r triggered.", colors.test),
 }

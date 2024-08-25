@@ -4,6 +4,11 @@
 BLU = LibStub("AceAddon-3.0"):NewAddon("BLU", "AceEvent-3.0", "AceConsole-3.0")
 
 --=====================================================================================
+-- Version Number
+--=====================================================================================
+VersionNumber = C_AddOns.GetAddOnMetadata("BLU", "Version")
+
+--=====================================================================================
 -- Libraries and Variables
 --=====================================================================================
 local AC = LibStub("AceConfig-3.0")
@@ -13,6 +18,7 @@ local DEBUG_PREFIX = "[|cff808080DEBUG|r] "
 
 BLU.functionsHalted = false
 BLU.chatFrameHooked = false
+BLU.delveChatFrameHooked = false
 BLU.debugMode = false
 BLU.showWelcomeMessage = true
 BLU.haltTimerRunning = false
@@ -25,20 +31,37 @@ function BLU:RegisterSlashCommands()
 end
 
 function BLU:HandleSlashCommands(input)
-    if not input or input:trim() == "" then
-        -- Correct method to open the options panel
+    input = input:trim()
+    if input == "" then
         Settings.OpenToCategory(self.optionsFrame.name)
-    elseif input:trim() == "debug" then
-        self.debugMode = not self.debugMode
-        self:PrintDebugMessage("Debug mode toggled: " .. tostring(self.debugMode))
-    elseif input:trim() == "welcome" then
-        self.showWelcomeMessage = not self.showWelcomeMessage
-        self:Print("Welcome message toggled: " .. tostring(self.showWelcomeMessage))
+        if self.debugMode then
+            self:PrintDebugMessage("OPTIONS_PANEL_OPENED")
+        end
+    elseif input == "debug" then
+        self:ToggleDebugMode()
+    elseif input == "welcome" then
+        self:ToggleWelcomeMessage()
     else
-        self:Print("Unknown command. Type '/blu' for options.")
+        self:PrintDebugMessage("UNKNOWN_SLASH_COMMAND", input)
+        print(BLU_PREFIX .. L["SLASH_COMMAND_HELP"])
     end
 end
 
+function BLU:ToggleDebugMode()
+    self.debugMode = not self.debugMode
+    self.db.profile.debugMode = self.debugMode
+    local status = self.debugMode and L["DEBUG_MODE_ENABLED"] or L["DEBUG_MODE_DISABLED"]
+    print(BLU_PREFIX .. status)
+    self:PrintDebugMessage("DEBUG_MODE_TOGGLED", tostring(self.debugMode))
+end
+
+function BLU:ToggleWelcomeMessage()
+    self.showWelcomeMessage = not self.showWelcomeMessage
+    self.db.profile.showWelcomeMessage = self.showWelcomeMessage
+    local status = self.showWelcomeMessage and L["WELCOME_MSG_ENABLED"] or L["WELCOME_MSG_DISABLED"]
+    print(BLU_PREFIX .. status)
+    self:PrintDebugMessage("SHOW_WELCOME_MESSAGE_TOGGLED", tostring(self.showWelcomeMessage))
+end
 
 --=====================================================================================
 -- Game Version Handling
@@ -65,17 +88,15 @@ end
 -- Mute Sounds Function
 --=====================================================================================
 function BLU:MuteSounds()
-    local gameVersion = self:GetGameVersion()
-    local soundsToMute = muteSoundIDs[gameVersion]
+    local soundsToMute = muteSoundIDs[self:GetGameVersion()]
 
-    if not soundsToMute or #soundsToMute == 0 then
+    if soundsToMute and #soundsToMute > 0 then
+        for _, soundID in ipairs(soundsToMute) do
+            MuteSoundFile(soundID)
+            self:PrintDebugMessage("MUTING_SOUND", soundID)
+        end
+    else
         self:PrintDebugMessage("NO_SOUNDS_TO_MUTE")
-        return
-    end
-
-    for _, soundID in ipairs(soundsToMute) do
-        MuteSoundFile(soundID)
-        self:PrintDebugMessage("MUTING_SOUND", soundID)
     end
 end
 
@@ -83,26 +104,17 @@ end
 -- Initialization
 --=====================================================================================
 function BLU:OnInitialize()
-    -- Load saved states
     self.db = LibStub("AceDB-3.0"):New("BLUDB", self.defaults, true)
     self.debugMode = self.db.profile.debugMode or false
     self.showWelcomeMessage = self.db.profile.showWelcomeMessage or true
 
-    -- Register slash commands
     self:RegisterSlashCommands()
-
-    -- Delay getting VersionNumber until PLAYER_LOGIN
     self:RegisterEvent("PLAYER_LOGIN", "OnPlayerLogin")
 end
 
 function BLU:OnPlayerLogin()
-    -- Initialize options based on game version
     self:InitializeOptions()
-
-    -- Register shared events
     self:RegisterSharedEvents()
-
-    -- Mute sounds based on the game version
     self:MuteSounds()
 end
 
@@ -112,7 +124,6 @@ end
 function BLU:InitializeOptions()
     local version = self:GetGameVersion()
 
-    -- Ensure BLU.options is initialized
     if not self.options or not self.options.args then
         self:PrintDebugMessage("ERROR_OPTIONS_NOT_INITIALIZED")
         return
@@ -122,45 +133,27 @@ function BLU:InitializeOptions()
         self:RemoveOptionsForVersion(version)
     end
 
-    -- Register options
     AC:RegisterOptionsTable("BLU_Options", self.options)
     self.optionsFrame = ACD:AddToBlizOptions("BLU_Options", "Better Level Up!")
-    self:PrintDebugMessage("OPTIONS_REGISTERED")
 
-    -- Register profiles
     local profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
     AC:RegisterOptionsTable("BLU_Profiles", profiles)
     ACD:AddToBlizOptions("BLU_Profiles", "Profiles", "Better Level Up!")
+    self:PrintDebugMessage("OPTIONS_REGISTERED")
 end
 
 function BLU:RemoveOptionsForVersion(version)
-    self.options.args = self.options.args or {}
     if version == "vanilla" then
-        -- Remove options not applicable to Vanilla
-        self.options.args.group2 = nil -- Remove Achievements
-        self.options.args.group3 = nil -- Remove Battle Pet Level-Up
-        self.options.args.group4 = nil -- Remove Honor Rank-Up
-        self.options.args.group9 = nil -- Remove Renown Rank-Up
-        self.options.args.group11 = nil -- Remove Trade Post Activity Complete
-
-        -- Remove the associated profile settings for Vanilla
-        self.defaults.profile.AchievementSoundSelect = nil
-        self.defaults.profile.BattlePetLevelSoundSelect = nil
-        self.defaults.profile.HonorSoundSelect = nil
-        self.defaults.profile.RenownSoundSelect = nil
-        self.defaults.profile.PostSoundSelect = nil
+        self.options.args.group2 = nil
+        self.options.args.group3 = nil
+        self.options.args.group4 = nil
+        self.options.args.group9 = nil
+        self.options.args.group11 = nil
     elseif version == "cata" then
-        -- Remove options not applicable to Cataclysm
-        self.options.args.group3 = nil -- Remove Battle Pet Level-Up
-        self.options.args.group4 = nil -- Remove Honor Rank-Up
-        self.options.args.group9 = nil -- Remove Renown Rank-Up
-        self.options.args.group11 = nil -- Remove Trade Post Activity Complete
-
-        -- Remove the associated profile settings for Cataclysm
-        self.defaults.profile.BattlePetLevelSoundSelect = nil
-        self.defaults.profile.HonorSoundSelect = nil
-        self.defaults.profile.RenownSoundSelect = nil
-        self.defaults.profile.PostSoundSelect = nil
+        self.options.args.group3 = nil
+        self.options.args.group4 = nil
+        self.options.args.group9 = nil
+        self.options.args.group11 = nil
     end
 end
 
@@ -170,32 +163,26 @@ end
 function BLU:RegisterSharedEvents()
     local version = self:GetGameVersion()
 
-    -- Register events based on version
+    local events = {
+        PLAYER_ENTERING_WORLD = "HandlePlayerEnteringWorld",
+        PLAYER_LEVEL_UP = "HandlePlayerLevelUp",
+        QUEST_ACCEPTED = "HandleQuestAccepted",
+        QUEST_TURNED_IN = "HandleQuestTurnedIn",
+        CHAT_MSG_COMBAT_FACTION_CHANGE = "ReputationChatFrameHook"
+    }
+
     if version == "retail" then
-        self:RegisterEvent("PLAYER_ENTERING_WORLD", "HandlePlayerEnteringWorld")
-        self:RegisterEvent("PLAYER_LEVEL_UP", "HandlePlayerLevelUp")
-        self:RegisterEvent("QUEST_ACCEPTED", "HandleQuestAccepted")
-        self:RegisterEvent("QUEST_TURNED_IN", "HandleQuestTurnedIn")
-        self:RegisterEvent("CHAT_MSG_COMBAT_FACTION_CHANGE", "ReputationChatFrameHook")
-        self:RegisterEvent("MAJOR_FACTION_RENOWN_LEVEL_CHANGED", "HandleRenownLevelChanged")
-        self:RegisterEvent("PERKS_ACTIVITY_COMPLETED", "HandlePerksActivityCompleted")
-        self:RegisterEvent("PET_BATTLE_LEVEL_CHANGED", "HandlePetBattleLevelChanged")
-        self:RegisterEvent("ACHIEVEMENT_EARNED", "HandleAchievementEarned")
-        self:RegisterEvent("HONOR_LEVEL_UPDATE", "HandleHonorLevelUpdate")
+        events.MAJOR_FACTION_RENOWN_LEVEL_CHANGED = "HandleRenownLevelChanged"
+        events.PERKS_ACTIVITY_COMPLETED = "HandlePerksActivityCompleted"
+        events.PET_BATTLE_LEVEL_CHANGED = "HandlePetBattleLevelChanged"
+        events.ACHIEVEMENT_EARNED = "HandleAchievementEarned"
+        events.HONOR_LEVEL_UPDATE = "HandleHonorLevelUpdate"
     elseif version == "cata" then
-        self:RegisterEvent("PLAYER_ENTERING_WORLD", "HandlePlayerEnteringWorld")
-        self:RegisterEvent("PLAYER_LEVEL_UP", "HandlePlayerLevelUp")
-        self:RegisterEvent("QUEST_ACCEPTED", "HandleQuestAccepted")
-        self:RegisterEvent("QUEST_TURNED_IN", "HandleQuestTurnedIn")
-        self:RegisterEvent("CHAT_MSG_COMBAT_FACTION_CHANGE", "ReputationChatFrameHook")
-        self:RegisterEvent("ACHIEVEMENT_EARNED", "HandleAchievementEarned")
-    elseif version == "vanilla" then
-        -- Vanilla-specific events (if any)
-        self:RegisterEvent("PLAYER_ENTERING_WORLD", "HandlePlayerEnteringWorld")
-        self:RegisterEvent("PLAYER_LEVEL_UP", "HandlePlayerLevelUp")
-        self:RegisterEvent("QUEST_ACCEPTED", "HandleQuestAccepted")
-        self:RegisterEvent("QUEST_TURNED_IN", "HandleQuestTurnedIn")
-        self:RegisterEvent("CHAT_MSG_COMBAT_FACTION_CHANGE", "ReputationChatFrameHook")
+        events.ACHIEVEMENT_EARNED = "HandleAchievementEarned"
+    end
+
+    for event, handler in pairs(events) do
+        self:RegisterEvent(event, handler)
     end
 
     self:PrintDebugMessage("EVENTS_REGISTERED")
@@ -204,36 +191,36 @@ end
 --=====================================================================================
 -- Handle Player Entering World
 --=====================================================================================
-function BLU:HandlePlayerEnteringWorld(...)
-    if self.haltTimerRunning then
-        self:PrintDebugMessage("Halt timer already running. No new timer started.")
-        return
-    end
+function BLU:HandlePlayerEnteringWorld()
+    if not self.haltTimerRunning then
+        self.haltTimerRunning = true
+        self.functionsHalted = true
+        local countdownTime = 15
 
-    self:PrintDebugMessage("PLAYER_LOGIN")
-    self:PrintDebugMessage("COUNTDOWN_START")
-    local countdownTime = 15
-    self.functionsHalted = true
-    self.haltTimerRunning = true -- Mark the timer as running
+        C_Timer.NewTicker(1, function()
+            countdownTime = countdownTime - 1
+            self:PrintDebugMessage("COUNTDOWN_TICK", countdownTime)
+            if countdownTime <= 0 then
+                self.functionsHalted = false
+                self.haltTimerRunning = false
+                self:PrintDebugMessage("FUNCTIONS_RESUMED")
+            end
+        end, 15)
 
-    C_Timer.NewTicker(1, function()
-        countdownTime = countdownTime - 1
-        self:PrintDebugMessage("COUNTDOWN_TICK", countdownTime)
+        self:MuteSounds()
 
-        if countdownTime <= 0 then
-            self.functionsHalted = false
-            self.haltTimerRunning = false -- Reset the flag when the timer ends
-            self:PrintDebugMessage("FUNCTIONS_RESUMED")
+        if self.showWelcomeMessage then
+            self:DisplayWelcomeMessage()
         end
-    end, 15)
-
-    -- Mute sounds based on the game version
-    self:PrintDebugMessage("MUTING_SOUNDS_FOR_VERSION", self:GetGameVersion())
-    self:MuteSounds()
-
-    -- Check the welcome message setting before displaying
-    if self.showWelcomeMessage then
-        self:PrintDebugMessage("WELCOME_MESSAGE_DISPLAYED")
-        self:DisplayWelcomeMessage()
+    else
+        self:PrintDebugMessage("HALT_TIMER_RUNNING")
     end
-end -- <<--- Add this missing end statement to close the function properly
+end
+
+--=====================================================================================
+-- Display Welcome Message
+--=====================================================================================
+function BLU:DisplayWelcomeMessage()
+    print(BLU_PREFIX .. L["WELCOME_MESSAGE"])
+    self:PrintDebugMessage("WELCOME_MESSAGE_DISPLAYED")
+end

@@ -1,92 +1,6 @@
--- core.lua
 --=====================================================================================
--- Sound Selection Functions
+-- BLU | Better Level Up!
 --=====================================================================================
-function BLU:RandomSoundID()
-    self:PrintDebugMessage("SELECTING_RANDOM_SOUND_ID")
-
-    local validSoundIDs = {}
-
-    -- Collect all custom sound IDs
-    for soundID, soundList in pairs(sounds) do
-        for _, _ in pairs(soundList) do
-            table.insert(validSoundIDs, {table = sounds, id = soundID})
-        end
-    end
-    self:PrintDebugMessage("QUEST_TURNED_IN")
-    local sound = SelectSound(self.db.profile["QuestSoundSelect"])
-    if not sound then
-        self:PrintDebugMessage("ERROR_SOUND_NOT_FOUND")
-        return
-    end
-    local volumeLevel = self.db.profile["QuestVolume"]
-    PlaySelectedSound(sound, volumeLevel, defaultSounds[8])
-end
-
-function BLU:HandleRenownLevelChanged()
-    if functionsHalted then
-        self:PrintDebugMessage("FUNCTIONS_HALTED")
-        return
-    end
-    self:PrintDebugMessage("MAJOR_FACTION_RENOWN_LEVEL_CHANGED")
-    local sound = SelectSound(self.db.profile["RenownSoundSelect"])
-    if not sound then
-        self:PrintDebugMessage("ERROR_SOUND_NOT_FOUND")
-        return
-    end
-    local volumeLevel = self.db.profile["RenownVolume"]
-    PlaySelectedSound(sound, volumeLevel, defaultSounds[5])
-end
-
-function BLU:SelectSound(soundID)
-    self:PrintDebugMessage("SELECTING_SOUND", tostring(soundID))
-
-    -- If the sound ID is not provided or is set to random (2), return a random sound ID
-    if not soundID or soundID == 2 then
-        local randomSoundID = self:RandomSoundID()
-        if randomSoundID then
-            self:PrintDebugMessage("USING_RANDOM_SOUND_ID", randomSoundID.id)
-            return randomSoundID
-        end
-    end
-    self:PrintDebugMessage("PERKS_ACTIVITY_COMPLETED")
-    local sound = SelectSound(self.db.profile["PostSoundSelect"])
-    if not sound then
-        self:PrintDebugMessage("ERROR_SOUND_NOT_FOUND")
-        return
-    end
-    local volumeLevel = self.db.profile["PostVolume"]
-    PlaySelectedSound(sound, volumeLevel, defaultSounds[9])
-end
-
-function BLU:PlaySelectedSound(sound, volumeLevel, defaultTable)
-    self:PrintDebugMessage("PLAYING_SOUND", sound.id, volumeLevel)
-
-    -- Do not play the sound if the volume level is set to 0
-    if volumeLevel == 0 then
-        self:PrintDebugMessage("VOLUME_LEVEL_ZERO")
-        return
-    end
-
-    -- Determine the sound file to play based on the sound ID and volume level
-    local soundFile
-    if sound and sound.table and sound.id then
-        soundFile = sound.table[sound.id][volumeLevel]
-    elseif defaultTable then
-        soundFile = defaultTable[volumeLevel]
-    end
-
-    self:PrintDebugMessage("SOUND_FILE_TO_PLAY", tostring(soundFile))
-
-    -- Play the sound file using the "MASTER" sound channel
-    if soundFile then
-        PlaySoundFile(soundFile, "MASTER")
-    else
-        self:PrintDebugMessage("ERROR_SOUND_NOT_FOUND", sound.id)
-    end
-    local volumeLevel = self.db.profile["BattlePetLevelVolume"]
-    PlaySelectedSound(sound, volumeLevel, defaultSounds[2])
-end
 
 --=====================================================================================
 -- Event Handlers
@@ -96,14 +10,9 @@ function BLU:HandlePlayerLevelUp()
         self:PrintDebugMessage("FUNCTIONS_HALTED")
         return
     end
-    self:PrintDebugMessage("ACHIEVEMENT_EARNED")
-    local sound = SelectSound(self.db.profile["AchievementSoundSelect"])
-    if not sound then
-        self:PrintDebugMessage("ERROR_SOUND_NOT_FOUND")
-        return
-    end
-    local volumeLevel = self.db.profile["AchievementVolume"]
-    PlaySelectedSound(sound, volumeLevel, defaultSounds[1])
+    self:PrintDebugMessage("PLAYER_LEVEL_UP")
+    local sound = self:SelectSound(self.db.profile["LevelSoundSelect"])
+    self:PlaySelectedSound(sound, self.db.profile["LevelVolume"], defaultSounds[4])
 end
 
 function BLU:HandleQuestAccepted()
@@ -111,14 +20,9 @@ function BLU:HandleQuestAccepted()
         self:PrintDebugMessage("FUNCTIONS_HALTED")
         return
     end
-    self:PrintDebugMessage("REPUTATION_RANK_INCREASE", rank)
-    local sound = SelectSound(self.db.profile.RepSoundSelect)
-    if not sound then
-        self:PrintDebugMessage("ERROR_SOUND_NOT_FOUND")
-        return
-    end
-    local volumeLevel = self.db.profile.RepVolume
-    PlaySelectedSound(sound, volumeLevel, defaultSounds[6])
+    self:PrintDebugMessage("QUEST_ACCEPTED")
+    local sound = self:SelectSound(self.db.profile["QuestAcceptSoundSelect"])
+    self:PlaySelectedSound(sound, self.db.profile["QuestAcceptVolume"], defaultSounds[7])
 end
 
 function BLU:HandleQuestTurnedIn()
@@ -126,6 +30,9 @@ function BLU:HandleQuestTurnedIn()
         self:PrintDebugMessage("FUNCTIONS_HALTED")
         return 
     end
+    self:PrintDebugMessage("QUEST_TURNED_IN")
+    local sound = self:SelectSound(self.db.profile["QuestSoundSelect"])
+    self:PlaySelectedSound(sound, self.db.profile["QuestVolume"], defaultSounds[8])
 end
 
 function BLU:HandleAchievementEarned()
@@ -182,7 +89,6 @@ end
 -- ChatFrame Hooks
 --=====================================================================================
 function BLU:ReputationChatFrameHook()
-    -- Ensure this hook is only added once
     if self.chatFrameHooked then return end
 
     ChatFrame_AddMessageEventFilter("CHAT_MSG_COMBAT_FACTION_CHANGE", function(_, _, msg)
@@ -248,6 +154,41 @@ function BLU:ReputationRankIncrease(rank)
 end
 
 --=====================================================================================
+-- Delve Level-Up Detection
+--=====================================================================================
+function BLU:DelveLevelUpChatFrameHook()
+    if self.delveChatFrameHooked then return end
+
+    ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", function(_, _, msg)
+        self:PrintDebugMessage("Incoming chat message: " .. msg)
+        local level = string.match(msg, "Brann Bronzebeard has reached Level (%d+)%p?")
+        if level then
+            self:PrintDebugMessage("Brann Bronzebeard has reached Level " .. level)
+            self:DelveLevelUpDetected(level)
+        else
+            self:PrintDebugMessage("No Delve Level found in chat message.")
+        end
+        return false
+    end)
+
+    self.delveChatFrameHooked = true
+end
+
+function BLU:DelveLevelUpDetected(level)
+    if self.functionsHalted then 
+        self:PrintDebugMessage("FUNCTIONS_HALTED")
+        return 
+    end
+    self:PrintDebugMessage("DELVE_LEVEL_UP_DETECTED", level)
+    local sound = self:SelectSound(self.db.profile.DelveLevelUpSoundSelect)
+    if not sound then
+        self:PrintDebugMessage("ERROR_SOUND_NOT_FOUND")
+        return
+    end
+    self:PlaySelectedSound(sound, self.db.profile.DelveLevelUpVolume, defaultSounds[6])
+end
+
+--=====================================================================================
 -- Test Sound Functions
 --=====================================================================================
 function BLU:TestAchievementSound()
@@ -308,17 +249,4 @@ function BLU:TestRepSound()
     self:PrintDebugMessage("TEST_REP_SOUND")
     local sound = self:SelectSound(self.db.profile.RepSoundSelect)
     self:PlaySelectedSound(sound, self.db.profile.RepVolume, defaultSounds[6])
-end
-
---=====================================================================================
--- Utility Functions
---=====================================================================================
-function BLU:MuteSounds()
-    -- Placeholder for muting sound logic if needed
-end
-
-function BLU:DisplayWelcomeMessage()
-    -- Display the welcome message in the chat window
-    print(BLU_PREFIX .. L["WELCOME_MESSAGE"])
-    self:PrintDebugMessage("WELCOME_MESSAGE_DISPLAYED")
 end

@@ -1,13 +1,7 @@
--- initialization.lua
 --=====================================================================================
 -- BLU | Better Level Up!
 --=====================================================================================
 BLU = LibStub("AceAddon-3.0"):NewAddon("BLU", "AceEvent-3.0", "AceConsole-3.0")
-
---=====================================================================================
--- Version Number
---=====================================================================================
-local VersionNumber = GetAddOnMetadata("BLU", "Version")
 
 --=====================================================================================
 -- Libraries and Variables
@@ -24,19 +18,27 @@ BLU.showWelcomeMessage = true
 BLU.haltTimerRunning = false
 
 --=====================================================================================
--- Utility Functions
+-- Slash Command Registration
 --=====================================================================================
-function BLU:DebugMessage(message)
-    if self.debugMode then
-        print(BLU_PREFIX .. DEBUG_PREFIX .. message)
+function BLU:RegisterSlashCommands()
+    self:RegisterChatCommand("blu", "HandleSlashCommands")
+end
+
+function BLU:HandleSlashCommands(input)
+    if not input or input:trim() == "" then
+        -- Correct method to open the options panel
+        Settings.OpenToCategory(self.optionsFrame.name)
+    elseif input:trim() == "debug" then
+        self.debugMode = not self.debugMode
+        self:PrintDebugMessage("Debug mode toggled: " .. tostring(self.debugMode))
+    elseif input:trim() == "welcome" then
+        self.showWelcomeMessage = not self.showWelcomeMessage
+        self:Print("Welcome message toggled: " .. tostring(self.showWelcomeMessage))
+    else
+        self:Print("Unknown command. Type '/blu' for options.")
     end
 end
 
-function BLU:PrintDebugMessage(key, ...)
-    if self.debugMode and L[key] then
-        self:DebugMessage(L[key]:format(...))
-    end
-end
 
 --=====================================================================================
 -- Game Version Handling
@@ -81,27 +83,21 @@ end
 -- Initialization
 --=====================================================================================
 function BLU:OnInitialize()
-    self.db = LibStub("AceDB-3.0"):New("BLUDB", self.defaults, true)
-
     -- Load saved states
+    self.db = LibStub("AceDB-3.0"):New("BLUDB", self.defaults, true)
     self.debugMode = self.db.profile.debugMode or false
-    self.showWelcomeMessage = self.db.profile.showWelcomeMessage
+    self.showWelcomeMessage = self.db.profile.showWelcomeMessage or true
 
-    -- Ensure the value is saved if not present (e.g., on first load)
-    if self.showWelcomeMessage == nil then
-        self.showWelcomeMessage = true  -- Default to true on first load
-        self.db.profile.showWelcomeMessage = true
-    end
+    -- Register slash commands
+    self:RegisterSlashCommands()
 
-    -- Debug messages for loaded states
-    self:PrintDebugMessage("DEBUG_MODE_LOADED", tostring(self.debugMode))
-    self:PrintDebugMessage("SHOW_WELCOME_MESSAGE_LOADED", tostring(self.showWelcomeMessage))
+    -- Delay getting VersionNumber until PLAYER_LOGIN
+    self:RegisterEvent("PLAYER_LOGIN", "OnPlayerLogin")
+end
 
+function BLU:OnPlayerLogin()
     -- Initialize options based on game version
     self:InitializeOptions()
-
-    -- Register chat commands
-    self:RegisterChatCommand("blu", "SlashCommand")
 
     -- Register shared events
     self:RegisterSharedEvents()
@@ -110,11 +106,17 @@ function BLU:OnInitialize()
     self:MuteSounds()
 end
 
+--=====================================================================================
+-- Options Initialization
+--=====================================================================================
 function BLU:InitializeOptions()
     local version = self:GetGameVersion()
 
     -- Ensure BLU.options is initialized
-    self.options = self.options or {}
+    if not self.options or not self.options.args then
+        self:PrintDebugMessage("ERROR_OPTIONS_NOT_INITIALIZED")
+        return
+    end
 
     if version ~= "retail" then
         self:RemoveOptionsForVersion(version)
@@ -180,7 +182,6 @@ function BLU:RegisterSharedEvents()
         self:RegisterEvent("PET_BATTLE_LEVEL_CHANGED", "HandlePetBattleLevelChanged")
         self:RegisterEvent("ACHIEVEMENT_EARNED", "HandleAchievementEarned")
         self:RegisterEvent("HONOR_LEVEL_UPDATE", "HandleHonorLevelUpdate")
-        self:RegisterEvent("UPDATE_FACTION", "HandleUpdateFaction")
     elseif version == "cata" then
         self:RegisterEvent("PLAYER_ENTERING_WORLD", "HandlePlayerEnteringWorld")
         self:RegisterEvent("PLAYER_LEVEL_UP", "HandlePlayerLevelUp")
@@ -201,7 +202,7 @@ function BLU:RegisterSharedEvents()
 end
 
 --=====================================================================================
--- HandlePlayerEnteringWorld
+-- Handle Player Entering World
 --=====================================================================================
 function BLU:HandlePlayerEnteringWorld(...)
     if self.haltTimerRunning then
@@ -235,41 +236,4 @@ function BLU:HandlePlayerEnteringWorld(...)
         self:PrintDebugMessage("WELCOME_MESSAGE_DISPLAYED")
         self:DisplayWelcomeMessage()
     end
-end
-
---=====================================================================================
--- Slash Command
---=====================================================================================
-function BLU:SlashCommand(input)
-    self:PrintDebugMessage("PROCESSING_SLASH_COMMAND", input)
-
-    if input == "debug" then
-        self.debugMode = not self.debugMode
-        self.db.profile.debugMode = self.debugMode
-        self:PrintDebugMessage("DEBUG_MODE_TOGGLED", tostring(self.debugMode))
-        local status = self.debugMode and "DEBUG_MODE_ENABLED" or "DEBUG_MODE_DISABLED"
-        self:PrintDebugMessage(status)
-    elseif input == "welcome" then
-        self.showWelcomeMessage = not self.showWelcomeMessage
-        self.db.profile.showWelcomeMessage = self.showWelcomeMessage
-        self:PrintDebugMessage("SHOW_WELCOME_MESSAGE_TOGGLED", tostring(self.showWelcomeMessage))
-        local status = self.showWelcomeMessage and "|cff00ff00enabled|r" or "|cffff0000disabled|r"
-        print(BLU_PREFIX .. "Welcome message " .. status)
-    elseif input == "enable" then
-        self:Enable()
-        self:PrintDebugMessage("ENABLING_ADDON")
-        print(BLU_PREFIX .. L["ADDON_ENABLED"])
-    elseif input == "disable" then
-        self:Disable()
-        print(BLU_PREFIX .. L["ADDON_DISABLED"])
-    elseif input == "help" then
-        print(L["SLASH_COMMAND_HELP"])
-    else
-        -- Log unknown command
-        self:PrintDebugMessage("UNKNOWN_SLASH_COMMAND", input)
-        Settings.OpenToCategory(self.optionsFrame.name)
-        if self.debugMode then
-            self:PrintDebugMessage("OPTIONS_PANEL_OPENED")
-        end
-    end
-end
+end -- <<--- Add this missing end statement to close the function properly

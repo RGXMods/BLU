@@ -33,7 +33,7 @@ muteSoundIDs = {
 -- Sound Options
 --=====================================================================================
 
-local soundOptions = {
+soundOptions = {
     "[Default]",
     "[Random]",
     "Altered Beast",
@@ -96,7 +96,7 @@ local soundOptions = {
 --=====================================================================================
 -- Default Sounds
 --=====================================================================================
-local defaultSounds = {
+defaultSounds = {
     [1] = { -- Achievement
         [1] = "Interface\\Addons\\BLU\\sounds\\achievement_default_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\achievement_default_med.ogg",
@@ -147,7 +147,7 @@ local defaultSounds = {
 --=====================================================================================
 -- Custom Sounds
 --=====================================================================================
-local sounds = {
+sounds = {
     [3] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\altered_beast_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\altered_beast_med.ogg",

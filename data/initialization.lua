@@ -13,8 +13,6 @@ VersionNumber = C_AddOns.GetAddOnMetadata("BLU", "Version")
 --=====================================================================================
 local AC = LibStub("AceConfig-3.0")
 local ACD = LibStub("AceConfigDialog-3.0")
-local BLU_PREFIX = "[|cff05dffaBLU|r] "
-local DEBUG_PREFIX = "[|cff808080DEBUG|r] "
 
 BLU.functionsHalted = false
 BLU.chatFrameHooked = false
@@ -31,7 +29,7 @@ function BLU:RegisterSlashCommands()
 end
 
 function BLU:HandleSlashCommands(input)
-    input = input:trim()
+    input = input:trim():lower()  -- Convert input to lowercase
     if input == "" then
         Settings.OpenToCategory(self.optionsFrame.name)
         if self.debugMode then
@@ -43,7 +41,7 @@ function BLU:HandleSlashCommands(input)
         self:ToggleWelcomeMessage()
     else
         self:PrintDebugMessage("UNKNOWN_SLASH_COMMAND", input)
-        print(BLU_PREFIX .. L["SLASH_COMMAND_HELP"])
+        print(L["SLASH_COMMAND_HELP"])
     end
 end
 
@@ -51,7 +49,7 @@ function BLU:ToggleDebugMode()
     self.debugMode = not self.debugMode
     self.db.profile.debugMode = self.debugMode
     local status = self.debugMode and L["DEBUG_MODE_ENABLED"] or L["DEBUG_MODE_DISABLED"]
-    print(BLU_PREFIX .. status)
+    print(status)
     self:PrintDebugMessage("DEBUG_MODE_TOGGLED", tostring(self.debugMode))
 end
 
@@ -59,7 +57,7 @@ function BLU:ToggleWelcomeMessage()
     self.showWelcomeMessage = not self.showWelcomeMessage
     self.db.profile.showWelcomeMessage = self.showWelcomeMessage
     local status = self.showWelcomeMessage and L["WELCOME_MSG_ENABLED"] or L["WELCOME_MSG_DISABLED"]
-    print(BLU_PREFIX .. status)
+    print(status)
     self:PrintDebugMessage("SHOW_WELCOME_MESSAGE_TOGGLED", tostring(self.showWelcomeMessage))
 end
 
@@ -221,6 +219,6 @@ end
 -- Display Welcome Message
 --=====================================================================================
 function BLU:DisplayWelcomeMessage()
-    print(BLU_PREFIX .. L["WELCOME_MESSAGE"])
+    print(L["WELCOME_MESSAGE"])
     self:PrintDebugMessage("WELCOME_MESSAGE_DISPLAYED")
 end

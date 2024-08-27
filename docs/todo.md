@@ -1,17 +1,18 @@
 # To-Do List
 
 -------------------------------------------------
-- [ ] Re-add enter world message - option to turn off
+- [x] Re-add enter world message - option to turn off
 - [x] Sounds for other event triggers
 - [ ] Sub-menus for gameName in drop-down
 - [x] Debug mode
 - [ ] Clean up - hella
 - [ ] gitignore and package stuff
 - [ ] Test auto-packaging ace libs
-- [ ] Re-combine - Vanilla/Retail/Cata to [core.lua]
-- [ ] Re-combine - options_c/v to [options.lua]
-- [ ] Achieve above with initialization process
-- [ ] Move debug code and locale - [debug.lua]
+- [x] Re-combine - Vanilla/Retail/Cata to [core.lua]
+- [x] Re-combine - options_c/v to [options.lua]
+- [x] Achieve above with initialization process
+- [x] Move debug code and locale - [debug.lua]
+- [ ] Update Options Panal
 -------------------------------------------------
 - [ ] Test-Sound button on drop-down and sub-menues
 - [ ] Integrate soundPacks

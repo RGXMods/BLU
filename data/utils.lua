@@ -78,7 +78,6 @@ function BLU:SelectSound(soundID)
     return nil
 end
 
-
 function BLU:PlaySelectedSound(sound, volumeLevel, defaultTable)
     self:PrintDebugMessage("PLAYING_SOUND", sound.id, volumeLevel)
 
@@ -108,7 +107,7 @@ end
 --=====================================================================================
 function BLU:DebugMessage(message)
     if self.debugMode then
-        print(BLU_PREFIX .. DEBUG_PREFIX .. message)
+        print(DEBUG_PREFIX .. message)
     end
 end
 
@@ -119,7 +118,7 @@ function BLU:PrintDebugMessage(key, ...)
 end
 
 function BLU:DisplayWelcomeMessage()
-    print(BLU_PREFIX .. L["WELCOME_MESSAGE"])
+    print(L["WELCOME_MESSAGE"])
     self:PrintDebugMessage("WELCOME_MESSAGE_DISPLAYED")
 end
 
@@ -133,22 +132,22 @@ function BLU:SlashCommand(input)
         self.debugMode = not self.debugMode
         self.db.profile.debugMode = self.debugMode
         local status = self.debugMode and L["DEBUG_MODE_ENABLED"] or L["DEBUG_MODE_DISABLED"]
-        print(BLU_PREFIX .. L["DEBUG_MODE_STATUS"]:format(status))
+        print(L["DEBUG_MODE_STATUS"]:format(status))
 
     elseif input == "welcome" then
         self.showWelcomeMessage = not self.showWelcomeMessage
         self.db.profile.showWelcomeMessage = self.showWelcomeMessage
         local status = self.showWelcomeMessage and L["WELCOME_MSG_ENABLED"] or L["WELCOME_MSG_DISABLED"]
-        print(BLU_PREFIX .. L["WELCOME_MESSAGE_STATUS"]:format(status))
+        print(L["WELCOME_MESSAGE_STATUS"]:format(status))
 
     elseif input == "enable" then
         self:Enable()
         self:PrintDebugMessage("ENABLING_ADDON")
-        print(BLU_PREFIX .. L["ADDON_ENABLED"])
+        print(L["ADDON_ENABLED"])
 
     elseif input == "disable" then
         self:Disable()
-        print(BLU_PREFIX .. L["ADDON_DISABLED"])
+        print(L["ADDON_DISABLED"])
 
     elseif input == "help" then
         print(L["SLASH_COMMAND_HELP"])

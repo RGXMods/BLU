@@ -45,9 +45,9 @@ function BLU:HandlePerksActivityCompleted(_, activityID)
     -- Retrieve the name of the completed activity and display in chat
     local activityName = C_PerksActivities.GetActivityInfo(activityID)
     if activityName then
-        self:Print(BLU_PREFIX .. "|cffffff00Perks Activity Completed:|r " .. activityName)
+        self:Print(L["PERKS_ACTIVITY_COMPLETED_MESSAGE"]:format(activityName))
     else
-        self:Print(BLU_PREFIX .. "|cffff0000Error: Activity name not found.|r")
+        self:Print(L["PERKS_ACTIVITY_COMPLETED_ERROR"])
     end
 end
 
@@ -58,18 +58,18 @@ function BLU:ReputationChatFrameHook()
     if self.chatFrameHooked then return end
 
     local rankPatterns = {
-        Exalted = "You are now Exalted with",
-        Revered = "You are now Revered with",
-        Honored = "You are now Honored with",
-        Friendly = "You are now Friendly with",
-        Neutral = "You are now Neutral with",
-        Unfriendly = "You are now Unfriendly with",
-        Hostile = "You are now Hostile with",
-        Hated = "You are now Hated with"
+        Exalted = L["RANK_EXALTED"],
+        Revered = L["RANK_REVERED"],
+        Honored = L["RANK_HONORED"],
+        Friendly = L["RANK_FRIENDLY"],
+        Neutral = L["RANK_NEUTRAL"],
+        Unfriendly = L["RANK_UNFRIENDLY"],
+        Hostile = L["RANK_HOSTILE"],
+        Hated = L["RANK_HATED"]
     }
 
     ChatFrame_AddMessageEventFilter("CHAT_MSG_COMBAT_FACTION_CHANGE", function(_, _, msg)
-        self:DebugMessage("|cffffff00Incoming chat message:|r " .. msg)
+        self:PrintDebugMessage(L["INCOMING_CHAT_MESSAGE"]:format(msg))
         local currentTime = GetTime()
 
         for rank, pattern in pairs(rankPatterns) do
@@ -77,18 +77,18 @@ function BLU:ReputationChatFrameHook()
                 local lastTriggered = triggeredReputationRanks[rank]
                 
                 if not lastTriggered or (currentTime - lastTriggered >= reputationCooldown) then
-                    self:DebugMessage("|cff00ff00Rank found: " .. rank .. "|r")
+                    self:PrintDebugMessage(L["RANK_FOUND"]:format(rank))
                     self:ReputationRankIncrease(rank)
                     triggeredReputationRanks[rank] = currentTime
                 else
-                    self:DebugMessage("Cooldown active for rank: " .. rank)
+                    self:PrintDebugMessage(L["COOLDOWN_ACTIVE"]:format(rank))
                 end
                 
                 return false
             end
         end
         
-        self:PrintDebugMessage("NO_RANK_FOUND")
+        self:PrintDebugMessage(L["NO_RANK_FOUND"])
         return false
     end)
 
@@ -106,13 +106,13 @@ function BLU:DelveLevelUpChatFrameHook()
     if self.delveChatFrameHooked then return end
 
     ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", function(_, _, msg)
-        self:PrintDebugMessage("Incoming chat message: " .. msg)
-        local level = string.match(msg, "Brann Bronzebeard has reached Level (%d+)%p?")
+        self:PrintDebugMessage(L["INCOMING_CHAT_MESSAGE"]:format(msg))
+        local level = string.match(msg, L["DELVESYSTEM_MESSAGE_PATTERN"])
         if level then
-            self:PrintDebugMessage("Brann Bronzebeard has reached Level " .. level)
+            self:PrintDebugMessage(L["BRANN_LEVEL_FOUND"]:format(level))
             self:DelveLevelUpDetected(level)
         else
-            self:PrintDebugMessage("No Delve Level found in chat message.")
+            self:PrintDebugMessage(L["NO_BRANN_LEVEL_FOUND"])
         end
         return false
     end)
@@ -131,7 +131,7 @@ local function TestSound(self, soundID, volumeKey, defaultSound, debugMessage)
     self:PrintDebugMessage(debugMessage)
     local sound = self:SelectSound(self.db.profile[soundID])
     if not sound then
-        self:PrintDebugMessage("ERROR_SOUND_NOT_FOUND")
+        self:PrintDebugMessage(L["ERROR_SOUND_NOT_FOUND"])
         return
     end
     self:PlaySelectedSound(sound, self.db.profile[volumeKey], defaultSound)

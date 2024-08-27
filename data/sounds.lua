@@ -88,7 +88,8 @@ soundOptions = {
     "Sonic The Hedgehog",
     "Spyro The Dragon",
     "Super Mario Bros 3",
-    "Warcraft 3",
+    "Warcraft 3 (1)",
+    "Warcraft 3 (2)",
     "Witcher 3 (1)",
     "Witcher 3 (2)",
 }
@@ -414,11 +415,16 @@ sounds = {
         [3] = "Interface\\Addons\\BLU\\sounds\\warcraft_3_high.ogg"
     },
     [56] = {
+        [1] = "Interface\\Addons\\BLU\\sounds\\warcraft_3-2_low.ogg",
+        [2] = "Interface\\Addons\\BLU\\sounds\\warcraft_3-2_med.ogg",
+        [3] = "Interface\\Addons\\BLU\\sounds\\warcraft_3-2_high.ogg"
+    },
+    [57] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\witcher_3-1_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\witcher_3-1_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\witcher_3-1_high.ogg"
     },
-    [57] = {
+    [58] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\witcher_3-2_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\witcher_3-2_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\witcher_3-2_high.ogg"

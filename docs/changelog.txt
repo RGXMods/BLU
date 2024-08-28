@@ -1,22 +1,32 @@
-## Alpha 3
+## Alpha 4-------------------------------------------------------------------
+- Fixed - Errors in formatting and using localization strings within the `AssignGroupColors` function - [core.lua]
+- Fixed - Handling of empty argument names and descriptions within `AssignGroupColors` to avoid hover box display issues - [core.lua]
+- Fixed - Resolved error caused by missing `INCOMING_CHAT_MESSAGE` localization string - [localization.lua]
+- Fixed - Issue with `localization.lua` not being loaded properly, leading to nil errors in multiple files - [localization.lua, initialization.lua]
+- Fixed - Various typos and missing brackets in localization strings causing runtime errors - [localization.lua]
+- Updated - Integrated localization strings into the `AssignGroupColors` function for debug messages - [core.lua]
+- Updated - Ensured `localization.lua` is loaded first by adjusting `.toc` file load order - [BLU.toc]
+- Updated - Logic for handling game versions in initialization to ensure correct option removal - [initialization.lua]
+- Updated - Debug message outputs to be more descriptive and consistent - [core.lua, localization.lua]
+- Added - Debug messages for group color assignments using localized strings - [localization.lua, core.lua]
+- Added - Logic to prevent the `MuteSounds` function from being called multiple times during the same session - [initialization.lua]
+  - Added a `soundsMuted` flag to ensure `MuteSounds` is only called once
+  - Prevented duplicate calls to `MuteSounds` during the `OnPlayerLogin` and `PLAYER_ENTERING_WORLD` events
+## Alpha 3-------------------------------------------------------------------
 - Fixed - Slash commands now work regardless of capitalization - [initialization.lua].
 - Fixed - Removed hard-coded `BLU_PREFIX` from core files and moved it to `localization.lua` - [initialization.lua, core.lua].
 - Fixed - Color-coded specific words instead of entire messages in `localization.lua`.
-
 - Updated - Centralized `BLU_PREFIX` handling in `localization.lua` - [localization.lua].
 - Updated - Handled Delve Level-Up detection output using localization strings - [core.lua, localization.lua].
 - Updated - Trade Post Activity Complete event to use localization strings for chat output - [core.lua, localization.lua].
 - Updated - Added Delve Companion functionality and updated README with new slash commands - [core.lua, README.md].
-
 - Added - New custom sound entry for `warcraft_3-2` and adjusted ordering in the `sounds` table - [core.lua]
 - Added - [sounds.md] - [/docs]
-
-## Alpha 2
+## Alpha 2-------------------------------------------------------------------
 - Fixed - Missing debug message statements after refactoring
 - Fixed - Trimmed input for slash command handling to avoid issues with whitespace
 - Fixed - Corrected an issue where a missing `end` statement caused initialization errors
 - Fixed - Prevented multiple reputation rank increases from triggering in quick succession - [core.lua]
-
 - Updated - Refined game version handling to reduce redundancy - [initialization.lua]
 - Updated - Consolidated event registration by game version - [initialization.lua]
 - Updated - Moved all localization strings, including debug messages, to `localization.lua` - [localization.lua]
@@ -26,40 +36,29 @@
 - Updated - Added a new halt timer message to prevent multiple executions - [localization.lua]
 - Updated - Improved sound selection logic to consolidate valid sound IDs and reduce redundancy - [utils.lua]
 - Updated - Enhanced slash command handling to log unknown commands and simplify toggles for debug mode and welcome message - [utils.lua]
-
 - Added - Chat message output for Trade Post Activity Complete event - [core.lua, localization.lua]
 - Added - [sounds.md] - [/docs]
-
-## Alpha 1
+## Alpha 1-------------------------------------------------------------------
 - Fixed - Corrected an issue with `GetAddOnMetadata` causing an error during initialization - [initialization.lua]
 - Fixed - Sound ID retrieval across game versions - [sounds.lua]
 - Fixed - Countdown timer logic - [initialization.lua]
 - Fixed - Proper loading of game-specific options - [options.lua]
 - Fixed - AceConfigRegistry error due to invalid `soundOptions` reference in options panel - [options.lua]
-
 - Updated - Improved scoping across all files to ensure proper access and modularity - [core.lua, initialization.lua, utils.lua, options.lua]
 - Updated - Restructured the handling of shared events to align with game versions - [initialization.lua]
 - Updated - Dynamic options initialization by game version - [options.lua]
 - Updated - Combined Retail, Cata, and Vanilla options - [options.lua]
 - Updated - Added detailed debug logging - [initialization.lua, core.lua, localization.lua]
 - Updated - `release.yml` for alpha, beta, and stable release handling
-
 - Restructured - Centralized debug message handling - [localization.lua, core.lua, initialization.lua].
 - Restructured - Moved event handler and sound configuration functions from [core.lua] to [initialization.lua]
 - Restructured - Sound options by game version - [sounds.lua, core.lua]
 - Restructured - Code organization to improve modularity and maintainability - [core.lua, initialization.lua, utils.lua, options.lua]
-
 - Removed - Unused debug messages - [localization.lua]
-
 - Added - Debug logging with toggle for enable/disable - [localization.lua]
 - Added - New [initialization.lua] file to [/data/]
 - Added - Tagging support: alpha (`v1.0.0-alpha`), beta (`v1.0.0-beta`), stable (`v1.0.0`)
 - Added - New event registrations to cover all supported game versions - [initialization.lua]
-
-
-
-
-
 v4.6.2
 - Updated - Refactored `ReputationChatFrameHook` for accurate rank detection - [core.lua]
 - Updated - Improved debug message coloring - [core.lua]

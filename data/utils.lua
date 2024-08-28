@@ -79,6 +79,7 @@ function BLU:SelectSound(soundID)
 end
 
 function BLU:PlaySelectedSound(sound, volumeLevel, defaultTable)
+    volumeLevel = volumeLevel or 1  -- Default to 1 if volumeLevel is nil
     self:PrintDebugMessage("PLAYING_SOUND", sound.id, volumeLevel)
 
     if volumeLevel == 0 then
@@ -96,7 +97,7 @@ function BLU:PlaySelectedSound(sound, volumeLevel, defaultTable)
     self:PrintDebugMessage("SOUND_FILE_TO_PLAY", tostring(soundFile))
 
     if soundFile then
-        PlaySoundFile(soundFile, "MASTER")
+        PlaySoundFile(soundFile, "Master")
     else
         self:PrintDebugMessage("ERROR_SOUND_NOT_FOUND", sound.id)
     end
@@ -105,9 +106,19 @@ end
 --=====================================================================================
 -- Utility Functions
 --=====================================================================================
+
+function BLU:ToggleDebugMode()
+    self.debugMode = not self.debugMode
+    self.db.profile.debugMode = self.debugMode
+    local statusMessage = self.debugMode and L["DEBUG_MODE_ENABLED"] or L["DEBUG_MODE_DISABLED"]
+    print(BLU_PREFIX .. statusMessage)
+    self:PrintDebugMessage("DEBUG_MODE_TOGGLED", tostring(self.debugMode))
+end
+
+
 function BLU:DebugMessage(message)
     if self.debugMode then
-        print(DEBUG_PREFIX .. message)
+        print(BLU_PREFIX .. DEBUG_PREFIX .. message)
     end
 end
 
@@ -118,45 +129,51 @@ function BLU:PrintDebugMessage(key, ...)
 end
 
 function BLU:DisplayWelcomeMessage()
-    print(L["WELCOME_MESSAGE"])
+    print(BLU_PREFIX .. L["WELCOME_MESSAGE"])
     self:PrintDebugMessage("WELCOME_MESSAGE_DISPLAYED")
 end
 
+
 --=====================================================================================
--- Slash Command Handler
+-- Slash Command
 --=====================================================================================
 function BLU:SlashCommand(input)
-    self:PrintDebugMessage("PROCESSING_SLASH_COMMAND", input)
+    input = input:trim():lower()  -- Ensure the input is trimmed and lowercase
 
     if input == "debug" then
         self.debugMode = not self.debugMode
         self.db.profile.debugMode = self.debugMode
-        local status = self.debugMode and L["DEBUG_MODE_ENABLED"] or L["DEBUG_MODE_DISABLED"]
-        print(L["DEBUG_MODE_STATUS"]:format(status))
-
+        self:PrintDebugMessage("DEBUG_MODE_TOGGLED", tostring(self.debugMode))
+        
+        -- Use localized status messages
+        local statusMessage = self.debugMode and L["DEBUG_MODE_ENABLED"] or L["DEBUG_MODE_DISABLED"]
+        print(BLU_PREFIX .. statusMessage)
+        
     elseif input == "welcome" then
         self.showWelcomeMessage = not self.showWelcomeMessage
         self.db.profile.showWelcomeMessage = self.showWelcomeMessage
-        local status = self.showWelcomeMessage and L["WELCOME_MSG_ENABLED"] or L["WELCOME_MSG_DISABLED"]
-        print(L["WELCOME_MESSAGE_STATUS"]:format(status))
-
+        self:PrintDebugMessage("SHOW_WELCOME_MESSAGE_TOGGLED", tostring(self.showWelcomeMessage))
+        
+        local status = self.showWelcomeMessage and "|cff00ff00enabled|r" or "|cffff0000disabled|r"
+        print(BLU_PREFIX .. "Welcome message " .. status)
+        
     elseif input == "enable" then
         self:Enable()
-        self:PrintDebugMessage("ENABLING_ADDON")
-        print(L["ADDON_ENABLED"])
-
+        print(BLU_PREFIX .. L["ADDON_ENABLED"])
+        
     elseif input == "disable" then
         self:Disable()
-        print(L["ADDON_DISABLED"])
-
+        print(BLU_PREFIX .. L["ADDON_DISABLED"])
+        
     elseif input == "help" then
-        print(L["SLASH_COMMAND_HELP"])
-
+        print(BLU_PREFIX .. L["SLASH_COMMAND_HELP"])
+        
     else
-        self:PrintDebugMessage("UNKNOWN_SLASH_COMMAND", input)
+        -- Default action: Open the options panel
         Settings.OpenToCategory(self.optionsFrame.name)
         if self.debugMode then
             self:PrintDebugMessage("OPTIONS_PANEL_OPENED")
         end
     end
 end
+

@@ -23,3 +23,7 @@
 - [ ] Add color to sub-menu text
 - [ ] Expand on Rep-Up! - Sounds on per rep basis?
 - [ ] Friendship ranks?????
+
+
+
+debug local

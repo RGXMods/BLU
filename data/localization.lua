@@ -27,13 +27,15 @@ L = {
     optionColor1 = colors.prefix,
     optionColor2 = colors.white,
 
+    -- Add this to the localization section of your localization.lua
+    FUNCTION_USED = string.format("%sFunction %s used.|r", colors.info, colors.highlight),
+
     -- General Text
     ADDON_DISABLED = string.format("Addon %sdisabled|r.", colors.error),
     ADDON_ENABLED = string.format("Addon %senabled|r.", colors.success),
     DEBUG_MODE_ENABLED = string.format("%sDebug Mode Enabled|r", colors.success),
     DEBUG_MODE_DISABLED = string.format("%sDebug Mode Disabled|r", colors.error),
     DEBUG_MODE_TOGGLED = string.format("Debug mode toggled: %s%%s|r.", colors.highlight),
-    ERROR_SOUND_NOT_FOUND = string.format("%sError: Sound not found.|r", colors.error),
     ERROR_UNKNOWN_GAME_VERSION = string.format("%sUnknown game version detected.|r", colors.error),
     FUNCTIONS_HALTED = string.format("%sFunctions halted. Event not processed.|r", colors.info),
     FUNCTIONS_RESUMED = string.format("Functions %sresumed|r after pause.", colors.success),
@@ -53,17 +55,18 @@ L = {
     BRANN_LEVEL_FOUND = string.format("%sBrann Bronzebeard has reached Level %%s|r", colors.info),
     DUPLICATE_LEVEL_DETECTED = string.format("%sDuplicate level-up detected, ignoring.|r", colors.warning),
     NO_BRANN_LEVEL_FOUND = string.format("%sNo Delve Level found in chat message.|r", colors.error),
-    ACHIEVEMENT_EARNED = string.format("%sACHIEVEMENT_EARNED|r %striggered.|r", colors.info, colors.test),
-    HONOR_LEVEL_UPDATE = string.format("%sHONOR_LEVEL_UPDATE|r %striggered.|r", colors.info, colors.test),
-    MAJOR_FACTION_RENOWN_LEVEL_CHANGED = string.format("%sMAJOR_FACTION_RENOWN_LEVEL_CHANGED|r %striggered.|r", colors.info, colors.test),
-    PERKS_ACTIVITY_COMPLETED = string.format("%sPERKS_ACTIVITY_COMPLETED|r %striggered.|r", colors.info, colors.test),
+    ACHIEVEMENT_EARNED_TRIGGERED = string.format("%sACHIEVEMENT_EARNED|r %striggered.|r", colors.info, colors.test),
+    HONOR_LEVEL_UPDATE_TRIGGERED = string.format("%sHONOR_LEVEL_UPDATE|r %striggered.|r", colors.info, colors.test),
+    MAJOR_FACTION_RENOWN_LEVEL_CHANGED_TRIGGERED = string.format("%sMAJOR_FACTION_RENOWN_LEVEL_CHANGED|r %striggered.|r", colors.info, colors.test),
+    PERKS_ACTIVITY_COMPLETED_TRIGGERED = string.format("%sPERKS_ACTIVITY_COMPLETED|r %striggered.|r", colors.info, colors.test),
     PERKS_ACTIVITY_COMPLETED_MSG = string.format("%sPerks Activity Completed:|r %s", colors.info, colors.test),
     PERKS_ACTIVITY_ERROR = string.format("%sError: Activity name not found.|r", colors.error),
-    PET_BATTLE_LEVEL_CHANGED = string.format("%sPET_BATTLE_LEVEL_CHANGED|r %striggered.|r", colors.info, colors.test),
-    PLAYER_LEVEL_UP = string.format("%sPLAYER_LEVEL_UP|r %striggered.|r", colors.info, colors.test),
-    QUEST_ACCEPTED = string.format("%sQUEST_ACCEPTED|r %striggered.|r", colors.info, colors.test),
-    QUEST_TURNED_IN = string.format("%sQUEST_TURNED_IN|r %striggered.|r", colors.info, colors.test),
+    PET_BATTLE_LEVEL_CHANGED_TRIGGERED = string.format("%sPET_BATTLE_LEVEL_CHANGED|r %striggered.|r", colors.info, colors.test),
+    PLAYER_LEVEL_UP_TRIGGERED = string.format("%sPLAYER_LEVEL_UP|r %striggered.|r", colors.info, colors.test),
+    QUEST_ACCEPTED_TRIGGERED = string.format("%sQUEST_ACCEPTED|r %striggered.|r", colors.info, colors.test),
+    QUEST_TURNED_IN_TRIGGERED = string.format("%sQUEST_TURNED_IN|r %striggered.|r", colors.info, colors.test),
     REPUTATION_RANK_INCREASE = string.format("%sREPUTATION_RANK_INCREASE|r %striggered for rank: %s|r.", colors.info, colors.test, colors.success),
+    REPUTATION_GAINED_TRIGGERED = string.format("%sReputation Gained|r %striggered: %s|r.", colors.info, colors.test, colors.success),
 
     -- Reputation Ranks with "You are now ... with" pattern
     RANK_EXALTED = "You are now Exalted with",
@@ -96,6 +99,7 @@ L = {
     USING_RANDOM_SOUND_ID = string.format("Using random sound ID: %s%%s|r", colors.highlight),
     USING_SPECIFIED_SOUND_ID = string.format("Using specified sound ID: %s%%s|r", colors.highlight),
     VOLUME_LEVEL_ZERO = string.format("%sVolume level is %s0|r, sound not played.|r", colors.error, colors.highlight),
+    INVALID_VOLUME_LEVEL = string.format("%sInvalid volume level: %s%%s|r.", colors.error, colors.highlight),
 
     -- Options Debug
     GROUP_COLOR_APPLIED = string.format("Group: %s%%s|r color applied.", colors.info),
@@ -124,7 +128,7 @@ L = {
     -- Profiles
     PROFILES_TITLE = "Profiles",
 
-    OPTIONS_LIST_MENU_TITLE = string.format("|Tinterface/addons/blu/images/icon:16:16|t - %sB|r%setter %sL|r%svel %sU|r%sp",
+    OPTIONS_LIST_MENU_TITLE = string.format("|Tinterface/addons/blu/images/icon:16:16|t - %sB|r%setter %sL|r%svel %sU|r%sp!",
     colors.prefix, colors.white, colors.prefix, colors.white, colors.prefix, colors.white),
 
     --=====================================================================================

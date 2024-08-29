@@ -1,4 +1,59 @@
 --=====================================================================================
+-- BLU | Better Level Up! - utils.lua
+--=====================================================================================
+
+--=====================================================================================
+-- Utility Functions
+--=====================================================================================
+
+function BLU:HandleEvent(eventName, soundSelectKey, volumeKey, defaultSound)
+    -- Log the event name being handled
+    self:PrintDebugMessage("EVENT_TRIGGERED", eventName)
+
+    -- Select and play the appropriate sound
+    local sound = self:SelectSound(self.db.profile[soundSelectKey])
+    if not sound then
+        self:PrintDebugMessage("ERROR_SOUND_NOT_FOUND", soundSelectKey)
+        return
+    end
+    local volumeLevel = self.db.profile[volumeKey]
+
+    -- Check that the volume level is within the valid range
+    if volumeLevel < 0 or volumeLevel > 3 then
+        self:PrintDebugMessage("INVALID_VOLUME_LEVEL", volumeLevel)
+        return
+    end
+
+    -- Play the selected sound
+    self:PlaySelectedSound(sound, volumeLevel, defaultSound)
+end
+
+function BLU:ToggleDebugMode()
+    self.debugMode = not self.debugMode
+    self.db.profile.debugMode = self.debugMode
+    local statusMessage = self.debugMode and L["DEBUG_MODE_ENABLED"] or L["DEBUG_MODE_DISABLED"]
+    print(BLU_PREFIX .. statusMessage)
+    self:PrintDebugMessage("DEBUG_MODE_TOGGLED", tostring(self.debugMode))
+end
+
+function BLU:DebugMessage(message)
+    if self.debugMode then
+        print(BLU_PREFIX .. DEBUG_PREFIX .. message)
+    end
+end
+
+function BLU:PrintDebugMessage(key, ...)
+    if self.debugMode and L[key] then
+        self:DebugMessage(L[key]:format(...))
+    end
+end
+
+function BLU:DisplayWelcomeMessage()
+    print(BLU_PREFIX .. L["WELCOME_MESSAGE"])
+    self:PrintDebugMessage("WELCOME_MESSAGE_DISPLAYED")
+end
+
+--=====================================================================================
 -- Sound Selection Functions
 --=====================================================================================
 function BLU:RandomSoundID()
@@ -34,8 +89,8 @@ function BLU:RandomSoundID()
 
     return selectedSoundID
 end
---=====================================================================================
 
+--=====================================================================================
 -- Function to select a sound based on the provided sound ID
 function BLU:SelectSound(soundID)
     self:PrintDebugMessage("SELECTING_SOUND", tostring(soundID))
@@ -55,6 +110,21 @@ function BLU:SelectSound(soundID)
 end
 
 --=====================================================================================
+-- Test Sound Functions with Detailed Debug Output
+--=====================================================================================
+function BLU:TestSound(soundID, volumeKey, defaultSound, debugMessage)
+    self:PrintDebugMessage(debugMessage)
+
+    local sound = self:SelectSound(self.db.profile[soundID])
+    if not sound then
+        self:PrintDebugMessage(L["ERROR_SOUND_NOT_FOUND"] .. " " .. L["DEFAULT_SOUND_USED"])
+    end
+
+    local volumeLevel = self.db.profile[volumeKey]
+    self:PlaySelectedSound(sound, volumeLevel, defaultSound)
+end
+
+--=====================================================================================
 -- Function to play the selected sound with the specified volume level
 function BLU:PlaySelectedSound(sound, volumeLevel, defaultTable)
     self:PrintDebugMessage("PLAYING_SOUND", sound.id, volumeLevel)
@@ -68,6 +138,7 @@ function BLU:PlaySelectedSound(sound, volumeLevel, defaultTable)
     -- Determine the sound file to play based on the sound ID and volume level
     local soundFile = sound.id == 1 and defaultTable[volumeLevel] or sound.table[sound.id][volumeLevel]
 
+    -- Log the sound file being played
     self:PrintDebugMessage("SOUND_FILE_TO_PLAY", tostring(soundFile))
 
     -- Play the sound file using the "MASTER" sound channel
@@ -77,78 +148,3 @@ function BLU:PlaySelectedSound(sound, volumeLevel, defaultTable)
         self:PrintDebugMessage("ERROR_SOUND_NOT_FOUND", sound.id)
     end
 end
-
---=====================================================================================
--- Utility Functions
---=====================================================================================
-
-function BLU:ToggleDebugMode()
-    self.debugMode = not self.debugMode
-    self.db.profile.debugMode = self.debugMode
-    local statusMessage = self.debugMode and L["DEBUG_MODE_ENABLED"] or L["DEBUG_MODE_DISABLED"]
-    print(BLU_PREFIX .. statusMessage)
-    self:PrintDebugMessage("DEBUG_MODE_TOGGLED", tostring(self.debugMode))
-end
-
-
-function BLU:DebugMessage(message)
-    if self.debugMode then
-        print(BLU_PREFIX .. DEBUG_PREFIX .. message)
-    end
-end
-
-function BLU:PrintDebugMessage(key, ...)
-    if self.debugMode and L[key] then
-        self:DebugMessage(L[key]:format(...))
-    end
-end
-
-function BLU:DisplayWelcomeMessage()
-    print(BLU_PREFIX .. L["WELCOME_MESSAGE"])
-    self:PrintDebugMessage("WELCOME_MESSAGE_DISPLAYED")
-end
-
-
---=====================================================================================
--- Slash Command
---=====================================================================================
-function BLU:SlashCommand(input)
-    input = input:trim():lower()  -- Ensure the input is trimmed and lowercase
-
-    if input == "debug" then
-        self.debugMode = not self.debugMode
-        self.db.profile.debugMode = self.debugMode
-        self:PrintDebugMessage("DEBUG_MODE_TOGGLED", tostring(self.debugMode))
-        
-        -- Use localized status messages
-        local statusMessage = self.debugMode and L["DEBUG_MODE_ENABLED"] or L["DEBUG_MODE_DISABLED"]
-        print(BLU_PREFIX .. statusMessage)
-        
-    elseif input == "welcome" then
-        self.showWelcomeMessage = not self.showWelcomeMessage
-        self.db.profile.showWelcomeMessage = self.showWelcomeMessage
-        self:PrintDebugMessage("SHOW_WELCOME_MESSAGE_TOGGLED", tostring(self.showWelcomeMessage))
-        
-        local status = self.showWelcomeMessage and "WELCOME_MSG_ENABLED" or "WELCOME_MSG_DISABLED"
-        print(BLU_PREFIX .. "Welcome message " .. status)
-        
-    elseif input == "enable" then
-        self:Enable()
-        print(BLU_PREFIX .. L["ADDON_ENABLED"])
-        
-    elseif input == "disable" then
-        self:Disable()
-        print(BLU_PREFIX .. L["ADDON_DISABLED"])
-        
-    elseif input == "help" then
-        print(BLU_PREFIX .. L["SLASH_COMMAND_HELP"])
-        
-    else
-        -- Default action: Open the options panel
-        Settings.OpenToCategory(self.optionsFrame.name)
-        if self.debugMode then
-            self:PrintDebugMessage("OPTIONS_PANEL_OPENED")
-        end
-    end
-end
-

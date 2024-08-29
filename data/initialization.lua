@@ -6,7 +6,7 @@ BLU = LibStub("AceAddon-3.0"):NewAddon("BLU", "AceEvent-3.0", "AceConsole-3.0")
 --=====================================================================================
 -- Version Number
 --=====================================================================================
-VersionNumber = C_AddOns.GetAddOnMetadata("BLU", "Version")
+BLU.VersionNumber = C_AddOns.GetAddOnMetadata("BLU", "Version")
 
 --=====================================================================================
 -- Libraries and Variables
@@ -50,7 +50,6 @@ function BLU:HandleSlashCommands(input)
         print(BLU_PREFIX .. L["UNKNOWN_SLASH_COMMAND"])
     end
 end
-
 
 function BLU:ToggleDebugMode()
     self.debugMode = not self.debugMode
@@ -121,8 +120,8 @@ function BLU:OnInitialize()
     end
 
     -- Set initial values from the database or apply defaults
-    BLU.debugMode = self.db.profile.debugMode or false
-    BLU.showWelcomeMessage = self.db.profile.showWelcomeMessage
+    self.debugMode = self.db.profile.debugMode or false
+    self.showWelcomeMessage = self.db.profile.showWelcomeMessage
 
     -- Register chat commands
     self:RegisterSlashCommands()
@@ -134,8 +133,8 @@ function BLU:OnInitialize()
     self:InitializeOptions()
 
     -- Debug messages for loaded states
-    self:PrintDebugMessage("DEBUG_MODE_LOADED", tostring(BLU.debugMode))
-    self:PrintDebugMessage("SHOW_WELCOME_MESSAGE_LOADED", tostring(BLU.showWelcomeMessage))
+    self:PrintDebugMessage("DEBUG_MODE_LOADED", tostring(self.debugMode))
+    self:PrintDebugMessage("SHOW_WELCOME_MESSAGE_LOADED", tostring(self.showWelcomeMessage))
 end
 
 --=====================================================================================

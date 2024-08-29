@@ -1,21 +1,4 @@
 --=====================================================================================
--- Utility Function to Handle Events
---=====================================================================================
-function HandleEvent(self, eventName, soundID, volumeKey, defaultSound)
-    if self.functionsHalted then 
-        self:PrintDebugMessage("FUNCTIONS_HALTED")
-        return
-    end
-    self:PrintDebugMessage(eventName)
-    local sound = self:SelectSound(self.db.profile[soundID])
-    if not sound then
-        self:PrintDebugMessage("ERROR_SOUND_NOT_FOUND")
-        return
-    end
-    self:PlaySelectedSound(sound, self.db.profile[volumeKey], defaultSound)
-end
-
---=====================================================================================
 -- Sound Selection Functions
 --=====================================================================================
 function BLU:RandomSoundID()
@@ -51,15 +34,14 @@ function BLU:RandomSoundID()
 
     return selectedSoundID
 end
+--=====================================================================================
 
---=====================================================================================
 -- Function to select a sound based on the provided sound ID
---=====================================================================================
 function BLU:SelectSound(soundID)
     self:PrintDebugMessage("SELECTING_SOUND", tostring(soundID))
 
-    -- If the sound ID is set to random (2), return a random sound ID
-    if soundID == 2 then
+    -- If the sound ID is not provided or is set to random (2), return a random sound ID
+    if not soundID or soundID == 2 then
         local randomSoundID = self:RandomSoundID()
         if randomSoundID then
             self:PrintDebugMessage("USING_RANDOM_SOUND_ID", randomSoundID.id)
@@ -67,37 +49,30 @@ function BLU:SelectSound(soundID)
         end
     end
 
-    -- If the sound ID is a valid custom or default sound, return it
-    if sounds[soundID] or defaultSounds[soundID] then
-        self:PrintDebugMessage("USING_SPECIFIED_SOUND_ID", soundID)
-        return { table = sounds[soundID] and sounds or defaultSounds, id = soundID }
-    end
-
-    -- If sound ID is invalid, log and return nil
-    self:PrintDebugMessage("ERROR_SOUND_NOT_FOUND", soundID)
-    return nil
+    -- Otherwise, return the specified sound ID
+    self:PrintDebugMessage("USING_SPECIFIED_SOUND_ID", soundID)
+    return {table = sounds, id = soundID}
 end
 
+--=====================================================================================
+-- Function to play the selected sound with the specified volume level
 function BLU:PlaySelectedSound(sound, volumeLevel, defaultTable)
-    volumeLevel = volumeLevel or 1  -- Default to 1 if volumeLevel is nil
     self:PrintDebugMessage("PLAYING_SOUND", sound.id, volumeLevel)
 
+    -- Do not play the sound if the volume level is set to 0
     if volumeLevel == 0 then
         self:PrintDebugMessage("VOLUME_LEVEL_ZERO")
         return
     end
 
-    local soundFile
-    if sound and sound.table and sound.id then
-        soundFile = sound.table[sound.id][volumeLevel]
-    elseif defaultTable then
-        soundFile = defaultTable[volumeLevel]
-    end
+    -- Determine the sound file to play based on the sound ID and volume level
+    local soundFile = sound.id == 1 and defaultTable[volumeLevel] or sound.table[sound.id][volumeLevel]
 
     self:PrintDebugMessage("SOUND_FILE_TO_PLAY", tostring(soundFile))
 
+    -- Play the sound file using the "MASTER" sound channel
     if soundFile then
-        PlaySoundFile(soundFile, "Master")
+        PlaySoundFile(soundFile, "MASTER")
     else
         self:PrintDebugMessage("ERROR_SOUND_NOT_FOUND", sound.id)
     end
@@ -154,7 +129,7 @@ function BLU:SlashCommand(input)
         self.db.profile.showWelcomeMessage = self.showWelcomeMessage
         self:PrintDebugMessage("SHOW_WELCOME_MESSAGE_TOGGLED", tostring(self.showWelcomeMessage))
         
-        local status = self.showWelcomeMessage and "|cff00ff00enabled|r" or "|cffff0000disabled|r"
+        local status = self.showWelcomeMessage and "WELCOME_MSG_ENABLED" or "WELCOME_MSG_DISABLED"
         print(BLU_PREFIX .. "Welcome message " .. status)
         
     elseif input == "enable" then

@@ -1,5 +1,5 @@
 --=====================================================================================
--- BLU | Better Level Up!
+-- BLU | Better Level Up! - core.lua
 --=====================================================================================
 
 --=====================================================================================
@@ -14,7 +14,7 @@ function BLU:HandleQuestAccepted()
 end
 
 function BLU:HandleQuestTurnedIn()
-    HandleEvent(self, "QUEST_TURN_IN", "QuestSoundSelect", "QuestVolume", defaultSounds[8])
+    HandleEvent(self, "QUEST_TURNED_IN", "QuestSoundSelect", "QuestVolume", defaultSounds[8])
 end
 
 function BLU:HandleAchievementEarned()
@@ -60,14 +60,14 @@ function BLU:ReputationChatFrameHook()
 
         local rankFound = false
         local ranks = {
-            { rank = "Exalted", pattern = "You are now Exalted with" },
-            { rank = "Revered", pattern = "You are now Revered with" },
-            { rank = "Honored", pattern = "You are now Honored with" },
-            { rank = "Friendly", pattern = "You are now Friendly with" },
-            { rank = "Neutral", pattern = "You are now Neutral with" },
-            { rank = "Unfriendly", pattern = "You are now Unfriendly with" },
-            { rank = "Hostile", pattern = "You are now Hostile with" },
-            { rank = "Hated", pattern = "You are now Hated with" }
+            { rank = "Exalted", pattern = L["RANK_EXALTED"] },
+            { rank = "Revered", pattern = L["RANK_REVERED"] },
+            { rank = "Honored", pattern = L["RANK_HONORED"] },
+            { rank = "Friendly", pattern = L["RANK_FRIENDLY"] },
+            { rank = "Neutral", pattern = L["RANK_NEUTRAL"] },
+            { rank = "Unfriendly", pattern = L["RANK_UNFRIENDLY"] },
+            { rank = "Hostile", pattern = L["RANK_HOSTILE"] },
+            { rank = "Hated", pattern = L["RANK_HATED"] }
         }
 
         -- Check for reputation rank changes
@@ -85,7 +85,6 @@ function BLU:ReputationChatFrameHook()
             local faction, amount = string.match(msg, "Reputation with (.+) increased by (%d+)")
             if faction and amount then
                 BLU:DebugMessage("|cff00ff00Reputation gained with " .. faction .. ": " .. amount .. "|r")
-                -- You could add more logic here if you want to do something on every reputation gain
             else
                 BLU:PrintDebugMessage("NO_RANK_OR_REP_GAIN_FOUND")
             end
@@ -97,7 +96,6 @@ function BLU:ReputationChatFrameHook()
     BLU.chatFrameHooked = true
     self:PrintDebugMessage("CHAT_FRAME_HOOK_SUCCESS")
 end
-
 
 --=====================================================================================
 -- Handle Reputation Rank Increase
@@ -170,56 +168,76 @@ function BLU:HandleDelveLevelUp(level)
     self:PlaySelectedSound(sound, volumeLevel, defaultSounds[3])
 end
 
+--=====================================================================================
+-- Test Sound Functions with Detailed Debug Output
+--=====================================================================================
+local function TestSound(self, soundID, volumeKey, defaultSound, debugMessage, functionName)
+    -- Output to chat the function name being used
+    self:PrintDebugMessage("Function used: " .. functionName)
 
---=====================================================================================
--- Test Sound Functions
---=====================================================================================
-local function TestSound(self, soundID, volumeKey, defaultSound, debugMessage)
+    -- Print the debug message for the test being triggered
     self:PrintDebugMessage(L[debugMessage])
+
+    -- Select the sound based on sound ID
     local sound = self:SelectSound(self.db.profile[soundID])
     if not sound then
-        self:PrintDebugMessage(L["ERROR_SOUND_NOT_FOUND"])
-        return
+        self:PrintDebugMessage(L["ERROR_SOUND_NOT_FOUND"] .. " Default sound will be used.")
     end
-    self:PlaySelectedSound(sound, self.db.profile[volumeKey], defaultSound)
+
+    -- Play the selected sound
+    local volumeLevel = self.db.profile[volumeKey]
+    self:PlaySelectedSound(sound, volumeLevel, defaultSound)
 end
 
+--=====================================================================================
+-- Test Sound Trigger Functions
+--=====================================================================================
 function BLU:TestAchievementSound()
-    TestSound(self, "AchievementSoundSelect", "AchievementVolume", defaultSounds[1], "TEST_ACHIEVEMENT_SOUND")
+    self:PrintDebugMessage("TEST_ACHIEVEMENT_SOUND")
+    TestSound(self, "AchievementSoundSelect", "AchievementVolume", defaultSounds[1], "TEST_ACHIEVEMENT_SOUND", "TestAchievementSound")
 end
 
 function BLU:TestBattlePetLevelSound()
-    TestSound(self, "BattlePetLevelSoundSelect", "BattlePetLevelVolume", defaultSounds[2], "TEST_BATTLE_PET_LEVEL_SOUND")
+    self:PrintDebugMessage("TEST_BATTLE_PET_LEVEL_SOUND")
+    TestSound(self, "BattlePetLevelSoundSelect", "BattlePetLevelVolume", defaultSounds[2], "TEST_BATTLE_PET_LEVEL_SOUND", "TestBattlePetLevelSound")
 end
 
 function BLU:TestDelveLevelUpSound()
-    TestSound(self, "DelveLevelUpSoundSelect", "DelveLevelUpVolume", defaultSounds[3], "TEST_DELVESOUND")
+    self:PrintDebugMessage("TEST_DELVE_LEVEL_UP_SOUND")
+    TestSound(self, "DelveLevelUpSoundSelect", "DelveLevelUpVolume", defaultSounds[3], "TEST_DELVESOUND", "TestDelveLevelUpSound")
 end
 
 function BLU:TestHonorSound()
-    TestSound(self, "HonorSoundSelect", "HonorVolume", defaultSounds[5], "TEST_HONOR_SOUND")
+    self:PrintDebugMessage("TEST_HONOR_SOUND")
+    TestSound(self, "HonorSoundSelect", "HonorVolume", defaultSounds[5], "TEST_HONOR_SOUND", "TestHonorSound")
 end
 
 function BLU:TestLevelSound()
-    TestSound(self, "LevelSoundSelect", "LevelVolume", defaultSounds[4], "TEST_LEVEL_SOUND")
+    self:PrintDebugMessage("TEST_LEVEL_SOUND")
+    TestSound(self, "LevelSoundSelect", "LevelVolume", defaultSounds[4], "TEST_LEVEL_SOUND", "TestLevelSound")
 end
 
 function BLU:TestPostSound()
-    TestSound(self, "PostSoundSelect", "PostVolume", defaultSounds[9], "TEST_POST_SOUND")
+    self:PrintDebugMessage("TEST_POST_SOUND")
+    TestSound(self, "PostSoundSelect", "PostVolume", defaultSounds[9], "TEST_POST_SOUND", "TestPostSound")
 end
 
 function BLU:TestQuestAcceptSound()
-    TestSound(self, "QuestAcceptSoundSelect", "QuestAcceptVolume", defaultSounds[7], "TEST_QUEST_ACCEPT_SOUND")
+    self:PrintDebugMessage("TEST_QUEST_ACCEPT_SOUND")
+    TestSound(self, "QuestAcceptSoundSelect", "QuestAcceptVolume", defaultSounds[7], "TEST_QUEST_ACCEPT_SOUND", "TestQuestAcceptSound")
 end
 
 function BLU:TestQuestSound()
-    TestSound(self, "QuestSoundSelect", "QuestVolume", defaultSounds[8], "TEST_QUEST_SOUND")
+    self:PrintDebugMessage("TEST_QUEST_SOUND")
+    TestSound(self, "QuestSoundSelect", "QuestVolume", defaultSounds[8], "TEST_QUEST_SOUND", "TestQuestSound")
 end
 
 function BLU:TestRenownSound()
-    TestSound(self, "RenownSoundSelect", "RenownVolume", defaultSounds[6], "TEST_RENOWN_SOUND")
+    self:PrintDebugMessage("TEST_RENOWN_SOUND")
+    TestSound(self, "RenownSoundSelect", "RenownVolume", defaultSounds[6], "TEST_RENOWN_SOUND", "TestRenownSound")
 end
 
 function BLU:TestRepSound()
-    TestSound(self, "RepSoundSelect", "RepVolume", defaultSounds[6], "TEST_REP_SOUND")
+    self:PrintDebugMessage("TEST_REP_SOUND")
+    TestSound(self, "RepSoundSelect", "RepVolume", defaultSounds[6], "TEST_REP_SOUND", "TestRepSound")
 end

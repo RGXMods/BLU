@@ -1,4 +1,34 @@
 --=====================================================================================
+-- Default Profile Settings
+--=====================================================================================
+BLU.defaults = {
+    profile = {
+        debugMode = false,
+        showWelcomeMessage = true,
+        AchievementSoundSelect = 35,
+        AchievementVolume = 2.0,
+        BattlePetLevelSoundSelect = 37,
+        BattlePetLevelVolume = 2.0,
+        DelveLevelUpSoundSelect = 50,
+        DelveLevelUpVolume = 2.0,
+        HonorSoundSelect = 27,
+        HonorVolume = 2.0,
+        LevelSoundSelect = 24,
+        LevelVolume = 2.0,
+        PostSoundSelect = 55,
+        PostVolume = 2.0,
+        QuestAcceptSoundSelect = 26,
+        QuestAcceptVolume = 2.0,
+        QuestSoundSelect = 25,
+        QuestVolume = 2.0,
+        RenownSoundSelect = 21,
+        RenownVolume = 2.0,
+        RepSoundSelect = 15,
+        RepVolume = 2.0,
+    },
+}
+
+--=====================================================================================
 -- Options Definition
 --=====================================================================================
 BLU.options = {

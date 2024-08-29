@@ -20,6 +20,8 @@ BLU.delveChatFrameHooked = false
 BLU.debugMode = false
 BLU.showWelcomeMessage = true
 BLU.haltTimerRunning = false
+BLU.sortedOptions = {}
+BLU.optionsRegistered = false
 
 --=====================================================================================
 -- Slash Command Registration
@@ -30,6 +32,7 @@ end
 
 function BLU:HandleSlashCommands(input)
     input = input:trim():lower()  -- Convert input to lowercase
+
     if input == "" then
         Settings.OpenToCategory(self.optionsFrame.name)
         if self.debugMode then
@@ -39,11 +42,15 @@ function BLU:HandleSlashCommands(input)
         self:ToggleDebugMode()
     elseif input == "welcome" then
         self:ToggleWelcomeMessage()
+    elseif input == "help" then
+        self:PrintDebugMessage("HELP_COMMAND_RECOGNIZED")
+        print(BLU_PREFIX .. L["SLASH_COMMAND_HELP"])
     else
         self:PrintDebugMessage("UNKNOWN_SLASH_COMMAND", input)
-        print(BLU_PREFIX .. L["SLASH_COMMAND_HELP"])
+        print(BLU_PREFIX .. L["UNKNOWN_SLASH_COMMAND"])
     end
 end
+
 
 function BLU:ToggleDebugMode()
     self.debugMode = not self.debugMode
@@ -103,31 +110,32 @@ end
 -- Initialization
 --=====================================================================================
 function BLU:OnInitialize()
-    -- Define default settings
-    self.defaults = {
-        profile = {
-            debugMode = false,
-            showWelcomeMessage = true,
-            -- Add other default settings here
-        },
-    }
-
     -- Initialize the database with defaults
     self.db = LibStub("AceDB-3.0"):New("BLUDB", self.defaults, true)
 
-    -- Set initial values
-    self.debugMode = self.db.profile.debugMode
-    self.showWelcomeMessage = self.db.profile.showWelcomeMessage
+    -- Apply default values to the profile if not already set
+    for key, value in pairs(self.defaults.profile) do
+        if self.db.profile[key] == nil then
+            self.db.profile[key] = value
+        end
+    end
 
-    -- Register slash commands and events
+    -- Set initial values from the database or apply defaults
+    BLU.debugMode = self.db.profile.debugMode or false
+    BLU.showWelcomeMessage = self.db.profile.showWelcomeMessage
+
+    -- Register chat commands
     self:RegisterSlashCommands()
-    self:RegisterEvent("PLAYER_LOGIN", "OnPlayerLogin")
-end
 
-function BLU:OnPlayerLogin()
-    self:InitializeOptions()
+    -- Register shared events
     self:RegisterSharedEvents()
-    self:MuteSounds()
+
+    -- Initialize and apply colors to options
+    self:InitializeOptions()
+
+    -- Debug messages for loaded states
+    self:PrintDebugMessage("DEBUG_MODE_LOADED", tostring(BLU.debugMode))
+    self:PrintDebugMessage("SHOW_WELCOME_MESSAGE_LOADED", tostring(BLU.showWelcomeMessage))
 end
 
 --=====================================================================================
@@ -142,7 +150,7 @@ function BLU:InitializeOptions()
         return
     end
 
-    -- Initialize sortedOptions if necessary
+    -- Initialize sortedOptions table
     self.sortedOptions = {}
 
     -- Remove options based on game version
@@ -159,19 +167,23 @@ function BLU:InitializeOptions()
         end
     end
 
-    -- Continue with options assignment
+    -- Apply colors to the options
     self:AssignGroupColors()
 
-    -- Register the options
-    AC:RegisterOptionsTable("BLU_Options", self.options)
+    -- Register the options with the system only once
+    if not self.optionsRegistered then
+        AC:RegisterOptionsTable("BLU_Options", self.options)
+        self.optionsFrame = ACD:AddToBlizOptions("BLU_Options", L["OPTIONS_LIST_MENU_TITLE"])
 
-    -- Setup the options frame
-    self.optionsFrame = ACD:AddToBlizOptions("BLU_Options", L["OPTIONS_LIST_MENU_TITLE"])
+        local profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
+        AC:RegisterOptionsTable("BLU_Profiles", profiles)
+        ACD:AddToBlizOptions("BLU_Profiles", L["PROFILES_TITLE"], L["OPTIONS_LIST_MENU_TITLE"])
 
-    local profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
-    AC:RegisterOptionsTable("BLU_Profiles", profiles)
-    ACD:AddToBlizOptions("BLU_Profiles", L["PROFILES_TITLE"], L["OPTIONS_LIST_MENU_TITLE"])
-    self:PrintDebugMessage(L["OPTIONS_REGISTERED"])
+        self.optionsRegistered = true
+        self:PrintDebugMessage(L["OPTIONS_REGISTERED"])
+    else
+        self:PrintDebugMessage("OPTIONS_ALREADY_REGISTERED")
+    end
 end
 
 function BLU:IsGroupCompatibleWithVersion(group, version)
@@ -226,37 +238,41 @@ function BLU:AssignGroupColors()
     local patternIndex = 1
 
     -- Sort the groups by their order value
-    table.sort(self.sortedOptions, function(a, b) return a.order < b.order end)
+    if self.sortedOptions and #self.sortedOptions > 0 then
+        table.sort(self.sortedOptions, function(a, b) return a.order < b.order end)
 
-    for _, group in ipairs(self.sortedOptions) do
-        -- Check if the group should be processed
-        if group.name and group.args then
-            -- Apply color to the group header
-            group.name = colors[patternIndex] .. group.name .. "|r"
-            self:PrintDebugMessage("GROUP_COLOR_APPLIED", group.name)
+        for _, group in ipairs(self.sortedOptions) do
+            -- Check if the group should be processed
+            if group.name and group.args then
+                -- Apply color to the group header
+                group.name = colors[patternIndex] .. group.name .. "|r"
+                self:PrintDebugMessage("GROUP_COLOR_APPLIED", group.name)
 
-            for _, arg in pairs(group.args) do
-                -- Apply color only if the argument has a name and description
-                if arg.name and arg.name ~= "" then
-                    arg.name = colors[patternIndex] .. arg.name .. "|r"
-                    self:PrintDebugMessage("ARGUMENT_NAME_COLOR_APPLIED", arg.name)
-                else
-                    self:PrintDebugMessage("SKIPPING_ARGUMENT_NAME")
+                for _, arg in pairs(group.args) do
+                    -- Apply color only if the argument has a name and description
+                    if arg.name and arg.name ~= "" then
+                        arg.name = colors[patternIndex] .. arg.name .. "|r"
+                        self:PrintDebugMessage("ARGUMENT_NAME_COLOR_APPLIED", arg.name)
+                    else
+                        self:PrintDebugMessage("SKIPPING_ARGUMENT_NAME")
+                    end
+
+                    if arg.desc and arg.desc ~= "" then
+                        arg.desc = colors[(patternIndex % 2) + 1] .. arg.desc .. "|r"
+                        self:PrintDebugMessage("DESCRIPTION_COLOR_APPLIED", arg.desc)
+                    else
+                        self:PrintDebugMessage("SKIPPING_ARGUMENT_DESC")
+                    end
                 end
 
-                if arg.desc and arg.desc ~= "" then
-                    arg.desc = colors[(patternIndex % 2) + 1] .. arg.desc .. "|r"
-                    self:PrintDebugMessage("DESCRIPTION_COLOR_APPLIED", arg.desc)
-                else
-                    self:PrintDebugMessage("SKIPPING_ARGUMENT_DESC")
-                end
+                -- Alternate the pattern index for the next group
+                patternIndex = patternIndex % 2 + 1
+            else
+                self:PrintDebugMessage("SKIPPING_GROUP", group.name or "Unnamed Group")
             end
-
-            -- Alternate the pattern index for the next group
-            patternIndex = patternIndex % 2 + 1
-        else
-            self:PrintDebugMessage("SKIPPING_GROUP", group.name or "Unnamed Group")
         end
+    else
+        self:PrintDebugMessage("NO_GROUPS_TO_COLOR")
     end
 end
 
@@ -293,7 +309,6 @@ function BLU:RegisterSharedEvents()
     self:PrintDebugMessage(L["EVENTS_REGISTERED"])
 end
 
-
 --=====================================================================================
 -- Handle Player Entering World
 --=====================================================================================
@@ -325,7 +340,6 @@ function BLU:HandlePlayerEnteringWorld()
         self:PrintDebugMessage(L["HALT_TIMER_RUNNING"])
     end
 end
-
 
 --=====================================================================================
 -- Display Welcome Message

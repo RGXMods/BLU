@@ -49,121 +49,142 @@ function BLU:HandlePerksActivityCompleted(_, activityID)
 
     -- Check if the activity info and name are valid
     if activityInfo and activityInfo.activityName then
-        self:PrintDebugMessage(L["PERKS_ACTIVITY_COMPLETED_MSG"]:format(activityID))
-        print(BLU_PREFIX .. L["PERKS_ACTIVITY_COMPLETED_MSG"]:format(activityInfo.activityName))
+        self:PrintDebugMessage("PERKS_ACTIVITY_COMPLETED_MSG" .. activityInfo.activityName)
+        print(BLU_PREFIX .. "PERKS_ACTIVITY_COMPLETED_MSG" .. activityInfo.activityName)
     else
-        self:PrintDebugMessage(L["PERKS_ACTIVITY_ERROR"]:format(activityID))
+        self:PrintDebugMessage("PERKS_ACTIVITY_ERROR")
     end
 end
 
 --=====================================================================================
--- Reputation Event Handler
+-- Reputation Event Handler with Hardcoded Rank Matching
 --=====================================================================================
 function BLU:ReputationChatFrameHook()
-    if BLU.chatFrameHooked then 
-        self:PrintDebugMessage(L["CHAT_FRAME_ALREADY_HOOKED"])
-        return 
-    end
+    -- Ensure this hook is only added once
+    if BLU.chatFrameHooked then return end
 
-    ChatFrame_AddMessageEventFilter("CHAT_MSG_COMBAT_FACTION_CHANGE", function(_, _, msg)
-        BLU:PrintDebugMessage(L["INCOMING_CHAT_MESSAGE"]:format(msg))
-
-        local ranks = {
-            { rank = "Exalted", pattern = L["RANK_EXALTED"] },
-            { rank = "Revered", pattern = L["RANK_REVERED"] },
-            { rank = "Honored", pattern = L["RANK_HONORED"] },
-            { rank = "Friendly", pattern = L["RANK_FRIENDLY"] },
-            { rank = "Neutral", pattern = L["RANK_NEUTRAL"] },
-            { rank = "Unfriendly", pattern = L["RANK_UNFRIENDLY"] },
-            { rank = "Hostile", pattern = L["RANK_HOSTILE"] },
-            { rank = "Hated", pattern = L["RANK_HATED"] }
-        }
+    ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", function(_, _, msg)
+        self:PrintDebugMessage("INCOMING_CHAT_MESSAGE" .. msg)
 
         local rankFound = false
-        for _, v in ipairs(ranks) do
-            if string.match(msg, v.pattern) then
-                BLU:PrintDebugMessage(L["RANK_FOUND"]:format(v.rank))
-                BLU:ReputationRankIncrease(v.rank)
-                rankFound = true
-                break
-            end
+        if string.match(msg, "You are now Exalted with") then
+            self:PrintDebugMessage("|cff00ff00Rank found: Exalted|r")
+            self:ReputationRankIncrease("Exalted", msg)
+            rankFound = true
+        elseif string.match(msg, "You are now Revered with") then
+            self:PrintDebugMessage("|cff00ff00Rank found: Revered|r")
+            self:ReputationRankIncrease("Revered", msg)
+            rankFound = true
+        elseif string.match(msg, "You are now Honored with") then
+            self:PrintDebugMessage("|cff00ff00Rank found: Honored|r")
+            self:ReputationRankIncrease("Honored", msg)
+            rankFound = true
+        elseif string.match(msg, "You are now Friendly with") then
+            self:PrintDebugMessage("|cff00ff00Rank found: Friendly|r")
+            self:ReputationRankIncrease("Friendly", msg)
+            rankFound = true
+        elseif string.match(msg, "You are now Neutral with") then
+            self:PrintDebugMessage("|cff00ff00Rank found: Neutral|r")
+            self:ReputationRankIncrease("Neutral", msg)
+            rankFound = true
+        elseif string.match(msg, "You are now Unfriendly with") then
+            self:PrintDebugMessage("|cff00ff00Rank found: Unfriendly|r")
+            self:ReputationRankIncrease("Unfriendly", msg)
+            rankFound = true
+        elseif string.match(msg, "You are now Hostile with") then
+            self:PrintDebugMessage("|cff00ff00Rank found: Hostile|r")
+            self:ReputationRankIncrease("Hostile", msg)
+            rankFound = true
+        elseif string.match(msg, "You are now Hated with") then
+            self:PrintDebugMessage("|cff00ff00Rank found: Hated|r")
+            self:ReputationRankIncrease("Hated", msg)
+            rankFound = true
         end
 
         if not rankFound then
-            local faction, amount = string.match(msg, "Reputation with (.+) increased by (%d+)")
-            if faction and amount then
-                BLU:PrintDebugMessage(L["REPUTATION_GAINED_TRIGGERED"]:format(faction, amount))
-            else
-                BLU:PrintDebugMessage(L["NO_RANK_OR_REP_GAIN_FOUND"])
-            end
+            self:PrintDebugMessage("NO_RANK_FOUND")
         end
 
-        return false
+        return false -- Ensure that the message is not blocked from being displayed
     end)
 
     BLU.chatFrameHooked = true
-    self:PrintDebugMessage(L["CHAT_FRAME_HOOK_SUCCESS"])
 end
 
---=====================================================================================
--- Handle Reputation Rank Increase
---=====================================================================================
-function BLU:ReputationRankIncrease(rank)
-    if BLU.functionsHalted then 
-        self:PrintDebugMessage(L["FUNCTIONS_HALTED"])
+-- Initialize a table to track the last processed time for each faction
+BLU.recentReputationRanks = BLU.recentReputationRanks or {}
+
+-- Define the cooldown duration in seconds (e.g., 86400 for 24 hours)
+local COOLDOWN_DURATION = 15 -- 24 hours
+
+function BLU:ReputationRankIncrease(rank, msg)
+    if self.functionsHalted then 
+        self:PrintDebugMessage("FUNCTIONS_HALTED")
         return 
     end
 
-    self:PrintDebugMessage(L["REPUTATION_RANK_INCREASE"]:format(rank))
+    -- Extract the faction name from the message
+    local factionName = string.match(msg, "with (.+)")
+
+    -- Get the current time
+    local currentTime = GetTime()
+
+    -- Check if the faction was processed recently
+    if factionName and self.recentReputationRanks[factionName] and (currentTime - self.recentReputationRanks[factionName] < COOLDOWN_DURATION) then
+        self:PrintDebugMessage("Duplicate reputation rank increase for " .. factionName .. ", skipping.")
+        return
+    end
+
+    -- Update the last processed time for the faction
+    if factionName then
+        self.recentReputationRanks[factionName] = currentTime
+    end
+
+    self:PrintDebugMessage("Reputation rank increase triggered for rank: " .. rank .. " with faction: " .. factionName)
     local sound = self:SelectSound(self.db.profile.RepSoundSelect)
     if not sound then
-        self:PrintDebugMessage(L["ERROR_SOUND_NOT_FOUND"])
+        self:PrintDebugMessage("ERROR_SOUND_NOT_FOUND" .. self.db.profile.RepSoundSelect)
         return
     end
     local volumeLevel = self.db.profile.RepVolume
     self:PlaySelectedSound(sound, volumeLevel, defaultSounds[6])
 end
 
+
+
 --=====================================================================================
 -- Delve Level-Up Event Handler
 --=====================================================================================
 function BLU:DelveLevelUpChatFrameHook()
-    if BLU.delveChatFrameHooked then
-        self:PrintDebugMessage(L["CHAT_FRAME_ALREADY_HOOKED"])
-        return
-    end
 
     ChatFrame_AddMessageEventFilter("UPDATE_FACTION", function(_, _, msg)
-        BLU:PrintDebugMessage(L["INCOMING_CHAT_MESSAGE"]:format(msg))
+        self:PrintDebugMessage("INCOMING_CHAT_MESSAGE" .. msg)
 
         local level = string.match(msg, "Brann Bronzebeard has reached Level (%d+)%p?")
         if level and tonumber(level) >= 1 and tonumber(level) <= 999 then
-            BLU:PrintDebugMessage(L["DELVE_LEVEL_FOUND"]:format(level))
-            BLU:HandleDelveLevelUp(level)
+            self:PrintDebugMessage("Brann Bronzebeard has reached Level " .. level)
+            self:HandleDelveLevelUp(level)
         else
-            BLU:PrintDebugMessage(L["NO_DELVESOUND_FOUND"])
+            self:PrintDebugMessage("NO_BRANN_LEVEL_FOUND")
         end
 
         return false
     end)
-
-    BLU.delveChatFrameHooked = true
-    self:PrintDebugMessage(L["CHAT_FRAME_HOOK_SUCCESS"])
 end
 
 --=====================================================================================
 -- Handle Delve Level-Up Detection
 --=====================================================================================
 function BLU:HandleDelveLevelUp(level)
-    if BLU.functionsHalted then
-        self:PrintDebugMessage(L["FUNCTIONS_HALTED"])
+    if self.functionsHalted then
+        self:PrintDebugMessage("Functions halted. Event not processed.")
         return
     end
 
-    self:PrintDebugMessage(L["DELVESOUND_LEVEL_UP"]:format(level))
+    self:PrintDebugMessage("Delve Level-Up sound triggered for Level " .. level)
     local sound = self:SelectSound(self.db.profile.DelveLevelUpSoundSelect)
     if not sound then
-        self:PrintDebugMessage(L["ERROR_SOUND_NOT_FOUND"])
+        self:PrintDebugMessage("Sound not found for sound ID: " .. self.db.profile.DelveLevelUpSoundSelect)
         return
     end
     local volumeLevel = self.db.profile.DelveLevelUpVolume
@@ -212,3 +233,5 @@ end
 function BLU:TestRepSound()
     self:TestSound("RepSoundSelect", "RepVolume", defaultSounds[6], "TEST_REP_SOUND")
 end
+
+

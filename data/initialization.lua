@@ -15,61 +15,10 @@ local AC = LibStub("AceConfig-3.0")
 local ACD = LibStub("AceConfigDialog-3.0")
 
 BLU.functionsHalted = false
-BLU.chatFrameHooked = false
-BLU.delveChatFrameHooked = false
 BLU.debugMode = false
 BLU.showWelcomeMessage = true
-BLU.haltTimerRunning = false
 BLU.sortedOptions = {}
 BLU.optionsRegistered = false
-
---=====================================================================================
--- Slash Command Registration
---=====================================================================================
-function BLU:RegisterSlashCommands()
-    self:RegisterChatCommand("blu", "HandleSlashCommands")
-end
-
-function BLU:HandleSlashCommands(input)
-    input = input:trim():lower()  -- Convert input to lowercase
-
-    if input == "" then
-        Settings.OpenToCategory(self.optionsFrame.name)
-        if self.debugMode then
-            self:PrintDebugMessage("OPTIONS_PANEL_OPENED")
-        end
-    elseif input == "debug" then
-        self:ToggleDebugMode()
-    elseif input == "welcome" then
-        self:ToggleWelcomeMessage()
-    elseif input == "help" then
-        self:PrintDebugMessage("HELP_COMMAND_RECOGNIZED")
-        print(BLU_PREFIX .. L["SLASH_COMMAND_HELP"])
-    else
-        self:PrintDebugMessage("UNKNOWN_SLASH_COMMAND", input)
-        print(BLU_PREFIX .. L["UNKNOWN_SLASH_COMMAND"])
-    end
-end
-
-function BLU:ToggleDebugMode()
-    self.debugMode = not self.debugMode
-    self.db.profile.debugMode = self.debugMode
-    local status = self.debugMode and BLU_PREFIX .. L["DEBUG_MODE_ENABLED"] or BLU_PREFIX .. L["DEBUG_MODE_DISABLED"]
-    print(status)
-    self:PrintDebugMessage("DEBUG_MODE_TOGGLED", tostring(self.debugMode))
-end
-
-function BLU:ToggleWelcomeMessage()
-    -- Toggle the welcome message setting
-    self.showWelcomeMessage = not self.showWelcomeMessage
-    self.db.profile.showWelcomeMessage = self.showWelcomeMessage
-
-    -- Print out the status to debug
-    local status = self.showWelcomeMessage and BLU_PREFIX .. L["WELCOME_MSG_ENABLED"] or BLU_PREFIX .. L["WELCOME_MSG_DISABLED"]
-    print(status)
-    self:PrintDebugMessage("SHOW_WELCOME_MESSAGE_TOGGLED", tostring(self.showWelcomeMessage))
-    self:PrintDebugMessage("Current DB setting: ", tostring(self.db.profile.showWelcomeMessage))
-end
 
 --=====================================================================================
 -- Game Version Handling
@@ -90,23 +39,40 @@ function BLU:GetGameVersion()
 end
 
 --=====================================================================================
--- Mute Sounds Function
+-- Event Registration
 --=====================================================================================
-function BLU:MuteSounds()
-    local soundsToMute = muteSoundIDs[self:GetGameVersion()]
+function BLU:RegisterSharedEvents()
+    local version = self:GetGameVersion()
 
-    if soundsToMute and #soundsToMute > 0 then
-        for _, soundID in ipairs(soundsToMute) do
-            MuteSoundFile(soundID)
-            self:PrintDebugMessage("MUTING_SOUND", soundID)
-        end
-    else
-        self:PrintDebugMessage("NO_SOUNDS_TO_MUTE")
+    events = {
+        PLAYER_ENTERING_WORLD = "HandlePlayerEnteringWorld",
+        PLAYER_LEVEL_UP = "HandlePlayerLevelUp",
+        QUEST_ACCEPTED = "HandleQuestAccepted",
+        QUEST_TURNED_IN = "HandleQuestTurnedIn",
+        CHAT_MSG_SYSTEM = "ReputationChatFrameHook", -- Reputation hook
+    }
+
+    if version == "retail" then
+        events.MAJOR_FACTION_RENOWN_LEVEL_CHANGED = "HandleRenownLevelChanged"
+        events.PERKS_ACTIVITY_COMPLETED = "HandlePerksActivityCompleted"
+        events.PET_BATTLE_LEVEL_CHANGED = "HandlePetBattleLevelChanged"
+        events.ACHIEVEMENT_EARNED = "HandleAchievementEarned"
+        events.HONOR_LEVEL_UPDATE = "HandleHonorLevelUpdate"
+        events.UPDATE_FACTION = "DelveLevelUpChatFrameHook" -- Delve hook
+    elseif version == "cata" then
+        events.ACHIEVEMENT_EARNED = "HandleAchievementEarned"
+        -- Additional event handlers for other versions if necessary
     end
+
+    for event, handler in pairs(events) do
+        self:RegisterEvent(event, handler)
+    end
+
+    self:PrintDebugMessage(L["EVENTS_REGISTERED"])
 end
 
 --=====================================================================================
--- Initialization
+-- Initialization, Mute Sounds, and Display Welcome Message
 --=====================================================================================
 function BLU:OnInitialize()
     -- Initialize the database with defaults
@@ -124,9 +90,9 @@ function BLU:OnInitialize()
     self.showWelcomeMessage = self.db.profile.showWelcomeMessage
 
     -- Register chat commands
-    self:RegisterSlashCommands()
+    self:RegisterChatCommand("blu", "HandleSlashCommands")
 
-    -- Register shared events
+    -- Register shared events, including chat frame hooks
     self:RegisterSharedEvents()
 
     -- Initialize and apply colors to options
@@ -135,6 +101,22 @@ function BLU:OnInitialize()
     -- Debug messages for loaded states
     self:PrintDebugMessage("DEBUG_MODE_LOADED", tostring(self.debugMode))
     self:PrintDebugMessage("SHOW_WELCOME_MESSAGE_LOADED", tostring(self.showWelcomeMessage))
+
+    -- Mute sounds during initialization if needed
+    local soundsToMute = muteSoundIDs[self:GetGameVersion()]
+    if soundsToMute and #soundsToMute > 0 then
+        for _, soundID in ipairs(soundsToMute) do
+            MuteSoundFile(soundID)
+            self:PrintDebugMessage("MUTING_SOUND", soundID)
+        end
+    else
+        self:PrintDebugMessage("NO_SOUNDS_TO_MUTE")
+    end
+
+    -- Display the welcome message if enabled
+    if self.showWelcomeMessage then
+        print(BLU_PREFIX .. L["WELCOME_MESSAGE"])
+    end
 end
 
 --=====================================================================================
@@ -187,12 +169,25 @@ end
 
 function BLU:IsGroupCompatibleWithVersion(group, version)
     -- Logic to determine if the group is compatible with the current game version
-    if version == "cata" then
-        if group.name and (group.name:match("Honor Rank%-Up!") or group.name:match("Battle Pet Level%-Up!") or group.name:match("Delve Companion Level%-Up!")) then
+    if version == "retail" then
+        return true
+    elseif version == "cata" then
+        if group.name and (group.name:match("Honor Rank%-Up!") or
+                           group.name:match("Battle Pet Level%-Up!") or
+                           group.name:match("Delve Companion Level%-Up!") or
+                           group.name:match("Renown Rank%-Up!") or
+                           group.name:match("Post%-Sound Select")) then
             return false
         end
     elseif version == "vanilla" then
-        -- Add conditions for vanilla if necessary
+        if group.name and (group.name:match("Achievement") or
+                           group.name:match("Honor Rank%-Up!") or
+                           group.name:match("Battle Pet Level%-Up!") or
+                           group.name:match("Delve Companion Level%-Up!") or
+                           group.name:match("Renown Rank%-Up!") or
+                           group.name:match("Post%-Sound Select")) then
+            return false
+        end
     end
     return true
 end
@@ -273,88 +268,4 @@ function BLU:AssignGroupColors()
     else
         self:PrintDebugMessage("NO_GROUPS_TO_COLOR")
     end
-end
-
---=====================================================================================
--- Event Registration
---=====================================================================================
-function BLU:RegisterSharedEvents()
-    local version = self:GetGameVersion()
-
-    local events = {
-        PLAYER_ENTERING_WORLD = "HandlePlayerEnteringWorld",
-        PLAYER_LEVEL_UP = "HandlePlayerLevelUp",
-        QUEST_ACCEPTED = "HandleQuestAccepted",
-        QUEST_TURNED_IN = "HandleQuestTurnedIn",
-        CHAT_MSG_COMBAT_FACTION_CHANGE = "ReputationChatFrameHook", -- Registering the event
-    }
-
-    if version == "retail" then
-        events.MAJOR_FACTION_RENOWN_LEVEL_CHANGED = "HandleRenownLevelChanged"
-        events.PERKS_ACTIVITY_COMPLETED = "HandlePerksActivityCompleted"
-        events.PET_BATTLE_LEVEL_CHANGED = "HandlePetBattleLevelChanged"
-        events.ACHIEVEMENT_EARNED = "HandleAchievementEarned"
-        events.HONOR_LEVEL_UPDATE = "HandleHonorLevelUpdate"
-        events.UPDATE_FACTION = "DelveLevelUpChatFrameHook"
-    elseif version == "cata" then
-        events.ACHIEVEMENT_EARNED = "HandleAchievementEarned"
-        -- Additional event handlers for other versions if necessary
-    end
-
-    for event, handler in pairs(events) do
-        self:RegisterEvent(event, handler)
-    end
-
-    self:PrintDebugMessage(L["EVENTS_REGISTERED"])
-end
-
---=====================================================================================
--- Handle Player Entering World
---=====================================================================================
-function BLU:HandlePlayerEnteringWorld()
-    if not self.haltTimerRunning then
-        self.haltTimerRunning = true
-        self.functionsHalted = true
-        local countdownTime = 15
-
-        -- Debug message to confirm timer initiation
-        self:PrintDebugMessage("HALT_TIMER_STARTED", countdownTime)
-
-        C_Timer.NewTicker(1, function()
-            countdownTime = countdownTime - 1
-            self:PrintDebugMessage("COUNTDOWN_TICK", countdownTime)
-            if countdownTime <= 0 then
-                self.functionsHalted = false
-                self.haltTimerRunning = false
-                self:PrintDebugMessage(L["FUNCTIONS_RESUMED"])
-            end
-        end, 15)
-
-        self:MuteSounds()
-
-        if self.showWelcomeMessage then
-            self:DisplayWelcomeMessage()
-        end
-    else
-        self:PrintDebugMessage(L["HALT_TIMER_RUNNING"])
-    end
-end
-
---=====================================================================================
--- Display Welcome Message
---=====================================================================================
-function BLU:DisplayWelcomeMessage()
-    print(BLU_PREFIX .. L["WELCOME_MESSAGE"])
-    self:PrintDebugMessage(L["WELCOME_MESSAGE_DISPLAYED"])
-end
-
---=====================================================================================
--- GetValue and SetValue Methods
---=====================================================================================
-function BLU:GetValue(info)
-    return self.db.profile[info[#info]]
-end
-
-function BLU:SetValue(info, value)
-    self.db.profile[info[#info]] = value
 end

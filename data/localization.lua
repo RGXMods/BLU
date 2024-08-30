@@ -27,10 +27,18 @@ L = {
     optionColor1 = colors.prefix,
     optionColor2 = colors.white,
 
-    -- Add this to the localization section of your localization.lua
-    FUNCTION_USED = string.format("%sFunction %s used.|r", colors.info, colors.highlight),
+    -- Option Labels and Descriptions
+    OPTIONS_PANEL_TITLE = string.format("|Tinterface/addons/blu/images/icon:16:16|t - %sBLU|r %s|| %sB|r%setter %sL|r%svel %sU|r%sp!",
+        colors.prefix, colors.white, colors.prefix, colors.white, colors.prefix, colors.white, colors.prefix, colors.white),
+
+    -- Profiles
+    PROFILES_TITLE = "Profiles",
+
+    OPTIONS_LIST_MENU_TITLE = string.format("|Tinterface/addons/blu/images/icon:16:16|t - %sB|r%setter %sL|r%svel %sU|r%sp!",
+        colors.prefix, colors.white, colors.prefix, colors.white, colors.prefix, colors.white),
 
     -- General Text
+    FUNCTION_USED = string.format("%sFunction %s used.|r", colors.info, colors.highlight),
     ADDON_DISABLED = string.format("Addon %sdisabled|r.", colors.error),
     ADDON_ENABLED = string.format("Addon %senabled|r.", colors.success),
     DEBUG_MODE_ENABLED = string.format("%sDebug Mode Enabled|r", colors.success),
@@ -79,11 +87,15 @@ L = {
     RANK_HATED = "You are now Hated with",
 
     -- Debug Messages
-    COOLDOWN_ACTIVE = string.format("Cooldown active for rank: %s%%s|r.", colors.info),
-    CURRENT_DB_SETTING = string.format("Current DB setting: %s%%s|r.", colors.info),
+    COUNTDOWN_TIMER_RESET = string.format("%sHalt timer restarted and countdown reset to 15 seconds.|r", colors.info),
+    HALT_TIMER_STARTED = string.format("%sHalt timer started for %%d seconds.|r", colors.info),
+    COUNTDOWN_TICK = string.format("%sCountdown: %s%%d%s seconds remaining.|r", colors.info, colors.highlight, colors.info),
+    COOLDOWN_ACTIVE = string.format("Cooldown active for rank: %%s.|r", colors.info),
+    CURRENT_DB_SETTING = string.format("Current DB setting: %%s.|r", colors.info),
     ERROR_OPTIONS_NOT_INITIALIZED = string.format("%sOptions not initialized properly.|r", colors.error),
-    ERROR_SOUND_NOT_FOUND = string.format("%sSound not found for sound ID: %s%%s|r", colors.error, colors.highlight),
+    ERROR_SOUND_NOT_FOUND = string.format("%sSound not found for sound ID: %%s.|r", colors.error, colors.highlight),
     EVENTS_REGISTERED = "All shared events registered successfully.",
+    HALT_TIMER_RESTARTED = string.format("%sHalt timer restarted.|r", colors.info),
     HALT_TIMER_RUNNING = string.format("Halt timer already running. %sNo new timer started.|r", colors.info),
     MISSING_GROUP_NAME = string.format("%sA group is missing its name field.|r", colors.error),
     MUTING_SOUND = string.format("Muting sound with ID: %s%%s|r.", colors.highlight),
@@ -91,15 +103,15 @@ L = {
     NO_SOUNDS_TO_MUTE = string.format("%sNo sounds to mute for this game version.|r", colors.error),
     NO_VALID_SOUND_IDS = string.format("%sNo valid sound IDs found.|r", colors.error),
     OPTIONS_PANEL_OPENED = string.format("Options panel %sopened|r.", colors.success),
-    PLAYING_SOUND = string.format("Playing sound with ID: %s%%s|r and volume level: %s%%s|r", colors.highlight, colors.highlight),
-    RANDOM_SOUND_ID_SELECTED = string.format("Random sound ID selected: %s%%s|r", colors.highlight),
-    SELECTING_SOUND = string.format("Selecting sound with ID: %s%%s|r", colors.highlight),
-    SOUND_FILE_TO_PLAY = string.format("Sound file to play: %s%%s|r", colors.sound),
-    UNKNOWN_SLASH_COMMAND = string.format("Unknown slash command: %s%%s|r.", colors.highlight),
-    USING_RANDOM_SOUND_ID = string.format("Using random sound ID: %s%%s|r", colors.highlight),
-    USING_SPECIFIED_SOUND_ID = string.format("Using specified sound ID: %s%%s|r", colors.highlight),
+    PLAYING_SOUND = string.format("Playing sound with ID: %%s and volume level: %%d.|r", colors.highlight, colors.highlight),
+    RANDOM_SOUND_ID_SELECTED = string.format("Random sound ID selected: %%s.|r", colors.highlight),
+    SELECTING_SOUND = string.format("Selecting sound with ID: %%s.|r", colors.highlight),
+    SOUND_FILE_TO_PLAY = string.format("Sound file to play: %%s.|r", colors.sound),
+    UNKNOWN_SLASH_COMMAND = string.format("Unknown slash command: %%s.|r", colors.highlight),
+    USING_RANDOM_SOUND_ID = string.format("Using random sound ID: %%s.|r", colors.highlight),
+    USING_SPECIFIED_SOUND_ID = string.format("Using specified sound ID: %%s.|r", colors.highlight),
     VOLUME_LEVEL_ZERO = string.format("%sVolume level is %s0|r, sound not played.|r", colors.error, colors.highlight),
-    INVALID_VOLUME_LEVEL = string.format("%sInvalid volume level: %s%%s|r.", colors.error, colors.highlight),
+    INVALID_VOLUME_LEVEL = string.format("%sInvalid volume level: %%d.|r", colors.error, colors.highlight),
 
     -- Options Debug
     GROUP_COLOR_APPLIED = string.format("Group: %s%%s|r color applied.", colors.info),
@@ -121,19 +133,7 @@ L = {
     TEST_RENOWN_SOUND = string.format("%sTestRenownSound|r %striggered.|r", colors.info, colors.test),
     TEST_REP_SOUND = string.format("%sTestRepSound|r %striggered.|r", colors.info, colors.test),
 
-    -- Option Labels and Descriptions
-    OPTIONS_PANEL_TITLE = string.format("|Tinterface/addons/blu/images/icon:16:16|t - %sBLU|r %s|| %sB|r%setter %sL|r%svel %sU|r%sp!",
-        colors.prefix, colors.white, colors.prefix, colors.white, colors.prefix, colors.white, colors.prefix, colors.white),
-
-    -- Profiles
-    PROFILES_TITLE = "Profiles",
-
-    OPTIONS_LIST_MENU_TITLE = string.format("|Tinterface/addons/blu/images/icon:16:16|t - %sB|r%setter %sL|r%svel %sU|r%sp!",
-    colors.prefix, colors.white, colors.prefix, colors.white, colors.prefix, colors.white),
-
-    --=====================================================================================
     -- Option Labels and Descriptions for Volume Controls
-    --=====================================================================================
     ACHIEVEMENT_EARNED = "Achievement Earned!",
     ACHIEVEMENT_VOLUME_LABEL = "Achievement Volume",
     ACHIEVEMENT_VOLUME_DESC = "Adjust the volume for the Achievement Earned! sound.",

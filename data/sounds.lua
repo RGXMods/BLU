@@ -2,34 +2,31 @@
 -- Sound IDs
 --=====================================================================================
 
--- Retail
 muteSoundIDs = {
-    569143,  -- Achievement
-    1489546, -- Honor
-    569593,  -- Level Up
-    642841,  -- Battle Pet Level
-    4745441, -- Renown
-    568016,  -- Reputation (8473)
-    567400,  -- Quest Accepted
-    567439,  -- Quest Turned In
-    2066672  -- Trade Post
-}
-
--- Cataclysm
-muteSoundIDs_c = {
-    569143,  -- Achievement
-    569593,  -- Level Up
-    568016,  -- Reputation (8473)
-    567400,  -- Quest Accepted
-    567439   -- Quest Turned In
-}
-
--- Vanilla
-muteSoundIDs_v = {
-    569593,  -- Level Up
-    568016,  -- Reputation (8473)
-    567400,  -- Quest Accepted
-    567439   -- Quest Turned In
+    retail = {
+        569143,  -- Achievement
+        1489546, -- Honor
+        569593,  -- Level Up
+        642841,  -- Battle Pet Level
+        4745441, -- Renown
+        568016,  -- Reputation
+        567400,  -- Quest Accepted
+        567439,  -- Quest Turned In
+        2066672  -- Trade Post
+    },
+    cata = {
+        569143,  -- Achievement
+        569593,  -- Level Up
+        568016,  -- Reputation
+        567400,  -- Quest Accepted
+        567439   -- Quest Turned In
+    },
+    vanilla = {
+        569593,  -- Level Up
+        568016,  -- Reputation
+        567400,  -- Quest Accepted
+        567439   -- Quest Turned In
+    }
 }
 
 --=====================================================================================
@@ -91,7 +88,9 @@ soundOptions = {
     "Sonic The Hedgehog",
     "Spyro The Dragon",
     "Super Mario Bros 3",
-    "Warcraft 3",
+    "Warcraft 3 (1)",
+    "Warcraft 3 (2)",
+    "Warcraft 3 (3)",
     "Witcher 3 (1)",
     "Witcher 3 (2)",
 }
@@ -150,7 +149,6 @@ defaultSounds = {
 --=====================================================================================
 -- Custom Sounds
 --=====================================================================================
-
 sounds = {
     [3] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\altered_beast_low.ogg",
@@ -418,13 +416,27 @@ sounds = {
         [3] = "Interface\\Addons\\BLU\\sounds\\warcraft_3_high.ogg"
     },
     [56] = {
+        [1] = "Interface\\Addons\\BLU\\sounds\\warcraft_3-2_low.ogg",
+        [2] = "Interface\\Addons\\BLU\\sounds\\warcraft_3-2_med.ogg",
+        [3] = "Interface\\Addons\\BLU\\sounds\\warcraft_3-2_high.ogg"
+    },
+    [57] = {
+        [1] = "Interface\\Addons\\BLU\\sounds\\warcraft_3-3_low.ogg",
+        [2] = "Interface\\Addons\\BLU\\sounds\\warcraft_3-3_med.ogg",
+        [3] = "Interface\\Addons\\BLU\\sounds\\warcraft_3-3_high.ogg"
+    },
+    [58] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\witcher_3-1_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\witcher_3-1_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\witcher_3-1_high.ogg"
     },
-    [57] = {
+    [59] = {
         [1] = "Interface\\Addons\\BLU\\sounds\\witcher_3-2_low.ogg",
         [2] = "Interface\\Addons\\BLU\\sounds\\witcher_3-2_med.ogg",
         [3] = "Interface\\Addons\\BLU\\sounds\\witcher_3-2_high.ogg"
     }
 }
+
+--=====================================================================================
+-- 
+--=====================================================================================

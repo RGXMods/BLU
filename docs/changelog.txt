@@ -1,3 +1,5 @@
+v5.0.1-------------------------------------------------------------------
+- Fixed - Error in Level-Up! Localization - [core.lua]
 v5.0.0-------------------------------------------------------------------
 - Added - Dynamic game version handling for Retail, Cataclysm, and Vanilla - [initialization.lua, utils.lua]
 - Added - Localization strings for all user-facing text - [localization.lua]

@@ -7,7 +7,7 @@
 --=====================================================================================
 function BLU:HandlePlayerLevelUp()
     self:PrintDebugMessage("PLAYER_LEVEL_UP_TRIGGERED")
-    self:HandleEvent(L["PLAYER_LEVEL_UP"], "LevelSoundSelect", "LevelVolume", defaultSounds[4])
+    self:HandleEvent("PLAYER_LEVEL_UP", "LevelSoundSelect", "LevelVolume", defaultSounds[4])
 end
 
 function BLU:HandleQuestAccepted()

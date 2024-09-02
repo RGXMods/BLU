@@ -1,3 +1,11 @@
+v5.0.2-------------------------------------------------------------------
+- Removed - Call to `C_PerksActivities.GetActivityInfo` due to deprecated API - [core.lua]
+- Updated - Enhanced the slash command handler to support additional commands and improved feedback for unknown commands - [core.lua]
+- Updated - Improved localization structure for help commands, enabling more detailed and customizable help output - [localization.lua, core.lua]
+- Updated - Refined debug mode toggling to provide clearer messages and improved integration with the options panel - [core.lua]
+- Updated - Version number display output added to the welcome message - [core.lua]
+- Updated - Replaced `DelveLevelUpChatFrameHook` with Blizzard API-based event handling for Delve Companion level-ups, using `TRAIT_CONFIG_UPDATED` and `UPDATE_FACTION` events - [core.lua]
+- Updated - Event registration logic to properly register Delve-related events for Retail version, improving handling of Delve Companion level-up detection - [core.lua]
 v5.0.1-------------------------------------------------------------------
 - Fixed - Error in Level-Up! Localization - [core.lua]
 v5.0.0-------------------------------------------------------------------

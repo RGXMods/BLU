@@ -113,11 +113,18 @@ function BLU:HandleSlashCommands(input)
         self:ToggleWelcomeMessage()
     elseif input == "help" then
         self:PrintDebugMessage("HELP_COMMAND_RECOGNIZED")
-        print(BLU_PREFIX .. L["SLASH_COMMAND_HELP"])
+        self:DisplayBLUHelp()
     else
         self:PrintDebugMessage("UNKNOWN_SLASH_COMMAND", input)
         print(BLU_PREFIX .. L["UNKNOWN_SLASH_COMMAND"])
     end
+end
+
+function BLU:DisplayBLUHelp()
+    print(BLU_PREFIX .. L["HELP_COMMAND"])
+    print(BLU_PREFIX .. L["HELP_DEBUG"])
+    print(BLU_PREFIX .. L["HELP_WELCOME"])
+    print(BLU_PREFIX .. L["HELP_PANEL"])
 end
 
 --=====================================================================================

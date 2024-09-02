@@ -52,11 +52,21 @@ L = {
     PROCESSING_SLASH_COMMAND = string.format("Processing slash command: %s%%s|r.", colors.highlight),
     SHOW_WELCOME_MESSAGE_TOGGLED = string.format("Welcome message toggled: %s%%s|r.", colors.highlight),
     SLASH_COMMAND_HELP = string.format("Use %s/blu debug|r to toggle debug mode, %s/blu welcome|r to toggle the welcome message, or %s/blu|r to open the options panel.", colors.prefix, colors.prefix, colors.prefix),
-    WELCOME_MESSAGE = string.format("%sAddon Loaded!|r Type %s/blu|r to open the options panel or %s/blu help|r for more commands.", colors.success, colors.prefix, colors.prefix),
+    WELCOME_MESSAGE = string.format("Welcome! Use %s/blu|r to open the options panel or %s/blu help|r for more commands.", colors.prefix, colors.prefix),
     WELCOME_MESSAGE_DISPLAYED = string.format("Welcome message %sdisplayed|r.", colors.success),
     WELCOME_MSG_DISABLED = string.format("Welcome message %sdisabled|r.", colors.error),
     WELCOME_MSG_ENABLED = string.format("Welcome message %senabled|r.", colors.success),
     WELCOME_MESSAGE_STATUS = "Welcome message status: %s.",
+    VERSION = string.format("%sVersion: %s|r", "|cffffff00", "|cff8080ff%s|r"),
+
+    -- Help Command Text
+    HELP_COMMAND = string.format("%sAvailable commands:", "|cffffff00"),
+    HELP_DEBUG = " " .. colors.prefix .. "/blu debug|r - Toggle debug mode.",
+    HELP_WELCOME = " " .. colors.prefix .. "/blu welcome|r - Toggles the welcome message on/off.",
+    HELP_PANEL = " " .. colors.prefix .. "/blu|r - Open the options panel.",
+
+
+
 
     -- Event Messages
     INCOMING_CHAT_MESSAGE = string.format("%sIncoming chat message: %%s|r", colors.highlight),

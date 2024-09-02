@@ -40,21 +40,11 @@ function BLU:HandlePetBattleLevelChanged()
     self:HandleEvent("PET_BATTLE_LEVEL_CHANGED", "BattlePetLevelSoundSelect", "BattlePetLevelVolume", defaultSounds[2])
 end
 
-function BLU:HandlePerksActivityCompleted(_, activityID)
+function BLU:HandlePerksActivityCompleted()
     self:PrintDebugMessage("PERKS_ACTIVITY_COMPLETED_TRIGGERED")
     self:HandleEvent("PERKS_ACTIVITY_COMPLETED", "PostSoundSelect", "PostVolume", defaultSounds[9])
-
-    -- Retrieve the activity info table
-    local activityInfo = C_PerksActivities.GetActivityInfo(activityID)
-
-    -- Check if the activity info and name are valid
-    if activityInfo and activityInfo.activityName then
-        self:PrintDebugMessage("PERKS_ACTIVITY_COMPLETED_MSG" .. activityInfo.activityName)
-        print(BLU_PREFIX .. "PERKS_ACTIVITY_COMPLETED_MSG" .. activityInfo.activityName)
-    else
-        self:PrintDebugMessage("PERKS_ACTIVITY_ERROR")
-    end
 end
+
 
 --=====================================================================================
 -- Reputation Event Handler with Hardcoded Rank Matching
@@ -155,21 +145,32 @@ end
 --=====================================================================================
 -- Delve Level-Up Event Handler
 --=====================================================================================
-function BLU:DelveLevelUpChatFrameHook()
+function BLU:DelveLevelUpEventHandler()
+    -- Register for the appropriate events that would indicate a level-up in the Delve system.
+    self:RegisterEvent("TRAIT_CONFIG_UPDATED", "OnDelveCompanionLevelUp")
+    self:RegisterEvent("UPDATE_FACTION", "OnDelveCompanionLevelUp")
+end
 
-    ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", function(_, _, msg)
-        self:PrintDebugMessage("INCOMING_CHAT_MESSAGE" .. msg)
+function BLU:OnDelveCompanionLevelUp()
+    -- Check the companion's current level and detect if there's a level-up
+    local companionFactionID = C_DelvesUI.GetFactionForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID)
+    local renownInfo = C_MajorFactions.GetMajorFactionRenownInfo(companionFactionID)
 
-        local level = string.match(msg, "Brann Bronzebeard has reached Level")
-        if level and tonumber(level) >= 1 and tonumber(level) <= 999 then
-            self:PrintDebugMessage("Brann Bronzebeard has leveled up!")
-            self:HandleDelveLevelUp(level)
-        else
-            self:PrintDebugMessage("NO_BRANN_LEVEL_FOUND")
-        end
+    if not renownInfo then
+        self:PrintDebugMessage("No renown information found for the companion.")
+        return
+    end
 
-        return false
-    end)
+    local currentLevel = renownInfo.renownLevel
+    local storedLevel = self.db.profile.CompanionLevel or 0
+
+    if currentLevel > storedLevel then
+        self:PrintDebugMessage("Brann Bronzebeard has leveled up to Level " .. currentLevel)
+        self:HandleDelveLevelUp(currentLevel)
+        self.db.profile.CompanionLevel = currentLevel
+    else
+        self:PrintDebugMessage("No level-up detected. Current Level: " .. currentLevel)
+    end
 end
 
 --=====================================================================================
@@ -190,6 +191,7 @@ function BLU:HandleDelveLevelUp(level)
     local volumeLevel = self.db.profile.DelveLevelUpVolume
     self:PlaySelectedSound(sound, volumeLevel, defaultSounds[3])
 end
+
 
 --=====================================================================================
 -- Test Sound Trigger Functions

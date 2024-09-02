@@ -44,7 +44,7 @@ end
 function BLU:RegisterSharedEvents()
     local version = self:GetGameVersion()
 
-    events = {
+    local events = {
         PLAYER_ENTERING_WORLD = "HandlePlayerEnteringWorld",
         PLAYER_LEVEL_UP = "HandlePlayerLevelUp",
         QUEST_ACCEPTED = "HandleQuestAccepted",
@@ -58,7 +58,8 @@ function BLU:RegisterSharedEvents()
         events.PET_BATTLE_LEVEL_CHANGED = "HandlePetBattleLevelChanged"
         events.ACHIEVEMENT_EARNED = "HandleAchievementEarned"
         events.HONOR_LEVEL_UPDATE = "HandleHonorLevelUpdate"
-        events.CHAT_MSG_SYSTEM = "DelveLevelUpChatFrameHook" -- Delve hook
+        events.TRAIT_CONFIG_UPDATED = "OnDelveCompanionLevelUp" -- Delve Companion Level-Up
+        events.UPDATE_FACTION = "OnDelveCompanionLevelUp" -- Additional event for Delve Companion Level-Up
     elseif version == "cata" then
         events.ACHIEVEMENT_EARNED = "HandleAchievementEarned"
         -- Additional event handlers for other versions if necessary
@@ -116,6 +117,7 @@ function BLU:OnInitialize()
     -- Display the welcome message if enabled
     if self.showWelcomeMessage then
         print(BLU_PREFIX .. L["WELCOME_MESSAGE"])
+        print(BLU_PREFIX .. string.format(L["VERSION"], BLU.VersionNumber))
     end
 end
 

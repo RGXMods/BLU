@@ -58,8 +58,10 @@ function BLU:RegisterSharedEvents()
         events.PET_BATTLE_LEVEL_CHANGED = "HandlePetBattleLevelChanged"
         events.ACHIEVEMENT_EARNED = "HandleAchievementEarned"
         events.HONOR_LEVEL_UPDATE = "HandleHonorLevelUpdate"
+        -- Register events for Delve Companion level-up handling
         events.TRAIT_CONFIG_UPDATED = "OnDelveCompanionLevelUp" -- Delve Companion Level-Up
         events.UPDATE_FACTION = "OnDelveCompanionLevelUp" -- Additional event for Delve Companion Level-Up
+        events.CHAT_MSG_SYSTEM = "OnDelveCompanionLevelUp" -- Monitor system messages for Brann level-up
     elseif version == "cata" then
         events.ACHIEVEMENT_EARNED = "HandleAchievementEarned"
         -- Additional event handlers for other versions if necessary

@@ -1,3 +1,8 @@
+v5.0.3-------------------------------------------------------------------
+- Updated - Delve Companion level-up handling - [core.lua, initialization.lua]
+- Updated - Sound trigger for Brann level-up based on chat message verification - [core.lua]
+- Updated - Registered Delve Companion level-up events for Retail - [initialization.lua]
+- Added - Back in missing Delve Companion event handling logic - [core.lua, initialization.lua]
 v5.0.2-------------------------------------------------------------------
 - Removed - Call to `C_PerksActivities.GetActivityInfo` due to deprecated API - [core.lua]
 - Updated - Enhanced the slash command handler to support additional commands and improved feedback for unknown commands - [core.lua]

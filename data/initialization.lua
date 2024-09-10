@@ -55,16 +55,19 @@ function BLU:RegisterSharedEvents()
     if version == "retail" then
         events.MAJOR_FACTION_RENOWN_LEVEL_CHANGED = "HandleRenownLevelChanged"
         events.PERKS_ACTIVITY_COMPLETED = "HandlePerksActivityCompleted"
-        events.PET_BATTLE_LEVEL_CHANGED = "HandlePetBattleLevelChanged"
+        events.PET_BATTLE_LEVEL_CHANGED = "HandlePetLevelUp"
+        events.PET_JOURNAL_LIST_UPDATE = "HandlePetLevelUp"
+        events.UNIT_PET_EXPERIENCE = "HandlePetLevelUp"
+        events.BAG_UPDATE_DELAYED = "HandlePetLevelUp"
         events.ACHIEVEMENT_EARNED = "HandleAchievementEarned"
         events.HONOR_LEVEL_UPDATE = "HandleHonorLevelUpdate"
+
         -- Register events for Delve Companion level-up handling
-        events.TRAIT_CONFIG_UPDATED = "OnDelveCompanionLevelUp" -- Delve Companion Level-Up
-        events.UPDATE_FACTION = "OnDelveCompanionLevelUp" -- Additional event for Delve Companion Level-Up
-        events.CHAT_MSG_SYSTEM = "OnDelveCompanionLevelUp" -- Monitor system messages for Brann level-up
+        events.TRAIT_CONFIG_UPDATED = "OnDelveCompanionLevelUp"
+        events.UPDATE_FACTION = "OnDelveCompanionLevelUp"
+        events.CHAT_MSG_SYSTEM = "OnDelveCompanionLevelUp" -- For Brann level-up system messages
     elseif version == "cata" then
         events.ACHIEVEMENT_EARNED = "HandleAchievementEarned"
-        -- Additional event handlers for other versions if necessary
     end
 
     for event, handler in pairs(events) do

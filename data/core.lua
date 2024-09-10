@@ -35,11 +35,76 @@ function BLU:HandleRenownLevelChanged()
     self:HandleEvent("MAJOR_FACTION_RENOWN_LEVEL_CHANGED", "RenownSoundSelect", "RenownVolume", defaultSounds[6])
 end
 
-function BLU:HandlePetBattleLevelChanged()
-    self:PrintDebugMessage("PET_BATTLE_LEVEL_CHANGED_TRIGGERED")
-    self:HandleEvent("PET_BATTLE_LEVEL_CHANGED", "BattlePetLevelSoundSelect", "BattlePetLevelVolume", defaultSounds[2])
+--=====================================================================================
+-- Unified Pet Level-Up Handler
+--=====================================================================================
+local previousPetLevels = {}
+local isPetJournalInitialized = false  -- New flag to track initial population
+
+function BLU:HandlePetLevelUp(event, ...)
+    if self.functionsHalted then
+        self:PrintDebugMessage("HANDLE_PET_LEVEL_UP - Halt timer active, not processing.")
+        return
+    end
+
+    local eventName = L[event] or "UnknownEvent"
+    self:PrintDebugMessage(eventName .. " triggered")  -- Use localized event name
+
+    if event == "PET_BATTLE_LEVEL_CHANGED" then
+        local petID = ...
+        self:ProcessPetLevelUp(petID)
+    elseif event == "PET_JOURNAL_LIST_UPDATE" or event == "UNIT_PET_EXPERIENCE" or event == "BAG_UPDATE_DELAYED" then
+        self:CheckPetJournalForLevelUps()
+    end
 end
 
+function BLU:CheckPetJournalForLevelUps()
+    for i = 1, C_PetJournal.GetNumPets(false) do
+        local petID = C_PetJournal.GetPetInfoByIndex(i)
+        self:ProcessPetLevelUp(petID, not isPetJournalInitialized)  -- Pass `true` if not initialized
+    end
+
+    -- After the first population of the journal, set the flag to true
+    if not isPetJournalInitialized then
+        self:PrintDebugMessage("Pet journal initialized. Suppressing sounds for initial population.")
+        isPetJournalInitialized = true
+    end
+end
+
+function BLU:ProcessPetLevelUp(petID, suppressSound)
+    if self.functionsHalted then
+        self:PrintDebugMessage("ProcessPetLevelUp - Halt timer active, not processing.")
+        return
+    end
+
+    -- Ensure petID is valid
+    if not petID then
+        self:PrintDebugMessage(L["ERROR_PET_ID_NIL"]) -- Use localized error message
+        return
+    end
+
+    -- Retrieve pet info using petGUID
+    local _, customName, level = C_PetJournal.GetPetInfoByPetID(petID)
+
+    -- Check if the level is valid and higher than the stored level
+    if level and (not previousPetLevels[petID] or level > previousPetLevels[petID]) then
+        self:PrintDebugMessage(L["HANDLE_PET_LEVEL_UP"]:format(customName or "Unnamed", level))  -- Localized level-up message
+
+        -- Suppress the sound if the pet journal is being initialized
+        if not suppressSound then
+            self:HandleEvent("PET_LEVEL_UP", "BattlePetLevelSoundSelect", "BattlePetLevelVolume", defaultSounds[2])
+        end
+
+        previousPetLevels[petID] = level  -- Update the previous level for tracking
+    else
+        self:PrintDebugMessage("No level increase detected for pet with GUID: " .. petID)
+    end
+end
+
+
+--=====================================================================================
+-- Perks Activity Completed
+--=====================================================================================
 function BLU:HandlePerksActivityCompleted()
     self:PrintDebugMessage("PERKS_ACTIVITY_COMPLETED_TRIGGERED")
     self:HandleEvent("PERKS_ACTIVITY_COMPLETED", "PostSoundSelect", "PostVolume", defaultSounds[9])
@@ -136,30 +201,14 @@ function BLU:OnDelveCompanionLevelUp(event, ...)
         if levelUpMatch then
             local level = tonumber(levelUpMatch)
             self:PrintDebugMessage("|cff00ff00Brann Level-Up detected: Level " .. level .. "|r")
-            self:TriggerDelveLevelUpSound(level)
+
+            -- Trigger event handling using the standard method
+            self:HandleEvent("DELVE_LEVEL_UP", "DelveLevelUpSoundSelect", "DelveLevelUpVolume", defaultSounds[3])
+
         else
             self:PrintDebugMessage("NO_LEVEL_FOUND")
         end
     end
-end
-
---=====================================================================================
--- Trigger Sound on Delve Level-Up
---=====================================================================================
-function BLU:TriggerDelveLevelUpSound(level)
-    if self.functionsHalted then
-        self:PrintDebugMessage("Functions halted. Event not processed.")
-        return
-    end
-
-    self:PrintDebugMessage("Delve Level-Up sound triggered for Level " .. level)
-    local sound = self:SelectSound(self.db.profile.DelveLevelUpSoundSelect)
-    if not sound then
-        self:PrintDebugMessage("Sound not found for sound ID: " .. self.db.profile.DelveLevelUpSoundSelect)
-        return
-    end
-    local volumeLevel = self.db.profile.DelveLevelUpVolume
-    self:PlaySelectedSound(sound, volumeLevel, defaultSounds[3])
 end
 
 --=====================================================================================

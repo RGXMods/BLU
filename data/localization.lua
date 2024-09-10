@@ -28,13 +28,13 @@ L = {
     optionColor2 = colors.white,
 
     -- Option Labels and Descriptions
-    OPTIONS_PANEL_TITLE = string.format("|Tinterface/addons/blu/images/icon:16:16|t - %sBLU|r %s|| %sB|r%setter %sL|r%svel %sU|r%sp!",
+    OPTIONS_PANEL_TITLE = string.format("|Tinterface/addons/blu/images/icon:16:16|t - %sBLU|r %s|| %sB|r%setter %sL|r%sevel %sU|r%sp!",
         colors.prefix, colors.white, colors.prefix, colors.white, colors.prefix, colors.white, colors.prefix, colors.white),
 
     -- Profiles
     PROFILES_TITLE = "Profiles",
 
-    OPTIONS_LIST_MENU_TITLE = string.format("|Tinterface/addons/blu/images/icon:16:16|t - %sB|r%setter %sL|r%svel %sU|r%sp!",
+    OPTIONS_LIST_MENU_TITLE = string.format("|Tinterface/addons/blu/images/icon:16:16|t - %sB|r%setter %sL|r%sevel %sU|r%sp!",
         colors.prefix, colors.white, colors.prefix, colors.white, colors.prefix, colors.white),
 
     -- General Text
@@ -79,7 +79,8 @@ L = {
     PERKS_ACTIVITY_COMPLETED_TRIGGERED = string.format("%sPERKS_ACTIVITY_COMPLETED|r %striggered.|r", colors.info, colors.test),
     PERKS_ACTIVITY_COMPLETED_MSG = string.format("%sPerks Activity Completed:|r %s", colors.info, colors.test),
     PERKS_ACTIVITY_ERROR = string.format("%sError: Activity name not found.|r", colors.error),
-    PET_BATTLE_LEVEL_CHANGED_TRIGGERED = string.format("%sPET_BATTLE_LEVEL_CHANGED|r %striggered.|r", colors.info, colors.test),
+    ERROR_PET_ID_NIL = string.format("%sError: Pet ID NIL.|r", colors.error),
+    HANDLE_PET_LEVEL_UP = string.format("%sHANDLE_PET_LEVEL_UP|r %striggered.|r", colors.info, colors.test),
     PLAYER_LEVEL_UP_TRIGGERED = string.format("%sPLAYER_LEVEL_UP|r %striggered.|r", colors.info, colors.test),
     QUEST_ACCEPTED_TRIGGERED = string.format("%sQUEST_ACCEPTED|r %striggered.|r", colors.info, colors.test),
     QUEST_TURNED_IN_TRIGGERED = string.format("%sQUEST_TURNED_IN|r %striggered.|r", colors.info, colors.test),

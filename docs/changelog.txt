@@ -1,3 +1,7 @@
+v5.0.5-------------------------------------------------------------------
+- Updated - Reintroduced pet ID validation to ensure sounds only trigger on actual level-ups - [core.lua]
+- Updated - Enhanced error handling for pet journal initialization and invalid pet data - [core.lua]
+- Fixed - Pet level-up sounds incorrectly firing without level-up events - [core.lua]
 v5.0.4-------------------------------------------------------------------
 - Added - Full integration of pet level-up tracking using `PET_BATTLE_LEVEL_CHANGED`, `PET_JOURNAL_LIST_UPDATE`, and `BAG_UPDATE_DELAYED` for Retail - [core.lua]
 - Added - New sound trigger for pet level-up based on `UNIT_PET_EXPERIENCE` event - [core.lua]

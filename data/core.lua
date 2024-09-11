@@ -39,7 +39,9 @@ end
 -- Unified Pet Level-Up Handler
 --=====================================================================================
 local previousPetLevels = {}
-local isPetJournalInitialized = false  -- New flag to track initial population
+local isPetJournalInitialized = false  -- Flag to track initial population
+local lastPetLevelSoundTime = 0  -- Time of last pet level-up sound trigger
+local PET_LEVEL_SOUND_COOLDOWN = 3  -- Cooldown period in seconds to prevent spamming
 
 function BLU:HandlePetLevelUp(event, ...)
     if self.functionsHalted then
@@ -51,8 +53,7 @@ function BLU:HandlePetLevelUp(event, ...)
     self:PrintDebugMessage(eventName .. " triggered")  -- Use localized event name
 
     if event == "PET_BATTLE_LEVEL_CHANGED" then
-        local petID = ...
-        self:ProcessPetLevelUp(petID)
+        self:ProcessPetLevelUp()  -- Just trigger the level-up processing without petID
     elseif event == "PET_JOURNAL_LIST_UPDATE" or event == "UNIT_PET_EXPERIENCE" or event == "BAG_UPDATE_DELAYED" then
         self:CheckPetJournalForLevelUps()
     end
@@ -60,8 +61,8 @@ end
 
 function BLU:CheckPetJournalForLevelUps()
     for i = 1, C_PetJournal.GetNumPets(false) do
-        local petID = C_PetJournal.GetPetInfoByIndex(i)
-        self:ProcessPetLevelUp(petID, not isPetJournalInitialized)  -- Pass `true` if not initialized
+        -- Trigger level-up processing without petID checks
+        self:ProcessPetLevelUp(not isPetJournalInitialized)  -- Pass `true` if not initialized
     end
 
     -- After the first population of the journal, set the flag to true
@@ -71,33 +72,23 @@ function BLU:CheckPetJournalForLevelUps()
     end
 end
 
-function BLU:ProcessPetLevelUp(petID, suppressSound)
+function BLU:ProcessPetLevelUp(suppressSound)
     if self.functionsHalted then
         self:PrintDebugMessage("ProcessPetLevelUp - Halt timer active, not processing.")
         return
     end
 
-    -- Ensure petID is valid
-    if not petID then
-        self:PrintDebugMessage(L["ERROR_PET_ID_NIL"]) -- Use localized error message
+    -- Time-based throttling: only allow sounds to play once every 3 seconds
+    local currentTime = GetTime()
+    if currentTime - lastPetLevelSoundTime < PET_LEVEL_SOUND_COOLDOWN then
+        self:PrintDebugMessage("ProcessPetLevelUp - Sound throttled due to cooldown.")
         return
     end
 
-    -- Retrieve pet info using petGUID
-    local _, customName, level = C_PetJournal.GetPetInfoByPetID(petID)
-
-    -- Check if the level is valid and higher than the stored level
-    if level and (not previousPetLevels[petID] or level > previousPetLevels[petID]) then
-        self:PrintDebugMessage(L["HANDLE_PET_LEVEL_UP"]:format(customName or "Unnamed", level))  -- Localized level-up message
-
-        -- Suppress the sound if the pet journal is being initialized
-        if not suppressSound then
-            self:HandleEvent("PET_LEVEL_UP", "BattlePetLevelSoundSelect", "BattlePetLevelVolume", defaultSounds[2])
-        end
-
-        previousPetLevels[petID] = level  -- Update the previous level for tracking
-    else
-        self:PrintDebugMessage("No level increase detected for pet with GUID: " .. petID)
+    -- Check if sounds should be suppressed (e.g., during initial population)
+    if not suppressSound then
+        self:HandleEvent("PET_LEVEL_UP", "BattlePetLevelSoundSelect", "BattlePetLevelVolume", defaultSounds[2])
+        lastPetLevelSoundTime = currentTime  -- Update the last time the sound was played
     end
 end
 

@@ -1,3 +1,4 @@
-- Updated - Reintroduced pet ID validation to ensure sounds only trigger on actual level-ups - [core.lua]
-- Updated - Enhanced error handling for pet journal initialization and invalid pet data - [core.lua]
-- Fixed - Pet level-up sounds incorrectly firing without level-up events - [core.lua]
+- Updated - Added additional safeguards to prevent incorrect pet level-up sound triggers on login - [core.lua]
+- Updated - Improved error handling for pet level-up detection and validation - [core.lua]
+- Updated - Enhanced redundancy checks in pet level-up logic to ensure accurate event-based sound triggers - [core.lua]
+- Fixed - Addressed issue with random pet level-up sound triggers during login or when entering the world - [core.lua]

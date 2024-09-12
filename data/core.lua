@@ -36,20 +36,23 @@ function BLU:HandleRenownLevelChanged()
 end
 
 --=====================================================================================
--- BLU | Better Level Up! - core.lua
---=====================================================================================
-
---=====================================================================================
 -- Unified Pet Level-Up Handler
 --=====================================================================================
 local previousPetLevels = {}
 local isPetJournalInitialized = false  -- Flag to track initial population
 local lastPetLevelSoundTime = 0  -- Time of last pet level-up sound trigger
 local PET_LEVEL_SOUND_COOLDOWN = 3  -- Cooldown period in seconds to prevent spamming
+local IGNORE_INITIAL_LOAD = true  -- Flag to ignore initial load events
 
 function BLU:HandlePetLevelUp(event, ...)
     if self.functionsHalted then
         self:PrintDebugMessage("HANDLE_PET_LEVEL_UP - Halt timer active, not processing.")
+        return
+    end
+
+    -- Ignore initial load events until the journal has fully initialized
+    if IGNORE_INITIAL_LOAD then
+        self:PrintDebugMessage("IGNORE_INITIAL_LOAD active, skipping.")
         return
     end
 
@@ -64,7 +67,6 @@ function BLU:HandlePetLevelUp(event, ...)
         else
             self:PrintDebugMessage("PetID missing, not processing event.")
         end
-    -- Ensure `BAG_UPDATE_DELAYED` triggers sound when using pet level-up items
     elseif event == "PET_JOURNAL_LIST_UPDATE" or event == "BAG_UPDATE_DELAYED" then
         self:CheckPetJournalForLevelUps(true)  -- Pass 'true' to handle item-triggered level-ups
     end
@@ -75,7 +77,6 @@ function BLU:CheckPetJournalForLevelUps(isItemTriggered)
     for i = 1, C_PetJournal.GetNumPets(false) do
         local petID = C_PetJournal.GetPetInfoByIndex(i)
         if petID then
-            -- Handle pet level-ups triggered by items differently
             self:ProcessPetLevelUp(petID, not isPetJournalInitialized, isItemTriggered)
         end
     end
@@ -83,6 +84,7 @@ function BLU:CheckPetJournalForLevelUps(isItemTriggered)
     if not isPetJournalInitialized then
         self:PrintDebugMessage("Pet journal initialized. Suppressing sounds for initial population.")
         isPetJournalInitialized = true
+        IGNORE_INITIAL_LOAD = false  -- Allow event processing after the first population
     end
 end
 
@@ -121,8 +123,6 @@ function BLU:ProcessPetLevelUp(petID, suppressSound, isItemTriggered)
         self:PrintDebugMessage("No level increase detected for pet with GUID: " .. petID)
     end
 end
-
-
 
 --=====================================================================================
 -- Perks Activity Completed

@@ -1,4 +1,4 @@
-- Updated - Added additional safeguards to prevent incorrect pet level-up sound triggers on login - [core.lua]
-- Updated - Improved error handling for pet level-up detection and validation - [core.lua]
-- Updated - Enhanced redundancy checks in pet level-up logic to ensure accurate event-based sound triggers - [core.lua]
-- Fixed - Addressed issue with random pet level-up sound triggers during login or when entering the world - [core.lua]
+- Updated - Safeguards to prevent pet level-up sound triggers at login - [core.lua]
+- Updated - Error handling for pet level-up events - [core.lua]
+- Updated - Redundancy checks for accurate pet level-up sound triggers - [core.lua]
+- Fixed - Random pet level-up sounds during login or world entry - [core.lua]

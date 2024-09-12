@@ -36,23 +36,21 @@ function BLU:HandleRenownLevelChanged()
 end
 
 --=====================================================================================
--- Unified Pet Level-Up Handler
+-- BLU | Better Level Up! - core.lua (Fixing Misfires)
+--=====================================================================================
+
+--=====================================================================================
+-- Unified Pet Level-Up Handler with Misfire Fixes
 --=====================================================================================
 local previousPetLevels = {}
 local isPetJournalInitialized = false  -- Flag to track initial population
 local lastPetLevelSoundTime = 0  -- Time of last pet level-up sound trigger
 local PET_LEVEL_SOUND_COOLDOWN = 3  -- Cooldown period in seconds to prevent spamming
-local IGNORE_INITIAL_LOAD = true  -- Flag to ignore initial load events
+local isItemTriggered = false -- Track if level-up is triggered by item
 
 function BLU:HandlePetLevelUp(event, ...)
     if self.functionsHalted then
         self:PrintDebugMessage("HANDLE_PET_LEVEL_UP - Halt timer active, not processing.")
-        return
-    end
-
-    -- Ignore initial load events until the journal has fully initialized
-    if IGNORE_INITIAL_LOAD then
-        self:PrintDebugMessage("IGNORE_INITIAL_LOAD active, skipping.")
         return
     end
 
@@ -67,16 +65,21 @@ function BLU:HandlePetLevelUp(event, ...)
         else
             self:PrintDebugMessage("PetID missing, not processing event.")
         end
+    -- Ensure `BAG_UPDATE_DELAYED` triggers sound when using pet level-up items
     elseif event == "PET_JOURNAL_LIST_UPDATE" or event == "BAG_UPDATE_DELAYED" then
-        self:CheckPetJournalForLevelUps(true)  -- Pass 'true' to handle item-triggered level-ups
+        isItemTriggered = (event == "BAG_UPDATE_DELAYED") -- Track if the event is item-triggered
+        self:CheckPetJournalForLevelUps(isItemTriggered)
     end
 end
 
 -- Check for any level-ups after journal update or bag change
 function BLU:CheckPetJournalForLevelUps(isItemTriggered)
+    self:PrintDebugMessage("Checking pet journal for level-ups")
+    
     for i = 1, C_PetJournal.GetNumPets(false) do
         local petID = C_PetJournal.GetPetInfoByIndex(i)
         if petID then
+            -- Handle pet level-ups triggered by items or battles
             self:ProcessPetLevelUp(petID, not isPetJournalInitialized, isItemTriggered)
         end
     end
@@ -84,7 +87,6 @@ function BLU:CheckPetJournalForLevelUps(isItemTriggered)
     if not isPetJournalInitialized then
         self:PrintDebugMessage("Pet journal initialized. Suppressing sounds for initial population.")
         isPetJournalInitialized = true
-        IGNORE_INITIAL_LOAD = false  -- Allow event processing after the first population
     end
 end
 
@@ -103,6 +105,7 @@ function BLU:ProcessPetLevelUp(petID, suppressSound, isItemTriggered)
     -- Retrieve pet info using petGUID
     local _, customName, level = C_PetJournal.GetPetInfoByPetID(petID)
 
+    -- Check for level increase
     if level and (not previousPetLevels[petID] or level > previousPetLevels[petID]) then
         self:PrintDebugMessage(L["HANDLE_PET_LEVEL_UP"]:format(customName or "Unnamed", level))
 

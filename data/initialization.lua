@@ -19,6 +19,12 @@ BLU.debugMode = false
 BLU.showWelcomeMessage = true
 BLU.sortedOptions = {}
 BLU.optionsRegistered = false
+BLU.previousPetLevels = {}
+local isPetJournalInitialized = false
+local PET_LEVEL_SOUND_COOLDOWN = 3
+
+local PET_JOURNAL_POLL_INTERVAL = 0.1
+local timeSinceLastPoll = 0
 
 --=====================================================================================
 -- Game Version Handling
@@ -33,7 +39,7 @@ function BLU:GetGameVersion()
     elseif interfaceVersion >= 100000 then
         return "retail"
     else
-        self:PrintDebugMessage(L["ERROR_UNKNOWN_GAME_VERSION"])
+        self:PrintDebugMessage(BLU_L["ERROR_UNKNOWN_GAME_VERSION"]) 
         return "unknown"
     end
 end
@@ -49,66 +55,66 @@ function BLU:RegisterSharedEvents()
         PLAYER_LEVEL_UP = "HandlePlayerLevelUp",
         QUEST_ACCEPTED = "HandleQuestAccepted",
         QUEST_TURNED_IN = "HandleQuestTurnedIn",
-        CHAT_MSG_SYSTEM = "ReputationChatFrameHook", -- Reputation hook
+        CHAT_MSG_SYSTEM = "ReputationChatFrameHook",
     }
 
     if version == "retail" then
         events.MAJOR_FACTION_RENOWN_LEVEL_CHANGED = "HandleRenownLevelChanged"
         events.PERKS_ACTIVITY_COMPLETED = "HandlePerksActivityCompleted"
         events.PET_BATTLE_LEVEL_CHANGED = "HandlePetLevelUp"
-        events.PET_JOURNAL_LIST_UPDATE = "HandlePetLevelUp"
+        events.PET_JOURNAL_LIST_UPDATE = "HandlePetJournalUpdate"
         events.UNIT_PET_EXPERIENCE = "HandlePetLevelUp"
         events.BAG_UPDATE_DELAYED = "HandlePetLevelUp"
         events.ACHIEVEMENT_EARNED = "HandleAchievementEarned"
         events.HONOR_LEVEL_UPDATE = "HandleHonorLevelUpdate"
-
-        -- Register events for Delve Companion level-up handling
-        events.TRAIT_CONFIG_UPDATED = "OnDelveCompanionLevelUp"
-        events.UPDATE_FACTION = "OnDelveCompanionLevelUp"
-        events.CHAT_MSG_SYSTEM = "OnDelveCompanionLevelUp" -- For Brann level-up system messages
     elseif version == "cata" then
         events.ACHIEVEMENT_EARNED = "HandleAchievementEarned"
     end
 
     for event, handler in pairs(events) do
-        self:RegisterEvent(event, handler)
+        if type(self[handler]) == "function" then
+            self:RegisterEvent(event, handler)
+        else
+            if BLU_L["EVENT_HANDLER_NOT_FOUND"] then
+                self:PrintDebugMessage(string.format(BLU_L["EVENT_HANDLER_NOT_FOUND"], event, handler))
+            else
+                print("Missing localization for EVENT_HANDLER_NOT_FOUND") -- Fallback if the localization key is missing
+            end
+        end
     end
 
-    self:PrintDebugMessage(L["EVENTS_REGISTERED"])
+    self:PrintDebugMessage(BLU_L["EVENTS_REGISTERED"])
 end
-
+    
 --=====================================================================================
--- Initialization, Mute Sounds, and Display Welcome Message
+-- Initialization, Mute Sounds, and Welcome Message
 --=====================================================================================
 function BLU:OnInitialize()
     -- Initialize the database with defaults
     self.db = LibStub("AceDB-3.0"):New("BLUDB", self.defaults, true)
 
-    -- Apply default values to the profile if not already set
+    -- Apply default values if they are not set
     for key, value in pairs(self.defaults.profile) do
         if self.db.profile[key] == nil then
             self.db.profile[key] = value
         end
     end
 
-    -- Set initial values from the database or apply defaults
-    self.debugMode = self.db.profile.debugMode or false
+    self.debugMode = self.db.profile.debugMode
     self.showWelcomeMessage = self.db.profile.showWelcomeMessage
 
-    -- Register chat commands
+    -- Register slash commands and events
     self:RegisterChatCommand("blu", "HandleSlashCommands")
-
-    -- Register shared events, including chat frame hooks
     self:RegisterSharedEvents()
 
-    -- Initialize and apply colors to options
+    -- Initialize options and start polling for pet level changes if in retail
     self:InitializeOptions()
-
-    -- Debug messages for loaded states
+    
+    -- Debug messages for initial states
     self:PrintDebugMessage("DEBUG_MODE_LOADED", tostring(self.debugMode))
     self:PrintDebugMessage("SHOW_WELCOME_MESSAGE_LOADED", tostring(self.showWelcomeMessage))
 
-    -- Mute sounds during initialization if needed
+    -- Mute sounds based on game version
     local soundsToMute = muteSoundIDs[self:GetGameVersion()]
     if soundsToMute and #soundsToMute > 0 then
         for _, soundID in ipairs(soundsToMute) do
@@ -121,8 +127,8 @@ function BLU:OnInitialize()
 
     -- Display the welcome message if enabled
     if self.showWelcomeMessage then
-        print(BLU_PREFIX .. L["WELCOME_MESSAGE"])
-        print(BLU_PREFIX .. string.format(L["VERSION"], BLU.VersionNumber))
+        print(BLU_PREFIX .. BLU_L["WELCOME_MESSAGE"])
+        print(BLU_PREFIX .. string.format(BLU_L["VERSION"], BLU.VersionNumber))
     end
 end
 
@@ -132,13 +138,11 @@ end
 function BLU:InitializeOptions()
     local version = self:GetGameVersion()
 
-    -- Ensure options are available
     if not self.options or not self.options.args then
-        self:PrintDebugMessage(L["ERROR_OPTIONS_NOT_INITIALIZED"])
+        self:PrintDebugMessage(BLU_L["ERROR_OPTIONS_NOT_INITIALIZED"])
         return
     end
 
-    -- Initialize sortedOptions table
     self.sortedOptions = {}
 
     -- Remove options based on game version
@@ -146,55 +150,43 @@ function BLU:InitializeOptions()
         self:RemoveOptionsForVersion(version)
     end
 
-    -- Filter out groups based on game version
+    -- Filter out incompatible groups and assign colors
     for _, group in pairs(self.options.args) do
         if self:IsGroupCompatibleWithVersion(group, version) then
             table.insert(self.sortedOptions, group)
         else
-            self:PrintDebugMessage("SKIPPING_GROUP_NOT_COMPATIBLE", group.name or "Unnamed Group")
+            self:PrintDebugMessage(string.format(BLU_L["SKIPPING_GROUP_NOT_COMPATIBLE"], group.name or "Unnamed Group")) 
         end
     end
 
-    -- Apply colors to the options
     self:AssignGroupColors()
 
-    -- Register the options with the system only once
     if not self.optionsRegistered then
         AC:RegisterOptionsTable("BLU_Options", self.options)
-        self.optionsFrame = ACD:AddToBlizOptions("BLU_Options", L["OPTIONS_LIST_MENU_TITLE"])
+        self.optionsFrame = ACD:AddToBlizOptions("BLU_Options", BLU_L["OPTIONS_LIST_MENU_TITLE"]) 
 
         local profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
         AC:RegisterOptionsTable("BLU_Profiles", profiles)
-        ACD:AddToBlizOptions("BLU_Profiles", L["PROFILES_TITLE"], L["OPTIONS_LIST_MENU_TITLE"])
+        ACD:AddToBlizOptions("BLU_Profiles", BLU_L["PROFILES_TITLE"], BLU_L["OPTIONS_LIST_MENU_TITLE"])
 
         self.optionsRegistered = true
-        self:PrintDebugMessage(L["OPTIONS_REGISTERED"])
+        self:PrintDebugMessage(BLU_L["OPTIONS_REGISTERED"])
     else
-        self:PrintDebugMessage("OPTIONS_ALREADY_REGISTERED")
+        self:PrintDebugMessage(BLU_L["OPTIONS_ALREADY_REGISTERED"])
     end
 end
 
 function BLU:IsGroupCompatibleWithVersion(group, version)
-    -- Logic to determine if the group is compatible with the current game version
     if version == "retail" then
         return true
-    elseif version == "cata" then
-        if group.name and (group.name:match("Honor Rank%-Up!") or
-                           group.name:match("Battle Pet Level%-Up!") or
-                           group.name:match("Delve Companion Level%-Up!") or
-                           group.name:match("Renown Rank%-Up!") or
-                           group.name:match("Post%-Sound Select")) then
-            return false
-        end
-    elseif version == "vanilla" then
-        if group.name and (group.name:match("Achievement") or
-                           group.name:match("Honor Rank%-Up!") or
-                           group.name:match("Battle Pet Level%-Up!") or
-                           group.name:match("Delve Companion Level%-Up!") or
-                           group.name:match("Renown Rank%-Up!") or
-                           group.name:match("Post%-Sound Select")) then
-            return false
-        end
+    elseif version == "cata" and (group.name:match("Honor Rank%-Up!") or group.name:match("Battle Pet Level%-Up!") or
+                                  group.name:match("Delve Companion Level%-Up!") or group.name:match("Renown Rank%-Up!") or
+                                  group.name:match("Post%-Sound Select")) then
+        return false
+    elseif version == "vanilla" and (group.name:match("Achievement") or group.name:match("Honor Rank%-Up!") or
+                                     group.name:match("Battle Pet Level%-Up!") or group.name:match("Delve Companion Level%-Up!") or
+                                     group.name:match("Renown Rank%-Up!") or group.name:match("Post%-Sound Select")) then
+        return false
     end
     return true
 end
@@ -215,7 +207,7 @@ function BLU:RemoveOptionsForVersion(version)
         self.db.profile.HonorSoundSelect = nil
         self.db.profile.RenownSoundSelect = nil
         self.db.profile.PostSoundSelect = nil
-        self:PrintDebugMessage(L["VANILLA_OPTIONS_REMOVED"])
+        self:PrintDebugMessage(BLU_L["VANILLA_OPTIONS_REMOVED"]) 
     elseif version == "cata" then
         args.group3 = nil
         args.group4 = nil
@@ -227,7 +219,7 @@ function BLU:RemoveOptionsForVersion(version)
         self.db.profile.HonorSoundSelect = nil
         self.db.profile.RenownSoundSelect = nil
         self.db.profile.PostSoundSelect = nil
-        self:PrintDebugMessage(L["CATA_OPTIONS_REMOVED"])
+        self:PrintDebugMessage(BLU_L["CATA_OPTIONS_REMOVED"]) 
     end
 end
 
@@ -235,22 +227,18 @@ end
 -- Assign Group Colors
 --=====================================================================================
 function BLU:AssignGroupColors()
-    local colors = { L.optionColor1, L.optionColor2 }  -- Blue, White
+    local colors = { BLU_L.optionColor1, BLU_L.optionColor2 } 
     local patternIndex = 1
 
-    -- Sort the groups by their order value
     if self.sortedOptions and #self.sortedOptions > 0 then
         table.sort(self.sortedOptions, function(a, b) return a.order < b.order end)
 
         for _, group in ipairs(self.sortedOptions) do
-            -- Check if the group should be processed
             if group.name and group.args then
-                -- Apply color to the group header
                 group.name = colors[patternIndex] .. group.name .. "|r"
                 self:PrintDebugMessage("GROUP_COLOR_APPLIED", group.name)
 
                 for _, arg in pairs(group.args) do
-                    -- Apply color only if the argument has a name and description
                     if arg.name and arg.name ~= "" then
                         arg.name = colors[patternIndex] .. arg.name .. "|r"
                         self:PrintDebugMessage("ARGUMENT_NAME_COLOR_APPLIED", arg.name)
@@ -266,7 +254,6 @@ function BLU:AssignGroupColors()
                     end
                 end
 
-                -- Alternate the pattern index for the next group
                 patternIndex = patternIndex % 2 + 1
             else
                 self:PrintDebugMessage("SKIPPING_GROUP", group.name or "Unnamed Group")

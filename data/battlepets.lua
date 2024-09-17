@@ -1,7 +1,3 @@
--- =====================================================================================
--- BLU | Better Level Up! - battlepets.lua
--- =====================================================================================
-
 BLU_L = BLU_L or {}
 BLU = BLU or {}
 
@@ -10,12 +6,14 @@ BLU.previousPetLevels = {}  -- Stores the initial pet levels on login
 local lastSoundTime = {}
 local SOUND_COOLDOWN = 2
 
-BLU.petData = {} -- This will now be used to store the *current* pet levels during checks
-
 -- Register events
 function BLU:RegisterPetEvents()
     self:RegisterEvent("PLAYER_LOGIN", "OnPlayerLogin")
     self:RegisterEvent("PET_JOURNAL_LIST_UPDATE", "HandlePetJournalUpdate")
+    -- Additional events for potential level-up triggers
+    self:RegisterEvent("PET_BATTLE_OPENING_START", "HandlePetBattleEvent")
+    self:RegisterEvent("PET_BATTLE_CLOSE", "HandlePetBattleEvent")
+    self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", "HandleCombatLogEvent")
     self:RegisterEvent("PET_BATTLE_LEVEL_CHANGED", "HandlePetLevelUp") 
     self:RegisterEvent("UNIT_PET_EXPERIENCE", "HandlePetLevelUp")
     self:RegisterEvent("BAG_UPDATE_DELAYED", "HandlePetLevelUp") 
@@ -34,10 +32,26 @@ end
 
 -- Handle Pet Journal Updates
 function BLU:HandlePetJournalUpdate()
-    -- Delay to stabilize the Pet Journal data (optional, might not be needed)
-    C_Timer.After(0.2, function()
+    -- Directly check for level-ups when the journal updates
+    self:CheckPetJournalForLevelUps() 
+end
+
+-- Handle Pet Battle Events 
+function BLU:HandlePetBattleEvent()
+    -- Delay to ensure pet data is updated after battle
+    C_Timer.After(0.2, function() 
         self:CheckPetJournalForLevelUps()
     end)
+end
+
+-- Handle Combat Log Events
+function BLU:HandleCombatLogEvent(_, _, event, ...)
+    if event == "UNIT_DIED" or event == "UNIT_DESTROYED" then
+        -- Potential pet level-up, check after a short delay
+        C_Timer.After(0.1, function()
+            self:CheckPetJournalForLevelUps()
+        end)
+    end
 end
 
 -- Pet Level-Up Event Handlers 
@@ -51,12 +65,16 @@ function BLU:HandlePetLevelUp(event, ...)
             self.db.profile.lastUsedItemID = nil
             -- Force Pet Journal update
             C_PetJournal.ClearSearchFilter()
+
+            -- Directly check after forcing the update
+            self:CheckPetJournalForLevelUps(true) -- true indicates item triggered
+            return -- Exit early, level-up handled
         end
     end
 
-    -- Delay to ensure pet journal is updated
-    C_Timer.After(0.2, function()
-        self:CheckPetJournalForLevelUps(event == "BAG_UPDATE_DELAYED")
+    -- For other events, still use a small delay 
+    C_Timer.After(0.1, function() -- Reduced delay
+        self:CheckPetJournalForLevelUps()
     end)
 end
 
@@ -64,16 +82,19 @@ end
 function BLU:CheckPetJournalForLevelUps(isItemTriggered)
     isItemTriggered = isItemTriggered or false
 
-    self:UpdatePetData() -- Update BLU.petData with current pet levels
+    for petID, previousLevel in pairs(BLU.previousPetLevels) do
+        -- Fetch the CURRENT level directly from the journal
+        local _, _, currentLevel = C_PetJournal.GetPetInfoByPetID(petID) 
 
-    for petID, currentLevel in pairs(BLU.petData) do
-        local previousLevel = BLU.previousPetLevels[petID] or 0 
         if currentLevel > previousLevel then
             self:ProcessPetLevelUp(petID, currentLevel, false, isItemTriggered)
         else
             self:PrintDebugMessage(string.format("No level-up detected for Pet ID: %s, Previous Level: %d, Current Level: %d", petID, previousLevel, currentLevel))
         end
     end
+
+    -- Update stored levels AFTER processing 
+    self:UpdatePetData()
 
     -- Output stored information after processing level-ups
     self:PrintStoredData()
@@ -95,7 +116,7 @@ function BLU:UpdatePetData()
     end
 
     -- Clear current pet data before updating
-    wipe(BLU.petData)
+    wipe(BLU.previousPetLevels) -- Directly update the stored levels
 
     for i = 1, numPets do
         -- Get the pet's unique ID from the second argument
@@ -113,7 +134,7 @@ function BLU:UpdatePetData()
 
             -- Store valid pet data if it's a valid battle pet with a proper level
             if canBattle and level and type(level) == "number" and level >= 1 and level <= 25 then
-                BLU.petData[petID] = level
+                BLU.previousPetLevels[petID] = level
                 self:PrintDebugMessage(string.format("Stored Pet ID: %s, Level: %d", tostring(petID), level))
             else
                 self:PrintDebugMessage(string.format("Invalid or non-battle pet data for Pet ID: %s, Level: %d", petID or "N/A", level or -1))

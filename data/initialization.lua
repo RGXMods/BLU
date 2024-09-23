@@ -55,14 +55,15 @@ function BLU:RegisterSharedEvents()
         PLAYER_LEVEL_UP = "HandlePlayerLevelUp",
         QUEST_ACCEPTED = "HandleQuestAccepted",
         QUEST_TURNED_IN = "HandleQuestTurnedIn",
-        CHAT_MSG_SYSTEM = "ReputationChatFrameHook",
+        CHAT_MSG_SYSTEM = "ReputationChatFrameHook", 
     }
 
     if version == "retail" then
+        -- Updated event registration for pet tracking
         events.MAJOR_FACTION_RENOWN_LEVEL_CHANGED = "HandleRenownLevelChanged"
         events.PERKS_ACTIVITY_COMPLETED = "HandlePerksActivityCompleted"
         events.PET_BATTLE_LEVEL_CHANGED = "HandlePetLevelUp"
-        events.PET_JOURNAL_LIST_UPDATE = "HandlePetJournalUpdate"
+        events.PET_JOURNAL_LIST_UPDATE = "UpdatePetData"
         events.UNIT_PET_EXPERIENCE = "HandlePetLevelUp"
         events.BAG_UPDATE_DELAYED = "HandlePetLevelUp"
         events.ACHIEVEMENT_EARNED = "HandleAchievementEarned"
@@ -83,9 +84,10 @@ function BLU:RegisterSharedEvents()
         end
     end
 
-    self:PrintDebugMessage(BLU_L["EVENTS_REGISTERED"])
+    self:PrintDebugMessage("EVENTS_REGISTERED")
 end
-    
+
+
 --=====================================================================================
 -- Initialization, Mute Sounds, and Welcome Message
 --=====================================================================================

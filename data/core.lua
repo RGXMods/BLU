@@ -1,10 +1,6 @@
--- =====================================================================================
--- BLU | Better Level Up! - core.lua
--- =====================================================================================
-BLU_L = BLU_L or {}
--- =====================================================================================
--- Event Handlers for Various Game Events
--- =====================================================================================
+--=====================================================================================
+-- BLU | Better Level Up! - core.lua (Fixing Misfires)
+--=====================================================================================
 
 function BLU:HandlePlayerLevelUp()
     self:HandleEvent("PLAYER_LEVEL_UP", "LevelSoundSelect", "LevelVolume", defaultSounds[4], "PLAYER_LEVEL_UP_TRIGGERED")
@@ -31,35 +27,71 @@ function BLU:HandleRenownLevelChanged()
 end
 
 function BLU:HandlePerksActivityCompleted()
-    self:HandleEvent("PERKS_ACTIVITY_COMPLETED", "PostSoundSelect", "PostVolume", defaultSounds[9], "PERKS_ACTIVITY_COMPLETED_TRIGGERED")
+    self:PrintDebugMessage("PERKS_ACTIVITY_COMPLETED_TRIGGERED")
+    self:HandleEvent("PERKS_ACTIVITY_COMPLETED", "PostSoundSelect", "PostVolume", defaultSounds[9])
 end
 
--- =====================================================================================
+--=====================================================================================
 -- Test Sound Trigger Functions
--- =====================================================================================
-
-local testSoundMappings = {
-    TestAchievementSound = { "AchievementSoundSelect", "AchievementVolume", defaultSounds[1], BLU_L["TEST_ACHIEVEMENT_SOUND"] },
-    TestBattlePetLevelSound = { "BattlePetLevelSoundSelect", "BattlePetLevelVolume", defaultSounds[2], BLU_L["TEST_BATTLE_PET_LEVEL_SOUND"] },
-    TestDelveLevelUpSound = { "DelveLevelUpSoundSelect", "DelveLevelUpVolume", defaultSounds[3], BLU_L["TEST_DELVE_LEVEL_UP_SOUND"] },
-    TestHonorSound = { "HonorSoundSelect", "HonorVolume", defaultSounds[5], BLU_L["TEST_HONOR_SOUND"] },
-    TestLevelSound = { "LevelSoundSelect", "LevelVolume", defaultSounds[4], BLU_L["TEST_LEVEL_SOUND"] },
-    TestPostSound = { "PostSoundSelect", "PostVolume", defaultSounds[9], BLU_L["TEST_POST_SOUND"] },
-    TestQuestAcceptSound = { "QuestAcceptSoundSelect", "QuestAcceptVolume", defaultSounds[7], BLU_L["TEST_QUEST_ACCEPT_SOUND"] },
-    TestQuestSound = { "QuestSoundSelect", "QuestVolume", defaultSounds[8], BLU_L["TEST_QUEST_SOUND"] },
-    TestRenownSound = { "RenownSoundSelect", "RenownVolume", defaultSounds[6], BLU_L["TEST_RENOWN_SOUND"] },
-    TestRepSound = { "RepSoundSelect", "RepVolume", defaultSounds[6], BLU_L["TEST_REP_SOUND"] }
-}
-
-for name, params in pairs(testSoundMappings) do
-    BLU[name] = function(self)
-        self:TestSound(unpack(params))
-    end
+--=====================================================================================
+function BLU:TestAchievementSound()
+    self:TestSound("AchievementSoundSelect", "AchievementVolume", defaultSounds[1], "TEST_ACHIEVEMENT_SOUND")
 end
 
--- =====================================================================================
+function BLU:TestBattlePetLevelSound()
+    self:TestSound("BattlePetLevelSoundSelect", "BattlePetLevelVolume", defaultSounds[2], "TEST_BATTLE_PET_LEVEL_SOUND")
+end
+
+function BLU:TestDelveLevelUpSound()
+    self:TestSound("DelveLevelUpSoundSelect", "DelveLevelUpVolume", defaultSounds[3], "TEST_DELVE_LEVEL_UP_SOUND")
+end
+
+function BLU:TestHonorSound()
+    self:TestSound("HonorSoundSelect", "HonorVolume", defaultSounds[5], "TEST_HONOR_SOUND")
+end
+
+function BLU:TestLevelSound()
+    self:TestSound("LevelSoundSelect", "LevelVolume", defaultSounds[4], "TEST_LEVEL_SOUND")
+end
+
+function BLU:TestPostSound()
+    self:TestSound("PostSoundSelect", "PostVolume", defaultSounds[9], "TEST_POST_SOUND")
+end
+
+function BLU:TestQuestAcceptSound()
+    self:TestSound("QuestAcceptSoundSelect", "QuestAcceptVolume", defaultSounds[7], "TEST_QUEST_ACCEPT_SOUND")
+end
+
+function BLU:TestQuestSound()
+    self:TestSound("QuestSoundSelect", "QuestVolume", defaultSounds[8], "TEST_QUEST_SOUND")
+end
+
+function BLU:TestRenownSound()
+    self:TestSound("RenownSoundSelect", "RenownVolume", defaultSounds[6], "TEST_RENOWN_SOUND")
+end
+
+function BLU:TestRepSound()
+    self:TestSound("RepSoundSelect", "RepVolume", defaultSounds[6], "TEST_REP_SOUND")
+end
+
+--=====================================================================================
 -- Reputation Event Handler with Hardcoded Rank Matching
--- =====================================================================================
+--=====================================================================================
+
+function BLU:ReputationRankIncrease(rank, msg)
+    if self.functionsHalted then 
+        self:PrintDebugMessage("FUNCTIONS_HALTED")
+        return 
+    end
+
+    -- Extract the faction name from the message
+    local factionName = string.match(msg, "with (.+)")
+
+    self:PrintDebugMessage("Reputation rank increase triggered for rank: " .. rank .. " with faction: " .. factionName)
+
+    -- Use HandleEvent to manage sound and volume handling
+    self:HandleEvent("REPUTATION_RANK_INCREASE", "RepSoundSelect", "RepVolume", defaultSounds[6])
+end
 
 function BLU:ReputationChatFrameHook()
     if self.chatFrameHooked then return end
@@ -92,22 +124,10 @@ function BLU:ReputationChatFrameHook()
     self.chatFrameHooked = true
 end
 
-function BLU:ReputationRankIncrease(rank, msg)
-    if self.functionsHalted then return end
-    local factionName = string.match(msg, "with (.+)")
-    self:PrintDebugMessage("Reputation rank increase for " .. rank .. " with " .. factionName)
 
-    local sound = self:SelectSound(self.db.profile.RepSoundSelect)
-    if not sound then
-        self:PrintDebugMessage("ERROR_SOUND_NOT_FOUND for ID: " .. self.db.profile.RepSoundSelect)
-        return
-    end
-    self:PlaySelectedSound(sound, self.db.profile.RepVolume, defaultSounds[6])
-end
-
--- =====================================================================================
+--=====================================================================================
 -- Delve Level-Up Event Handler
--- =====================================================================================
+--=====================================================================================
 
 function BLU:OnDelveCompanionLevelUp(event, ...)
     self:PrintDebugMessage(BLU_L["DELVE_LEVEL_UP_AWAITING_CONFIRMATION"])
@@ -126,4 +146,3 @@ function BLU:OnDelveCompanionLevelUp(event, ...)
         end
     end
 end
-

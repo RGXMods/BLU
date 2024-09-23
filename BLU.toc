@@ -36,6 +36,7 @@ data\sounds.lua
 data\localization.lua
 data\initialization.lua
 data\utils.lua
+data\battlepets.lua
 data\core.lua
 data\battlepets.lua
 data\options.lua

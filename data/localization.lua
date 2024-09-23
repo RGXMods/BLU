@@ -85,7 +85,9 @@ BLU_L = {
     QUEST_TURNED_IN_TRIGGERED = string.format("%sQUEST_TURNED_IN|r %striggered.|r", colors.info, colors.test),
     REPUTATION_RANK_INCREASE = string.format("%sREPUTATION_RANK_INCREASE|r %striggered for rank: %s|r.", colors.info, colors.test, colors.success),
     REPUTATION_GAINED_TRIGGERED = string.format("%sReputation Gained|r %striggered: %s|r.", colors.info, colors.test, colors.success),
-
+    HANDLE_PET_LEVEL_UP_TRIGGERED = string.format("%sHANDLE_PET_LEVEL_UP|r triggered. Event: %%s", colors.info),
+    NO_LEVEL_INCREASE_DETECTED = string.format("%sNo level increase detected for pet: %%s - Level: %%d|r", colors.warning),
+    
     -- Reputation Ranks with "You are now ... with" pattern
     RANK_EXALTED = "You are now Exalted with",
     RANK_REVERED = "You are now Revered with",

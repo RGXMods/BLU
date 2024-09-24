@@ -1,6 +1,6 @@
 ## Interface: 110002
-## Version: v5.1.3
-## Title: |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel-|r|cff05dffaU|r|cffffffffp!|r - |cff8080ffv5.1.3|r 
+## Version: v5.1.4
+## Title: |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel-|r|cff05dffaU|r|cffffffffp!|r - |cff8080ffv5.1.4|r 
 ## Notes: Play sounds from other games!  |n|r  |cff05dffa/blu -|r Open options panel  |n|r   |cff05dffaBy Uivi US-BleedingHollow|r
 ## Author: DonnieDice
 ## Email: 60427166+donniedice@users.noreply.github.com
@@ -36,6 +36,6 @@ data\localization.lua
 data\initialization.lua
 data\sounds.lua
 data\utils.lua
-data\battlepets.lua
+
 data\core.lua
 data\options.lua

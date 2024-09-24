@@ -1,3 +1,6 @@
+v5.1.2-------------------------------------------------------------------
+- Fixed - Event registration for Delve Companion level-up checks to ensure proper handling - [core.lua]
+
 v5.1.1-------------------------------------------------------------------
 - Fixed - Multiple calls to `battlepets.lua` in TOC file causing redundant execution - [BLU.toc]
 - Fixed - Login spam for pet level-up sounds after the halt timer expires - [battlepets.lua]

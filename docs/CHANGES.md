@@ -1,3 +1,1 @@
-- Fixed - Multiple calls to `battlepets.lua` in TOC file causing redundant execution - [BLU.toc]
-- Fixed - Login spam for pet level-up sounds after the halt timer expires - [battlepets.lua]
-- Fixed - Broken event handlers causing incorrect sound triggers and event processing - [battlepets.lua]
+- Fixed - Event registration for Delve Companion level-up checks to ensure proper handling - [core.lua]

@@ -1,3 +1,8 @@
+v5.1.1-------------------------------------------------------------------
+- Fixed - Multiple calls to `battlepets.lua` in TOC file causing redundant execution - [BLU.toc]
+- Fixed - Login spam for pet level-up sounds after the halt timer expires - [battlepets.lua]
+- Fixed - Broken event handlers causing incorrect sound triggers and event processing - [battlepets.lua]
+
 v5.1.0-------------------------------------------------------------------
 - Fixed - Version number updated in TOC files to v5.1.0 - [BLU.toc, BLU_Cata.toc, BLU_Vanilla.toc]
 - Fixed - Corrected debug output localization for missing event handlers - [core.lua, initialization.lua]

@@ -1,22 +1,23 @@
---=====================================================================================
--- BLU | Better Level Up! - petTracking.lua
---=====================================================================================
-local BLU = BLU or {}  -- Ensure BLU is referencing the correct addon object as a table
-BLU.previousPetLevels = {}  -- Stores the initial pet levels on login
-BLU.currentPetLevels = {}   -- Temporary table to store current pet levels
-BLU.dataInitialized = false -- Prevents level-up detection during initial load
+local BLU = BLU or {} 
+BLU.previousPetLevels = {}
+BLU.currentPetLevels = {}
+BLU.dataInitialized = false
+BLU.L = BLU.L or {}
 
 -- Cooldown to prevent sound spamming
-BLU.soundCooldowns = {} -- Table to store cooldown timers per pet
+BLU.soundCooldowns = {}
 
 -- =====================================================================================
 -- Helper Functions (Utility)
 -- =====================================================================================
-BLU.L = BLU.L or {}
-local L = BLU.L
 
 -- Function to check for cooldowns on sound triggers
 function BLU:CanPlaySound(petID)
+    -- Prevent any sounds if functions are halted
+    if self.functionsHalted then
+        return false
+    end
+
     local cooldown = self.soundCooldowns[petID]
     if cooldown and cooldown > GetTime() then
         return false
@@ -26,106 +27,107 @@ function BLU:CanPlaySound(petID)
     return true
 end
 
--- =====================================================================================
--- Pet Level-Up Handling (Core Functionality)
--- =====================================================================================
-
-function BLU:HandlePetLevelUp(petID, currentLevel)
+-- Function to handle pet level-up detection
+function BLU:HandlePetLevelUp(petID, speciesID, currentLevel)
     -- Ensure valid level data
     if not petID or not currentLevel then
-        self:PrintDebugMessage("Invalid petID or currentLevel. PetID: " .. tostring(petID) .. ", Level: " .. tostring(currentLevel))
+        self:PrintDebugMessage("[BLU] Invalid petID or currentLevel. PetID: " .. tostring(petID) .. ", Level: " .. tostring(currentLevel))
         return
     end
 
     -- Avoid triggering level-ups during the initial load
-    if not self.dataInitialized then
-        self:PrintDebugMessage("Skipping level-up detection during initial data load")
+    if not self.initialLoadComplete then
+        self:PrintDebugMessage("[BLU] Skipping level-up detection during initial data load")
         return
     end
 
-    self:PrintDebugMessage("PET_LEVEL_UP_TRIGGERED for PetID: " .. tostring(petID) .. " Level: " .. tostring(currentLevel))
-    
-    -- Ensure we only play sound after checking cooldown
-    if self:CanPlaySound(petID) then
-        -- Use the correct keys for battle pet sound and volume
-        self:HandleEvent("PET_LEVEL_UP", "BattlePetLevelSoundSelect", "BattlePetLevelVolume", defaultSounds[2])
+    -- Get the previous level for comparison using speciesID
+    local previousLevel = self.previousPetLevels[speciesID] and self.previousPetLevels[speciesID].level or 0
+
+    -- Check if the level has actually increased
+    if currentLevel > previousLevel then
+        self:PrintDebugMessage("[BLU] PET_LEVEL_UP_TRIGGERED for PetID: " .. tostring(petID) .. " | Species: " .. tostring(speciesID) .. " | Level: " .. tostring(currentLevel))
+
+        -- Ensure we only play sound after checking cooldown
+        if self:CanPlaySound(petID) then
+            -- Trigger the event with correct sound parameters
+            self:HandleEvent("PET_LEVEL_UP", "BattlePetLevelSoundSelect", "BattlePetLevelVolume", defaultSounds[2])
+            -- Update the previous level to prevent repeated triggers
+            self.previousPetLevels[speciesID] = { level = currentLevel }
+        else
+            self:PrintDebugMessage("[BLU] Cooldown active or functions halted for PetID: " .. tostring(petID) .. ". No sound played.")
+        end
+    else
+        self:PrintDebugMessage("[BLU] No level-up detected for PetID: " .. tostring(petID) .. " | Species: " .. tostring(speciesID) .. " | Level: " .. tostring(currentLevel))
     end
 end
 
--- Update pet data
+
+-- Update pet data and track current levels
 function BLU:UpdatePetData()
     if not C_PetJournal.IsJournalUnlocked() then
+        self:PrintDebugMessage("[BLU] Pet Journal is not unlocked, skipping pet data update.")
         return
     end
 
     local numPets = C_PetJournal.GetNumPets()
     if not numPets or numPets == 0 then
+        self:PrintDebugMessage("[BLU] No pets found, skipping pet data update.")
         return
     end
 
-    -- Populate currentPetLevels
+    -- Clear search filters and populate currentPetLevels
+    C_PetJournal.ClearSearchFilter()
     wipe(self.currentPetLevels)
+    self:PrintDebugMessage("[BLU] Updating pet data for " .. tostring(numPets) .. " pets.")
 
     for i = 1, numPets do
         local petID, speciesID, isOwned, customName, level, favorite, isRevoked, speciesName, icon, petType = C_PetJournal.GetPetInfoByIndex(i)
 
         if petID then
-            local health, maxHealth, power, speed, rarity = C_PetJournal.GetPetStats(petID)
             local _, _, _, _, _, _, _, _, _, _, _, _, _, _, canBattle = C_PetJournal.GetPetInfoByPetID(petID)
 
             if canBattle and level and type(level) == "number" and level >= 1 and level <= 25 then
                 self.currentPetLevels[petID] = {
+                    speciesID = speciesID,
                     customName = customName,
                     speciesName = speciesName,
-                    level = level,
-                    canBattle = canBattle,
-                    icon = icon,
-                    maxHealth = maxHealth,
-                    power = power,
-                    speed = speed
+                    level = level
                 }
 
-                -- Debug print
-                self:PrintDebugMessage("Tracking pet:", speciesName, "ID:", petID, "Level:", level)
+                -- Always populate previous levels if not present
+                if not self.previousPetLevels[speciesID] then
+                    self.previousPetLevels[speciesID] = { level = level }
+                end
             end
         end
     end
 
-    -- Mark data as initialized after the first load
+    -- Mark the data as initialized after the first load
     if not self.dataInitialized then
         self.dataInitialized = true
-        -- Initialize previousPetLevels with currentPetLevels
-        wipe(self.previousPetLevels)
-        for petID, petInfo in pairs(self.currentPetLevels) do
-            self.previousPetLevels[petID] = petInfo
-        end
-        self:PrintDebugMessage("Pet data initialized.")
+        self:PrintDebugMessage("[BLU] Pet data initialized and previous pet levels stored.")
     end
 end
 
 -- Check for level-ups and process them
 function BLU:CheckPetJournalForLevelUps()
-    if not self.dataInitialized then
-        self:PrintDebugMessage("Skipping level-up detection during initial data load.")
+    if not self.initialLoadComplete then
+        self:PrintDebugMessage("[BLU] Skipping level-up check as initial load is incomplete.")
         return
     end
 
-    self:PrintDebugMessage("Checking for pet level-ups...")
-
+    -- Checking for pet level-ups by comparing current levels with the initially stored previous levels
     for petID, petInfo in pairs(self.currentPetLevels) do
-        local previousLevel = self.previousPetLevels[petID] and self.previousPetLevels[petID].level or 0
-
-        if petInfo.level > previousLevel then
-            self:HandlePetLevelUp(petID, petInfo.level)
+        -- Only check for level-ups on pets with valid levels
+        if petInfo.level and petInfo.level > 0 then
+            self:HandlePetLevelUp(petID, petInfo.speciesID, petInfo.level)
         end
     end
 
-    -- Update previousPetLevels to match currentPetLevels
-    wipe(self.previousPetLevels)
-    for petID, petInfo in pairs(self.currentPetLevels) do
-        self.previousPetLevels[petID] = petInfo
-    end
+    self:PrintDebugMessage("[BLU] Pet levels checked and compared with previous levels.")
 end
+
 -- =====================================================================================
 -- Event Handlers
 -- =====================================================================================
@@ -150,12 +152,18 @@ eventFrame:RegisterEvent("BAG_UPDATE_DELAYED")
 -- PLAYER_LOGIN event handler
 function BLU:PLAYER_LOGIN()
     if self:GetGameVersion() == "retail" then
-        -- Clear any search filters
-        C_PetJournal.ClearSearchFilter()
         self:UpdatePetData() -- Initialize pet data on login
+        self.initialLoadComplete = true -- Set flag for future checks
 
-        -- Output to chat
-        DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00Tracked Pet Levels Initialized on Login.|r")
+        -- Halt functions for 15 seconds after login (using utils function)
+        self:HaltOperations()
+        C_Timer.After(15, function()
+            self:ResumeOperations()
+            self:PrintDebugMessage("[BLU] Pet level-up sounds are now enabled.")
+        end)
+
+        -- Output to chat if in debug mode
+        self:PrintDebugMessage("|cff00ff00Tracked Pet Levels Initialized on Login. Sounds halted for 15 seconds.|r")
     end
 end
 
@@ -184,7 +192,6 @@ end
 function BLU:COMBAT_LOG_EVENT_UNFILTERED()
     local _, eventType = CombatLogGetCurrentEventInfo()
     if eventType == "UNIT_DIED" or eventType == "UNIT_DESTROYED" then
-        -- Delay to ensure pet data is updated
         C_Timer.After(0.1, function()
             BLU:UpdatePetData()
             BLU:CheckPetJournalForLevelUps()
@@ -194,42 +201,15 @@ end
 
 -- Handle pet level-up related events
 function BLU:PET_BATTLE_LEVEL_CHANGED(petID, newLevel)
-    if petID and newLevel then
-        BLU:HandlePetLevelUp(petID, newLevel)
-    else
-        -- Fallback: Check all pets if parameters are missing
-        BLU:UpdatePetData()
-        BLU:CheckPetJournalForLevelUps()
-    end
+    BLU:HandlePetLevelUp(petID, speciesID, newLevel)
 end
 
 function BLU:UNIT_PET_EXPERIENCE(unitID, currentXP, maxXP)
-    if unitID then
-        -- Determine which pet corresponds to the unitID
-        -- Assuming unitID "player" corresponds to the player's main pet
-        local petID = C_PetJournal.GetPetIDForPetSlot(1) -- Adjust the slot index as needed
-        if petID then
-            local _, _, currentLevel = C_PetJournal.GetPetInfoByPetID(petID)
-            if currentLevel then
-                BLU:HandlePetLevelUp(petID, currentLevel)
-            else
-                -- If currentLevel is not available, fallback to checking all pets
-                BLU:UpdatePetData()
-                BLU:CheckPetJournalForLevelUps()
-            end
-        else
-            -- If petID can't be determined, fallback to checking all pets
-            BLU:UpdatePetData()
-            BLU:CheckPetJournalForLevelUps()
-        end
-    else
-        BLU:CheckPetJournalForLevelUps()
-    end
+    BLU:UpdatePetData()
+    BLU:CheckPetJournalForLevelUps()
 end
 
 function BLU:BAG_UPDATE_DELAYED()
-    -- BAG_UPDATE_DELAYED doesn't provide pet-specific information
-    -- It's best to iterate through all pets to detect any level changes
     BLU:UpdatePetData()
     BLU:CheckPetJournalForLevelUps()
 end

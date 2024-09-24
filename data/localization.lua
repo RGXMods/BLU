@@ -2,7 +2,8 @@
 -- BLU | Better Level Up! - localization.lua
 -- =====================================================================================
 
-BLU_L = BLU_L or {}
+BLU = BLU or {}  -- Ensure BLU is defined
+BLU.L = BLU.L or {}  -- Ensure the localization table exists
 
 local colors = {
     prefix = "|cff05dffa",      -- BLU Prefix Color
@@ -23,6 +24,9 @@ DEBUG_PREFIX = string.format("[%sDEBUG|r] ", colors.debug)
 -- =====================================================================================
 -- Localization Strings
 -- =====================================================================================
+BLU.L["Tracking pet"] = "Tracking pet: %s | ID: %s | Level: %d"
+BLU.L["Checking for pet level-ups"] = "Checking for pet level-ups..."
+BLU.L["Invalid petID or currentLevel"] = "Invalid petID or currentLevel. PetID: %s, Level: %s"
 
 BLU_L = {
     -- Option Colors (Cycle with Color Alternation)

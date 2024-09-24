@@ -77,6 +77,57 @@ end
 --=====================================================================================
 -- Reputation Event Handler with Hardcoded Rank Matching
 --=====================================================================================
+function BLU:ReputationChatFrameHook()
+    -- Ensure this hook is only added once
+    if BLU.chatFrameHooked then return end
+
+    ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", function(_, _, msg)
+        self:PrintDebugMessage("INCOMING_CHAT_MESSAGE: " .. msg)
+
+        local rankFound = false
+        if string.match(msg, "You are now Exalted with") then
+            self:PrintDebugMessage("|cff00ff00Rank found: Exalted|r")
+            self:ReputationRankIncrease("Exalted", msg)
+            rankFound = true
+        elseif string.match(msg, "You are now Revered with") then
+            self:PrintDebugMessage("|cff00ff00Rank found: Revered|r")
+            self:ReputationRankIncrease("Revered", msg)
+            rankFound = true
+        elseif string.match(msg, "You are now Honored with") then
+            self:PrintDebugMessage("|cff00ff00Rank found: Honored|r")
+            self:ReputationRankIncrease("Honored", msg)
+            rankFound = true
+        elseif string.match(msg, "You are now Friendly with") then
+            self:PrintDebugMessage("|cff00ff00Rank found: Friendly|r")
+            self:ReputationRankIncrease("Friendly", msg)
+            rankFound = true
+        elseif string.match(msg, "You are now Neutral with") then
+            self:PrintDebugMessage("|cff00ff00Rank found: Neutral|r")
+            self:ReputationRankIncrease("Neutral", msg)
+            rankFound = true
+        elseif string.match(msg, "You are now Unfriendly with") then
+            self:PrintDebugMessage("|cff00ff00Rank found: Unfriendly|r")
+            self:ReputationRankIncrease("Unfriendly", msg)
+            rankFound = true
+        elseif string.match(msg, "You are now Hostile with") then
+            self:PrintDebugMessage("|cff00ff00Rank found: Hostile|r")
+            self:ReputationRankIncrease("Hostile", msg)
+            rankFound = true
+        elseif string.match(msg, "You are now Hated with") then
+            self:PrintDebugMessage("|cff00ff00Rank found: Hated|r")
+            self:ReputationRankIncrease("Hated", msg)
+            rankFound = true
+        end
+
+        if not rankFound then
+            self:PrintDebugMessage("NO_RANK_FOUND")
+        end
+
+        return false -- Ensure that the message is not blocked from being displayed
+    end)
+
+    BLU.chatFrameHooked = true
+end
 
 function BLU:ReputationRankIncrease(rank, msg)
     if self.functionsHalted then 
@@ -88,41 +139,15 @@ function BLU:ReputationRankIncrease(rank, msg)
     local factionName = string.match(msg, "with (.+)")
 
     self:PrintDebugMessage("Reputation rank increase triggered for rank: " .. rank .. " with faction: " .. factionName)
-
-    -- Use HandleEvent to manage sound and volume handling
-    self:HandleEvent("REPUTATION_RANK_INCREASE", "RepSoundSelect", "RepVolume", defaultSounds[6])
+    local sound = self:SelectSound(self.db.profile.RepSoundSelect)
+    if not sound then
+        self:PrintDebugMessage("ERROR_SOUND_NOT_FOUND: " .. self.db.profile.RepSoundSelect)
+        return
+    end
+    local volumeLevel = self.db.profile.RepVolume
+    self:PlaySelectedSound(sound, volumeLevel, defaultSounds[6])
 end
 
-function BLU:ReputationChatFrameHook()
-    if self.chatFrameHooked then return end
-
-    ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", function(_, _, msg)
-        self:PrintDebugMessage("INCOMING_CHAT_MESSAGE: " .. msg)
-        local rankPatterns = {
-            { "Exalted", "You are now Exalted with" },
-            { "Revered", "You are now Revered with" },
-            { "Honored", "You are now Honored with" },
-            { "Friendly", "You are now Friendly with" },
-            { "Neutral", "You are now Neutral with" },
-            { "Unfriendly", "You are now Unfriendly with" },
-            { "Hostile", "You are now Hostile with" },
-            { "Hated", "You are now Hated with" }
-        }
-
-        for _, rank in pairs(rankPatterns) do
-            if string.match(msg, rank[2]) then
-                self:PrintDebugMessage("Rank found: " .. rank[1])
-                self:ReputationRankIncrease(rank[1], msg)
-                return false
-            end
-        end
-
-        self:PrintDebugMessage("NO_RANK_FOUND")
-        return false
-    end)
-
-    self.chatFrameHooked = true
-end
 
 
 --=====================================================================================

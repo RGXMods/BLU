@@ -2,7 +2,7 @@ local BLU = BLU or {}
 BLU.previousPetLevels = {}
 BLU.currentPetLevels = {}
 BLU.dataInitialized = false
-BLU.L = BLU.L or {}
+BLU_L = BLU_L or {}
 
 -- Cooldown to prevent sound spamming
 BLU.soundCooldowns = {}
@@ -109,6 +109,7 @@ function BLU:UpdatePetData()
         self:PrintDebugMessage("[BLU] Pet data initialized and previous pet levels stored.")
     end
 end
+
 
 -- Check for level-ups and process them
 function BLU:CheckPetJournalForLevelUps()

@@ -4,7 +4,7 @@
 --=====================================================================================
 -- Get and Set Functions
 --=====================================================================================
-BLU.L = BLU.L or {}
+BLU_L = BLU_L or {}
 
 function BLU:GetValue(info)
     self:PrintDebugMessage("GETTING_VALUE", info[#info])
@@ -118,15 +118,20 @@ function BLU:HandleSlashCommands(input)
         self:DisplayBLUHelp()
     else
         self:PrintDebugMessage("UNKNOWN_SLASH_COMMAND", input)
-        print(BLU_PREFIX .. BLU.L["UNKNOWN_SLASH_COMMAND"])
+        print(BLU_PREFIX .. BLU_L["UNKNOWN_SLASH_COMMAND"])
     end
 end
 
 function BLU:DisplayBLUHelp()
-    print(BLU_PREFIX .. BLU.L["HELP_COMMAND"])
-    print(BLU_PREFIX .. BLU.L["HELP_DEBUG"])
-    print(BLU_PREFIX .. BLU.L["HELP_WELCOME"])
-    print(BLU_PREFIX .. BLU.L["HELP_PANEL"])
+    local helpCommand = BLU_L["HELP_COMMAND"] or "/blu help - Displays help information."
+    local helpDebug = BLU_L["HELP_DEBUG"] or "/blu debug - Toggles debug mode."
+    local helpWelcome = BLU_L["HELP_WELCOME"] or "/blu welcome - Toggles welcome messages."
+    local helpPanel = BLU_L["HELP_PANEL"] or "/blu panel - Opens the options panel."
+
+    print(BLU_PREFIX .. helpCommand)
+    print(BLU_PREFIX .. helpDebug)
+    print(BLU_PREFIX .. helpWelcome)
+    print(BLU_PREFIX .. helpPanel)
 end
 
 --=====================================================================================
@@ -138,7 +143,7 @@ function BLU:ToggleDebugMode()
     self.db.profile.debugMode = self.debugMode
 
     -- Fallback in case the localization string is missing
-    local statusMessage = self.debugMode and BLU.L["DEBUG_MODE_ENABLED"] or BLU.L["DEBUG_MODE_DISABLED"]
+    local statusMessage = self.debugMode and BLU_L["DEBUG_MODE_ENABLED"] or BLU_L["DEBUG_MODE_DISABLED"]
     if not statusMessage then
         statusMessage = self.debugMode and "Debug mode enabled" or "Debug mode disabled"
     end
@@ -152,7 +157,7 @@ function BLU:ToggleWelcomeMessage()
     self.showWelcomeMessage = not self.showWelcomeMessage
     self.db.profile.showWelcomeMessage = self.showWelcomeMessage
 
-    local status = self.showWelcomeMessage and BLU_PREFIX .. BLU.L["WELCOME_MSG_ENABLED"] or BLU_PREFIX .. BLU.L["WELCOME_MSG_DISABLED"]
+    local status = self.showWelcomeMessage and BLU_PREFIX .. BLU_L["WELCOME_MSG_ENABLED"] or BLU_PREFIX .. BLU_L["WELCOME_MSG_DISABLED"]
     print(status)
     self:PrintDebugMessage("SHOW_WELCOME_MESSAGE_TOGGLED", tostring(self.showWelcomeMessage))
     self:PrintDebugMessage("CURRENT_DB_SETTING", tostring(self.db.profile.showWelcomeMessage))
@@ -169,8 +174,8 @@ function BLU:DebugMessage(message)
 end
 
 function BLU:PrintDebugMessage(key, ...)
-    if self.debugMode and BLU.L[key] then
-        self:DebugMessage(BLU.L[key]:format(...))
+    if self.debugMode and BLU_L[key] then
+        self:DebugMessage(BLU_L[key]:format(...))
     end
 end
 
@@ -232,7 +237,7 @@ function BLU:TestSound(soundID, volumeKey, defaultSound, debugMessage)
 
     local sound = self:SelectSound(self.db.profile[soundID])
     if not sound then
-        self:PrintDebugMessage(BLU.L["ERROR_SOUND_NOT_FOUND"] .. " " .. BLU.L["DEFAULT_SOUND_USED"])
+        self:PrintDebugMessage(BLU_L["ERROR_SOUND_NOT_FOUND"] .. " " .. BLU_L["DEFAULT_SOUND_USED"])
     end
 
     local volumeLevel = self.db.profile[volumeKey]

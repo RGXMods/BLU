@@ -26,6 +26,8 @@ local PET_LEVEL_SOUND_COOLDOWN = 3
 local PET_JOURNAL_POLL_INTERVAL = 0.1
 local timeSinceLastPoll = 0
 
+BLU_L = BLU_L or {}
+
 --=====================================================================================
 -- Game Version Handling
 --=====================================================================================
@@ -91,7 +93,6 @@ function BLU:RegisterSharedEvents()
     self:PrintDebugMessage("EVENTS_REGISTERED")
 end
 
-
 --=====================================================================================
 -- Initialization, Mute Sounds, and Welcome Message
 --=====================================================================================
@@ -113,7 +114,7 @@ function BLU:OnInitialize()
     self:RegisterChatCommand("blu", "HandleSlashCommands")
     self:RegisterSharedEvents()
 
-    -- Initialize options and start polling for pet level changes if in retail
+    -- Initialize options
     self:InitializeOptions()
     
     -- Debug messages for initial states

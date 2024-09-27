@@ -1,5 +1,5 @@
 -- =====================================================================================
--- BLU | Better Level Up! - localization.lua
+-- BLU | Better Level-Up! - localization.lua
 -- =====================================================================================
 
 BLU = BLU or {}  -- Ensure BLU is defined
@@ -34,13 +34,13 @@ BLU_L = {
     optionColor2 = colors.white,
 
     -- Option Labels and Descriptions
-    OPTIONS_PANEL_TITLE = string.format("|Tinterface/addons/blu/images/icon:16:16|t - %sBLU|r %s|| %sB|r%setter %sL|r%sevel %sU|r%sp!",
+    OPTIONS_PANEL_TITLE = string.format("|Tinterface/addons/blu/images/icon:16:16|t - %sBLU|r %s|| %sB|r%setter %sL|r%sevel-%sU|r%sp!",
         colors.prefix, colors.white, colors.prefix, colors.white, colors.prefix, colors.white, colors.prefix, colors.white),
 
     -- Profiles
     PROFILES_TITLE = "Profiles",
 
-    OPTIONS_LIST_MENU_TITLE = string.format("|Tinterface/addons/blu/images/icon:16:16|t - %sB|r%setter %sL|r%sevel %sU|r%sp!",
+    OPTIONS_LIST_MENU_TITLE = string.format("|Tinterface/addons/blu/images/icon:16:16|t - %sB|r%setter %sL|r%sevel-%sU|r%sp!",
         colors.prefix, colors.white, colors.prefix, colors.white, colors.prefix, colors.white),
 
     -- General Text
@@ -124,25 +124,10 @@ BLU_L = {
     SELECTING_SOUND = string.format("Selecting sound with ID: %%s.|r", colors.highlight),
     SOUND_FILE_TO_PLAY = string.format("Sound file to play: %%s.|r", colors.sound),
     UNKNOWN_SLASH_COMMAND = string.format("Unknown slash command: %%s.|r", colors.highlight),
-    -- Debug Messages (continued)
     USING_RANDOM_SOUND_ID = string.format("Using random sound ID: %%s.|r", colors.highlight),
     USING_SPECIFIED_SOUND_ID = string.format("Using specified sound ID: %%s.|r", colors.highlight),
     VOLUME_LEVEL_ZERO = string.format("%sVolume level is %s0|r, sound not played.|r", colors.error, colors.highlight),
     INVALID_VOLUME_LEVEL = string.format("%sInvalid volume level: %%d.|r", colors.error, colors.highlight),
-
-    -- Pet Leveling and Sounds
-    HANDLE_PET_LEVEL_UP_TRIGGERED = string.format("%sHANDLE_PET_LEVEL_UP|r triggered. Event: %%s", colors.info),
-    ERROR_PET_ID_OR_LEVEL_NIL = string.format("%sError: Pet ID or level is nil.|r", colors.error),
-    PET_POLLING_STARTED = string.format("%sStarted polling for pet level changes.|r", colors.success),
-    PET_POLLING_STOPPED = string.format("%sStopped polling for pet level changes.|r", colors.success),
-    PET_JOURNAL_NOT_LOADED = string.format("%sPet journal not loaded yet|r", colors.warning),
-    PET_JOURNAL_INITIALIZED = string.format("%sPet journal initialization complete.|r", colors.success),
-    INVALID_PET_DATA = string.format("%sInvalid pet data: Pet ID or level is missing or incorrect.|r", colors.error),
-    PLAYING_LEVEL_UP_SOUND_FOR_PET = string.format("%sPlaying level-up sound for pet: %%s at level %%d|r", colors.success),
-    NO_LEVEL_INCREASE_FOR_PET = string.format("%sNo level increase detected for pet: %%s - Level: %%d|r", colors.warning),
-    SOUND_SUPPRESSED_FOR_PET = string.format("%sSound suppressed for pet: %%s|r", colors.info),
-    STORING_INITIAL_LEVEL_FOR_PET = string.format("%sStoring initial level for pet: %%s at level %%d|r", colors.info),
-    INVALID_PET_ID_OR_NOT_A_BATTLING_PET = string.format("%sInvalid pet ID or this pet cannot battle: %%s|r", colors.error),
 
     -- Options Debug (continued)
     GROUP_COLOR_APPLIED = string.format("Group: %s%%s|r color applied.", colors.info),
@@ -151,8 +136,6 @@ BLU_L = {
     SKIPPING_ARGUMENT_NAME = string.format("%sSkipping argument name due to missing name.|r", colors.warning),
     SKIPPING_ARGUMENT_DESC = string.format("%sSkipping argument description due to missing description.|r", colors.warning),
     SKIPPING_GROUP = string.format("%sSkipping group due to missing name or args.|r", colors.warning),
-    -- Pet Leveling and Sounds
-    INVALID_PET_DATA = string.format("%sInvalid pet data: Pet ID or level is missing or incorrect.|r", colors.error),
 
     -- Countdown message (fix for missing localization)
     COUNTDOWN_TICK = string.format("%sCountdown: %s%%d%s seconds remaining.|r", colors.info, colors.highlight, colors.info),
@@ -174,9 +157,9 @@ BLU_L = {
     ACHIEVEMENT_VOLUME_LABEL = "Achievement Volume",
     ACHIEVEMENT_VOLUME_DESC = "Adjust the volume for the Achievement Earned! sound.",
 
-    BATTLE_PET_LEVEL_UP = "Battle Pet Level-Up!",
-    BATTLE_PET_VOLUME_LABEL = "Battle Pet Volume",
-    BATTLE_PET_VOLUME_DESC = "Adjust the volume for the Battle Pet Level-Up! sound.",
+    --BATTLE_PET_LEVEL_UP = "Battle Pet Level-Up!",
+    --BATTLE_PET_VOLUME_LABEL = "Battle Pet Volume",
+    --BATTLE_PET_VOLUME_DESC = "Adjust the volume for the Battle Pet Level-Up! sound.",
 
     DELVE_COMPANION_LEVEL_UP = "Delve Companion Level-Up!",
     DELVE_VOLUME_LABEL = "Delve Volume",
@@ -209,10 +192,3 @@ BLU_L = {
     POST_VOLUME_LABEL = "Trade Post Volume",
     POST_VOLUME_DESC = "Adjust the volume for the Trade Post Activity Complete! sound."
 }
-
--- Debug checks to ensure no strings are missing
-for key, value in pairs(BLU_L) do
-    if not value or value == "" then
-        print(string.format("Warning: Localization string for key '%s' is missing or empty in localization.lua.", key)) 
-    end
-end

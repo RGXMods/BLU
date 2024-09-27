@@ -1,39 +1,35 @@
+v5.1.5-------------------------------------------------------------------
+- Removed - Debug for missing localization - [localizaton.lua]
+- Removed - Excess debug output - [core.lua, initialization.lua, utils.lua]
+- Removed - (temp) Redacted - 'Battle-Pets Level-Up!' - [core.lua, initialization.lua, , options.lua, utils.lua]
+- Removed - Unused Dependancy - [BLU.toc, BLU_Vanilla.toc, BLU_Cata.toc]
 v5.1.4-------------------------------------------------------------------
 - Removed - Temporarily disabled Battle Pet logic - [BLU.toc]
-
 v5.1.3-------------------------------------------------------------------
 - Fixed - Removed invalid `GetSearchFilter()` and `SetSearchFilter()` calls in `battlepets.lua` causing errors when updating pet data - [battlepets.lua]
 - Fixed - Login spam for pet level-up sounds after the halt timer expires - [battlepets.lua]
 - Fixed - Updated pet level-up detection to prevent multiple triggers - [battlepets.lua]
 - Fixed - Version number in TOC files - [BLU.toc, BLU_Cata.toc, BLU_Vanilla.toc]
 - Fixed - The `"/help"` command to display help information correctly - [utils.lua]
-
 - Updated - Improved handling for pet data updates to ensure filters are cleared but not incorrectly restored - [battlepets.lua]
-
 v5.1.2-------------------------------------------------------------------
 - Fixed - Event registration for Delve Companion level-up checks to ensure proper handling - [core.lua]
-
 v5.1.1-------------------------------------------------------------------
 - Fixed - Multiple calls to `battlepets.lua` in TOC file causing redundant execution - [BLU.toc]
 - Fixed - Login spam for pet level-up sounds after the halt timer expires - [battlepets.lua]
 - Fixed - Broken event handlers causing incorrect sound triggers and event processing - [battlepets.lua]
-
 v5.1.0-------------------------------------------------------------------
 - Fixed - Version number updated in TOC files to v5.1.0 - [BLU.toc, BLU_Cata.toc, BLU_Vanilla.toc]
 - Fixed - Corrected debug output localization for missing event handlers - [core.lua, initialization.lua]
 - Fixed - Improved handling for pet level-up events to prevent misfires during initial load - [battlepets.lua]
-  
 - Updated - Enhanced pet level-up detection logic to handle journal updates and battle pet experience gains - [battlepets.lua]
 - Updated - Integrated pet sound cooldown mechanism to prevent sound spam during level-ups - [battlepets.lua]
 - Updated - Color alternation and localization keys for options panel elements - [options.lua, localization.lua]
-  
 - Restructured - Separated battle pet level tracking into its own module - [battlepets.lua, core.lua]
 - Restructured - Centralized sound handling functions for player level, quest, and reputation events - [core.lua]
-  
 - Added - Support for pet level-up detection triggered by item use in the pet journal - [battlepets.lua]
 - Added - Debug logging for pet level-up event and sound cooldowns - [battlepets.lua, localization.lua]
 - Added - Delve Companion level-up detection using chat messages for Brann Bronzebeard - [core.lua, initialization.lua]
-
 v5.0.7-------------------------------------------------------------------
 - Updated - Safeguards to prevent pet level-up sound triggers at login - [core.lua]
 - Updated - Error handling for pet level-up events - [core.lua]

@@ -1,5 +1,5 @@
 --=====================================================================================
--- BLU | Better Level Up! - utils.lua
+-- BLU | Better Level-Up! - utils.lua
 --=====================================================================================
 --=====================================================================================
 -- Get and Set Functions
@@ -7,12 +7,10 @@
 BLU_L = BLU_L or {}
 
 function BLU:GetValue(info)
-    self:PrintDebugMessage("GETTING_VALUE", info[#info])
     return self.db.profile[info[#info]]
 end
 
 function BLU:SetValue(info, value)
-    self:PrintDebugMessage("SETTING_VALUE", info[#info], tostring(value))
     self.db.profile[info[#info]] = value
 end
 --=====================================================================================
@@ -38,31 +36,24 @@ function BLU:HandleEvent(eventName, soundSelectKey, volumeKey, defaultSound)
 end
 
 function BLU:HandlePlayerEnteringWorld()
-    self:PrintDebugMessage("PLAYER_ENTER_WORLD_FUNCTION_USED", "HandlePlayerEnteringWorld")
     self:HaltOperations()
 end
 
 function BLU:HaltOperations()
-    self:PrintDebugMessage("HALT_OPERATIONS_FUNCTION_USED", "HaltOperations")
 
     -- Ensure functions are halted
     if not self.functionsHalted then
         self.functionsHalted = true
-        self:PrintDebugMessage("FUNCTIONS_HALTED")
     end
 
     -- Cancel the existing timer if it's running
     if self.haltTimer then
         self.haltTimer:Cancel()
         self.haltTimer = nil
-        self:PrintDebugMessage("COUNTDOWN_TIMER_RESET")
     end
 
     -- Initialize countdown variables
-    local countdownTime = 15
-
-    -- Debug message to confirm that the countdown timer has started
-    self:PrintDebugMessage("HALT_TIMER_STARTED", countdownTime)
+    local countdownTime = 5
 
     -- Start the countdown timer
     self.haltTimer = C_Timer.NewTicker(1, function()
@@ -79,12 +70,10 @@ function BLU:HaltOperations()
 end
 
 function BLU:ResumeOperations()
-    self:PrintDebugMessage("RESUME_OPERATIONS_FUNCTION_USED", "ResumeOperations")
 
     -- Lift the function halt
     if self.functionsHalted then
         self.functionsHalted = false
-        self:PrintDebugMessage("FUNCTIONS_RESUMED")
     end
 
     -- Mark the countdown as not running

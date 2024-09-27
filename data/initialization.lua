@@ -1,5 +1,5 @@
 --=====================================================================================
--- BLU | Better Level Up! - initialization.lua
+-- BLU | Better Level-Up! - initialization.lua
 --=====================================================================================
 BLU = LibStub("AceAddon-3.0"):NewAddon("BLU", "AceEvent-3.0", "AceConsole-3.0")
 
@@ -19,12 +19,7 @@ BLU.debugMode = false
 BLU.showWelcomeMessage = true
 BLU.sortedOptions = {}
 BLU.optionsRegistered = false
-BLU.previousPetLevels = {}
-local isPetJournalInitialized = false
-local PET_LEVEL_SOUND_COOLDOWN = 3
 
-local PET_JOURNAL_POLL_INTERVAL = 0.1
-local timeSinceLastPoll = 0
 
 BLU_L = BLU_L or {}
 
@@ -61,19 +56,13 @@ function BLU:RegisterSharedEvents()
     }
 
     if version == "retail" then
-        -- Updated event registration for pet tracking
         events.MAJOR_FACTION_RENOWN_LEVEL_CHANGED = "HandleRenownLevelChanged"
         events.PERKS_ACTIVITY_COMPLETED = "HandlePerksActivityCompleted"
-        events.PET_BATTLE_LEVEL_CHANGED = "HandlePetLevelUp"
-        events.PET_JOURNAL_LIST_UPDATE = "UpdatePetData"
-        events.UNIT_PET_EXPERIENCE = "HandlePetLevelUp"
-        events.BAG_UPDATE_DELAYED = "HandlePetLevelUp"
         events.ACHIEVEMENT_EARNED = "HandleAchievementEarned"
         events.HONOR_LEVEL_UPDATE = "HandleHonorLevelUpdate"
-        -- Register events for Delve Companion level-up handling
         events.TRAIT_CONFIG_UPDATED = "OnDelveCompanionLevelUp"
         events.UPDATE_FACTION = "OnDelveCompanionLevelUp"
-        events.CHAT_MSG_SYSTEM = "OnDelveCompanionLevelUp" -- For Brann level-up system messages
+        events.CHAT_MSG_SYSTEM = "OnDelveCompanionLevelUp"
     elseif version == "cata" then
         events.ACHIEVEMENT_EARNED = "HandleAchievementEarned"
     end
@@ -81,16 +70,8 @@ function BLU:RegisterSharedEvents()
     for event, handler in pairs(events) do
         if type(self[handler]) == "function" then
             self:RegisterEvent(event, handler)
-        else
-            if BLU_L["EVENT_HANDLER_NOT_FOUND"] then
-                self:PrintDebugMessage(string.format(BLU_L["EVENT_HANDLER_NOT_FOUND"], event, handler))
-            else
-                print("Missing localization for EVENT_HANDLER_NOT_FOUND") -- Fallback if the localization key is missing
-            end
         end
     end
-
-    self:PrintDebugMessage("EVENTS_REGISTERED")
 end
 
 --=====================================================================================
@@ -117,19 +98,12 @@ function BLU:OnInitialize()
     -- Initialize options
     self:InitializeOptions()
     
-    -- Debug messages for initial states
-    self:PrintDebugMessage("DEBUG_MODE_LOADED", tostring(self.debugMode))
-    self:PrintDebugMessage("SHOW_WELCOME_MESSAGE_LOADED", tostring(self.showWelcomeMessage))
-
     -- Mute sounds based on game version
     local soundsToMute = muteSoundIDs[self:GetGameVersion()]
     if soundsToMute and #soundsToMute > 0 then
         for _, soundID in ipairs(soundsToMute) do
             MuteSoundFile(soundID)
-            self:PrintDebugMessage("MUTING_SOUND", soundID)
         end
-    else
-        self:PrintDebugMessage("NO_SOUNDS_TO_MUTE")
     end
 
     -- Display the welcome message if enabled
@@ -186,12 +160,12 @@ end
 function BLU:IsGroupCompatibleWithVersion(group, version)
     if version == "retail" then
         return true
-    elseif version == "cata" and (group.name:match("Honor Rank%-Up!") or group.name:match("Battle Pet Level%-Up!") or
+    elseif version == "cata" and (group.name:match("Honor Rank%-Up!") or
                                   group.name:match("Delve Companion Level%-Up!") or group.name:match("Renown Rank%-Up!") or
                                   group.name:match("Post%-Sound Select")) then
         return false
     elseif version == "vanilla" and (group.name:match("Achievement") or group.name:match("Honor Rank%-Up!") or
-                                     group.name:match("Battle Pet Level%-Up!") or group.name:match("Delve Companion Level%-Up!") or
+                                     group.name:match("Delve Companion Level%-Up!") or
                                      group.name:match("Renown Rank%-Up!") or group.name:match("Post%-Sound Select")) then
         return false
     end
@@ -209,24 +183,22 @@ function BLU:RemoveOptionsForVersion(version)
         args.group9 = nil
         args.group11 = nil
         self.db.profile.AchievementSoundSelect = nil
-        self.db.profile.BattlePetLevelSoundSelect = nil
+        --self.db.profile.BattlePetLevelSoundSelect = nil
         self.db.profile.DelveLevelUpSoundSelect = nil
         self.db.profile.HonorSoundSelect = nil
         self.db.profile.RenownSoundSelect = nil
         self.db.profile.PostSoundSelect = nil
-        self:PrintDebugMessage(BLU_L["VANILLA_OPTIONS_REMOVED"]) 
     elseif version == "cata" then
         args.group3 = nil
         args.group4 = nil
         args.group5 = nil
         args.group9 = nil
         args.group11 = nil
-        self.db.profile.BattlePetLevelSoundSelect = nil
+        --self.db.profile.BattlePetLevelSoundSelect = nil
         self.db.profile.DelveLevelUpSoundSelect = nil
         self.db.profile.HonorSoundSelect = nil
         self.db.profile.RenownSoundSelect = nil
         self.db.profile.PostSoundSelect = nil
-        self:PrintDebugMessage(BLU_L["CATA_OPTIONS_REMOVED"]) 
     end
 end
 
@@ -243,30 +215,19 @@ function BLU:AssignGroupColors()
         for _, group in ipairs(self.sortedOptions) do
             if group.name and group.args then
                 group.name = colors[patternIndex] .. group.name .. "|r"
-                self:PrintDebugMessage("GROUP_COLOR_APPLIED", group.name)
 
                 for _, arg in pairs(group.args) do
                     if arg.name and arg.name ~= "" then
                         arg.name = colors[patternIndex] .. arg.name .. "|r"
-                        self:PrintDebugMessage("ARGUMENT_NAME_COLOR_APPLIED", arg.name)
-                    else
-                        self:PrintDebugMessage("SKIPPING_ARGUMENT_NAME")
                     end
 
                     if arg.desc and arg.desc ~= "" then
                         arg.desc = colors[(patternIndex % 2) + 1] .. arg.desc .. "|r"
-                        self:PrintDebugMessage("DESCRIPTION_COLOR_APPLIED", arg.desc)
-                    else
-                        self:PrintDebugMessage("SKIPPING_ARGUMENT_DESC")
                     end
                 end
 
                 patternIndex = patternIndex % 2 + 1
-            else
-                self:PrintDebugMessage("SKIPPING_GROUP", group.name or "Unnamed Group")
             end
         end
-    else
-        self:PrintDebugMessage("NO_GROUPS_TO_COLOR")
     end
 end

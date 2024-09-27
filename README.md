@@ -1,18 +1,18 @@
-# BLU | Better Level Up!
+# BLU | Better Level-Up!
 
 ![](https://github.com/donniedice/BLU/blob/main/images/preview.png)
 
 ## Overview
-**BLU | Better Level Up!** changes up the repetitive sounds in World of Warcraft, giving you the option to hear sounds from other games when you level up, complete Trade Post activities, gain reputation, or level up your Delve Companion.
+**BLU | Better Level-Up!** changes up the repetitive sounds in World of Warcraft, giving you the option to hear sounds from other games when you level-up, complete Trade Post activities, gain reputation, or level-up your Delve Companion.
 
 ---
 
 ## Features
 - **Achievements:** Play sounds from other games when you earn achievements.
-- **Battle-Pets:** *(`R`etail Only)* Play sounds from other games when you level up battle-pets.
-- **Delve Companion Level Up:** *(`R`etail Only)* Play sounds from other games when your Delve Companion levels up.
+- **Battle-Pets:** *(`R`etail Only)* Play sounds from other games when you level-up battle-pets.
+- **Delve Companion Level-Up:** *(`R`etail Only)* Play sounds from other games when your Delve Companion levels-up.
 - **Honor Ranks:** *(`R`etail Only)* Play sounds from other games when you gain honor ranks.
-- **Level Up:** Play sounds from other games when you level up.
+- **Level-Up:** Play sounds from other games when you level-up.
 - **Renown Reputation Ranks:** *(`R`etail Only)* Play sounds from other games when you gain DragonFlight renown reputation ranks.
 - **Reputation Ranks:** Play sounds from other games when you gain reputation ranks.
 - **Quests:** Play sounds from other games when you accept or turn in quests.
@@ -73,7 +73,7 @@ The addon can be managed using the following slash commands:
 - Warcraft 3
 - Witcher 3
 
-*Note: When new sounds are added, they are listed in alphabetical order. This may change the selection order in the code for `Options.lua`. You may need to re-select previously selected sounds after updates.*
+*Note: When new sounds are added, they are listed in alphabetical order. This may change the selection order in the code for `sounds.lua`. You may need to re-select previously selected sounds after updates.*
 
 ---
 

@@ -2,12 +2,15 @@
 -- BLU | Better Level-Up! - core.lua
 --=====================================================================================
 
+---BLU:HandleEvent(eventName, soundSelectKey, volumeKey, defaultSound, debugMessage)
+
 function BLU:HandlePlayerLevelUp()
     self:HandleEvent("PLAYER_LEVEL_UP", "LevelSoundSelect", "LevelVolume", defaultSounds[4], "PLAYER_LEVEL_UP_TRIGGERED")
 end
 
 function BLU:HandleQuestAccepted()
     self:HandleEvent("QUEST_ACCEPTED", "QuestAcceptSoundSelect", "QuestAcceptVolume", defaultSounds[7], "QUEST_ACCEPTED_TRIGGERED")
+    
 end
 
 function BLU:HandleQuestTurnedIn()
@@ -27,8 +30,7 @@ function BLU:HandleRenownLevelChanged()
 end
 
 function BLU:HandlePerksActivityCompleted()
-    self:PrintDebugMessage("PERKS_ACTIVITY_COMPLETED_TRIGGERED")
-    self:HandleEvent("PERKS_ACTIVITY_COMPLETED", "PostSoundSelect", "PostVolume", defaultSounds[9])
+    self:HandleEvent("PERKS_ACTIVITY_COMPLETED", "PostSoundSelect", "PostVolume", defaultSounds[9], "PERKS_ACTIVITY_COMPLETED_TRIGGERED")
 end
 
 --=====================================================================================
@@ -87,7 +89,7 @@ function BLU:ReputationChatFrameHook()
     }
 
     ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", function(_, _, msg)
-        self:PrintDebugMessage("INCOMING_CHAT_MESSAGE: " .. msg)
+        self:PrintDebugMessage("INCOMING_CHAT_MESSAGE" .. msg)
 
         for _, rank in ipairs(reputationRanks) do
             if string.match(msg, "You are now " .. rank .. " with") then
@@ -113,10 +115,10 @@ function BLU:ReputationRankIncrease(rank, msg)
     -- Extract the faction name from the message
     local factionName = string.match(msg, "with (.+)")
 
-    self:PrintDebugMessage("Reputation rank increase triggered for rank: " .. rank .. " with faction: " .. factionName)
+    self:PrintDebugMessage("REPUTATION_RANK_TRIGGERED" .. rank .. " with faction: " .. factionName)
     local sound = self:SelectSound(self.db.profile.RepSoundSelect)
     if not sound then
-        self:PrintDebugMessage("ERROR_SOUND_NOT_FOUND: " .. self.db.profile.RepSoundSelect)
+        self:PrintDebugMessage("ERROR_SOUND_NOT_FOUND" .. self.db.profile.RepSoundSelect)
         return
     end
     local volumeLevel = self.db.profile.RepVolume
@@ -138,7 +140,7 @@ function BLU:OnDelveCompanionLevelUp(event, ...)
             local level = tonumber(levelUpMatch)
             self:HandleEvent("DELVE_LEVEL_UP", "DelveLevelUpSoundSelect", "DelveLevelUpVolume", defaultSounds[3])
         else
-            self:PrintDebugMessage(BLU_L["NO_LEVEL_FOUND"])
+            self:PrintDebugMessage("NO_BRANN_LEVEL_FOUND")
         end
     end
 end

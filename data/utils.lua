@@ -17,22 +17,61 @@ end
 -- Event Handling Functions
 --=====================================================================================
 
-function BLU:HandleEvent(eventName, soundSelectKey, volumeKey, defaultSound)
-    self:PrintDebugMessage(eventName .. " triggered")
+-- Global table to hold the event queue
+BLU_EventQueue = {}
 
-    local sound = self:SelectSound(self.db.profile[soundSelectKey])
+function BLU:HandleEvent(eventName, soundSelectKey, volumeKey, defaultSound, debugMessage)
+    -- Print the specific debug message if provided
+    if debugMessage then
+        self:PrintDebugMessage(debugMessage)
+    end
+
+    -- Add the event details to the queue
+    table.insert(BLU_EventQueue, {
+        eventName = eventName,
+        soundSelectKey = soundSelectKey,
+        volumeKey = volumeKey,
+        defaultSound = defaultSound
+    })
+
+    -- If the queue is not being processed, start processing it
+    if not self.isProcessingQueue then
+        self.isProcessingQueue = true
+        self:ProcessEventQueue()
+    end
+end
+
+function BLU:ProcessEventQueue()
+    -- If the queue is empty, stop processing
+    if #BLU_EventQueue == 0 then
+        self.isProcessingQueue = false
+        return
+    end
+
+    -- Get the first event from the queue
+    local event = table.remove(BLU_EventQueue, 1)
+
+    -- Process the event (select sound, check volume, play sound)
+    local sound = self:SelectSound(self.db.profile[event.soundSelectKey])
     if not sound then
-        self:PrintDebugMessage("Sound not found for sound ID: " .. tostring(soundSelectKey))
+        self:PrintDebugMessage("ERROR_SOUND_NOT_FOUND" .. tostring(event.soundSelectKey))
+        -- Continue processing the queue after a short delay
+        C_Timer.After(1, function() self:ProcessEventQueue() end)
         return
     end
 
-    local volumeLevel = self.db.profile[volumeKey]
+    local volumeLevel = self.db.profile[event.volumeKey]
     if volumeLevel < 0 or volumeLevel > 3 then
-        self:PrintDebugMessage("Invalid volume level: " .. tostring(volumeLevel))
+        self:PrintDebugMessage("INVALID_VOLUME_LEVEL" .. tostring(volumeLevel))
+        -- Continue processing the queue after a short delay
+        C_Timer.After(1, function() self:ProcessEventQueue() end)
         return
     end
 
-    self:PlaySelectedSound(sound, volumeLevel, defaultSound)
+    self:PlaySelectedSound(sound, volumeLevel, event.defaultSound)
+
+    -- Continue processing the queue after a 1-second delay
+    C_Timer.After(1, function() self:ProcessEventQueue() end)
 end
 
 function BLU:HandlePlayerEnteringWorld()
@@ -103,10 +142,8 @@ function BLU:HandleSlashCommands(input)
     elseif input == "welcome" then
         self:ToggleWelcomeMessage()
     elseif input == "help" then
-        self:PrintDebugMessage("HELP_COMMAND_RECOGNIZED")
         self:DisplayBLUHelp()
     else
-        self:PrintDebugMessage("UNKNOWN_SLASH_COMMAND", input)
         print(BLU_PREFIX .. BLU_L["UNKNOWN_SLASH_COMMAND"])
     end
 end
@@ -131,14 +168,15 @@ function BLU:ToggleDebugMode()
     self.debugMode = not self.debugMode
     self.db.profile.debugMode = self.debugMode
 
-    -- Fallback in case the localization string is missing
+    -- Use the localized strings directly, assuming they are defined
     local statusMessage = self.debugMode and BLU_L["DEBUG_MODE_ENABLED"] or BLU_L["DEBUG_MODE_DISABLED"]
-    if not statusMessage then
-        statusMessage = self.debugMode and "Debug mode enabled" or "Debug mode disabled"
-    end
 
     print(BLU_PREFIX .. statusMessage)
-    self:PrintDebugMessage("DEBUG_MODE_TOGGLED", tostring(self.debugMode))
+
+    -- Only print the debug message if debug mode is enabled
+    if self.debugMode then
+        self:PrintDebugMessage("DEBUG_MODE_TOGGLED", tostring(self.debugMode))
+    end
 end
 
 
@@ -225,9 +263,6 @@ function BLU:TestSound(soundID, volumeKey, defaultSound, debugMessage)
     self:PrintDebugMessage(debugMessage)
 
     local sound = self:SelectSound(self.db.profile[soundID])
-    if not sound then
-        self:PrintDebugMessage(BLU_L["ERROR_SOUND_NOT_FOUND"] .. " " .. BLU_L["DEFAULT_SOUND_USED"])
-    end
 
     local volumeLevel = self.db.profile[volumeKey]
     self:PlaySelectedSound(sound, volumeLevel, defaultSound)

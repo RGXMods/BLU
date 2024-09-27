@@ -1,2 +1,1 @@
-- Updated - ToC for _classic_era_ - Season of Discovery Phase 5 (1.15.4.56817) [ToC.11504]
-- Fixed - Spelling of 'Level' in Options Panel Title - [/images/preview.png]
+- Cleaning Up

@@ -1,3 +1,5 @@
+v5.1.6-------------------------------------------------------------------
+
 v5.1.5-------------------------------------------------------------------
 - Removed - Debug for missing localization - [localizaton.lua]
 - Removed - Excess debug output - [core.lua, initialization.lua, utils.lua]

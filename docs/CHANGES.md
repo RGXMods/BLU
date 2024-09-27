@@ -1,4 +1,0 @@
-- Removed - Debug for missing localization - [localizaton.lua]
-- Removed - Excess debug output - [core.lua, initialization.lua, utils.lua]
-- Removed - (temp) Redacted - 'Battle-Pets Level-Up!' - [core.lua, initialization.lua, , options.lua, utils.lua]
-- Removed - Unused Dependancy - [BLU.toc, BLU_Vanilla.toc, BLU_Cata.toc]

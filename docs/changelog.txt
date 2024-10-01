@@ -6,6 +6,12 @@ v5.2.0-------------------------------------------------------------------
 - Updated - Delve Companion level-up detection using chat messages - [core.lua, initialization.lua]
 - Removed - Sound throttling for reputation events - [core.lua]
 - Added - New debug messages for reputation and Delve level-ups - [localization.lua]
+v5.1.8-------------------------------------------------------------------
+- Fixed - String parse for reputation rank-ups - [core.lua]
+- Fixed - String parse for delve compantion level-ups - [core.lua]
+v5.1.7-------------------------------------------------------------------
+- Updated - ToC for _classic_era_ - Season of Discovery Phase 5 (1.15.4.56817) [ToC.11504]
+- Fixed - Spelling of 'Level' in Options Panel Title - [/images/preview.png]
 v5.1.6-------------------------------------------------------------------
 - Added - Missing Dependency [BLU.toc, BLU_Cata.toc, BLU_Vanilla.toc] - [/Libs/CallbackHandler-1.0/CallbackHandler-1.0.xml]
 v5.1.5-------------------------------------------------------------------

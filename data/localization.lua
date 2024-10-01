@@ -241,5 +241,5 @@ BLU_L = {
 
     -- BLU:UpdatePetData()
     NO_PETS_FOUND = string.format("%sNo pets found, skipping pet data update.|r", colors.info),
-    INIT_LOAD_COMPLETE = string.format("%sTracked Pet Levels Initialized on Login. Sounds halted for 15 seconds.|r", colors.info),
+    INIT_LOAD_COMPLETE = string.format("%sTracked Pet Levels Initialized on Login.|r", colors.info),
 }

@@ -61,7 +61,7 @@ BLU_L = {
 
     -- BLU:OnInitialize()
     WELCOME_MESSAGE = string.format("Welcome! Use %s/blu|r to open the options panel or %s/blu help|r for more commands.", colors.prefix, colors.prefix),
-    VERSION = string.format("%sVersion: %s|r", "|cffffff00", "|cff8080ff%s|r"),
+    VERSION = string.format("%sVersion:|r", "|cffffff00"),
 
     -- BLU:InitializeOptions()
     ERROR_OPTIONS_NOT_INITIALIZED = string.format("%sOptions not initialized properly.|r", colors.error),
@@ -231,30 +231,19 @@ BLU_L = {
 -- Localization for battlepets.lua
 -- =====================================================================================
 
-    -- BLU:HandlePetLevelUp()
-    INVALID_PET_LEVEL = string.format("%sInvalid petID or currentLevel. PetID: %%s, Level: %%s|r", colors.error),
-    SKIPPING_LEVEL_UP_DETECTION = string.format("%sSkipping level-up detection during initial data load|r", colors.error),
-    PET_LEVEL_UP_TRIGGERED = string.format("%sPET_LEVEL_UP|r triggered for PetID: %%s | Species: %%s | Level: %%s|r", colors.info),
-    SOUND_PLAYED = string.format("%sSOUND_PLAYED for PetID: %%s|r", colors.info),
-    COOLDOWN_ACTIVE = string.format("%sCooldown active or functions halted for PetID: %%s. No sound played.|r", colors.info),
-    NO_LEVEL_UP_DETECTED = string.format("%sNo level-up detected for PetID: %%s | Species: %%s | Level: %%s|r", colors.info),
-   
-    -- BLU:UpdatePetData()
-    PET_JOURNAL_NOT_UNLOCKED = string.format("%sPet Journal is not unlocked, skipping pet data update.|r", colors.info),
-    NO_PETS_FOUND = string.format("%sNo pets found, skipping pet data update.|r", colors.info),
-    UPDATING_PET_DATA = string.format("%sUpdating pet data for %%s pets.|r", colors.info),
-    UPDATE_PET_DATA_FAILED = string.format("%sFailed to retrieve pet info for PetID: %%s|r", colors.error),
-    UPDATE_PET_DATA_INIT = string.format("%sPet data initialized and previous pet levels stored.|r", colors.info),
+PET_LEVEL_UP = "Your pet '%s' has reached level %d!",
+INITIAL_LOAD_COMPLETE = "Initial pet data loaded.",
+INVALID_PET_INFO = "Invalid pet info at index: %d",
+TRACKING_PET = "Tracking pet: %s, ID: %s, Level: %d",
+SKIPPING_PET = "Skipping pet: %s, ID: %s, Level: %s, canBattle: %s",
+PET_JOURNAL_UNLOCKED = "Pet journal is unlocked.",
+PET_JOURNAL_LOCKED = "Pet journal is not unlocked.",
+TOTAL_PETS_FOUND = "Total pets found: %d",
+NO_PETS_FOUND = "No pets found in the journal.",
+PET_BATTLE_ITEM_USED = "Pet Battle Item used, checking pet levels.",
+PET_LEVEL_OR_EXP_CHANGED = "Pet level or experience changed, checking for level-ups.",
+PET_JOURNAL_UPDATED = "Pet journal updated, checking for level-ups.",
+DEFAULT_SOUND_MISSING = "Default sound is missing.",
+INVALID_PET_LEVEL_DATA = "Invalid pet level data for PetID: %s"
 
-    -- BLU:CheckPetJournalForLevelUps()
-    SKIPPING_LEVEL_UP_CHECK = string.format("%sSkipping level-up check as initial load is incomplete.|r", colors.info),
-    PET_LEVELS_CHECKED = string.format("%sPet levels checked and compared with previous levels.|r", colors.info),
-
-    -- BLU:PLAYER_LOGIN()
-    SOUNDS_ENABLED = string.format("%sPet level-up sounds are now enabled.|r", colors.success),
-    INIT_LOAD_COMPLETE = string.format("%sTracked Pet Levels Initialized on Login. Sounds halted for 15 seconds.|r", colors.info),
-    
-    -- BLU:PET_BATTLE_LEVEL_CHANGED
-    INVALID_PET_BATTLE_PARAMS = string.format("%sInvalid parameters for PET_BATTLE_LEVEL_CHANGED.|r", colors.error),
-    SPECIES_ID_NIL = string.format("%sspeciesID is nil for PetID: %%s|r", colors.error),
 }

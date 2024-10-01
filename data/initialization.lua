@@ -109,7 +109,7 @@ function BLU:OnInitialize()
     -- Display the welcome message if enabled
     if self.showWelcomeMessage then
         print(BLU_PREFIX .. BLU_L["WELCOME_MESSAGE"])
-        print(BLU_PREFIX .. BLU_L["VERSION"], BLU.VersionNumber)
+        print(BLU_PREFIX .. BLU_L["VERSION"], "|cff8080ff", BLU.VersionNumber)
     end
 end
 

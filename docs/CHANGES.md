@@ -6,3 +6,5 @@
 - Removed - Disabled Battle Pet level-up sound options - [core.lua, options.lua, utils.lua]
 - Removed - Sound throttling for reputation events - [core.lua]
 - Added - New debug messages for reputation and Delve level-ups - [localization.lua]
+----
+early push because I maybe fixed battlepets

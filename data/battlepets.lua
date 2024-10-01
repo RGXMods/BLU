@@ -110,7 +110,7 @@ function BLU:TriggerLevelUpSound(petName, currentLevel)
 
     -- Use HandleEvent to trigger the sound (assuming it's defined elsewhere)
     if self.HandleEvent then
-        self:HandleEvent("PET_LEVEL_UP", "BattlePetLevelSoundSelect", "BattlePetLevelVolume", "DefaultSound")
+        self:HandleEvent("PET_LEVEL_UP", "BattlePetLevelSoundSelect", "BattlePetLevelVolume", defaultSounds[2])
     else
         self:PrintDebugMessage("HandleEvent function is not defined.")
     end

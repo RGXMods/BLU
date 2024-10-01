@@ -1,1 +1,2 @@
-- Added - Missing Dependency [BLU.toc, BLU_Cata.toc, BLU_Vanilla.toc] - [/Libs/CallbackHandler-1.0/CallbackHandler-1.0.xml]
+- Updated - ToC for _classic_era_ - Season of Discovery Phase 5 (1.15.4.56817) [ToC.11504]
+- Fixed - Spelling of 'Level' in Options Panel Title - [/images/preview.png]

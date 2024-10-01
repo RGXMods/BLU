@@ -36,7 +36,7 @@ function BLU:GetGameVersion()
     elseif interfaceVersion >= 100000 then
         return "retail"
     else
-        self:PrintDebugMessage("ERROR_UNKNOWN_GAME_VERSION") 
+        self:PrintDebugMessage(BLU_L["ERROR_UNKNOWN_GAME_VERSION"]) 
         return "unknown"
     end
 end
@@ -109,7 +109,7 @@ function BLU:OnInitialize()
     -- Display the welcome message if enabled
     if self.showWelcomeMessage then
         print(BLU_PREFIX .. BLU_L["WELCOME_MESSAGE"])
-        print(BLU_PREFIX .. string.format(BLU_L["VERSION"], BLU.VersionNumber))
+        print(BLU_PREFIX .. BLU_L["VERSION"], BLU.VersionNumber)
     end
 end
 
@@ -120,7 +120,7 @@ function BLU:InitializeOptions()
     local version = self:GetGameVersion()
 
     if not self.options or not self.options.args then
-        self:PrintDebugMessage("ERROR_OPTIONS_NOT_INITIALIZED")
+        self:PrintDebugMessage(BLU_L["ERROR_OPTIONS_NOT_INITIALIZED"])
         return
     end
 
@@ -136,7 +136,7 @@ function BLU:InitializeOptions()
         if self:IsGroupCompatibleWithVersion(group, version) then
             table.insert(self.sortedOptions, group)
         else
-            self:PrintDebugMessage("SKIPPING_GROUP_NOT_COMPATIBLE") 
+            self:PrintDebugMessage(string.format(BLU_L["SKIPPING_GROUP_NOT_COMPATIBLE"], group.name or "Unnamed Group")) 
         end
     end
 
@@ -151,20 +151,21 @@ function BLU:InitializeOptions()
         ACD:AddToBlizOptions("BLU_Profiles", BLU_L["PROFILES_TITLE"], BLU_L["OPTIONS_LIST_MENU_TITLE"])
 
         self.optionsRegistered = true
+        self:PrintDebugMessage(BLU_L["OPTIONS_REGISTERED"])
     else
-        self:PrintDebugMessage("OPTIONS_ALREADY_REGISTERED")
+        self:PrintDebugMessage(BLU_L["OPTIONS_ALREADY_REGISTERED"])
     end
 end
 
 function BLU:IsGroupCompatibleWithVersion(group, version)
     if version == "retail" then
         return true
-    elseif version == "cata" and (group.name:match("Honor Rank%-Up!") or --these have to match localization - this needs to be worked around
+    elseif version == "cata" and (group.name:match("Honor Rank%-Up!") or group.name:match("Battle Pet Level%-Up!") or
                                   group.name:match("Delve Companion Level%-Up!") or group.name:match("Renown Rank%-Up!") or
                                   group.name:match("Post%-Sound Select")) then
         return false
     elseif version == "vanilla" and (group.name:match("Achievement") or group.name:match("Honor Rank%-Up!") or
-                                     group.name:match("Delve Companion Level%-Up!") or
+                                     group.name:match("Battle Pet Level%-Up!") or group.name:match("Delve Companion Level%-Up!") or
                                      group.name:match("Renown Rank%-Up!") or group.name:match("Post%-Sound Select")) then
         return false
     end
@@ -182,7 +183,7 @@ function BLU:RemoveOptionsForVersion(version)
         args.group9 = nil
         args.group11 = nil
         self.db.profile.AchievementSoundSelect = nil
-        --self.db.profile.BattlePetLevelSoundSelect = nil
+        self.db.profile.BattlePetLevelSoundSelect = nil
         self.db.profile.DelveLevelUpSoundSelect = nil
         self.db.profile.HonorSoundSelect = nil
         self.db.profile.RenownSoundSelect = nil
@@ -193,7 +194,7 @@ function BLU:RemoveOptionsForVersion(version)
         args.group5 = nil
         args.group9 = nil
         args.group11 = nil
-        --self.db.profile.BattlePetLevelSoundSelect = nil
+        self.db.profile.BattlePetLevelSoundSelect = nil
         self.db.profile.DelveLevelUpSoundSelect = nil
         self.db.profile.HonorSoundSelect = nil
         self.db.profile.RenownSoundSelect = nil

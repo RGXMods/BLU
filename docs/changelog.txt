@@ -1,8 +1,14 @@
-- Added - Missing Dependency [BLU.toc, BLU_Cata.toc, BLU_Vanilla.toc] - [/Libs/CallbackHandler-1.0/CallbackHandler-1.0.xml]
+v5.2.0-alpha.1----------------------------------------------------------
+- Fixed - Version numbers in all TOC files - [BLU.toc, BLU_Cata.toc, BLU_Vanilla.toc]
+- Fixed - Debug output for missing localization - [localization.lua]
+- Updated - Event registration for pet level-ups and shared events - [core.lua, initialization.lua]
+- Updated - Delve Companion level-up detection using chat messages - [core.lua, initialization.lua]
+- Updated - Removed redundant pet level-up logic - [core.lua, utils.lua]
+- Removed - Disabled Battle Pet level-up sound options - [core.lua, options.lua, utils.lua]
+- Removed - Sound throttling for reputation events - [core.lua]
+- Added - New debug messages for reputation and Delve level-ups - [localization.lua]
 v5.1.6-------------------------------------------------------------------
-- Fixed - Spelling of 'Level' in Options Panel Title - [/images/preview.png]
-- Updated - ToC for _classic_era_ - Season of Discovery Phase 5 (1.15.4.56817) [ToC.11504]
-v5.1.7-------------------------------------------------------------------
+- Added - Missing Dependency [BLU.toc, BLU_Cata.toc, BLU_Vanilla.toc] - [/Libs/CallbackHandler-1.0/CallbackHandler-1.0.xml]
 v5.1.5-------------------------------------------------------------------
 - Removed - Debug for missing localization - [localizaton.lua]
 - Removed - Excess debug output - [core.lua, initialization.lua, utils.lua]

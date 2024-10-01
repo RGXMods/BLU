@@ -163,6 +163,20 @@ end
 --=====================================================================================
 -- Utility Functions
 --=====================================================================================
+-- Function: GetLocalizedString
+-- Purpose: Retrieves the localized string based on the user's locale.
+--[[
+function BLU:GetLocalizedString(key)
+    local locale = GetLocale()
+    if BLU_L[key] and BLU_L[key][locale] then
+        return BLU_L[key][locale]
+    elseif BLU_L[key] and BLU_L[key]["enUS"] then
+        return BLU_L[key]["enUS"] -- Fallback to English
+    else
+        return key -- If no localization is found, return the key itself
+    end
+end
+]]
 
 function BLU:ToggleDebugMode()
     self.debugMode = not self.debugMode

@@ -1,3 +1,5 @@
+v5.1.6-------------------------------------------------------------------
+- Added - Missing Dependency [BLU.toc, BLU_Cata.toc, BLU_Vanilla.toc] - [/Libs/CallbackHandler-1.0/CallbackHandler-1.0.xml]
 v5.1.5-------------------------------------------------------------------
 - Removed - Debug for missing localization - [localizaton.lua]
 - Removed - Excess debug output - [core.lua, initialization.lua, utils.lua]

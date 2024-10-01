@@ -1,6 +1,6 @@
 ## Interface: 11503
-## Version: v5.1.5
-## Title: |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel-|r|cff05dffaU|r|cffffffffp!|r - |cff8080ffv5.1.5|r 
+## Version: v5.1.6
+## Title: |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel-|r|cff05dffaU|r|cffffffffp!|r - |cff8080ffv5.1.6|r 
 ## Notes: Play sounds from other games!  |n|r  |cff05dffa/blu -|r Open options panel  |n|r   |cff05dffaBy Uivi US-BleedingHollow|r
 ## Author: DonnieDice
 ## Email: 60427166+donniedice@users.noreply.github.com
@@ -24,6 +24,7 @@ Libs\AceDBOptions-3.0\AceDBOptions-3.0.xml
 Libs\AceLocale-3.0\AceLocale-3.0.xml
 Libs\AceConsole-3.0\AceConsole-3.0.xml
 Libs\AceConfig-3.0\AceConfig-3.0.xml
+Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
 
 
 data\localization.lua

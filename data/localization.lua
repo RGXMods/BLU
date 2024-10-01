@@ -148,7 +148,7 @@ BLU_L = {
     TEST_ACHIEVEMENT_SOUND = string.format("%sTestAchievementSound|r %striggered.|r", colors.info, colors.test),
     
     -- BLU:TestBattlePetLevelSound()
-    --TEST_BATTLE_PET_LEVEL_SOUND = string.format("%sTestBattlePetLevelSound|r %striggered.|r", colors.info, colors.test),
+    TEST_BATTLE_PET_LEVEL_SOUND = string.format("%sTestBattlePetLevelSound|r %striggered.|r", colors.info, colors.test),
     
     -- BLU:TestDelveLevelUpSound()
     TEST_DELVE_LEVEL_UP_SOUND = string.format("%sTestDelveLevelUpSound|r %striggered.|r", colors.info, colors.test),
@@ -231,19 +231,15 @@ BLU_L = {
 -- Localization for battlepets.lua
 -- =====================================================================================
 
-PET_LEVEL_UP = "Your pet '%s' has reached level %d!",
-INITIAL_LOAD_COMPLETE = "Initial pet data loaded.",
-INVALID_PET_INFO = "Invalid pet info at index: %d",
-TRACKING_PET = "Tracking pet: %s, ID: %s, Level: %d",
-SKIPPING_PET = "Skipping pet: %s, ID: %s, Level: %s, canBattle: %s",
-PET_JOURNAL_UNLOCKED = "Pet journal is unlocked.",
-PET_JOURNAL_LOCKED = "Pet journal is not unlocked.",
-TOTAL_PETS_FOUND = "Total pets found: %d",
-NO_PETS_FOUND = "No pets found in the journal.",
-PET_BATTLE_ITEM_USED = "Pet Battle Item used, checking pet levels.",
-PET_LEVEL_OR_EXP_CHANGED = "Pet level or experience changed, checking for level-ups.",
-PET_JOURNAL_UPDATED = "Pet journal updated, checking for level-ups.",
-DEFAULT_SOUND_MISSING = "Default sound is missing.",
-INVALID_PET_LEVEL_DATA = "Invalid pet level data for PetID: %s"
+    -- BLU:HandlePetLevelUp()
+    INVALID_PET_LEVEL = string.format("%sInvalid petID or currentLevel. PetID: %%s, Level: %%s|r", colors.error),
+    UNKNOWN_PET = string.format("%sUnknown Pet", colors.error),   
 
+    -- BLU:HandlePetLevelUp()
+    PET_LEVEL_UP_TRIGGERED = string.format("%sPet Level-Up triggered for %s%%s%s at level %s%%d%s.|r",
+        colors.info, colors.highlight, colors.white, colors.highlight, colors.white),
+
+    -- BLU:UpdatePetData()
+    NO_PETS_FOUND = string.format("%sNo pets found, skipping pet data update.|r", colors.info),
+    INIT_LOAD_COMPLETE = string.format("%sTracked Pet Levels Initialized on Login. Sounds halted for 15 seconds.|r", colors.info),
 }

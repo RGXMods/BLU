@@ -1,10 +1,7 @@
+- Fixed - Re-enabled Battle-Pet Level-Up!
 - Fixed - Version numbers in all TOC files - [BLU.toc, BLU_Cata.toc, BLU_Vanilla.toc]
 - Fixed - Debug output for missing localization - [localization.lua]
 - Updated - Event registration for pet level-ups and shared events - [core.lua, initialization.lua]
 - Updated - Delve Companion level-up detection using chat messages - [core.lua, initialization.lua]
-- Updated - Removed redundant pet level-up logic - [core.lua, utils.lua]
-- Removed - Disabled Battle Pet level-up sound options - [core.lua, options.lua, utils.lua]
 - Removed - Sound throttling for reputation events - [core.lua]
 - Added - New debug messages for reputation and Delve level-ups - [localization.lua]
-----
-early push because I maybe fixed battlepets

@@ -84,16 +84,19 @@ end
 function BLU:HandlePetLevelUp(petID)
     petID = tostring(petID)
     -- Fetch pet info by petID
-    local speciesID, customName, level = C_PetJournal.GetPetInfoByPetID(petID)
+    local speciesID, _, level, _, _, _, _, petName = C_PetJournal.GetPetInfoByPetID(petID)
     if not level then
-        self:PrintDebugMessage("Invalid pet level data for PetID:", petID)
+        self:PrintDebugMessage("INVALID_PET_LEVEL", petID)
         return
     end
 
     -- Get the pet's name and level
-    local petName = customName or "Unknown Pet"
+    local displayName = petName or BLU_L["UNKNOWN_PET"]
 
-    self:TriggerLevelUpSound(petName, level)
+    -- Add debug message
+    self:PrintDebugMessage("PET_LEVEL_UP_TRIGGERED", displayName, level)
+
+    self:TriggerLevelUpSound(displayName, level)
 
     -- Update the stored level and species ID
     self.previousPetLevels[petID] = {
@@ -105,14 +108,10 @@ end
 -- Function: TriggerLevelUpSound
 -- Purpose: Plays the level-up sound and displays a message.
 function BLU:TriggerLevelUpSound(petName, currentLevel)
-    -- Print the pet level-up message
-    print("|cFF00FF00[BLU]|r Your pet '" .. petName .. "' has reached level " .. currentLevel .. "!")
-
+    
     -- Use HandleEvent to trigger the sound (assuming it's defined elsewhere)
     if self.HandleEvent then
         self:HandleEvent("PET_LEVEL_UP", "BattlePetLevelSoundSelect", "BattlePetLevelVolume", defaultSounds[2])
-    else
-        self:PrintDebugMessage("HandleEvent function is not defined.")
     end
 end
 
@@ -124,10 +123,8 @@ end
 function BLU:UpdatePetData()
     -- Fetch total number of pets (collected and uncollected)
     local numPets = C_PetJournal.GetNumPets()
-    self:PrintDebugMessage("Total pets found:", numPets)
-
     if not numPets or numPets == 0 then
-        self:PrintDebugMessage("No pets found in the journal.")
+        self:PrintDebugMessage("NO_PETS_FOUND")
         return
     end
 
@@ -137,22 +134,14 @@ function BLU:UpdatePetData()
     -- Loop through all pets
     for i = 1, numPets do
         -- Fetch pet info by index
-        local petID, speciesID, isOwned, customName, level, favorite, isRevoked, name, icon, petType, companionID, tooltip, description, isWild, canBattle = C_PetJournal.GetPetInfoByIndex(i)
+        local petID, speciesID, isOwned, _, level = C_PetJournal.GetPetInfoByIndex(i)
         if petID and isOwned then
             if level and level >= 1 and level <= MAX_PET_LEVEL then
                 currentPetLevels[petID] = {
                     level = level,
                     speciesID = speciesID,
                 }
-
-                -- Debug print
-                self:PrintDebugMessage("Tracking pet:", customName or name or "Unknown", "ID:", petID, "Level:", level)
-            else
-                -- Debug print for pets that cannot battle or invalid data
-                self:PrintDebugMessage("Skipping pet:", customName or name or "Unknown", "ID:", petID, "Level:", level)
             end
-        else
-            self:PrintDebugMessage("Invalid or unowned pet at index:", i)
         end
     end
 
@@ -169,7 +158,7 @@ function BLU:UpdatePetData()
     else
         -- Initial data load, do not trigger level-up notifications
         self.isInitialized = true
-        self:PrintDebugMessage("Initial pet data loaded.")
+        self:PrintDebugMessage("INIT_LOAD_COMPLETE")
     end
 
     -- Update previousPetLevels with current levels
@@ -189,23 +178,18 @@ end
 function BLU:HandleEvents(event, ...)
     if event == "UNIT_SPELLCAST_SUCCEEDED" then
         local unitTarget, castGUID, spellID = ...
-        self:PrintDebugMessage("Spellcast succeeded:", "Unit:", unitTarget, "SpellID:", spellID)
         -- Ensure the spell cast is by the player
         if unitTarget == "player" and IsPetBattleItem(spellID) then
-            self:PrintDebugMessage("Pet Battle Item used, checking pet levels.")
             -- Check for pet level-ups when a pet battle item is used
             self:CheckPetJournalForLevelUps()
         end
     elseif event == "PLAYER_LOGIN" then
         -- Store pet data when the player logs in
-        self:PrintDebugMessage("Player logged in, updating pet data.")
         self:UpdatePetData()
     elseif event == "PET_BATTLE_LEVEL_CHANGED" or event == "UNIT_PET_EXPERIENCE" then
-        self:PrintDebugMessage("Pet level or experience changed, checking for level-ups.")
         -- Update pet data and check for level-ups
         self:UpdatePetData()
     elseif event == "PET_JOURNAL_LIST_UPDATE" then
-        self:PrintDebugMessage("Pet journal updated, checking for level-ups.")
         -- Secondary check for level-ups
         self:CheckPetJournalForLevelUps()
     end

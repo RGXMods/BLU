@@ -75,30 +75,55 @@ function BLU:TestRepSound()
 end
 
 --=====================================================================================
--- Reputation Event Handler with Enhanced Rank Handling
+-- Reputation Event Handler with Hardcoded Rank Matching
 --=====================================================================================
 function BLU:ReputationChatFrameHook()
     -- Ensure this hook is only added once
     if BLU.chatFrameHooked then return end
 
-    local reputationRanks = {
-        "Exalted", "Revered", "Honored", "Friendly", "Neutral",
-        "Unfriendly", "Hostile", "Hated"
-    }
-
     ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", function(_, _, msg)
         self:PrintDebugMessage("INCOMING_CHAT_MESSAGE: " .. msg)
 
-        for _, rank in ipairs(reputationRanks) do
-            if string.match(msg, "You are now " .. rank .. " with") then
-                self:PrintDebugMessage("|cff00ff00Rank found: " .. rank .. "|r")
-                self:ReputationRankIncrease(rank, msg)
-                return false -- Ensure the message is not blocked
-            end
+        local rankFound = false
+        if string.match(msg, "You are now Exalted with") then
+            self:PrintDebugMessage("|cff00ff00Rank found: Exalted|r")
+            self:ReputationRankIncrease("Exalted", msg)
+            rankFound = true
+        elseif string.match(msg, "You are now Revered with") then
+            self:PrintDebugMessage("|cff00ff00Rank found: Revered|r")
+            self:ReputationRankIncrease("Revered", msg)
+            rankFound = true
+        elseif string.match(msg, "You are now Honored with") then
+            self:PrintDebugMessage("|cff00ff00Rank found: Honored|r")
+            self:ReputationRankIncrease("Honored", msg)
+            rankFound = true
+        elseif string.match(msg, "You are now Friendly with") then
+            self:PrintDebugMessage("|cff00ff00Rank found: Friendly|r")
+            self:ReputationRankIncrease("Friendly", msg)
+            rankFound = true
+        elseif string.match(msg, "You are now Neutral with") then
+            self:PrintDebugMessage("|cff00ff00Rank found: Neutral|r")
+            self:ReputationRankIncrease("Neutral", msg)
+            rankFound = true
+        elseif string.match(msg, "You are now Unfriendly with") then
+            self:PrintDebugMessage("|cff00ff00Rank found: Unfriendly|r")
+            self:ReputationRankIncrease("Unfriendly", msg)
+            rankFound = true
+        elseif string.match(msg, "You are now Hostile with") then
+            self:PrintDebugMessage("|cff00ff00Rank found: Hostile|r")
+            self:ReputationRankIncrease("Hostile", msg)
+            rankFound = true
+        elseif string.match(msg, "You are now Hated with") then
+            self:PrintDebugMessage("|cff00ff00Rank found: Hated|r")
+            self:ReputationRankIncrease("Hated", msg)
+            rankFound = true
         end
 
-        self:PrintDebugMessage("NO_RANK_FOUND")
-        return false 
+        if not rankFound then
+            self:PrintDebugMessage("NO_RANK_FOUND")
+        end
+
+        return false -- Ensure that the message is not blocked from being displayed
     end)
 
     BLU.chatFrameHooked = true
@@ -123,22 +148,45 @@ function BLU:ReputationRankIncrease(rank, msg)
     self:PlaySelectedSound(sound, volumeLevel, defaultSounds[6])
 end
 
-
 --=====================================================================================
 -- Delve Level-Up Event Handler
 --=====================================================================================
-
 function BLU:OnDelveCompanionLevelUp(event, ...)
+    -- Print debug message for the triggering event
+    self:PrintDebugMessage(event .. " event fired, awaiting CHAT_MSG_SYSTEM for confirmation.")
 
+    -- Only proceed with the CHAT_MSG_SYSTEM event to finalize the check
     if event == "CHAT_MSG_SYSTEM" then
         local msg = ...
+        self:PrintDebugMessage("INCOMING_CHAT_MESSAGE: " .. msg)
 
+        -- Check if Brann's level-up message is found in the chat
         local levelUpMatch = string.match(msg, "Brann Bronzebeard has reached Level (%d+)")
         if levelUpMatch then
             local level = tonumber(levelUpMatch)
-            self:HandleEvent("DELVE_LEVEL_UP", "DelveLevelUpSoundSelect", "DelveLevelUpVolume", defaultSounds[3])
+            self:PrintDebugMessage("|cff00ff00Brann Level-Up detected: Level " .. level .. "|r")
+            self:TriggerDelveLevelUpSound(level)
         else
-            self:PrintDebugMessage(BLU_L["NO_LEVEL_FOUND"])
+            self:PrintDebugMessage("NO_LEVEL_FOUND")
         end
     end
+end
+
+--=====================================================================================
+-- Trigger Sound on Delve Level-Up
+--=====================================================================================
+function BLU:TriggerDelveLevelUpSound(level)
+    if self.functionsHalted then
+        self:PrintDebugMessage("Functions halted. Event not processed.")
+        return
+    end
+
+    self:PrintDebugMessage("Delve Level-Up sound triggered for Level " .. level)
+    local sound = self:SelectSound(self.db.profile.DelveLevelUpSoundSelect)
+    if not sound then
+        self:PrintDebugMessage("Sound not found for sound ID: " .. self.db.profile.DelveLevelUpSoundSelect)
+        return
+    end
+    local volumeLevel = self.db.profile.DelveLevelUpVolume
+    self:PlaySelectedSound(sound, volumeLevel, defaultSounds[3])
 end

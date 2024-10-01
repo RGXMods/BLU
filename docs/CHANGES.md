@@ -1,2 +1,2 @@
-- Updated - ToC for _classic_era_ - Season of Discovery Phase 5 (1.15.4.56817) [ToC.11504]
-- Fixed - Spelling of 'Level' in Options Panel Title - [/images/preview.png]
+- Fixed - String parse for reputation rank-ups - [core.lua]
+- Fixed - String parse for delve compantion level-ups - [core.lua]

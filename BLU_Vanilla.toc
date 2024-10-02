@@ -1,6 +1,6 @@
 ## Interface: 11504
-## Version: v5.1.8
-## Title: |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel-|r|cff05dffaU|r|cffffffffp!|r - |cff8080ffv5.1.8|r 
+## Version: v5.1.9
+## Title: |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel-|r|cff05dffaU|r|cffffffffp!|r - |cff8080ffv5.1.9|r 
 ## Notes: Play sounds from other games!  |n|r  |cff05dffa/blu -|r Open options panel  |n|r   |cff05dffaBy Uivi US-BleedingHollow|r
 ## Author: DonnieDice
 ## Email: 60427166+donniedice@users.noreply.github.com
@@ -16,6 +16,7 @@
 
 ## Libraries
 Libs\LibStub\LibStub.lua
+Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
 Libs\AceAddon-3.0\AceAddon-3.0.xml
 Libs\AceEvent-3.0\AceEvent-3.0.xml
 Libs\AceTimer-3.0\AceTimer-3.0.xml
@@ -23,9 +24,8 @@ Libs\AceDB-3.0\AceDB-3.0.xml
 Libs\AceDBOptions-3.0\AceDBOptions-3.0.xml
 Libs\AceLocale-3.0\AceLocale-3.0.xml
 Libs\AceConsole-3.0\AceConsole-3.0.xml
+Libs\AceGUI-3.0\AceGUI-3.0.xml
 Libs\AceConfig-3.0\AceConfig-3.0.xml
-Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
-
 
 data\localization.lua
 data\initialization.lua

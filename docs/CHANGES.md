@@ -1,2 +1,1 @@
-- Fixed - String parse for reputation rank-ups - [core.lua]
-- Fixed - String parse for delve compantion level-ups - [core.lua]
+- Fixed - Lua errors from missing dependency - [BLU_Cata.toc]

@@ -36,7 +36,7 @@ function BLU:GetGameVersion()
     elseif interfaceVersion >= 100000 then
         return "retail"
     else
-        self:PrintDebugMessage(BLU_L["ERROR_UNKNOWN_GAME_VERSION"]) 
+        self:PrintDebugMessage("ERROR_UNKNOWN_GAME_VERSION") 
         return "unknown"
     end
 end
@@ -52,7 +52,7 @@ function BLU:RegisterSharedEvents()
         PLAYER_LEVEL_UP = "HandlePlayerLevelUp",
         QUEST_ACCEPTED = "HandleQuestAccepted",
         QUEST_TURNED_IN = "HandleQuestTurnedIn",
-        CHAT_MSG_SYSTEM = "ReputationChatFrameHook", 
+        CHAT_MSG_SYSTEM = "ReputationChatFrameHook",
     }
 
     if version == "retail" then
@@ -60,9 +60,17 @@ function BLU:RegisterSharedEvents()
         events.PERKS_ACTIVITY_COMPLETED = "HandlePerksActivityCompleted"
         events.ACHIEVEMENT_EARNED = "HandleAchievementEarned"
         events.HONOR_LEVEL_UPDATE = "HandleHonorLevelUpdate"
+
+        -- Delve Compantion events for retail
         events.TRAIT_CONFIG_UPDATED = "OnDelveCompanionLevelUp"
         events.UPDATE_FACTION = "OnDelveCompanionLevelUp"
         events.CHAT_MSG_SYSTEM = "OnDelveCompanionLevelUp"
+
+        -- Battle pet events for retail
+        events.UNIT_SPELLCAST_SUCCEEDED = "HandleBattlePetLevelUp"  -- Used for pet battle items
+        events.PET_BATTLE_LEVEL_CHANGED = "HandleBattlePetLevelUp"
+        events.UNIT_PET_EXPERIENCE = "HandleBattlePetLevelUp"
+        events.PET_JOURNAL_LIST_UPDATE = "HandleBattlePetLevelUp"
     elseif version == "cata" then
         events.ACHIEVEMENT_EARNED = "HandleAchievementEarned"
     end
@@ -73,6 +81,7 @@ function BLU:RegisterSharedEvents()
         end
     end
 end
+
 
 --=====================================================================================
 -- Initialization, Mute Sounds, and Welcome Message
@@ -109,7 +118,7 @@ function BLU:OnInitialize()
     -- Display the welcome message if enabled
     if self.showWelcomeMessage then
         print(BLU_PREFIX .. BLU_L["WELCOME_MESSAGE"])
-        print(BLU_PREFIX .. string.format(BLU_L["VERSION"], BLU.VersionNumber))
+        print(BLU_PREFIX .. BLU_L["VERSION"], "|cff8080ff", BLU.VersionNumber)
     end
 end
 
@@ -120,7 +129,7 @@ function BLU:InitializeOptions()
     local version = self:GetGameVersion()
 
     if not self.options or not self.options.args then
-        self:PrintDebugMessage(BLU_L["ERROR_OPTIONS_NOT_INITIALIZED"])
+        self:PrintDebugMessage("ERROR_OPTIONS_NOT_INITIALIZED")
         return
     end
 
@@ -136,7 +145,7 @@ function BLU:InitializeOptions()
         if self:IsGroupCompatibleWithVersion(group, version) then
             table.insert(self.sortedOptions, group)
         else
-            self:PrintDebugMessage(string.format(BLU_L["SKIPPING_GROUP_NOT_COMPATIBLE"], group.name or "Unnamed Group")) 
+            self:PrintDebugMessage("SKIPPING_GROUP_NOT_COMPATIBLE") 
         end
     end
 
@@ -151,23 +160,32 @@ function BLU:InitializeOptions()
         ACD:AddToBlizOptions("BLU_Profiles", BLU_L["PROFILES_TITLE"], BLU_L["OPTIONS_LIST_MENU_TITLE"])
 
         self.optionsRegistered = true
-        self:PrintDebugMessage(BLU_L["OPTIONS_REGISTERED"])
     else
-        self:PrintDebugMessage(BLU_L["OPTIONS_ALREADY_REGISTERED"])
+        self:PrintDebugMessage("OPTIONS_ALREADY_REGISTERED")
     end
 end
 
 function BLU:IsGroupCompatibleWithVersion(group, version)
+    -- Logic to determine if the group is compatible with the current game version
     if version == "retail" then
         return true
-    elseif version == "cata" and (group.name:match("Honor Rank%-Up!") or
-                                  group.name:match("Delve Companion Level%-Up!") or group.name:match("Renown Rank%-Up!") or
-                                  group.name:match("Post%-Sound Select")) then
-        return false
-    elseif version == "vanilla" and (group.name:match("Achievement") or group.name:match("Honor Rank%-Up!") or
-                                     group.name:match("Delve Companion Level%-Up!") or
-                                     group.name:match("Renown Rank%-Up!") or group.name:match("Post%-Sound Select")) then
-        return false
+    elseif version == "cata" then
+        if group.name and (group.name:match("Honor Rank%-Up!") or
+                           group.name:match("Battle Pet Level%-Up!") or
+                           group.name:match("Delve Companion Level%-Up!") or
+                           group.name:match("Renown Rank%-Up!") or
+                           group.name:match("Post%-Sound Select")) then
+            return false
+        end
+    elseif version == "vanilla" then
+        if group.name and (group.name:match("Achievement") or
+                           group.name:match("Honor Rank%-Up!") or
+                           group.name:match("Battle Pet Level%-Up!") or
+                           group.name:match("Delve Companion Level%-Up!") or
+                           group.name:match("Renown Rank%-Up!") or
+                           group.name:match("Post%-Sound Select")) then
+            return false
+        end
     end
     return true
 end
@@ -183,7 +201,7 @@ function BLU:RemoveOptionsForVersion(version)
         args.group9 = nil
         args.group11 = nil
         self.db.profile.AchievementSoundSelect = nil
-        --self.db.profile.BattlePetLevelSoundSelect = nil
+        self.db.profile.BattlePetLevelSoundSelect = nil
         self.db.profile.DelveLevelUpSoundSelect = nil
         self.db.profile.HonorSoundSelect = nil
         self.db.profile.RenownSoundSelect = nil
@@ -194,7 +212,7 @@ function BLU:RemoveOptionsForVersion(version)
         args.group5 = nil
         args.group9 = nil
         args.group11 = nil
-        --self.db.profile.BattlePetLevelSoundSelect = nil
+        self.db.profile.BattlePetLevelSoundSelect = nil
         self.db.profile.DelveLevelUpSoundSelect = nil
         self.db.profile.HonorSoundSelect = nil
         self.db.profile.RenownSoundSelect = nil

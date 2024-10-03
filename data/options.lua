@@ -7,8 +7,8 @@ BLU.defaults = {
         showWelcomeMessage = true,
         AchievementSoundSelect = 35,
         AchievementVolume = 2.0,
-        --BattlePetLevelSoundSelect = 37,
-        --BattlePetLevelVolume = 2.0,
+        BattlePetLevelSoundSelect = 37,
+        BattlePetLevelVolume = 2.0,
         DelveLevelUpSoundSelect = 50,
         DelveLevelUpVolume = 2.0,
         HonorSoundSelect = 27,
@@ -27,7 +27,7 @@ BLU.defaults = {
         RepVolume = 2.0,
     },
 }
-
+local BLU_L = BLU_L or {}
 --=====================================================================================
 -- Options Definition
 --=====================================================================================
@@ -77,42 +77,42 @@ BLU.options = {
                 },
             },
         },
-        --group3 = {
-        --    type = "group",
-        --    order = 3,
-        --    name = BLU_L["BATTLE_PET_LEVEL_UP"], -- color should be white
-        --    inline = true,
-        --    get = "GetValue",
-        --    set = "SetValue",
-        --    args = {
-        --        BattlePetLevelSoundSelect = {
-        --            type = "select",
-        --            order = 1,
-        --            name = "",  -- Can leave blank if desired
-        --            desc = "",  -- Blank sound description
-        --            values = soundOptions,
-        --        },
-        --        TestBattlePetLevelSound = {
-        --            type = "execute",
-        --            order = 2,
-        --            image = "Interface\\Addons\\BLU\\images\\play.blp",
-        --            imageWidth = 20,
-        --           imageHeight = 20,
-        --            name = "",
-        --            desc = "",  -- Description not needed for button
-        --            func = function() BLU:TestBattlePetLevelSound() end,
-        --        },
-        --        BattlePetLevelVolume = {
-        --            type = "range",
-        --            order = 3,
-        --            name = BLU_L["BATTLE_PET_VOLUME_LABEL"], -- color should be white
-        --            desc = BLU_L["BATTLE_PET_VOLUME_DESC"], -- color should be blu
-        --            min = 0,
-        --            max = 3,
-        --            step = 1,
-        --        },
-        --    },
-        --},
+        group3 = {
+            type = "group",
+            order = 3,
+            name = BLU_L["BATTLE_PET_LEVEL_UP"], -- color should be white
+            inline = true,
+            get = "GetValue",
+            set = "SetValue",
+            args = {
+                BattlePetLevelSoundSelect = {
+                    type = "select",
+                    order = 1,
+                    name = "",  -- Can leave blank if desired
+                    desc = "",  -- Blank sound description
+                    values = soundOptions,
+                },
+                TestBattlePetLevelSound = {
+                    type = "execute",
+                    order = 2,
+                    image = "Interface\\Addons\\BLU\\images\\play.blp",
+                    imageWidth = 20,
+                   imageHeight = 20,
+                    name = "",
+                    desc = "",  -- Description not needed for button
+                    func = function() BLU:TestBattlePetLevelSound() end,
+                },
+                BattlePetLevelVolume = {
+                    type = "range",
+                    order = 3,
+                    name = BLU_L["BATTLE_PET_VOLUME_LABEL"], -- color should be white
+                    desc = BLU_L["BATTLE_PET_VOLUME_DESC"], -- color should be blu
+                    min = 0,
+                    max = 3,
+                    step = 1,
+                },
+            },
+        },
         group4 = {
             type = "group",
             order = 4,

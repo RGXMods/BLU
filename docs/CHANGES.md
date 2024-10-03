@@ -1,1 +1,9 @@
-- Fixed - Lua errors from missing dependency - [BLU_Cata.toc]
+- Fixed - Re-enabled Battle-Pet Level-Up!
+- Fixed - Version numbers in all TOC files - [BLU.toc, BLU_Cata.toc, BLU_Vanilla.toc]
+- Fixed - Debug output for missing localization - [localization.lua]
+- Updated - Event registration for pet level-ups and shared events - [core.lua, initialization.lua]
+- Updated - Delve Companion level-up detection using chat messages - [core.lua, initialization.lua]
+- Removed - Sound throttling for reputation events - [core.lua]
+- Added - Proccess queue system - [utils.lua]
+- Added - New debug messages for reputation and Delve level-ups - [localization.lua]
+- Added - Reputation rank-up tracking for The Severed Threads sub-factions [core.lua]

@@ -2,10 +2,16 @@
 -- BLU | Better Level-Up! - utils.lua
 --=====================================================================================
 --=====================================================================================
--- Get and Set Functions
+-- 
 --=====================================================================================
 BLU_L = BLU_L or {}
 
+-- Global table to hold the event queue
+BLU_EventQueue = {}
+
+--=====================================================================================
+-- Get and Set Functions
+--=====================================================================================
 function BLU:GetValue(info)
     return self.db.profile[info[#info]]
 end
@@ -13,31 +19,79 @@ end
 function BLU:SetValue(info, value)
     self.db.profile[info[#info]] = value
 end
+
 --=====================================================================================
 -- Event Handling Functions
 --=====================================================================================
-
-function BLU:HandleEvent(eventName, soundSelectKey, volumeKey, defaultSound)
-    self:PrintDebugMessage(eventName .. " triggered")
-
-    local sound = self:SelectSound(self.db.profile[soundSelectKey])
-    if not sound then
-        self:PrintDebugMessage("Sound not found for sound ID: " .. tostring(soundSelectKey))
-        return
+function BLU:HandleEvent(eventName, soundSelectKey, volumeKey, defaultSound, debugMessage)
+    
+    if self.functionsHalted then 
+        self:PrintDebugMessage("FUNCTIONS_HALTED")
+        return 
     end
+    
+    table.insert(BLU_EventQueue, {
+        eventName = eventName,
+        soundSelectKey = soundSelectKey,
+        volumeKey = volumeKey,
+        defaultSound = defaultSound,
+        debugMessage = debugMessage
+    })
 
-    local volumeLevel = self.db.profile[volumeKey]
-    if volumeLevel < 0 or volumeLevel > 3 then
-        self:PrintDebugMessage("Invalid volume level: " .. tostring(volumeLevel))
-        return
+    if not self.isProcessingQueue then
+        self.isProcessingQueue = true
+        self:ProcessEventQueue()
     end
-
-    self:PlaySelectedSound(sound, volumeLevel, defaultSound)
 end
 
+--=====================================================================================
+-- 
+--=====================================================================================
+function BLU:ProcessEventQueue()
+    if #BLU_EventQueue == 0 then
+        self.isProcessingQueue = false
+        return
+    end
+
+    local event = table.remove(BLU_EventQueue, 1)
+
+    -- Ensure the debug message is valid before playing the sound
+    if event.debugMessage then
+        self:PrintDebugMessage(event.debugMessage)
+    else
+        self:PrintDebugMessage("DEBUG_MESSAGE_MISSING")
+    end
+
+    -- Process the event (select sound, check volume, play sound)
+    local sound = self:SelectSound(self.db.profile[event.soundSelectKey])
+    if not sound then
+        self:PrintDebugMessage("ERROR_SOUND_NOT_FOUND", tostring(event.soundSelectKey))
+        -- Continue processing the queue after a short delay
+        C_Timer.After(1, function() self:ProcessEventQueue() end)
+        return
+    end
+
+    local volumeLevel = self.db.profile[event.volumeKey]
+    if volumeLevel < 0 or volumeLevel > 3 then
+        self:PrintDebugMessage("INVALID_VOLUME_LEVEL", tostring(volumeLevel))
+        -- Continue processing the queue after a short delay
+        C_Timer.After(1, function() self:ProcessEventQueue() end)
+        return
+    end
+
+    -- Play the selected sound after debug message is printed
+    self:PlaySelectedSound(sound, volumeLevel, event.defaultSound)
+
+    -- Continue processing the queue after a 1-second delay
+    C_Timer.After(1, function() self:ProcessEventQueue() end)
+end
+
+--=====================================================================================
 function BLU:HandlePlayerEnteringWorld()
     self:HaltOperations()
 end
+
+--=====================================================================================
 
 function BLU:HaltOperations()
 
@@ -68,7 +122,9 @@ function BLU:HaltOperations()
         end
     end, countdownTime)
 end
-
+--=====================================================================================
+-- 
+--=====================================================================================
 function BLU:ResumeOperations()
 
     -- Lift the function halt
@@ -103,14 +159,14 @@ function BLU:HandleSlashCommands(input)
     elseif input == "welcome" then
         self:ToggleWelcomeMessage()
     elseif input == "help" then
-        self:PrintDebugMessage("HELP_COMMAND_RECOGNIZED")
         self:DisplayBLUHelp()
     else
-        self:PrintDebugMessage("UNKNOWN_SLASH_COMMAND", input)
         print(BLU_PREFIX .. BLU_L["UNKNOWN_SLASH_COMMAND"])
     end
 end
-
+--=====================================================================================
+-- 
+--=====================================================================================
 function BLU:DisplayBLUHelp()
     local helpCommand = BLU_L["HELP_COMMAND"] or "/blu help - Displays help information."
     local helpDebug = BLU_L["HELP_DEBUG"] or "/blu debug - Toggles debug mode."
@@ -126,21 +182,40 @@ end
 --=====================================================================================
 -- Utility Functions
 --=====================================================================================
-
+-- Function: GetLocalizedString
+-- Purpose: Retrieves the localized string based on the user's locale.
+--[[
+function BLU:GetLocalizedString(key)
+    local locale = GetLocale()
+    if BLU_L[key] and BLU_L[key][locale] then
+        return BLU_L[key][locale]
+    elseif BLU_L[key] and BLU_L[key]["enUS"] then
+        return BLU_L[key]["enUS"] -- Fallback to English
+    else
+        return key -- If no localization is found, return the key itself
+    end
+end
+]]
+--=====================================================================================
+-- 
+--=====================================================================================
 function BLU:ToggleDebugMode()
     self.debugMode = not self.debugMode
     self.db.profile.debugMode = self.debugMode
 
-    -- Fallback in case the localization string is missing
+    -- Use the localized strings directly, assuming they are defined
     local statusMessage = self.debugMode and BLU_L["DEBUG_MODE_ENABLED"] or BLU_L["DEBUG_MODE_DISABLED"]
-    if not statusMessage then
-        statusMessage = self.debugMode and "Debug mode enabled" or "Debug mode disabled"
-    end
 
     print(BLU_PREFIX .. statusMessage)
-    self:PrintDebugMessage("DEBUG_MODE_TOGGLED", tostring(self.debugMode))
-end
 
+    -- Only print the debug message if debug mode is enabled
+    if self.debugMode then
+        self:PrintDebugMessage("DEBUG_MODE_TOGGLED", tostring(self.debugMode))
+    end
+end
+--=====================================================================================
+-- 
+--=====================================================================================
 
 function BLU:ToggleWelcomeMessage()
     self.showWelcomeMessage = not self.showWelcomeMessage
@@ -197,23 +272,25 @@ function BLU:RandomSoundID()
     local randomIndex = math.random(1, #validSoundIDs)
     local selectedSoundID = validSoundIDs[randomIndex]
 
-    self:PrintDebugMessage("RANDOM_SOUND_ID_SELECTED", selectedSoundID.id)
+    self:PrintDebugMessage("RANDOM_SOUND_ID_SELECTED", "|cff8080ff" .. selectedSoundID.id .. "|r")
 
     return selectedSoundID
 end
-
+--=====================================================================================
+-- 
+--=====================================================================================
 function BLU:SelectSound(soundID)
-    self:PrintDebugMessage("SELECTING_SOUND", tostring(soundID))
+    self:PrintDebugMessage("SELECTING_SOUND", "|cff8080ff" .. tostring(soundID) .. "|r")
 
     if not soundID or soundID == 2 then
         local randomSoundID = self:RandomSoundID()
         if randomSoundID then
-            self:PrintDebugMessage("USING_RANDOM_SOUND_ID", randomSoundID.id)
+            self:PrintDebugMessage("USING_RANDOM_SOUND_ID", "|cff8080ff" .. randomSoundID.id .. "|r")
             return randomSoundID
         end
     end
 
-    self:PrintDebugMessage("USING_SPECIFIED_SOUND_ID", soundID)
+    self:PrintDebugMessage("USING_SPECIFIED_SOUND_ID", "|cff8080ff" .. soundID .. "|r")
     return {table = sounds, id = soundID}
 end
 
@@ -225,14 +302,13 @@ function BLU:TestSound(soundID, volumeKey, defaultSound, debugMessage)
     self:PrintDebugMessage(debugMessage)
 
     local sound = self:SelectSound(self.db.profile[soundID])
-    if not sound then
-        self:PrintDebugMessage(BLU_L["ERROR_SOUND_NOT_FOUND"] .. " " .. BLU_L["DEFAULT_SOUND_USED"])
-    end
 
     local volumeLevel = self.db.profile[volumeKey]
     self:PlaySelectedSound(sound, volumeLevel, defaultSound)
 end
-
+--=====================================================================================
+-- 
+--=====================================================================================
 function BLU:PlaySelectedSound(sound, volumeLevel, defaultTable)
     self:PrintDebugMessage("PLAYING_SOUND", sound.id, volumeLevel)
 
@@ -243,11 +319,11 @@ function BLU:PlaySelectedSound(sound, volumeLevel, defaultTable)
 
     local soundFile = sound.id == 1 and defaultTable[volumeLevel] or sound.table[sound.id][volumeLevel]
 
-    self:PrintDebugMessage("SOUND_FILE_TO_PLAY", tostring(soundFile))
+    self:PrintDebugMessage("SOUND_FILE_TO_PLAY", "|cffce9178" .. tostring(soundFile) .. "|r")
 
     if soundFile then
         PlaySoundFile(soundFile, "MASTER")
     else
-        self:PrintDebugMessage("ERROR_SOUND_NOT_FOUND", sound.id)
+        self:PrintDebugMessage("ERROR_SOUND_NOT_FOUND", "|cff8080ff" .. sound.id .. "|r")
     end
 end

@@ -157,16 +157,26 @@ function BLU:InitializeOptions()
 end
 
 function BLU:IsGroupCompatibleWithVersion(group, version)
+    -- Logic to determine if the group is compatible with the current game version
     if version == "retail" then
         return true
-    elseif version == "cata" and (group.name:match("Honor Rank%-Up!") or --these have to match localization - this needs to be worked around
-                                  group.name:match("Delve Companion Level%-Up!") or group.name:match("Renown Rank%-Up!") or
-                                  group.name:match("Post%-Sound Select")) then
-        return false
-    elseif version == "vanilla" and (group.name:match("Achievement") or group.name:match("Honor Rank%-Up!") or
-                                     group.name:match("Battle Pet Level%-Up!") or group.name:match("Delve Companion Level%-Up!") or
-                                     group.name:match("Renown Rank%-Up!") or group.name:match("Post%-Sound Select")) then
-        return false
+    elseif version == "cata" then
+        if group.name and (group.name:match("Honor Rank%-Up!") or
+                           group.name:match("Battle Pet Level%-Up!") or
+                           group.name:match("Delve Companion Level%-Up!") or
+                           group.name:match("Renown Rank%-Up!") or
+                           group.name:match("Post%-Sound Select")) then
+            return false
+        end
+    elseif version == "vanilla" then
+        if group.name and (group.name:match("Achievement") or
+                           group.name:match("Honor Rank%-Up!") or
+                           group.name:match("Battle Pet Level%-Up!") or
+                           group.name:match("Delve Companion Level%-Up!") or
+                           group.name:match("Renown Rank%-Up!") or
+                           group.name:match("Post%-Sound Select")) then
+            return false
+        end
     end
     return true
 end

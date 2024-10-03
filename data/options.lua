@@ -7,8 +7,8 @@ BLU.defaults = {
         showWelcomeMessage = true,
         AchievementSoundSelect = 35,
         AchievementVolume = 2.0,
-        --BattlePetLevelSoundSelect = 37,
-        --BattlePetLevelVolume = 2.0,
+        BattlePetLevelSoundSelect = 37,
+        BattlePetLevelVolume = 2.0,
         DelveLevelUpSoundSelect = 50,
         DelveLevelUpVolume = 2.0,
         HonorSoundSelect = 27,
@@ -27,7 +27,7 @@ BLU.defaults = {
         RepVolume = 2.0,
     },
 }
-
+local BLU_L = BLU_L or {}
 --=====================================================================================
 -- Options Definition
 --=====================================================================================

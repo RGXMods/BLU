@@ -106,13 +106,9 @@ function BLU:HandlePetLevelUp(petID)
 end
 
 -- Function: TriggerLevelUpSound
--- Purpose: Plays the level-up sound and displays a message.
+-- Purpose: Plays the level-up sound
 function BLU:TriggerLevelUpSound(petName, currentLevel)
-    
-    -- Use HandleEvent to trigger the sound (assuming it's defined elsewhere)
-    if self.HandleEvent then
-        self:HandleEvent("PET_LEVEL_UP", "BattlePetLevelSoundSelect", "BattlePetLevelVolume", defaultSounds[2])
-    end
+    self:HandleEvent("PET_LEVEL_UP", "BattlePetLevelSoundSelect", "BattlePetLevelVolume", defaultSounds[2])
 end
 
 -- ============================
@@ -149,8 +145,8 @@ function BLU:UpdatePetData()
         -- Compare current levels to previous levels to detect level-ups
         for petID, petData in pairs(currentPetLevels) do
             local previousData = self.previousPetLevels[petID]
-            local previousLevel = previousData and previousData.level or 0
-            if petData.level > previousLevel then
+            -- Only trigger level-up if the pet was previously tracked and its level has increased
+            if previousData and petData.level > previousData.level then
                 -- Pet has leveled up
                 self:HandlePetLevelUp(petID)
             end

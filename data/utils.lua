@@ -22,10 +22,11 @@ BLU_EventQueue = {}
 
 function BLU:HandleEvent(eventName, soundSelectKey, volumeKey, defaultSound, debugMessage)
     -- Print the specific debug message if provided
-    if debugMessage then
-        self:PrintDebugMessage(debugMessage)
+    if self.functionsHalted then 
+        self:PrintDebugMessage("FUNCTIONS_HALTED")
+        return 
     end
-
+    
     -- Add the event details to the queue
     table.insert(BLU_EventQueue, {
         eventName = eventName,
@@ -249,23 +250,23 @@ function BLU:RandomSoundID()
     local randomIndex = math.random(1, #validSoundIDs)
     local selectedSoundID = validSoundIDs[randomIndex]
 
-    self:PrintDebugMessage("RANDOM_SOUND_ID_SELECTED", selectedSoundID.id)
+    self:PrintDebugMessage("RANDOM_SOUND_ID_SELECTED", "|cff8080ff" .. selectedSoundID.id .. "|r")
 
     return selectedSoundID
 end
 
 function BLU:SelectSound(soundID)
-    self:PrintDebugMessage("SELECTING_SOUND", tostring(soundID))
+    self:PrintDebugMessage("SELECTING_SOUND", "|cff8080ff" .. tostring(soundID) .. "|r")
 
     if not soundID or soundID == 2 then
         local randomSoundID = self:RandomSoundID()
         if randomSoundID then
-            self:PrintDebugMessage("USING_RANDOM_SOUND_ID", randomSoundID.id)
+            self:PrintDebugMessage("USING_RANDOM_SOUND_ID", "|cff8080ff" .. randomSoundID.id .. "|r")
             return randomSoundID
         end
     end
 
-    self:PrintDebugMessage("USING_SPECIFIED_SOUND_ID", soundID)
+    self:PrintDebugMessage("USING_SPECIFIED_SOUND_ID", "|cff8080ff" .. soundID .. "|r")
     return {table = sounds, id = soundID}
 end
 
@@ -292,11 +293,11 @@ function BLU:PlaySelectedSound(sound, volumeLevel, defaultTable)
 
     local soundFile = sound.id == 1 and defaultTable[volumeLevel] or sound.table[sound.id][volumeLevel]
 
-    self:PrintDebugMessage("SOUND_FILE_TO_PLAY", tostring(soundFile))
+    self:PrintDebugMessage("SOUND_FILE_TO_PLAY", "|cffce9178" .. tostring(soundFile) .. "|r")
 
     if soundFile then
         PlaySoundFile(soundFile, "MASTER")
     else
-        self:PrintDebugMessage("ERROR_SOUND_NOT_FOUND", sound.id)
+        self:PrintDebugMessage("ERROR_SOUND_NOT_FOUND", "|cff8080ff" .. sound.id .. "|r")
     end
 end

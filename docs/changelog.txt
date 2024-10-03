@@ -6,6 +6,8 @@ v5.2.0-------------------------------------------------------------------
 - Updated - Delve Companion level-up detection using chat messages - [core.lua, initialization.lua]
 - Removed - Sound throttling for reputation events - [core.lua]
 - Added - New debug messages for reputation and Delve level-ups - [localization.lua]
+v5.1.9-------------------------------------------------------------------
+- Fixed - Lua errors from missing dependency - [BLU_Cata.toc]
 v5.1.8-------------------------------------------------------------------
 - Fixed - String parse for reputation rank-ups - [core.lua]
 - Fixed - String parse for delve compantion level-ups - [core.lua]

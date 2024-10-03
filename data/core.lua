@@ -119,6 +119,38 @@ function BLU:ReputationChatFrameHook()
             self:PrintDebugMessage("|cff00ff00Rank found: Hated|r")
             self:ReputationRankIncrease("Hated", msg)
             rankFound = true
+        elseif string.match(msg, "Your standing with") then -- start of new shit
+            self:PrintDebugMessage("|cff00ff00Rank found: Acquaintance|r")
+            self:ReputationRankIncrease("Acquaintance", msg)
+            rankFound = true
+        elseif string.match(msg, "Your standing with") then
+            self:PrintDebugMessage("|cff00ff00Rank found: Crony|r")
+            self:ReputationRankIncrease("Crony", msg)
+            rankFound = true
+        elseif string.match(msg, "Your standing with") then
+            self:PrintDebugMessage("|cff00ff00Rank found: Accomplice|r")
+            self:ReputationRankIncrease("Accomplice", msg)
+            rankFound = true
+        elseif string.match(msg, "Your standing with") then
+            self:PrintDebugMessage("|cff00ff00Rank found: Collaborator|r")
+            self:ReputationRankIncrease("Collaborator", msg)
+            rankFound = true
+        elseif string.match(msg, "Your standing with") then
+            self:PrintDebugMessage("|cff00ff00Rank found: Accessory|r")
+            self:ReputationRankIncrease("Accessory", msg)
+            rankFound = true
+        elseif string.match(msg, "Your standing with") then
+            self:PrintDebugMessage("|cff00ff00Rank found: Abettor|r")
+            self:ReputationRankIncrease("Abettor", msg)
+            rankFound = true
+        elseif string.match(msg, "Your standing with") then
+            self:PrintDebugMessage("|cff00ff00Rank found: Conspirator|r")
+            self:ReputationRankIncrease("Conspirator", msg)
+            rankFound = true
+        elseif string.match(msg, "Your standing with") then
+            self:PrintDebugMessage("|cff00ff00Rank found: Mastermind|r")
+            self:ReputationRankIncrease("Hated", msg)
+            rankFound = true
         end
 
         if not rankFound then
@@ -132,22 +164,12 @@ function BLU:ReputationChatFrameHook()
 end
 
 function BLU:ReputationRankIncrease(rank, msg)
-    if self.functionsHalted then 
-        self:PrintDebugMessage("FUNCTIONS_HALTED")
-        return 
-    end
 
     -- Extract the faction name from the message
     local factionName = string.match(msg, "with (.+)")
-
-    self:PrintDebugMessage("Reputation rank increase triggered for rank: " .. rank .. " with faction: " .. factionName)
-    local sound = self:SelectSound(self.db.profile.RepSoundSelect)
-    if not sound then
-        self:PrintDebugMessage("ERROR_SOUND_NOT_FOUND: " .. self.db.profile.RepSoundSelect)
-        return
-    end
-    local volumeLevel = self.db.profile.RepVolume
-    self:PlaySelectedSound(sound, volumeLevel, defaultSounds[6])
+    
+    -- Use HandleEvent for consistency
+    self:HandleEvent("REPUTATION_RANK_INCREASE", "RepSoundSelect", "RepVolume", defaultSounds[6], "REPUTATION_RANK_INCREASE_TRIGGERED")
 end
 
 --=====================================================================================
@@ -178,17 +200,6 @@ end
 -- Trigger Sound on Delve Level-Up
 --=====================================================================================
 function BLU:TriggerDelveLevelUpSound(level)
-    if self.functionsHalted then
-        self:PrintDebugMessage("Functions halted. Event not processed.")
-        return
-    end
-
-    self:PrintDebugMessage("Delve Level-Up sound triggered for Level " .. level)
-    local sound = self:SelectSound(self.db.profile.DelveLevelUpSoundSelect)
-    if not sound then
-        self:PrintDebugMessage("Sound not found for sound ID: " .. self.db.profile.DelveLevelUpSoundSelect)
-        return
-    end
-    local volumeLevel = self.db.profile.DelveLevelUpVolume
-    self:PlaySelectedSound(sound, volumeLevel, defaultSounds[3])
+    -- Use HandleEvent for consistency
+    self:HandleEvent("DELVE_LEVEL_UP", "DelveLevelUpSoundSelect", "DelveLevelUpVolume", defaultSounds[3], "DELVE_LEVEL_UP_TRIGGERED")
 end

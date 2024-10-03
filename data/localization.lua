@@ -103,19 +103,19 @@ BLU_L = {
     CURRENT_DB_SETTING = string.format("Current DB setting: %%s.|r", colors.info),
 
     -- BLU:RandomSoundID()
-    SELECTING_RANDOM_SOUND = string.format("Selecting Random %sSoundID", colors.highlight),
-    NO_VALID_SOUND_IDS = string.format("%sNo valid sound IDs found.|r", colors.error),
-    RANDOM_SOUND_ID_SELECTED = string.format("Random sound ID selected: %%s.|r", colors.highlight),
+    SELECTING_RANDOM_SOUND = "Selecting Random SoundID",
+    NO_VALID_SOUND_IDS = string.format("No valid sound IDs found.", colors.error),
+    RANDOM_SOUND_ID_SELECTED = "Random sound ID selected: %s.",
 
     -- BLU:SelectSound()
-    SELECTING_SOUND = string.format("Selecting sound with ID: %%s.|r", colors.highlight),
-    USING_RANDOM_SOUND_ID = string.format("Using random sound ID: %%s.|r", colors.highlight),
-    USING_SPECIFIED_SOUND_ID = string.format("Using specified sound ID: %%s.|r", colors.highlight),
+    SELECTING_SOUND = "Selecting sound with ID: %s.",
+    USING_RANDOM_SOUND_ID = "Using random sound ID: %s.",
+    USING_SPECIFIED_SOUND_ID = "Using specified sound ID: %s.",
 
     -- PlaySelectedSound()
     PLAYING_SOUND = string.format("Playing sound with ID: %%s and volume level: %%d.|r", colors.highlight, colors.highlight),
     VOLUME_LEVEL_ZERO = string.format("%sVolume level is %s0|r, sound not played.|r", colors.error, colors.highlight),
-    SOUND_FILE_TO_PLAY = string.format("Sound file to play: %%s.|r", colors.sound),
+    SOUND_FILE_TO_PLAY = "Sound file to play: %s.",
 
 -- =====================================================================================
 -- Localization for core.lua
@@ -187,6 +187,9 @@ BLU_L = {
     -- BLU:OnDelveCompantionLevelUp(event, ...)
     DELVE_LEVEL_UP = string.format("%sBrann Bronzebeard has reached Level %%s|r", colors.info),
     NO_BRANN_LEVEL_FOUND = string.format("%sNo Delve Level found in chat message.|r", colors.error),
+    
+    -- BLU:TriggerDelveLevelUpSound(level)
+    DELVE_LEVEL_UP_SOUND_TRIGGERED = string.format("Delve Level-Up sound triggered for Level ", colors.info),
 
     -- Option Labels and Descriptions for Volume Controls
     ACHIEVEMENT_EARNED = "Achievement Earned!",

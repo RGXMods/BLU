@@ -5,3 +5,4 @@
 - Updated - Delve Companion level-up detection using chat messages - [core.lua, initialization.lua]
 - Removed - Sound throttling for reputation events - [core.lua]
 - Added - New debug messages for reputation and Delve level-ups - [localization.lua]
+- Added - Reputation rank-up tracking for The Severed Threads sub-factions [core.lua]

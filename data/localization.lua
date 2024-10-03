@@ -74,9 +74,11 @@ BLU_L = {
 -- Localization for utils.lua
 -- =====================================================================================
 
-    -- BLU:ProcessEventQueue()
+    --BLU:ProcessEventQueue()
     ERROR_SOUND_NOT_FOUND = string.format("%sSound not found for sound ID: %%s.|r", colors.error, colors.highlight),
     INVALID_VOLUME_LEVEL = string.format("%sInvalid volume level: %%d.|r", colors.error, colors.highlight),
+    DEBUG_MESSAGE_MISSING = string.format("%sDebug message missing for event.|r", colors.warning, colors.highlight),
+    FUNCTIONS_HALTED = string.format("%sFunctions halted.|r", colors.error, colors.highlight),
 
     -- BLU:HaltOperations()
     COUNTDOWN_TICK = string.format("%sCountdown: %s%%d%s seconds remaining.|r", colors.info, colors.highlight, colors.info),
@@ -113,7 +115,7 @@ BLU_L = {
     USING_SPECIFIED_SOUND_ID = "Using specified sound ID: %s.",
 
     -- PlaySelectedSound()
-    PLAYING_SOUND = string.format("Playing sound with ID: %%s and volume level: %%d.|r", colors.highlight, colors.highlight),
+    PLAYING_SOUND = "Playing sound with ID: |cff8080ff%s|r and volume level: |cff8080ff%d|r.",
     VOLUME_LEVEL_ZERO = string.format("%sVolume level is %s0|r, sound not played.|r", colors.error, colors.highlight),
     SOUND_FILE_TO_PLAY = "Sound file to play: %s.",
 

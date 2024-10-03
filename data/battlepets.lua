@@ -171,7 +171,7 @@ end
 -- Event Handler
 -- ============================
 -- Main event handler function
-function BLU:HandleEvents(event, ...)
+function BLU:HandleBattlePetLevelUp(event, ...)
     if event == "UNIT_SPELLCAST_SUCCEEDED" then
         local unitTarget, castGUID, spellID = ...
         -- Ensure the spell cast is by the player
@@ -197,12 +197,6 @@ end
 -- Create an event frame to listen for addon events
 local eventFrame = CreateFrame("Frame")
 eventFrame:SetScript("OnEvent", function(self, event, ...)
-    BLU:HandleEvents(event, ...)
+    BLU:HandleBattlePetLevelUp(event, ...)
 end)
 
--- Register events
-eventFrame:RegisterEvent("PLAYER_LOGIN")
-eventFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-eventFrame:RegisterEvent("PET_BATTLE_LEVEL_CHANGED")
-eventFrame:RegisterEvent("UNIT_PET_EXPERIENCE")
-eventFrame:RegisterEvent("PET_JOURNAL_LIST_UPDATE")

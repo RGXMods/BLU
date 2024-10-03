@@ -52,7 +52,7 @@ function BLU:RegisterSharedEvents()
         PLAYER_LEVEL_UP = "HandlePlayerLevelUp",
         QUEST_ACCEPTED = "HandleQuestAccepted",
         QUEST_TURNED_IN = "HandleQuestTurnedIn",
-        CHAT_MSG_SYSTEM = "ReputationChatFrameHook", 
+        CHAT_MSG_SYSTEM = "ReputationChatFrameHook",
     }
 
     if version == "retail" then
@@ -60,9 +60,17 @@ function BLU:RegisterSharedEvents()
         events.PERKS_ACTIVITY_COMPLETED = "HandlePerksActivityCompleted"
         events.ACHIEVEMENT_EARNED = "HandleAchievementEarned"
         events.HONOR_LEVEL_UPDATE = "HandleHonorLevelUpdate"
+
+        -- Delve Compantion events for retail
         events.TRAIT_CONFIG_UPDATED = "OnDelveCompanionLevelUp"
         events.UPDATE_FACTION = "OnDelveCompanionLevelUp"
         events.CHAT_MSG_SYSTEM = "OnDelveCompanionLevelUp"
+
+        -- Battle pet events for retail
+        events.UNIT_SPELLCAST_SUCCEEDED = "HandleBattlePetLevelUp"  -- Used for pet battle items
+        events.PET_BATTLE_LEVEL_CHANGED = "HandleBattlePetLevelUp"
+        events.UNIT_PET_EXPERIENCE = "HandleBattlePetLevelUp"
+        events.PET_JOURNAL_LIST_UPDATE = "HandleBattlePetLevelUp"
     elseif version == "cata" then
         events.ACHIEVEMENT_EARNED = "HandleAchievementEarned"
     end
@@ -73,6 +81,7 @@ function BLU:RegisterSharedEvents()
         end
     end
 end
+
 
 --=====================================================================================
 -- Initialization, Mute Sounds, and Welcome Message

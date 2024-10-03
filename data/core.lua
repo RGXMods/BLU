@@ -1,7 +1,7 @@
 --=====================================================================================
 -- BLU | Better Level-Up! - core.lua
 --=====================================================================================
-
+BLU_L = BLU_L or {}
 ---BLU:HandleEvent(eventName, soundSelectKey, volumeKey, defaultSound, debugMessage)
 
 function BLU:HandlePlayerLevelUp()

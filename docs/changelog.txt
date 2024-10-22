@@ -1,3 +1,6 @@
+v5.2.1-------------------------------------------------------------------
+- Updated - New formatting for readme - [README.md]
+- Updated - ToC for _retail_ - WOW20TH (11.0.5.57171) [ToC.110005]
 v5.2.0-------------------------------------------------------------------
 - Added - Cooldown logic for pet level-up sounds to prevent spamming - [battlepets.lua]
 - Added - Dynamic handling for Delve Companion level-up sounds based on system messages - [core.lua, initialization.lua]

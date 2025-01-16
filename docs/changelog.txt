@@ -1,3 +1,7 @@
+v5.2.2-------------------------------------------------------------------
+- Updated - ToC for _classic_era_ - [ToC.11505]
+- Updated - ToC for _classic_ - [ToC.40401]
+- Updated - ToC for _retail_ - [ToC.110007]
 v5.2.1-------------------------------------------------------------------
 - Updated - New formatting for readme - [README.md]
 - Updated - ToC for _retail_ - WOW20TH (11.0.5.57171) [ToC.110005]

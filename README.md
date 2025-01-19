@@ -1,6 +1,6 @@
 # BLU | Better Level-Up!
 
-[![In-Game Options - Preview Image](https://mods.dicematrix.cloud/sites/default/files/images/preview.png)](https://mods.dicematrix.cloud/sites/default/files/images/preview.png)
+[![In-Game Options - Preview Image](https://raw.githubusercontent.com/donniedice/BLU/main/images/preview.png)](https://raw.githubusercontent.com/donniedice/BLU/main/images/preview.png)
 
 ## Overview
 

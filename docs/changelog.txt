@@ -1,10 +1,13 @@
+v5.2.4-------------------------------------------------------------------
+- Updated - TOC version bump for Retail, Vanilla, and Cata [BLU.toc, BLU_Vanilla.toc, BLU_Cata.toc]
+- Updated - Email address updated in TOC files for Retail, Vanilla, and Cata [BLU.toc, BLU_Vanilla.toc, BLU_Cata.toc]
 v5.2.3-------------------------------------------------------------------
 - Updated - Retail TOC to reflect version 110100 [BLU.toc]
 - Updated - Retail BLU version number to v5.2.3 in TOC [BLU.toc]
 - Removed - Version number from TOC title (Blizzard added this to the default interface) [BLU.toc]
 - Updated - Email address in Retail TOC [BLU.toc]
 - Updated - Name in notes to 'donniedice' instead of character name [BLU.toc]
-- Updated - Vanilla TOC to reflect version 11506 [BLU_Vanilla.toc]
+- Updated - Vanilla TOC tod reflect version 11506 [BLU_Vanilla.toc]
 - Updated - Vanilla BLU version number to v5.2.3 in TOC [BLU_Vanilla.toc]
 - Updated - Email address in Vanilla TOC [BLU_Vanilla.toc]
 - Updated - Name in notes to 'donniedice' instead of character name [BLU_Vanilla.toc]

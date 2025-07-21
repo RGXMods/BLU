@@ -32,6 +32,12 @@ function BLU:OnInitialize()
     -- Set up options
     self:SetupOptions()
     
+    -- Initialize sound registry
+    self.soundRegistry = {}
+    
+    -- Load core modules
+    self:LoadCoreModules()
+    
     -- Load modules based on settings
     self:LoadModulesFromSettings()
     
@@ -138,6 +144,41 @@ function BLU:ReloadAllModules()
     self:LoadModulesFromSettings()
     
     self:Print("Modules reloaded successfully")
+end
+
+-- Sound registration API
+function BLU:RegisterSound(soundId, soundData)
+    self.soundRegistry[soundId] = soundData
+    self:PrintDebug("Registered sound: " .. soundId)
+end
+
+function BLU:UnregisterSound(soundId)
+    self.soundRegistry[soundId] = nil
+end
+
+function BLU:GetSound(soundId)
+    return self.soundRegistry[soundId]
+end
+
+function BLU:PlaySound(soundId, volume)
+    local sound = self.soundRegistry[soundId]
+    if not sound then
+        self:PrintDebug("Sound not found: " .. soundId)
+        return
+    end
+    
+    volume = volume or 1.0
+    PlaySoundFile(sound.file, "Master")
+end
+
+-- Load core modules
+function BLU:LoadCoreModules()
+    -- These modules are always loaded
+    local coreModules = {"SoundPakBridge", "GameSoundBrowser"}
+    
+    for _, moduleName in ipairs(coreModules) do
+        self:LoadModule("core", moduleName)
+    end
 end
 
 -- Export core module

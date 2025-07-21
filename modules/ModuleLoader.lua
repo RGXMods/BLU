@@ -15,7 +15,9 @@ local moduleRegistry = {
         "Core",
         "Config",
         "Utils",
-        "Localization"
+        "Localization",
+        "SoundPakBridge",
+        "GameSoundBrowser"
     },
     
     -- Feature modules (loaded on demand)

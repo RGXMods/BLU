@@ -10,6 +10,9 @@ v5.3.0-alpha-------------------------------------------------------------------
 - Removed - Game version checking from initialization [initialization.lua]
 - Optimized - Memory usage with lazy-loaded sound modules [modules/sounds/]
 - Optimized - CPU usage by loading only active features [modules/features/]
+- Added - SoundPak addon compatibility using LibSharedMedia [modules/SoundPakBridge.lua]
+- Added - In-game WoW sound file browser and support [modules/GameSoundBrowser.lua]
+- Added - Sound registry system for unified sound management [modules/Core.lua]
 v5.2.5-------------------------------------------------------------------
 - Added - RGX Mods branding and community integration [README.md]
 - Updated - Professional README with GitHub statistics and badges [README.md]

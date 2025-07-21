@@ -1,0 +1,9 @@
+<!-- BLU Core Systems -->
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+    <!-- Framework must load first -->
+    <Script file="framework.lua"/>
+    <Script file="database.lua"/>
+    
+    <!-- Core initialization -->
+    <Script file="init.lua"/>
+</Ui>

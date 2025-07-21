@@ -1,0 +1,11 @@
+<!-- BLU Sound System -->
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+    <!-- Sound system modules -->
+    <Script file="soundpak.lua"/>
+    <Script file="browser.lua"/>
+    
+    <!-- Sound packs are loaded dynamically -->
+    <!-- <Script file="packs/finalfantasy.lua"/> -->
+    <!-- <Script file="packs/zelda.lua"/> -->
+    <!-- etc... -->
+</Ui>

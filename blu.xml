@@ -1,0 +1,11 @@
+<!-- BLU Main XML Loader -->
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+    <!-- Core Framework -->
+    <Include file="core\core.xml"/>
+    
+    <!-- Modules -->
+    <Include file="modules\modules.xml"/>
+    
+    <!-- Sound System -->
+    <Include file="sound\sound.xml"/>
+</Ui>

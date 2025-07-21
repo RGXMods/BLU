@@ -1,0 +1,18 @@
+<!-- BLU Feature Modules -->
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+    <!-- These are loaded dynamically based on user settings -->
+    <!-- Listed here for organization and reference -->
+    
+    <!-- Core Features -->
+    <!-- <Script file="LevelUp.lua"/> -->
+    <!-- <Script file="Achievement.lua"/> -->
+    <!-- <Script file="Reputation.lua"/> -->
+    <!-- <Script file="Quest.lua"/> -->
+    
+    <!-- Retail Features -->
+    <!-- <Script file="BattlePet.lua"/> -->
+    <!-- <Script file="DelveCompanion.lua"/> -->
+    <!-- <Script file="HonorRank.lua"/> -->
+    <!-- <Script file="RenownRank.lua"/> -->
+    <!-- <Script file="TradingPost.lua"/> -->
+</Ui>

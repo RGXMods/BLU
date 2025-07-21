@@ -1,0 +1,17 @@
+<!-- BLU Modules -->
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+    <!-- Core Modules (Always loaded) -->
+    <Script file="core.lua"/>
+    <Script file="events.lua"/>
+    <Script file="localization.lua"/>
+    <Script file="config.lua"/>
+    <Script file="utils.lua"/>
+    <Script file="registry.lua"/>
+    <Script file="loader.lua"/>
+    
+    <!-- UI Modules -->
+    <Script file="options.lua"/>
+    
+    <!-- Feature Modules are loaded dynamically -->
+    <!-- <Include file="features\features.xml"/> -->
+</Ui>

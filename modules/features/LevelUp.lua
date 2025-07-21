@@ -9,13 +9,13 @@ local LevelUp = {}
 -- Module initialization
 function LevelUp:Init()
     BLU:RegisterEvent("PLAYER_LEVEL_UP", function(...) self:OnLevelUp(...) end)
-    BLU:PrintDebug("LevelUp module initialized")
+    BLU:PrintDebug(BLU:Loc("MODULE_LOADED", "LevelUp"))
 end
 
 -- Cleanup function
 function LevelUp:Cleanup()
     BLU:UnregisterEvent("PLAYER_LEVEL_UP")
-    BLU:PrintDebug("LevelUp module cleaned up")
+    BLU:PrintDebug(BLU:Loc("MODULE_CLEANED_UP", "LevelUp"))
 end
 
 -- Level up event handler
@@ -28,7 +28,7 @@ function LevelUp:OnLevelUp(event, level)
     BLU:PlaySound(soundName, volume)
     
     if BLU.debugMode then
-        BLU:Print(string.format("Level Up! You reached level %d", level))
+        BLU:Print(string.format("%s %d", BLU:Loc("LEVEL_UP"), level))
     end
 end
 

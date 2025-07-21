@@ -149,7 +149,7 @@ end
 -- Sound registration API
 function BLU:RegisterSound(soundId, soundData)
     self.soundRegistry[soundId] = soundData
-    self:PrintDebug("Registered sound: " .. soundId)
+    self:PrintDebug(self:Loc("SOUND_REGISTERED", soundId) or ("Registered sound: " .. soundId))
 end
 
 function BLU:UnregisterSound(soundId)
@@ -163,7 +163,7 @@ end
 function BLU:PlaySound(soundId, volume)
     local sound = self.soundRegistry[soundId]
     if not sound then
-        self:PrintDebug("Sound not found: " .. soundId)
+        self:PrintDebug(self:Loc("ERROR_SOUND_NOT_FOUND", soundId) or ("Sound not found: " .. soundId))
         return
     end
     
@@ -173,8 +173,11 @@ end
 
 -- Load core modules
 function BLU:LoadCoreModules()
+    -- Load localization first
+    self:LoadModule("core", "Localization")
+    
     -- These modules are always loaded
-    local coreModules = {"SoundPakBridge", "GameSoundBrowser"}
+    local coreModules = {"Config", "Utils", "SoundPakBridge", "GameSoundBrowser"}
     
     for _, moduleName in ipairs(coreModules) do
         self:LoadModule("core", moduleName)

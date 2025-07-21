@@ -30,6 +30,7 @@ Libs\AceConfig-3.0\AceConfig-3.0.xml
 ## Core Systems (Always Loaded)
 data\localization.lua
 modules\Core.lua
+modules\Localization.lua
 modules\ModuleLoader.lua
 modules\Config.lua
 modules\Utils.lua

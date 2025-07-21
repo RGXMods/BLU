@@ -9,13 +9,13 @@ local Achievement = {}
 -- Module initialization
 function Achievement:Init()
     BLU:RegisterEvent("ACHIEVEMENT_EARNED", function(...) self:OnAchievementEarned(...) end)
-    BLU:PrintDebug("Achievement module initialized")
+    BLU:PrintDebug(BLU:Loc("MODULE_LOADED", "Achievement"))
 end
 
 -- Cleanup function
 function Achievement:Cleanup()
     BLU:UnregisterEvent("ACHIEVEMENT_EARNED")
-    BLU:PrintDebug("Achievement module cleaned up")
+    BLU:PrintDebug(BLU:Loc("MODULE_CLEANED_UP", "Achievement"))
 end
 
 -- Achievement earned event handler
@@ -30,7 +30,7 @@ function Achievement:OnAchievementEarned(event, achievementID, alreadyEarned)
     
     if BLU.debugMode then
         local _, name = GetAchievementInfo(achievementID)
-        BLU:Print(string.format("Achievement earned: %s", name or "Unknown"))
+        BLU:Print(string.format("%s: %s", BLU:Loc("ACHIEVEMENT_EARNED"), name or BLU:Loc("UNKNOWN")))
     end
 end
 

@@ -1,3 +1,9 @@
+v5.3.0-alpha-------------------------------------------------------------------
+- BREAKING - BLU now supports Retail only - removed Classic/Cata support [BLU_Vanilla.toc, BLU_Cata.toc]
+- Updated - Version to v5.3.0-alpha for development phase [BLU.toc]
+- Added - [ALPHA] tag in red to addon title [BLU.toc]
+- Updated - README to reflect retail-only support [README.md]
+- Removed - Compatibility sections from documentation [README.md]
 v5.2.5-------------------------------------------------------------------
 - Added - RGX Mods branding and community integration [README.md]
 - Updated - Professional README with GitHub statistics and badges [README.md]

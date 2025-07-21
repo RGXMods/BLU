@@ -35,8 +35,7 @@
 
 <!-- WoW Compatibility -->
 [![WoW Retail](https://img.shields.io/badge/WoW-The%20War%20Within-green?style=flat-square&logo=worldofwarcraft)](https://worldofwarcraft.com)
-[![WoW Cataclysm](https://img.shields.io/badge/WoW-Cataclysm%20Classic-green?style=flat-square&logo=worldofwarcraft)](https://worldofwarcraft.com)
-[![WoW Classic](https://img.shields.io/badge/WoW-Classic%20Era-green?style=flat-square&logo=worldofwarcraft)](https://worldofwarcraft.com)
+[![Version](https://img.shields.io/badge/Version-v5.3.0--alpha-red?style=flat-square)](https://github.com/donniedice/BLU/releases)
 
 </div>
 
@@ -85,19 +84,19 @@
 
 <div align="center">
 
-| Feature | Description | Availability |
-|---------|-------------|--------------|
-| 🎵 **50+ Game Sounds** | Choose from iconic sounds from games like Final Fantasy, Zelda, Mario, and more | All Versions |
-| 🎯 **Achievements** | Celebrate achievements with unique sounds | All Versions |
-| 🐾 **Battle Pets** | Custom sounds when leveling battle pets | Retail Only |
-| ⚔️ **Delve Companion** | Sounds for Delve Companion level-ups | Retail Only |
-| 🏆 **Honor Ranks** | Audio feedback for honor rank gains | Retail Only |
-| ⭐ **Level-Up** | Replace default level-up sounds | All Versions |
-| 👑 **Renown Ranks** | Sounds for renown reputation gains | Retail Only |
-| 📈 **Reputation** | Custom sounds for reputation increases | All Versions |
-| 📜 **Quests** | Unique sounds for quest accept/turn-in | All Versions |
-| 🛒 **Trading Post** | Sounds for Trading Post activities | Retail Only |
-| 🔊 **Volume Control** | Independent volume adjustment for each sound type | All Versions |
+| Feature | Description |
+|---------|-------------|
+| 🎵 **50+ Game Sounds** | Choose from iconic sounds from games like Final Fantasy, Zelda, Mario, and more |
+| 🎯 **Achievements** | Celebrate achievements with unique sounds |
+| 🐾 **Battle Pets** | Custom sounds when leveling battle pets |
+| ⚔️ **Delve Companion** | Sounds for Delve Companion level-ups |
+| 🏆 **Honor Ranks** | Audio feedback for honor rank gains |
+| ⭐ **Level-Up** | Replace default level-up sounds |
+| 👑 **Renown Ranks** | Sounds for renown reputation gains |
+| 📈 **Reputation** | Custom sounds for reputation increases |
+| 📜 **Quests** | Unique sounds for quest accept/turn-in |
+| 🛒 **Trading Post** | Sounds for Trading Post activities |
+| 🔊 **Volume Control** | Independent volume adjustment for each sound type |
 | ⚙️ **Smart Management** | Automatically mutes default WoW sounds when replacing | All Versions |
 | 💾 **Persistent Settings** | Your preferences are saved between sessions | All Versions |
 | 🎨 **Professional UI** | Clean options panel with intuitive controls | All Versions |
@@ -185,13 +184,13 @@ Each sound type has three volume levels:
 
 ### 🌍 **Supported WoW Versions**
 
-| WoW Version | Interface | Status | Features |
-|-------------|-----------|--------|----------|
-| The War Within (Retail) | 110105 | ✅ Fully Supported | All Features |
-| Cataclysm Classic | 40402 | ✅ Fully Supported | Core Features |
-| Classic Era / Hardcore / SoD | 11507 | ✅ Fully Supported | Core Features |
+**BLU v5.3.0-alpha supports World of Warcraft Retail only.**
 
-**Note**: Some features are Retail-only due to game limitations.
+| WoW Version | Interface | Status |
+|-------------|-----------|---------|
+| The War Within (Retail) | 110105 | ✅ Fully Supported |
+
+**Note**: For Classic support, please use [BLU Classic](https://github.com/donniedice/BLU_Classic).
 
 </div>
 
@@ -204,13 +203,11 @@ Each sound type has three volume levels:
    - [GitHub](https://github.com/donniedice/BLU)
 
 2. **Extract** to your WoW AddOns directory:
-   - **Retail**: `World of Warcraft/_retail_/Interface/AddOns`
-   - **Classic**: `World of Warcraft/_classic_/Interface/AddOns`
-   - **Classic Era**: `World of Warcraft/_classic_era_/Interface/AddOns`
+   - `World of Warcraft/_retail_/Interface/AddOns`
 
 3. **Restart** WoW and enable in AddOns menu
 
-## 🆕 Looking for Universal Support?
+## 🆕 Looking for Classic Support?
 
 <div align="center">
 
@@ -218,7 +215,7 @@ Each sound type has three volume levels:
 
 [![BLU Classic](https://img.shields.io/badge/BLU%20Classic-Universal%20Version-FFD700?style=for-the-badge&logo=worldofwarcraft)](https://github.com/donniedice/BLU_Classic)
 
-**BLU Classic** is the universal version that supports ALL WoW versions with a single addon!
+**BLU Classic** supports ALL WoW versions (Retail, Classic Era, Cataclysm) with a single addon!
 
 </div>
 

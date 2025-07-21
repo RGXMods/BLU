@@ -31,4 +31,8 @@ Libs\AceConfig-3.0\AceConfig-3.0.xml
 data\localization.lua
 modules\Core.lua
 modules\ModuleLoader.lua
+modules\Config.lua
+modules\Utils.lua
+modules\SoundPakBridge.lua
+modules\GameSoundBrowser.lua
 data\initialization.lua

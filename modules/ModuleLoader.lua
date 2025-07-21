@@ -50,6 +50,12 @@ local moduleRegistry = {
 
 -- Module loader function
 function BLU:LoadModule(moduleType, moduleName)
+    -- Special handling for core modules
+    if moduleType == "core" then
+        local modulePath = "Interface\\AddOns\\BLU\\modules\\" .. moduleName .. ".lua"
+        return self:LoadModuleFromPath(moduleName, modulePath)
+    end
+    
     local modulePath = moduleRegistry[moduleType] and moduleRegistry[moduleType][moduleName]
     
     if not modulePath then
@@ -57,6 +63,11 @@ function BLU:LoadModule(moduleType, moduleName)
         return false
     end
     
+    return self:LoadModuleFromPath(moduleName, "Interface\\AddOns\\BLU\\" .. modulePath)
+end
+
+-- Load module from specific path
+function BLU:LoadModuleFromPath(moduleName, modulePath)
     -- Check if already loaded
     if self.LoadedModules[moduleName] then
         self:PrintDebug("Module already loaded: " .. moduleName)
@@ -65,7 +76,7 @@ function BLU:LoadModule(moduleType, moduleName)
     
     -- Load the module
     local success, module = pcall(function()
-        return assert(loadfile("Interface\\AddOns\\BLU\\" .. modulePath))()
+        return assert(loadfile(modulePath))()
     end)
     
     if success then

@@ -1,3 +1,9 @@
+v5.2.5-------------------------------------------------------------------
+- Added - RGX Mods branding and community integration [README.md]
+- Updated - Professional README with GitHub statistics and badges [README.md]
+- Added - Discord community links and support information [README.md]
+- Enhanced - Documentation with 3-column game list display [README.md]
+- Added - Reference to BLU Classic universal version [README.md]
 v5.2.4-------------------------------------------------------------------
 - Updated - TOC version bump for Retail, Vanilla, and Cata [BLU.toc, BLU_Vanilla.toc, BLU_Cata.toc]
 - Updated - Email address updated in TOC files for Retail, Vanilla, and Cata [BLU.toc, BLU_Vanilla.toc, BLU_Cata.toc]

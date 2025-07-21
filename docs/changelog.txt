@@ -1,9 +1,15 @@
 v5.3.0-alpha-------------------------------------------------------------------
 - BREAKING - BLU now supports Retail only - removed Classic/Cata/Mists support [BLU_Vanilla.toc, BLU_Cata.toc, BLU_Mists.toc]
+- BREAKING - Complete modular rewrite for performance optimization [all files]
+- Added - Module loader system for on-demand loading [modules/ModuleLoader.lua]
+- Added - Modular architecture - only load used features [modules/]
 - Updated - Version to v5.3.0-alpha for development phase [BLU.toc]
 - Added - [ALPHA] tag in red to addon title [BLU.toc]
 - Updated - README to reflect retail-only support [README.md]
 - Removed - Compatibility sections from documentation [README.md]
+- Removed - Game version checking from initialization [initialization.lua]
+- Optimized - Memory usage with lazy-loaded sound modules [modules/sounds/]
+- Optimized - CPU usage by loading only active features [modules/features/]
 v5.2.5-------------------------------------------------------------------
 - Added - RGX Mods branding and community integration [README.md]
 - Updated - Professional README with GitHub statistics and badges [README.md]

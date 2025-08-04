@@ -132,7 +132,13 @@ function BLU.CreateGeneralPanel(panel)
     local testBtn = BLU.Design:CreateButton(audioSection.content, "Test", 80, 22)
     testBtn:SetPoint("LEFT", channelDropdown, "RIGHT", 10, 2)
     testBtn:SetScript("OnClick", function()
-        BLU:PlayCategorySound("levelup")
+        if BLU.PlaySound then
+            BLU:PlaySound("levelup")
+        elseif BLU.Modules.registry and BLU.Modules.registry.PlaySound then
+            BLU.Modules.registry:PlaySound("levelup")
+        else
+            BLU:Print("Sound system not available")
+        end
     end)
     
     -- Behavior Settings Section
@@ -196,7 +202,13 @@ function BLU.CreateGeneralPanel(panel)
         local function playNext()
             if index <= #events then
                 BLU:Print("Playing: " .. events[index])
-                BLU:PlayCategorySound(events[index])
+                if BLU.PlaySound then
+                    BLU:PlaySound(events[index])
+                elseif BLU.Modules.registry and BLU.Modules.registry.PlaySound then
+                    BLU.Modules.registry:PlaySound(events[index])
+                else
+                    BLU:Print("Sound system not available")
+                end
                 index = index + 1
                 C_Timer.After(2, playNext)
             else

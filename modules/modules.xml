@@ -4,20 +4,22 @@
     <Script file="localization.lua"/>
     <Script file="config.lua"/>
     <Script file="utils.lua"/>
+    <Script file="sharedmedia.lua"/>
     <Script file="registry.lua"/>
     <Script file="loader.lua"/>
     
     <!-- Interface System -->
-    <Script file="interface/simple_options.lua"/>
-    <!-- Complex interface disabled for now
+    <Script file="interface/design.lua"/>
     <Script file="interface/widgets.lua"/>
     <Script file="interface/tabs.lua"/>
-    <Script file="interface/panels/general.lua"/>
-    <Script file="interface/panels/sounds.lua"/>
-    <Script file="interface/panels/modules.lua"/>
-    <Script file="interface/panels/about.lua"/>
-    <Script file="interface/options.lua"/>
-    -->
+    <Script file="interface/panels/general_new.lua"/>
+    <Script file="interface/panels/sounds_new.lua"/>
+    <Script file="interface/panels/modules_new.lua"/>
+    <Script file="interface/panels/about_new.lua"/>
+    <Script file="interface/options_new.lua"/>
+    <!-- Keep old options as fallback -->
+    <!-- <Script file="interface/options.lua"/> -->
+    <Script file="interface/simple_options.lua"/>
     
     <!-- Feature Modules (loaded at startup, enabled/disabled at runtime) -->
     <Include file="features.xml"/>

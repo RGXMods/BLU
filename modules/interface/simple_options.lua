@@ -10,8 +10,8 @@ function BLU:CreateSimpleOptionsPanel()
     print("|cff05dffaBLU: Creating simple options panel...|r")
     
     -- Create the main panel frame
-    local panel = CreateFrame("Frame", "BLUOptionsPanel")
-    panel.name = "Better Level-Up!"
+    local panel = CreateFrame("Frame", "BLUSimpleOptionsPanel")
+    panel.name = "Better Level-Up! (Simple)"
     
     -- Title
     local title = panel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")

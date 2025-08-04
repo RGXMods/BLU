@@ -106,11 +106,37 @@ SlashCmdList["BLU"] = function(msg)
         return
     end
     
-    -- Use simple options for now
-    if BLU.OpenSimpleOptions then
+    -- Debug what's available
+    if msg == "status" then
+        print("|cff05dffa=== BLU Options Status ===|r")
+        print("OpenOptions:", BLU.OpenOptions and "Available" or "Not found")
+        print("OpenSimpleOptions:", BLU.OpenSimpleOptions and "Available" or "Not found") 
+        print("CreateOptionsPanel:", BLU.CreateOptionsPanel and "Available" or "Not found")
+        print("OptionsPanel:", BLU.OptionsPanel and "Exists" or "Not created")
+        print("Tabs system:", BLU.Tabs and "Loaded" or "Not loaded")
+        print("Widgets system:", BLU.Widgets and "Loaded" or "Not loaded")
+        return
+    end
+    
+    -- Try to force create panel
+    if msg == "create" then
+        if BLU.CreateOptionsPanel then
+            BLU:Print("Force creating options panel...")
+            BLU:CreateOptionsPanel()
+        else
+            BLU:Print("CreateOptionsPanel function not found")
+        end
+        return
+    end
+    
+    -- Use new tabbed options panel
+    if BLU.OpenOptions then
+        BLU:Print("|cff00ff00Opening tabbed options panel...|r")
+        BLU:OpenOptions()
+    elseif BLU.OpenSimpleOptions then
         BLU:Print("|cff00ff00Opening simple options panel (Build: 2025-08-04)|r")
         BLU:OpenSimpleOptions()
     else
-        BLU:Print("Options panel not available")
+        BLU:Print("Options panel not available - try /blu status for info")
     end
 end

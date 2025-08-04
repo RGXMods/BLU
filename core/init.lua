@@ -23,8 +23,10 @@ BLU:RegisterEvent("ADDON_LOADED", function(event, addon)
     local initOrder = {
         "database",      -- Has Init()
         "localization",  -- Has Init()
+        "sharedmedia",   -- Has Init() - external sound detection
         "registry",      -- Has Init()
-        "loader"         -- Has Init()
+        "loader",        -- Has Init()
+        "options_new"    -- New UI system
         -- "config" and "utils" don't have Init()
         -- "events" is loaded but doesn't need Init()
     }
@@ -44,10 +46,10 @@ BLU:RegisterEvent("ADDON_LOADED", function(event, addon)
     for _, moduleName in ipairs(initOrder) do
         local module = BLU.Modules[moduleName]
         if module and module.Init then
-            print("|cff05dffaBLU Initializing module: " .. moduleName .. "|r")
+            -- print("|cff05dffaBLU Initializing module: " .. moduleName .. "|r")
             module:Init()
         else
-            print("|cffff0000BLU Module not found or has no Init: " .. moduleName .. "|r")
+            BLU:PrintDebug("Module not found or has no Init: " .. moduleName)
         end
     end
     
@@ -56,12 +58,13 @@ BLU:RegisterEvent("ADDON_LOADED", function(event, addon)
         BLU:LoadModulesFromSettings()
     end
     
-    -- Create simple options panel
-    if BLU.CreateSimpleOptionsPanel then
-        BLU:CreateSimpleOptionsPanel()
-    else
-        print("|cffff0000BLU: CreateSimpleOptionsPanel not found!|r")
-    end
+    -- Create simple options panel as backup - disabled for new UI
+    -- C_Timer.After(1, function()
+    --     if BLU.CreateSimpleOptionsPanel and not BLU.OptionsPanel then
+    --         BLU:PrintDebug("Creating simple options panel as backup")
+    --         BLU:CreateSimpleOptionsPanel()
+    --     end
+    -- end)
     
     BLU:PrintDebug("BLU initialized successfully")
     BLU.isInitialized = true
@@ -72,7 +75,7 @@ BLU:RegisterEvent("PLAYER_LOGIN", function()
     if BLU.db and BLU.db.profile and BLU.db.profile.showWelcomeMessage then
         BLU:Print("v" .. (BLU.version or "Unknown") .. " loaded! Type |cff05dffa/blu|r for options")
         BLU:Print("Join our community at |cffffd700discord.gg/rgxmods|r")
-        BLU:Print("|cff00ff00Build: 2025-08-04 - Simple options panel active|r")
+        BLU:Print("|cff00ff00Build: 2025-08-04 - New UI active|r")
     end
 end)
 

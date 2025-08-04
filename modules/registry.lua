@@ -163,6 +163,20 @@ end
 
 -- Play sound for a specific event category
 function SoundRegistry:PlayCategorySound(category, forceSound)
+    -- Get selected sound for category
+    local selectedSound = forceSound
+    if not selectedSound and BLU.db and BLU.db.profile and BLU.db.profile.selectedSounds then
+        selectedSound = BLU.db.profile.selectedSounds[category]
+    end
+    
+    -- Check if it's an external sound
+    if selectedSound and selectedSound:match("^external:") then
+        local externalName = selectedSound:gsub("^external:", "")
+        if BLU.PlayExternalSound then
+            return BLU:PlayExternalSound(externalName)
+        end
+    end
+    
     -- Check if random sounds are enabled
     if BLU.db and BLU.db.profile and BLU.db.profile.randomSounds then
         -- Get all sounds for this category
@@ -179,14 +193,9 @@ function SoundRegistry:PlayCategorySound(category, forceSound)
         end
     else
         -- Use selected sound for category
-        local selectedGame = forceSound
-        if not selectedGame and BLU.db and BLU.db.profile and BLU.db.profile.selectedSounds then
-            selectedGame = BLU.db.profile.selectedSounds[category]
-        end
-        
-        if selectedGame and selectedGame ~= "default" then
+        if selectedSound and selectedSound ~= "default" and not selectedSound:match("^external:") then
             -- Build sound ID from game + category
-            local soundId = selectedGame .. "_" .. category
+            local soundId = selectedSound .. "_" .. category
             
             -- Try to play the sound
             if self.sounds[soundId] then
@@ -194,7 +203,7 @@ function SoundRegistry:PlayCategorySound(category, forceSound)
             else
                 BLU:PrintDebug("Sound not found: " .. soundId)
             end
-        elseif selectedGame == "default" then
+        elseif selectedSound == "default" then
             -- Play default WoW sound if available
             return self:PlayDefaultSound(category)
         end

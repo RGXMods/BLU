@@ -9,41 +9,33 @@ local FinalFantasy = {}
 -- Sound definitions
 FinalFantasy.sounds = {
     -- Victory Fanfare
-    finalfantasy_victory = {
+    finalfantasy_levelup = {
         name = "Final Fantasy - Victory Fanfare",
-        file = "Interface\\AddOns\\BLU\\sounds\\FinalFantasy\\victory.ogg",
+        file = "Interface\\AddOns\\BLU\\media\\sounds\\finalfantasy\\victory.ogg",
         duration = 3.5,
         category = "levelup"
     },
     
-    -- Level Up
-    finalfantasy_levelup = {
-        name = "Final Fantasy - Level Up",
-        file = "Interface\\AddOns\\BLU\\sounds\\FinalFantasy\\levelup.ogg",
-        duration = 2.0,
-        category = "levelup"
-    },
-    
     -- Item Get
-    finalfantasy_itemget = {
+    finalfantasy_quest = {
         name = "Final Fantasy - Item Get",
-        file = "Interface\\AddOns\\BLU\\sounds\\FinalFantasy\\itemget.ogg",
+        file = "Interface\\AddOns\\BLU\\media\\sounds\\finalfantasy\\itemget.ogg",
         duration = 1.5,
         category = "quest"
     },
     
     -- Save Complete
-    finalfantasy_save = {
+    finalfantasy_achievement = {
         name = "Final Fantasy - Save Complete",
-        file = "Interface\\AddOns\\BLU\\sounds\\FinalFantasy\\save.ogg",
+        file = "Interface\\AddOns\\BLU\\media\\sounds\\finalfantasy\\save.ogg",
         duration = 1.0,
         category = "achievement"
     },
     
     -- Crystal Theme
-    finalfantasy_crystal = {
+    finalfantasy_reputation = {
         name = "Final Fantasy - Crystal Theme",
-        file = "Interface\\AddOns\\BLU\\sounds\\FinalFantasy\\crystal.ogg",
+        file = "Interface\\AddOns\\BLU\\media\\sounds\\finalfantasy\\crystal.ogg",
         duration = 4.0,
         category = "reputation"
     }
@@ -66,6 +58,10 @@ function FinalFantasy:Cleanup()
         BLU:UnregisterSound(soundId)
     end
 end
+
+-- Register module
+BLU.Modules = BLU.Modules or {}
+BLU.Modules["FinalFantasy"] = FinalFantasy
 
 -- Export module
 return FinalFantasy

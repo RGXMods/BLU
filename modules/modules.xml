@@ -1,0 +1,24 @@
+<!-- BLU Modules -->
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+    <!-- Core Modules (Always loaded) -->
+    <Script file="localization.lua"/>
+    <Script file="config.lua"/>
+    <Script file="utils.lua"/>
+    <Script file="registry.lua"/>
+    <Script file="loader.lua"/>
+    
+    <!-- Interface System -->
+    <Script file="interface/simple_options.lua"/>
+    <!-- Complex interface disabled for now
+    <Script file="interface/widgets.lua"/>
+    <Script file="interface/tabs.lua"/>
+    <Script file="interface/panels/general.lua"/>
+    <Script file="interface/panels/sounds.lua"/>
+    <Script file="interface/panels/modules.lua"/>
+    <Script file="interface/panels/about.lua"/>
+    <Script file="interface/options.lua"/>
+    -->
+    
+    <!-- Feature Modules (loaded at startup, enabled/disabled at runtime) -->
+    <Include file="features.xml"/>
+</Ui>

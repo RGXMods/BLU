@@ -20,17 +20,19 @@ end
 
 -- Level up event handler
 function LevelUp:OnLevelUp(event, level)
-    if not BLU.db.profile.enableLevelUp then return end
+    if not BLU.db.profile.enabled then return end
     
-    local soundName = BLU.db.profile.levelUpSound
-    local volume = BLU.db.profile.levelUpVolume * BLU.db.profile.masterVolume
+    -- Play level up sound for this category
+    BLU:PlayCategorySound("levelup")
     
-    BLU:PlaySound(soundName, volume)
-    
-    if BLU.debugMode then
+    if BLU.db.profile.debugMode then
         BLU:Print(string.format("%s %d", BLU:Loc("LEVEL_UP"), level))
     end
 end
+
+-- Register module
+BLU.Modules = BLU.Modules or {}
+BLU.Modules["LevelUp"] = LevelUp
 
 -- Export module
 return LevelUp

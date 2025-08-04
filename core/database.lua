@@ -6,55 +6,45 @@
 local addonName, addonTable = ...
 local Database = {}
 
+-- Remove loading message - not needed
+
 -- Default settings
 Database.defaults = {
     -- General
+    enabled = true,
     showWelcomeMessage = true,
     debugMode = false,
-    masterVolume = 0.5,
+    soundVolume = 100,
     soundChannel = "Master",
+    randomSounds = false,
     
-    -- Features
-    enableLevelUp = true,
-    enableAchievement = true,
-    enableReputation = true,
-    enableQuest = true,
-    enableBattlePet = true,
-    enableDelveCompanion = true,
-    enableHonorRank = true,
-    enableRenownRank = true,
-    enableTradingPost = true,
-    
-    -- Sounds
-    levelUpSound = "None",
-    achievementSound = "None",
-    reputationSound = "None",
-    questAcceptSound = "None",
-    questTurnInSound = "None",
-    battlePetSound = "None",
-    delveCompanionSound = "None",
-    honorRankSound = "None",
-    renownRankSound = "None",
-    tradingPostSound = "None",
-    
-    -- Volumes
-    levelUpVolume = 1.0,
-    achievementVolume = 1.0,
-    reputationVolume = 1.0,
-    questVolume = 1.0,
-    battlePetVolume = 1.0,
-    delveCompanionVolume = 1.0,
-    honorRankVolume = 1.0,
-    renownRankVolume = 1.0,
-    tradingPostVolume = 1.0
+    -- Selected sounds per category
+    selectedSounds = {
+        levelup = "default",
+        achievement = "default",
+        reputation = "default",
+        quest = "default",
+        battlepet = "default",
+        delvecompanion = "default",
+        honorrank = "default",
+        renownrank = "default",
+        tradingpost = "default"
+    }
 }
 
 -- Initialize database
 function Database:Init()
-    -- Wait for saved variables to load
-    BLU:RegisterEvent("VARIABLES_LOADED", function()
+    BLU:PrintDebug("Initializing database module")
+    -- Check if variables are already loaded
+    if C_AddOns.IsAddOnLoaded(addonName) then
+        -- Variables should be available now
         self:LoadSavedVariables()
-    end)
+    else
+        -- Wait for saved variables to load
+        BLU:RegisterEvent("VARIABLES_LOADED", function()
+            self:LoadSavedVariables()
+        end)
+    end
 end
 
 -- Load saved variables
@@ -77,11 +67,13 @@ function Database:LoadSavedVariables()
         end
     end
     
-    -- Create easy access
-    BLU.db = BLUDB.profiles[BLUDB.currentProfile]
+    -- Create easy access with profile structure
+    BLU.db = {
+        profile = BLUDB.profiles[BLUDB.currentProfile]
+    }
     
     -- Merge with defaults (in case new settings were added)
-    self:MergeDefaults(BLU.db, self.defaults)
+    self:MergeDefaults(BLU.db.profile, self.defaults)
     
     BLU:PrintDebug("Database loaded: " .. BLUDB.currentProfile)
 end
@@ -96,7 +88,7 @@ end
 function Database:ResetProfile()
     local profile = BLUDB.currentProfile
     BLUDB.profiles[profile] = self:CopyTable(self.defaults)
-    BLU.db = BLUDB.profiles[profile]
+    BLU.db.profile = BLUDB.profiles[profile]
     BLU:Print("Profile reset to defaults")
 end
 
@@ -107,7 +99,7 @@ function Database:CreateProfile(name)
         return false
     end
     
-    BLUDB.profiles[name] = self:CopyTable(BLU.db)
+    BLUDB.profiles[name] = self:CopyTable(BLU.db.profile)
     BLU:Print("Profile created: " .. name)
     return true
 end
@@ -137,7 +129,7 @@ function Database:SetProfile(name)
     end
     
     BLUDB.currentProfile = name
-    BLU.db = BLUDB.profiles[name]
+    BLU.db.profile = BLUDB.profiles[name]
     
     -- Notify modules of profile change
     BLU:FireEvent("BLU_PROFILE_CHANGED", name)
@@ -210,6 +202,14 @@ end
 function BLU:SaveSettings()
     Database:Save()
 end
+
+function BLU:ResetSettings()
+    Database:ResetProfile()
+end
+
+-- Register module
+BLU.Modules = BLU.Modules or {}
+BLU.Modules["database"] = Database
 
 -- Export
 BLU.Database = Database

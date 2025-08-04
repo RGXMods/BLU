@@ -5,6 +5,7 @@
 
 local addonName, addonTable = ...
 local Utils = {}
+BLU.Modules["utils"] = Utils
 
 -- Sound queue for managing multiple sounds
 Utils.soundQueue = {}

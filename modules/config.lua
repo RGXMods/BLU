@@ -5,6 +5,7 @@
 
 local addonName, addonTable = ...
 local Config = {}
+BLU.Modules["config"] = Config
 
 -- Default configuration
 Config.defaults = {
@@ -69,13 +70,17 @@ end
 
 -- Initialize database
 function Config:InitializeDatabase()
-    local AceDB = LibStub("AceDB-3.0")
-    BLU.db = AceDB:New("BLUDB", self.defaults, true)
-    
-    -- Handle profile changes
-    BLU.db.RegisterCallback(self, "OnProfileChanged", "OnProfileChanged")
-    BLU.db.RegisterCallback(self, "OnProfileCopied", "OnProfileChanged")
-    BLU.db.RegisterCallback(self, "OnProfileReset", "OnProfileChanged")
+    -- Use the custom database system instead of AceDB
+    if BLU.Database then
+        BLU.db = BLU.Database:New("BLUDB", self.defaults)
+    else
+        -- Fallback to simple saved variables
+        BLUDB = BLUDB or {}
+        BLU.db = {
+            profile = BLUDB.profile or CopyTable(self.defaults.profile)
+        }
+        BLUDB.profile = BLU.db.profile
+    end
 end
 
 -- Profile changed handler
@@ -146,29 +151,37 @@ end
 
 -- Export/Import functionality
 function Config:ExportSettings()
-    local AceSerializer = LibStub("AceSerializer-3.0")
-    local LibDeflate = LibStub("LibDeflate")
-    
+    -- Simple export without compression for now
     local settings = BLU.db.profile
-    local serialized = AceSerializer:Serialize(settings)
-    local compressed = LibDeflate:CompressDeflate(serialized)
-    local encoded = LibDeflate:EncodeForPrint(compressed)
-    
-    return encoded
+    -- Convert to string representation
+    local str = "BLU_SETTINGS:"
+    for k, v in pairs(settings) do
+        if type(v) == "string" or type(v) == "number" or type(v) == "boolean" then
+            str = str .. k .. "=" .. tostring(v) .. ";"
+        end
+    end
+    return str
 end
 
 function Config:ImportSettings(importString)
-    local AceSerializer = LibStub("AceSerializer-3.0")
-    local LibDeflate = LibStub("LibDeflate")
+    -- Simple import for now
+    if not importString:match("^BLU_SETTINGS:") then
+        return false, "Invalid import string"
+    end
     
-    local decoded = LibDeflate:DecodeForPrint(importString)
-    if not decoded then return false, "Invalid import string" end
-    
-    local decompressed = LibDeflate:DecompressDeflate(decoded)
-    if not decompressed then return false, "Failed to decompress" end
-    
-    local success, settings = AceSerializer:Deserialize(decompressed)
-    if not success then return false, "Failed to deserialize" end
+    -- Parse settings
+    local settings = {}
+    for k, v in importString:gmatch("(%w+)=([^;]+);") do
+        if v == "true" then
+            settings[k] = true
+        elseif v == "false" then
+            settings[k] = false
+        elseif tonumber(v) then
+            settings[k] = tonumber(v)
+        else
+            settings[k] = v
+        end
+    end
     
     -- Apply imported settings
     for key, value in pairs(settings) do
@@ -176,7 +189,9 @@ function Config:ImportSettings(importString)
     end
     
     self:ApplySettings()
-    BLU:ReloadAllModules()
+    if BLU.ReloadAllModules then
+        BLU:ReloadAllModules()
+    end
     
     return true
 end

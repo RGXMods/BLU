@@ -120,5 +120,9 @@ function RenownRank:PlayRenownSound()
     BLU:PlaySound(soundName, volume)
 end
 
+-- Register module
+BLU.Modules = BLU.Modules or {}
+BLU.Modules["RenownRank"] = RenownRank
+
 -- Export module
 return RenownRank

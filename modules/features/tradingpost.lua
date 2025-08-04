@@ -72,5 +72,9 @@ function TradingPost:PlayTradingPostSound()
     BLU:PlaySound(soundName, volume)
 end
 
+-- Register module
+BLU.Modules = BLU.Modules or {}
+BLU.Modules["TradingPost"] = TradingPost
+
 -- Export module
 return TradingPost

@@ -106,5 +106,9 @@ function HonorRank:PlayHonorSound()
     BLU:PlaySound(soundName, volume)
 end
 
+-- Register module
+BLU.Modules = BLU.Modules or {}
+BLU.Modules["HonorRank"] = HonorRank
+
 -- Export module
 return HonorRank

@@ -3,6 +3,13 @@
 -- Our own lightweight addon framework (no external dependencies)
 --=====================================================================================
 
+-- Early print function with icon
+local function BluPrint(msg)
+    print("|TInterface\\AddOns\\BLU\\media\\images\\icon:16:16|t |cff05dffa[BLU]|r " .. msg)
+end
+
+-- Remove redundant loading message
+
 local addonName, addonTable = ...
 
 -- Create the main addon object
@@ -12,18 +19,20 @@ BLU = {
     author = C_AddOns.GetAddOnMetadata(addonName, "Author"),
     
     -- Core tables
-    modules = {},
+    Modules = {},
     events = {},
     hooks = {},
     timers = {},
     
     -- Settings
-    debugMode = false,
+    debugMode = true,  -- Enable debug for now
     isInitialized = false
 }
 
 -- Make globally accessible
 _G[addonName] = BLU
+
+-- Framework loaded
 
 --=====================================================================================
 -- Event System
@@ -178,11 +187,14 @@ function BLU:RegisterSlashCommand(command, callback)
     -- Support multiple commands
     local commands = type(command) == "table" and command or {command}
     
+    -- Use a unique identifier for this addon's commands
+    local cmdName = addonName .. "CMD"
+    
     for i, cmd in ipairs(commands) do
-        _G["SLASH_" .. addonName .. i] = "/" .. cmd
+        _G["SLASH_" .. cmdName .. i] = "/" .. cmd
     end
     
-    SlashCmdList[addonName] = callback
+    SlashCmdList[cmdName] = callback
 end
 
 --=====================================================================================
@@ -191,7 +203,7 @@ end
 
 -- Print message
 function BLU:Print(message)
-    local prefix = "|cff05dffa[BLU]|r"
+    local prefix = "|TInterface\\AddOns\\BLU\\media\\images\\icon:16:16|t |cff05dffa[BLU]|r"
     print(prefix .. " " .. message)
 end
 
@@ -215,7 +227,7 @@ end
 
 -- Register module
 function BLU:RegisterModule(name, module)
-    self.modules[name] = module
+    self.Modules[name] = module
     
     -- Call module init if exists
     if module.Init then
@@ -227,56 +239,8 @@ end
 
 -- Get module
 function BLU:GetModule(name)
-    return self.modules[name]
+    return self.Modules[name]
 end
-
---=====================================================================================
--- Initialization
---=====================================================================================
-
--- Initialize addon
-function BLU:Initialize()
-    -- Load saved variables
-    self:LoadSettings()
-    
-    -- Register base events
-    self:RegisterEvent("ADDON_LOADED", function(event, addon)
-        if addon == addonName then
-            self:OnAddonLoaded()
-        end
-    end)
-    
-    self:RegisterEvent("PLAYER_LOGIN", function()
-        self:OnPlayerLogin()
-    end)
-    
-    self:RegisterEvent("PLAYER_LOGOUT", function()
-        self:SaveSettings()
-    end)
-end
-
--- Addon loaded
-function BLU:OnAddonLoaded()
-    -- Initialize modules
-    self:InitializeModules()
-    
-    -- Register slash commands
-    self:RegisterSlashCommand({"blu", "betterup"}, function(input)
-        self:HandleSlashCommand(input)
-    end)
-    
-    self.isInitialized = true
-end
-
--- Player login
-function BLU:OnPlayerLogin()
-    if self.db and self.db.showWelcomeMessage then
-        self:Print("v" .. self.version .. " loaded. Type /blu for options.")
-    end
-end
-
--- Initialize
-BLU:Initialize()
 
 -- Export
 return BLU

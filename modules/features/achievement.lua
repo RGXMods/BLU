@@ -20,19 +20,21 @@ end
 
 -- Achievement earned event handler
 function Achievement:OnAchievementEarned(event, achievementID, alreadyEarned)
-    if not BLU.db.profile.enableAchievement then return end
+    if not BLU.db.profile.enabled then return end
     if alreadyEarned then return end
     
-    local soundName = BLU.db.profile.achievementSound
-    local volume = BLU.db.profile.achievementVolume * BLU.db.profile.masterVolume
+    -- Play achievement sound for this category
+    BLU:PlayCategorySound("achievement")
     
-    BLU:PlaySound(soundName, volume)
-    
-    if BLU.debugMode then
+    if BLU.db.profile.debugMode then
         local _, name = GetAchievementInfo(achievementID)
         BLU:Print(string.format("%s: %s", BLU:Loc("ACHIEVEMENT_EARNED"), name or BLU:Loc("UNKNOWN")))
     end
 end
+
+-- Register module
+BLU.Modules = BLU.Modules or {}
+BLU.Modules["Achievement"] = Achievement
 
 -- Export module
 return Achievement

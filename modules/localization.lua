@@ -6,6 +6,9 @@
 local addonName, addonTable = ...
 local Localization = {}
 
+-- Register module
+BLU.Modules["localization"] = Localization
+
 -- Get current locale
 local locale = GetLocale()
 

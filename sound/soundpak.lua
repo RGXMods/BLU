@@ -7,7 +7,7 @@ local addonName, addonTable = ...
 local SoundPakBridge = {}
 
 -- LibSharedMedia integration
-local LSM = LibStub("LibSharedMedia-3.0", true)
+local LSM = LibStub and LibStub("LibSharedMedia-3.0", true) or nil
 
 -- SoundPak registry
 SoundPakBridge.registeredPaks = {}

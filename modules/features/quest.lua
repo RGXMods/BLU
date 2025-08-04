@@ -29,14 +29,12 @@ end
 
 -- Quest accepted handler
 function Quest:OnQuestAccepted(event, questId)
-    if not BLU.db.profile.enableQuest then return end
+    if not BLU.db.profile.enabled then return end
     
-    local soundName = BLU.db.profile.questAcceptSound
-    local volume = BLU.db.profile.questVolume * BLU.db.profile.masterVolume
+    -- Optionally play quest accept sound if configured
+    -- For now, we focus on quest completion
     
-    BLU:PlaySound(soundName, volume)
-    
-    if BLU.debugMode then
+    if BLU.db.profile.debugMode then
         local questTitle = C_QuestLog.GetTitleForQuestID(questId) or "Unknown Quest"
         BLU:Print(string.format("Quest accepted: %s", questTitle))
     end
@@ -44,14 +42,12 @@ end
 
 -- Quest turned in handler
 function Quest:OnQuestTurnedIn(event, questId, xpReward, moneyReward)
-    if not BLU.db.profile.enableQuest then return end
+    if not BLU.db.profile.enabled then return end
     
-    local soundName = BLU.db.profile.questTurnInSound
-    local volume = BLU.db.profile.questVolume * BLU.db.profile.masterVolume
+    -- Play quest completion sound
+    BLU:PlayCategorySound("quest")
     
-    BLU:PlaySound(soundName, volume)
-    
-    if BLU.debugMode then
+    if BLU.db.profile.debugMode then
         local questTitle = C_QuestLog.GetTitleForQuestID(questId) or "Unknown Quest"
         BLU:Print(string.format("Quest completed: %s", questTitle))
     end
@@ -67,6 +63,10 @@ function Quest:OnQuestComplete(event)
         self.atQuestGiver = false
     end)
 end
+
+-- Register module
+BLU.Modules = BLU.Modules or {}
+BLU.Modules["Quest"] = Quest
 
 -- Export module
 return Quest

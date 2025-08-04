@@ -122,5 +122,9 @@ function BattlePet:CheckPetLevels()
     end
 end
 
+-- Register module
+BLU.Modules = BLU.Modules or {}
+BLU.Modules["BattlePet"] = BattlePet
+
 -- Export module
 return BattlePet

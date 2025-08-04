@@ -1,8 +1,13 @@
 <!-- BLU Core Systems -->
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
-    <!-- Framework must load first -->
+    <!-- Framework must load first to create BLU global -->
     <Script file="framework.lua"/>
     <Script file="database.lua"/>
+    
+    <!-- Core systems -->
+    <Script file="addon.lua"/>
+    <Script file="events.lua"/>
+    <Script file="commands.lua"/>
     
     <!-- Core initialization -->
     <Script file="init.lua"/>

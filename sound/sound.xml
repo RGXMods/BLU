@@ -4,8 +4,7 @@
     <Script file="soundpak.lua"/>
     <Script file="browser.lua"/>
     
-    <!-- Sound packs are loaded dynamically -->
-    <!-- <Script file="packs/finalfantasy.lua"/> -->
-    <!-- <Script file="packs/zelda.lua"/> -->
-    <!-- etc... -->
+    <!-- Sound packs - loaded but initialized on demand -->
+    <Script file="packs/wowdefault.lua"/>
+    <Script file="packs/finalfantasy.lua"/>
 </Ui>

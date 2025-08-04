@@ -1,189 +1,265 @@
 --=====================================================================================
--- BLU Game Sound Browser Module
--- Provides access to in-game WoW sound files
+-- BLU Sound Browser Module
+-- Provides UI for browsing and previewing all sounds
 --=====================================================================================
 
-local addonName, addonTable = ...
-local GameSoundBrowser = {}
+local addonName, BLU = ...
+local SoundBrowser = {}
 
--- Sound categories from WoW game files
-GameSoundBrowser.categories = {
-    -- Interface sounds
-    interface = {
-        name = "Interface Sounds",
-        sounds = {
-            ["Sound\\Interface\\LevelUp.ogg"] = "Level Up",
-            ["Sound\\Interface\\QuestActivate.ogg"] = "Quest Accept",
-            ["Sound\\Interface\\QuestComplete.ogg"] = "Quest Complete",
-            ["Sound\\Interface\\AchievementSound.ogg"] = "Achievement",
-            ["Sound\\Interface\\RaidWarning.ogg"] = "Raid Warning",
-            ["Sound\\Interface\\ReadyCheck.ogg"] = "Ready Check",
-            ["Sound\\Interface\\PvPFlagTaken.ogg"] = "PvP Flag Taken",
-            ["Sound\\Interface\\PvPVictory.ogg"] = "PvP Victory",
-            ["Sound\\Interface\\ItemRepair.ogg"] = "Item Repair",
-            ["Sound\\Interface\\GuildBankOpen.ogg"] = "Guild Bank Open",
-            ["Sound\\Interface\\MapPing.ogg"] = "Map Ping",
-            ["Sound\\Interface\\FriendJoin.ogg"] = "Friend Online"
-        }
-    },
-    
-    -- Spell sounds
-    spells = {
-        name = "Spell Sounds",
-        sounds = {
-            ["Sound\\Spells\\LevelUp.ogg"] = "Spell Level Up",
-            ["Sound\\Spells\\Achievement_Reward.ogg"] = "Achievement Reward",
-            ["Sound\\Spells\\GainExperience.ogg"] = "Gain Experience",
-            ["Sound\\Spells\\Tradeskills\\LevelUp.ogg"] = "Profession Level Up",
-            ["Sound\\Spells\\Valentine_Achievement.ogg"] = "Special Achievement",
-            ["Sound\\Spells\\Achievement_Boss_Kill.ogg"] = "Boss Kill",
-            ["Sound\\Spells\\PvP_Alliance_Wins.ogg"] = "Alliance Victory",
-            ["Sound\\Spells\\PvP_Horde_Wins.ogg"] = "Horde Victory"
-        }
-    },
-    
-    -- Creature sounds
-    creatures = {
-        name = "Creature Sounds",
-        sounds = {
-            ["Sound\\Creature\\Blingtron5000\\VO_60_Blingtron_5000_01.ogg"] = "Blingtron Hello",
-            ["Sound\\Creature\\HeadlessHorseman\\Horseman_Laugh_01.ogg"] = "Headless Horseman Laugh",
-            ["Sound\\Creature\\Illidan\\BLACK_Illidan_04.ogg"] = "You Are Not Prepared",
-            ["Sound\\Creature\\Peon\\PeonYes1.ogg"] = "Work Work",
-            ["Sound\\Creature\\Murloc\\MurlocAggro.ogg"] = "Murloc Aggro"
-        }
-    },
-    
-    -- Music stingers
-    music = {
-        name = "Music Stingers",
-        sounds = {
-            ["Sound\\Music\\Events\\Event_DalaranKarazhan.ogg"] = "Dalaran Kharazan",
-            ["Sound\\Music\\Events\\Event_DeathKnightStart.ogg"] = "Death Knight Start",
-            ["Sound\\Music\\Events\\Event_DemonHunterStart.ogg"] = "Demon Hunter Start",
-            ["Sound\\Music\\Events\\Event_GarrisonAlliance.ogg"] = "Garrison Alliance",
-            ["Sound\\Music\\Events\\Event_GarrisonHorde.ogg"] = "Garrison Horde",
-            ["Sound\\Music\\Events\\Event_Tournament.ogg"] = "Tournament Fanfare"
-        }
-    },
-    
-    -- Zone music
-    zones = {
-        name = "Zone Music",
-        sounds = {
-            ["Sound\\Music\\Zone\\Stormwind\\Stormwind01.ogg"] = "Stormwind Theme",
-            ["Sound\\Music\\Zone\\Orgrimmar\\Orgrimmar01.ogg"] = "Orgrimmar Theme",
-            ["Sound\\Music\\Zone\\IronForge\\IronForge01.ogg"] = "Ironforge Theme",
-            ["Sound\\Music\\Zone\\Dalaran\\Dalaran01.ogg"] = "Dalaran Theme",
-            ["Sound\\Music\\Zone\\Elwynn\\ElwynnForest01.ogg"] = "Elwynn Forest"
-        }
-    }
-}
+-- Browser frame reference
+local browserFrame = nil
 
--- Popular sounds for quick access
-GameSoundBrowser.popularSounds = {
-    {id = "game_levelup", path = "Sound\\Interface\\LevelUp.ogg", name = "WoW - Level Up"},
-    {id = "game_achievement", path = "Sound\\Interface\\AchievementSound.ogg", name = "WoW - Achievement"},
-    {id = "game_questcomplete", path = "Sound\\Interface\\QuestComplete.ogg", name = "WoW - Quest Complete"},
-    {id = "game_pvpvictory", path = "Sound\\Interface\\PvPVictory.ogg", name = "WoW - PvP Victory"},
-    {id = "game_readycheck", path = "Sound\\Interface\\ReadyCheck.ogg", name = "WoW - Ready Check"},
-    {id = "game_raidwarning", path = "Sound\\Interface\\RaidWarning.ogg", name = "WoW - Raid Warning"},
-    {id = "game_murloc", path = "Sound\\Creature\\Murloc\\MurlocAggro.ogg", name = "WoW - Murloc"},
-    {id = "game_notprepared", path = "Sound\\Creature\\Illidan\\BLACK_Illidan_04.ogg", name = "WoW - Not Prepared"}
-}
-
--- Initialize game sound browser
-function GameSoundBrowser:Init()
-    -- Register popular sounds with BLU
-    for _, sound in ipairs(self.popularSounds) do
-        local soundData = {
-            name = sound.name,
-            file = sound.path,
-            duration = 2.0,
-            category = "game",
-            source = "wow"
-        }
-        BLU:RegisterSound(sound.id, soundData)
+-- Initialize browser
+function SoundBrowser:Init()
+    BLU.OpenSoundBrowser = function()
+        self:Open()
     end
     
-    BLU:PrintDebug("Game Sound Browser initialized with " .. #self.popularSounds .. " popular sounds")
+    BLU:PrintDebug("Sound Browser initialized")
 end
 
--- Search for game sounds
-function GameSoundBrowser:SearchSounds(query)
-    local results = {}
-    query = query:lower()
+-- Create browser frame
+function SoundBrowser:CreateFrame()
+    if browserFrame then return browserFrame end
     
-    for categoryId, category in pairs(self.categories) do
-        for path, name in pairs(category.sounds) do
-            if name:lower():find(query) or path:lower():find(query) then
-                table.insert(results, {
-                    path = path,
-                    name = name,
-                    category = category.name
-                })
+    -- Main frame
+    browserFrame = CreateFrame("Frame", "BLUSoundBrowser", UIParent, "BasicFrameTemplateWithInset")
+    browserFrame:SetSize(700, 500)
+    browserFrame:SetPoint("CENTER")
+    browserFrame:SetMovable(true)
+    browserFrame:EnableMouse(true)
+    browserFrame:SetClampedToScreen(true)
+    browserFrame:RegisterForDrag("LeftButton")
+    browserFrame:SetScript("OnDragStart", browserFrame.StartMoving)
+    browserFrame:SetScript("OnDragStop", browserFrame.StopMovingOrSizing)
+    browserFrame:Hide()
+    
+    -- Title
+    browserFrame.TitleText:SetText("BLU Sound Browser")
+    
+    -- Category dropdown
+    local categoryDropdown = CreateFrame("Frame", "BLUSoundBrowserCategory", browserFrame, "UIDropDownMenuTemplate")
+    categoryDropdown:SetPoint("TOPLEFT", browserFrame.InsetBg, "TOPLEFT", 0, -10)
+    UIDropDownMenu_SetWidth(categoryDropdown, 150)
+    
+    -- Search box
+    local searchBox = CreateFrame("EditBox", nil, browserFrame, "SearchBoxTemplate")
+    searchBox:SetSize(200, 20)
+    searchBox:SetPoint("LEFT", categoryDropdown, "RIGHT", 10, 3)
+    searchBox:SetMaxLetters(50)
+    searchBox:SetScript("OnTextChanged", function(self)
+        SearchBoxTemplate_OnTextChanged(self)
+        SoundBrowser:UpdateList()
+    end)
+    
+    -- Scroll frame
+    local scrollFrame = CreateFrame("ScrollFrame", nil, browserFrame, "UIPanelScrollFrameTemplate")
+    scrollFrame:SetPoint("TOPLEFT", browserFrame.InsetBg, "TOPLEFT", 5, -50)
+    scrollFrame:SetPoint("BOTTOMRIGHT", browserFrame.InsetBg, "BOTTOMRIGHT", -26, 40)
+    
+    -- Content frame
+    local content = CreateFrame("Frame", nil, scrollFrame)
+    content:SetSize(650, 1)
+    scrollFrame:SetScrollChild(content)
+    browserFrame.content = content
+    
+    -- Sound buttons container
+    browserFrame.soundButtons = {}
+    
+    -- Currently playing indicator
+    local nowPlaying = browserFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    nowPlaying:SetPoint("BOTTOMLEFT", browserFrame.InsetBg, "BOTTOMLEFT", 10, 10)
+    nowPlaying:SetText("Now Playing: None")
+    browserFrame.nowPlaying = nowPlaying
+    
+    -- Stop button
+    local stopButton = CreateFrame("Button", nil, browserFrame, "UIPanelButtonTemplate")
+    stopButton:SetSize(80, 22)
+    stopButton:SetPoint("BOTTOMRIGHT", browserFrame.InsetBg, "BOTTOMRIGHT", -10, 10)
+    stopButton:SetText("Stop")
+    stopButton:SetScript("OnClick", function()
+        StopSound(0)
+        browserFrame.nowPlaying:SetText("Now Playing: None")
+    end)
+    
+    -- Initialize dropdown
+    UIDropDownMenu_Initialize(categoryDropdown, function(self, level)
+        local categories = {
+            {text = "All Sounds", value = "all"},
+            {text = "Level Up", value = "levelup"},
+            {text = "Achievement", value = "achievement"},
+            {text = "Quest Complete", value = "quest"},
+            {text = "Reputation", value = "reputation"},
+            {text = "Honor Rank", value = "honorrank"},
+            {text = "Renown Rank", value = "renownrank"},
+            {text = "Trading Post", value = "tradingpost"},
+            {text = "Battle Pet", value = "battlepet"},
+            {text = "Delve Companion", value = "delvecompanion"}
+        }
+        
+        for _, category in ipairs(categories) do
+            local info = UIDropDownMenu_CreateInfo()
+            info.text = category.text
+            info.value = category.value
+            info.func = function()
+                UIDropDownMenu_SetText(self, category.text)
+                browserFrame.selectedCategory = category.value
+                SoundBrowser:UpdateList()
             end
+            info.checked = browserFrame.selectedCategory == category.value
+            UIDropDownMenu_AddButton(info)
+        end
+    end)
+    
+    UIDropDownMenu_SetText(categoryDropdown, "All Sounds")
+    browserFrame.selectedCategory = "all"
+    browserFrame.searchBox = searchBox
+    browserFrame.categoryDropdown = categoryDropdown
+    
+    return browserFrame
+end
+
+-- Create sound button
+function SoundBrowser:CreateSoundButton(index)
+    local button = CreateFrame("Button", nil, browserFrame.content)
+    button:SetSize(630, 30)
+    button:SetPoint("TOPLEFT", 0, -(index - 1) * 35)
+    
+    -- Background
+    local bg = button:CreateTexture(nil, "BACKGROUND")
+    bg:SetAllPoints()
+    bg:SetColorTexture(1, 1, 1, 0.05)
+    button.bg = bg
+    
+    -- Highlight
+    button:SetHighlightTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight", "ADD")
+    
+    -- Sound name
+    local name = button:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    name:SetPoint("LEFT", 10, 0)
+    name:SetJustifyH("LEFT")
+    button.name = name
+    
+    -- Category
+    local category = button:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    category:SetPoint("LEFT", 250, 0)
+    category:SetTextColor(0.7, 0.7, 0.7)
+    button.category = category
+    
+    -- Game
+    local game = button:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    game:SetPoint("LEFT", 400, 0)
+    game:SetTextColor(0.7, 0.7, 0.7)
+    button.game = game
+    
+    -- Play button
+    local playBtn = CreateFrame("Button", nil, button)
+    playBtn:SetSize(50, 20)
+    playBtn:SetPoint("RIGHT", -10, 0)
+    playBtn:SetNormalFontObject("GameFontNormalSmall")
+    playBtn:SetHighlightFontObject("GameFontHighlightSmall")
+    playBtn:SetText("Play")
+    button.playBtn = playBtn
+    
+    -- Hover effect
+    button:SetScript("OnEnter", function(self)
+        self.bg:SetColorTexture(1, 1, 1, 0.1)
+    end)
+    
+    button:SetScript("OnLeave", function(self)
+        self.bg:SetColorTexture(1, 1, 1, 0.05)
+    end)
+    
+    return button
+end
+
+-- Update sound list
+function SoundBrowser:UpdateList()
+    if not browserFrame then return end
+    
+    -- Get all sounds
+    local sounds = {}
+    if BLU.Modules and BLU.Modules.registry then
+        sounds = BLU.Modules.registry:GetAllSounds()
+    end
+    
+    local filteredSounds = {}
+    
+    -- Filter by category and search
+    local searchText = browserFrame.searchBox:GetText():lower()
+    local category = browserFrame.selectedCategory
+    
+    for soundId, soundData in pairs(sounds) do
+        local matchesCategory = category == "all" or soundData.category == category
+        local matchesSearch = searchText == "" or 
+                            soundData.name:lower():find(searchText) or 
+                            soundId:lower():find(searchText)
+        
+        if matchesCategory and matchesSearch then
+            table.insert(filteredSounds, {
+                id = soundId,
+                data = soundData
+            })
         end
     end
     
-    return results
-end
-
--- Get all sounds in a category
-function GameSoundBrowser:GetCategorySounds(categoryId)
-    local category = self.categories[categoryId]
-    if not category then return {} end
+    -- Sort by name
+    table.sort(filteredSounds, function(a, b)
+        return a.data.name < b.data.name
+    end)
     
-    local sounds = {}
-    for path, name in pairs(category.sounds) do
-        table.insert(sounds, {
-            path = path,
-            name = name,
-            category = category.name
-        })
+    -- Hide all buttons
+    for _, button in ipairs(browserFrame.soundButtons) do
+        button:Hide()
     end
     
-    return sounds
-end
-
--- Register a game sound with BLU
-function GameSoundBrowser:RegisterGameSound(soundPath, soundName)
-    local soundId = "game_custom_" .. soundName:lower():gsub("%s+", "_")
+    -- Create/update buttons
+    for i, sound in ipairs(filteredSounds) do
+        local button = browserFrame.soundButtons[i]
+        if not button then
+            button = self:CreateSoundButton(i)
+            browserFrame.soundButtons[i] = button
+        end
+        
+        -- Update button data
+        button.name:SetText(sound.data.name)
+        button.category:SetText(sound.data.category or "misc")
+        
+        -- Extract game name from sound ID
+        local gameName = sound.id:match("^(.-)_") or "custom"
+        button.game:SetText(gameName)
+        
+        -- Play button click
+        button.playBtn:SetScript("OnClick", function()
+            StopSound(0)
+            BLU:PlaySound(sound.id)
+            browserFrame.nowPlaying:SetText("Now Playing: " .. sound.data.name)
+        end)
+        
+        button:Show()
+    end
     
-    local soundData = {
-        name = "WoW - " .. soundName,
-        file = soundPath,
-        duration = 2.0,
-        category = "game",
-        source = "wow"
-    }
+    -- Update content height
+    browserFrame.content:SetHeight(math.max(1, #filteredSounds * 35))
+end
+
+-- Open browser
+function SoundBrowser:Open()
+    if not browserFrame then
+        self:CreateFrame()
+    end
     
-    BLU:RegisterSound(soundId, soundData)
-    
-    return soundId
+    self:UpdateList()
+    browserFrame:Show()
 end
 
--- Play preview of game sound
-function GameSoundBrowser:PreviewSound(soundPath)
-    PlaySoundFile(soundPath, "Master")
-end
-
--- Get sound file ID from path (for newer API)
-function GameSoundBrowser:GetSoundKitID(soundPath)
-    -- This would need a lookup table of sound paths to sound kit IDs
-    -- For now, we'll use PlaySoundFile which works with paths
-    return nil
-end
-
--- Create browser UI frame
-function GameSoundBrowser:CreateBrowserFrame()
-    -- This would create a browsable UI for selecting game sounds
-    -- Implementation would include:
-    -- - Category dropdown
-    -- - Search box
-    -- - Sound list with preview buttons
-    -- - Add to BLU button
+-- Close browser
+function SoundBrowser:Close()
+    if browserFrame then
+        browserFrame:Hide()
+    end
 end
 
 -- Export module
-return GameSoundBrowser
+BLU.SoundBrowser = SoundBrowser
+return SoundBrowser

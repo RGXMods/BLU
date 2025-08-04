@@ -77,5 +77,9 @@ function DelveCompanion:PlayDelveSound()
     BLU:PlaySound(soundName, volume)
 end
 
+-- Register module
+BLU.Modules = BLU.Modules or {}
+BLU.Modules["DelveCompanion"] = DelveCompanion
+
 -- Export module
 return DelveCompanion

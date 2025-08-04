@@ -258,7 +258,7 @@ function Options:CreateOptionsPanel()
     panel:SelectTab(1)
     
     -- Add a custom icon check
-    BLU.HasCustomIcon = select(3, GetAddOnInfo(addonName)) ~= nil
+    BLU.HasCustomIcon = select(3, C_AddOns.GetAddOnInfo(addonName)) ~= nil
     
     -- Register the panel
     local category

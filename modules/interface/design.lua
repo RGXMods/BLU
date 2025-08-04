@@ -93,20 +93,20 @@ end
 -- Create styled header
 function BLU.Design:CreateHeader(parent, text, icon)
     local header = CreateFrame("Frame", nil, parent)
-    header:SetHeight(30)
+    header:SetHeight(20)
     
     if icon then
         local iconTex = header:CreateTexture(nil, "ARTWORK")
-        iconTex:SetSize(24, 24)
+        iconTex:SetSize(16, 16)
         iconTex:SetPoint("LEFT", 0, 0)
         iconTex:SetTexture(icon)
         
-        local title = header:CreateFontString(nil, "OVERLAY", self.Fonts.Large)
+        local title = header:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         title:SetPoint("LEFT", iconTex, "RIGHT", 5, 0)
         title:SetText(self.Colors.PrimaryHex .. text .. "|r")
         header.title = title
     else
-        local title = header:CreateFontString(nil, "OVERLAY", self.Fonts.Large)
+        local title = header:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         title:SetPoint("LEFT", 0, 0)
         title:SetText(self.Colors.PrimaryHex .. text .. "|r")
         header.title = title
@@ -115,21 +115,48 @@ function BLU.Design:CreateHeader(parent, text, icon)
     -- Divider line
     local divider = header:CreateTexture(nil, "BACKGROUND")
     divider:SetHeight(1)
-    divider:SetPoint("TOPLEFT", 0, -25)
-    divider:SetPoint("TOPRIGHT", 0, -25)
-    divider:SetColorTexture(unpack(self.Colors.Border))
+    divider:SetPoint("TOPLEFT", 0, -18)
+    divider:SetPoint("TOPRIGHT", 0, -18)
+    divider:SetColorTexture(0.2, 0.2, 0.2, 1)
     
     return header
 end
 
 -- Create styled button
 function BLU.Design:CreateButton(parent, text, width, height)
-    local button = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
-    button:SetSize(width or 120, height or 25)
-    button:SetText(text)
+    local button = CreateFrame("Button", nil, parent)
+    button:SetSize(width or 100, height or 22)
     
-    -- Custom highlight
-    button:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+    -- Button texture
+    button:SetNormalTexture("Interface\\Buttons\\UI-DialogBox-Button-Up")
+    button:SetPushedTexture("Interface\\Buttons\\UI-DialogBox-Button-Down")
+    button:SetHighlightTexture("Interface\\Buttons\\UI-DialogBox-Button-Highlight")
+    
+    local normal = button:GetNormalTexture()
+    normal:SetTexCoord(0, 1, 0, 0.71875)
+    normal:SetVertexColor(0.2, 0.2, 0.2, 1)
+    
+    local pushed = button:GetPushedTexture()
+    pushed:SetTexCoord(0, 1, 0, 0.71875)
+    
+    local highlight = button:GetHighlightTexture()
+    highlight:SetTexCoord(0, 1, 0, 0.71875)
+    highlight:SetVertexColor(0.02, 0.37, 1, 0.3)
+    
+    local textStr = button:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    textStr:SetPoint("CENTER")
+    textStr:SetText(text)
+    button.Text = textStr
+    
+    button:SetScript("OnEnter", function(self)
+        local normal = self:GetNormalTexture()
+        normal:SetVertexColor(0.3, 0.3, 0.3, 1)
+    end)
+    
+    button:SetScript("OnLeave", function(self)
+        local normal = self:GetNormalTexture()
+        normal:SetVertexColor(0.2, 0.2, 0.2, 1)
+    end)
     
     return button
 end
@@ -168,20 +195,33 @@ end
 -- Create section container
 function BLU.Design:CreateSection(parent, title, icon)
     local section = CreateFrame("Frame", nil, parent)
-    self:ApplyBackdrop(section, "Dark", self.Colors.Panel)
+    
+    -- Compact background
+    local bg = section:CreateTexture(nil, "BACKGROUND")
+    bg:SetAllPoints()
+    bg:SetColorTexture(0.03, 0.03, 0.03, 0.6)
+    
+    -- Border
+    local border = CreateFrame("Frame", nil, section, "BackdropTemplate")
+    border:SetAllPoints()
+    border:SetBackdrop({
+        edgeFile = "Interface\\Buttons\\WHITE8x8",
+        edgeSize = 1,
+    })
+    border:SetBackdropBorderColor(0.1, 0.1, 0.1, 1)
     
     if title then
         local header = self:CreateHeader(section, title, icon)
-        header:SetPoint("TOPLEFT", 10, -10)
-        header:SetPoint("TOPRIGHT", -10, -10)
+        header:SetPoint("TOPLEFT", 8, -8)
+        header:SetPoint("TOPRIGHT", -8, -8)
         section.header = header
         section.content = CreateFrame("Frame", nil, section)
-        section.content:SetPoint("TOPLEFT", 10, -45)
-        section.content:SetPoint("BOTTOMRIGHT", -10, 10)
+        section.content:SetPoint("TOPLEFT", 8, -32)
+        section.content:SetPoint("BOTTOMRIGHT", -8, 8)
     else
         section.content = CreateFrame("Frame", nil, section)
-        section.content:SetPoint("TOPLEFT", 10, -10)
-        section.content:SetPoint("BOTTOMRIGHT", -10, 10)
+        section.content:SetPoint("TOPLEFT", 8, -8)
+        section.content:SetPoint("BOTTOMRIGHT", -8, 8)
     end
     
     return section

@@ -37,97 +37,58 @@ function Options:Init()
     end)
 end
 
--- Create preview section
-local function CreatePreviewSection(parent)
-    local preview = CreateFrame("Frame", nil, parent)
-    preview:SetHeight(180)
-    BLU.Design:ApplyBackdrop(preview, "Dark", BLU.Design.Colors.Panel, BLU.Design.Colors.Primary)
-    
-    -- Title
-    local title = preview:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    title:SetPoint("TOP", 0, -10)
-    title:SetText(BLU.Design.Colors.PrimaryHex .. "Sound Preview|r")
-    
-    -- Preview content area
-    local content = CreateFrame("Frame", nil, preview)
-    content:SetPoint("TOPLEFT", 20, -40)
-    content:SetPoint("BOTTOMRIGHT", -20, 60)
-    
-    -- Current sound display
-    local currentLabel = content:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    currentLabel:SetPoint("TOPLEFT", 0, 0)
-    currentLabel:SetText("Currently Playing:")
-    currentLabel:SetTextColor(unpack(BLU.Design.Colors.TextMuted))
-    
-    local currentSound = content:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    currentSound:SetPoint("TOPLEFT", currentLabel, "BOTTOMLEFT", 0, -5)
-    currentSound:SetText("None")
-    preview.currentSound = currentSound
-    
-    -- Test buttons
-    local buttonY = -10
-    local events = {
-        {id = "levelup", text = "Level Up", color = {1, 0.82, 0}},
-        {id = "achievement", text = "Achievement", color = {0.2, 1, 0.2}},
-        {id = "quest", text = "Quest", color = {0.2, 1, 1}},
-        {id = "reputation", text = "Reputation", color = {0.8, 0.5, 1}}
-    }
-    
-    for i, event in ipairs(events) do
-        local btn = BLU.Design:CreateButton(preview, event.text, 100, 25)
-        btn:SetPoint("BOTTOM", preview, "BOTTOM", -220 + (i-1) * 110, 20)
-        btn.Text:SetTextColor(unpack(event.color))
-        btn:SetScript("OnClick", function()
-            if BLU.PlayCategorySound then
-                BLU:PlayCategorySound(event.id)
-                currentSound:SetText(event.text .. " Sound")
-                currentSound:SetTextColor(unpack(event.color))
-            end
-        end)
-    end
-    
-    return preview
-end
+-- Removed preview section - tabs will be module based
 
 -- Create tab button with SimpleQuestPlates style
-local function CreateTabButton(parent, text, index, totalTabs)
+local function CreateTabButton(parent, text, icon, index, totalTabs)
     local button = CreateFrame("Button", "BLUTab" .. text:gsub(" ", ""), parent)
-    button:SetSize(120, 32)
+    button:SetSize(110, 28)
     
     -- Position
-    local xOffset = -((totalTabs * 120 + (totalTabs - 1) * 5) / 2) + (index - 1) * 125 + 60
-    button:SetPoint("TOP", parent, "TOP", xOffset, -5)
+    if index == 1 then
+        button:SetPoint("TOPLEFT", parent, "TOPLEFT", 5, -2)
+    else
+        button:SetPoint("LEFT", parent[index-1], "RIGHT", 2, 0)
+    end
+    parent[index] = button
     
-    -- Background
+    -- Background with gradient
     local bg = button:CreateTexture(nil, "BACKGROUND")
     bg:SetAllPoints()
-    bg:SetColorTexture(0.1, 0.1, 0.1, 0.8)
+    bg:SetTexture("Interface\\Buttons\\UI-DialogBox-Button-Up")
+    bg:SetTexCoord(0, 1, 0, 0.71875)
+    bg:SetVertexColor(0.2, 0.2, 0.2, 1)
     button.bg = bg
     
-    -- Border
-    local border = CreateFrame("Frame", nil, button, "BackdropTemplate")
-    border:SetAllPoints()
-    border:SetBackdrop({
-        edgeFile = "Interface\\Buttons\\WHITE8x8",
-        edgeSize = 1,
-    })
-    border:SetBackdropBorderColor(0.3, 0.3, 0.3, 1)
+    -- Border for active state
+    local border = button:CreateTexture(nil, "BORDER")
+    border:SetPoint("BOTTOMLEFT", 0, -2)
+    border:SetPoint("BOTTOMRIGHT", 0, -2)
+    border:SetHeight(2)
+    border:SetColorTexture(0.02, 0.37, 1, 1)
+    border:Hide()
     button.border = border
     
+    -- Icon
+    if icon then
+        local tabIcon = button:CreateTexture(nil, "ARTWORK")
+        tabIcon:SetSize(16, 16)
+        tabIcon:SetPoint("LEFT", 8, 0)
+        tabIcon:SetTexture(icon)
+        button.icon = tabIcon
+    end
+    
     -- Text
-    local buttonText = button:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    buttonText:SetPoint("CENTER", 0, 0)
+    local buttonText = button:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    if icon then
+        buttonText:SetPoint("LEFT", button.icon, "RIGHT", 5, 0)
+    else
+        buttonText:SetPoint("CENTER", 0, 0)
+    end
     buttonText:SetText(text)
     button.text = buttonText
     
-    -- Active indicator
-    local active = button:CreateTexture(nil, "ARTWORK")
-    active:SetHeight(3)
-    active:SetPoint("BOTTOMLEFT", 0, 0)
-    active:SetPoint("BOTTOMRIGHT", 0, 0)
-    active:SetColorTexture(unpack(BLU.Design.Colors.Primary))
-    active:Hide()
-    button.active = active
+    -- Removed separate active indicator - using border instead
     
     -- Scripts
     button:SetScript("OnClick", function(self)
@@ -136,15 +97,13 @@ local function CreateTabButton(parent, text, index, totalTabs)
     
     button:SetScript("OnEnter", function(self)
         if not self.isActive then
-            self.bg:SetColorTexture(0.15, 0.15, 0.15, 1)
-            self.border:SetBackdropBorderColor(unpack(BLU.Design.Colors.Primary))
+            self.bg:SetVertexColor(0.3, 0.3, 0.3, 1)
         end
     end)
     
     button:SetScript("OnLeave", function(self)
         if not self.isActive then
-            self.bg:SetColorTexture(0.1, 0.1, 0.1, 0.8)
-            self.border:SetBackdropBorderColor(0.3, 0.3, 0.3, 1)
+            self.bg:SetVertexColor(0.2, 0.2, 0.2, 1)
         end
     end)
     
@@ -153,15 +112,19 @@ local function CreateTabButton(parent, text, index, totalTabs)
     function button:SetActive(active)
         self.isActive = active
         if active then
-            self.bg:SetColorTexture(0.05, 0.05, 0.05, 1)
-            self.border:SetBackdropBorderColor(unpack(BLU.Design.Colors.Primary))
-            self.text:SetTextColor(unpack(BLU.Design.Colors.Primary))
-            self.active:Show()
-        else
-            self.bg:SetColorTexture(0.1, 0.1, 0.1, 0.8)
-            self.border:SetBackdropBorderColor(0.3, 0.3, 0.3, 1)
+            self.bg:SetVertexColor(0.02, 0.37, 1, 1)
             self.text:SetTextColor(1, 1, 1, 1)
-            self.active:Hide()
+            self.border:Show()
+            if self.icon then
+                self.icon:SetVertexColor(1, 1, 1, 1)
+            end
+        else
+            self.bg:SetVertexColor(0.2, 0.2, 0.2, 1)
+            self.text:SetTextColor(0.7, 0.7, 0.7, 1)
+            self.border:Hide()
+            if self.icon then
+                self.icon:SetVertexColor(0.7, 0.7, 0.7, 1)
+            end
         end
     end
     
@@ -176,79 +139,105 @@ function Options:CreateOptionsPanel()
     local panel = CreateFrame("Frame", "BLUOptionsPanel", UIParent)
     panel.name = "Better Level-Up!"
     
-    -- Apply main panel styling
-    BLU.Design:ApplyBackdrop(panel, "Panel")
+    -- Custom icon for the settings menu
+    panel.OnCommit = function() end
+    panel.OnDefault = function() end
+    panel.OnRefresh = function() end
     
     -- Store reference
     BLU.OptionsPanel = panel
     
-    -- Header section
+    -- Compact header
     local header = CreateFrame("Frame", nil, panel)
-    header:SetHeight(100)
-    header:SetPoint("TOPLEFT", 0, 0)
-    header:SetPoint("TOPRIGHT", 0, 0)
-    BLU.Design:ApplyBackdrop(header, "Dark", {0.05, 0.05, 0.05, 1})
+    header:SetHeight(60)
+    header:SetPoint("TOPLEFT", 10, -10)
+    header:SetPoint("TOPRIGHT", -10, -10)
     
-    -- Large icon
+    -- Header background
+    local headerBg = header:CreateTexture(nil, "BACKGROUND")
+    headerBg:SetAllPoints()
+    headerBg:SetColorTexture(0.05, 0.05, 0.05, 0.9)
+    
+    -- Header border
+    local headerBorder = CreateFrame("Frame", nil, header, "BackdropTemplate")
+    headerBorder:SetAllPoints()
+    headerBorder:SetBackdrop({
+        edgeFile = "Interface\\Buttons\\WHITE8x8",
+        edgeSize = 1,
+    })
+    headerBorder:SetBackdropBorderColor(0.02, 0.37, 1, 0.5)
+    
+    -- Icon
     local icon = header:CreateTexture(nil, "ARTWORK")
-    icon:SetSize(80, 80)
-    icon:SetPoint("LEFT", 20, 0)
+    icon:SetSize(48, 48)
+    icon:SetPoint("LEFT", 10, 0)
     icon:SetTexture("Interface\\Icons\\Achievement_Level_100")
     
+    -- Icon border
+    local iconBorder = header:CreateTexture(nil, "OVERLAY")
+    iconBorder:SetSize(52, 52)
+    iconBorder:SetPoint("CENTER", icon, "CENTER")
+    iconBorder:SetTexture("Interface\\Tooltips\\UI-Tooltip-Border")
+    iconBorder:SetTexCoord(0.5, 0.625, 0.5, 0.625)
+    iconBorder:SetVertexColor(0.02, 0.37, 1, 1)
+    
     -- Title
-    local title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalHuge")
-    title:SetPoint("LEFT", icon, "RIGHT", 15, 15)
-    title:SetText(BLU.Design.Colors.PrimaryHex .. "BLU|r - Better Level-Up!")
+    local title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    title:SetPoint("LEFT", icon, "RIGHT", 10, 8)
+    title:SetText("|cff05dffaBLU|r - Better Level-Up!")
     
     -- Subtitle
-    local subtitle = header:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    subtitle:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -5)
-    subtitle:SetText("Play sounds from 50+ games when events fire in WoW!")
-    subtitle:SetTextColor(unpack(BLU.Design.Colors.TextMuted))
+    local subtitle = header:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    subtitle:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -2)
+    subtitle:SetText("Iconic game sounds for WoW events")
+    subtitle:SetTextColor(0.7, 0.7, 0.7)
     
-    -- Version in corner
+    -- Version
     local version = header:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    version:SetPoint("TOPRIGHT", -20, -20)
-    version:SetText("v" .. (BLU.version or "5.3.0-alpha"))
-    version:SetTextColor(unpack(BLU.Design.Colors.Primary))
+    version:SetPoint("RIGHT", -10, 0)
+    version:SetText("v" .. (BLU.version or "5.3.0"))
+    version:SetTextColor(0.5, 0.5, 0.5)
     
-    -- RGX Mods branding
-    local branding = header:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    branding:SetPoint("BOTTOMRIGHT", -20, 10)
-    branding:SetText("|cffffd700RGX Mods|r")
-    
-    -- Preview section
-    local preview = CreatePreviewSection(panel)
-    preview:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 10, -10)
-    preview:SetPoint("TOPRIGHT", header, "BOTTOMRIGHT", -10, -10)
-    
-    -- Tab container
+    -- Tab container (directly under header)
     local tabContainer = CreateFrame("Frame", nil, panel)
-    tabContainer:SetHeight(40)
-    tabContainer:SetPoint("TOPLEFT", preview, "BOTTOMLEFT", 0, -10)
-    tabContainer:SetPoint("TOPRIGHT", preview, "BOTTOMRIGHT", 0, -10)
+    tabContainer:SetHeight(32)
+    tabContainer:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -5)
+    tabContainer:SetPoint("TOPRIGHT", header, "BOTTOMRIGHT", 0, -5)
     
-    -- Create tabs
+    -- Create tabs with icons
     local tabs = {
-        {text = "General", create = BLU.CreateGeneralPanel},
-        {text = "Sounds", create = BLU.CreateSoundsPanel},
-        {text = "Modules", create = BLU.CreateModulesPanel},
-        {text = "About", create = BLU.CreateAboutPanel},
-        {text = "RGX Mods", create = BLU.CreateRGXPanel}
+        {text = "General", icon = "Interface\\Icons\\INV_Misc_Gear_01", create = BLU.CreateGeneralPanel},
+        {text = "Sounds", icon = "Interface\\Icons\\INV_Misc_Bell_01", create = BLU.CreateSoundsPanel},
+        {text = "Modules", icon = "Interface\\Icons\\INV_Misc_Gear_08", create = BLU.CreateModulesPanel},
+        {text = "About", icon = "Interface\\Icons\\INV_Misc_Book_09", create = BLU.CreateAboutPanel}
     }
     
     panel.tabs = {}
     panel.contents = {}
     
     for i, tabInfo in ipairs(tabs) do
-        local tab = CreateTabButton(tabContainer, tabInfo.text, i, #tabs)
+        local tab = CreateTabButton(tabContainer, tabInfo.text, tabInfo.icon, i, #tabs)
         panel.tabs[i] = tab
         
         -- Create content frame
         local content = CreateFrame("Frame", nil, panel)
-        content:SetPoint("TOPLEFT", tabContainer, "BOTTOMLEFT", 0, -5)
+        content:SetPoint("TOPLEFT", tabContainer, "BOTTOMLEFT", 0, -2)
         content:SetPoint("BOTTOMRIGHT", panel, "BOTTOMRIGHT", -10, 10)
-        BLU.Design:ApplyBackdrop(content, "Dark", BLU.Design.Colors.Panel)
+        
+        -- Content background
+        local contentBg = content:CreateTexture(nil, "BACKGROUND")
+        contentBg:SetAllPoints()
+        contentBg:SetColorTexture(0.02, 0.02, 0.02, 0.9)
+        
+        -- Content border
+        local contentBorder = CreateFrame("Frame", nil, content, "BackdropTemplate")
+        contentBorder:SetAllPoints()
+        contentBorder:SetBackdrop({
+            edgeFile = "Interface\\Buttons\\WHITE8x8",
+            edgeSize = 1,
+        })
+        contentBorder:SetBackdropBorderColor(0.1, 0.1, 0.1, 1)
+        
         content:Hide()
         
         -- Create tab content
@@ -270,11 +259,13 @@ function Options:CreateOptionsPanel()
     -- Select first tab
     panel:SelectTab(1)
     
-    -- Register the panel
+    -- Register the panel with custom icon
     local category
     if Settings and Settings.RegisterCanvasLayoutCategory then
         -- Dragonflight+ (10.0+)
         category = Settings.RegisterCanvasLayoutCategory(panel, panel.name)
+        -- Add custom icon to the settings menu
+        category.name = "|T" .. "Interface\\Icons\\Achievement_Level_100" .. ":16:16:0:0|t " .. panel.name
         Settings.RegisterAddOnCategory(category)
         BLU.OptionsCategory = category
         BLU:PrintDebug("Options panel registered with new Settings API")
@@ -313,22 +304,4 @@ function Options:OpenOptions()
     end
 end
 
--- Create RGX Mods panel (new)
-function BLU.CreateRGXPanel(panel)
-    local content = CreateFrame("Frame", nil, panel)
-    content:SetAllPoints()
-    
-    local header = BLU.Design:CreateHeader(content, "RGX Mods - RealmGX Community", "Interface\\Icons\\VAS_RaceChange")
-    header:SetPoint("TOPLEFT", 20, -20)
-    header:SetPoint("TOPRIGHT", -20, -20)
-    
-    local info = content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    info:SetPoint("TOP", header, "BOTTOM", 0, -30)
-    info:SetText("Join our community for more amazing addons!")
-    
-    local discord = BLU.Design:CreateButton(content, "Discord", 200, 40)
-    discord:SetPoint("TOP", info, "BOTTOM", 0, -30)
-    discord:SetScript("OnClick", function()
-        BLU:Print("Join us at: |cffffd700discord.gg/rgxmods|r")
-    end)
-end
+-- Removed RGX Mods panel - keeping focus on core functionality

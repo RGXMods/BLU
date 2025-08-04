@@ -6,13 +6,13 @@
 local addonName, BLU = ...
 
 BLU.Design = {
-    -- Brand colors
+    -- Brand colors (matching SimpleQuestPlates style)
     Colors = {
-        Primary = {0.02, 0.37, 1, 1},        -- BLU blue: #05dffa
+        Primary = {0.02, 0.87, 0.98, 1},        -- BLU blue: #05dffa
         PrimaryHex = "|cff05dffa",
-        Background = {0.02, 0.02, 0.02, 0.95},  -- Almost black
-        Panel = {0.03, 0.03, 0.03, 0.9},        -- Slightly lighter
-        Border = {0.02, 0.37, 1, 0.5},          -- BLU blue translucent
+        Background = {0.05, 0.05, 0.05, 0.95},  -- SQP dark background
+        Panel = {0.08, 0.08, 0.08, 0.8},        -- SQP panel background
+        Border = {0.02, 0.87, 0.98, 1},         -- BLU blue for borders
         Text = {1, 1, 1, 1},                    -- White
         TextMuted = {0.7, 0.7, 0.7, 1},        -- Gray
         Success = {0.34, 0.74, 0.36, 1},       -- Green
@@ -20,7 +20,7 @@ BLU.Design = {
         Error = {1, 0.2, 0.2, 1},               -- Red
     },
     
-    -- Backdrop templates
+    -- Backdrop templates (SimpleQuestPlates style)
     Backdrops = {
         Dark = {
             bgFile = "Interface\\Buttons\\WHITE8x8",
@@ -31,12 +31,12 @@ BLU.Design = {
             insets = {left = 1, right = 1, top = 1, bottom = 1}
         },
         Panel = {
-            bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background-Dark",
-            edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
-            tile = true,
-            tileSize = 32,
-            edgeSize = 32,
-            insets = {left = 11, right = 12, top = 12, bottom = 11}
+            bgFile = "Interface\\Buttons\\WHITE8x8",
+            edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+            tile = false,
+            tileSize = 0,
+            edgeSize = 1,
+            insets = {left = 1, right = 1, top = 1, bottom = 1}
         },
         Tooltip = {
             bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",

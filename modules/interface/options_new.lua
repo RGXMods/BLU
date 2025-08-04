@@ -40,16 +40,14 @@ end
 -- Removed preview section - tabs will be module based
 
 -- Create tab button with SimpleQuestPlates style
-local function CreateTabButton(parent, text, icon, index, totalTabs)
+local function CreateTabButton(parent, text, index, row, col)
     local button = CreateFrame("Button", "BLUTab" .. text:gsub(" ", ""), parent)
-    button:SetSize(90, 28)
+    button:SetSize(85, 24)
     
-    -- Position
-    if index == 1 then
-        button:SetPoint("TOPLEFT", parent, "TOPLEFT", 5, -2)
-    else
-        button:SetPoint("LEFT", parent[index-1], "RIGHT", 2, 0)
-    end
+    -- Position based on row and column
+    local xOffset = 5 + (col - 1) * 87  -- 85 width + 2 spacing
+    local yOffset = -2 - (row - 1) * 26  -- 24 height + 2 spacing
+    button:SetPoint("TOPLEFT", parent, "TOPLEFT", xOffset, yOffset)
     parent[index] = button
     
     -- Background
@@ -68,22 +66,9 @@ local function CreateTabButton(parent, text, icon, index, totalTabs)
     border:SetBackdropBorderColor(0.3, 0.3, 0.3, 1)
     button.border = border
     
-    -- Icon
-    if icon then
-        local tabIcon = button:CreateTexture(nil, "ARTWORK")
-        tabIcon:SetSize(16, 16)
-        tabIcon:SetPoint("LEFT", 8, 0)
-        tabIcon:SetTexture(icon)
-        button.icon = tabIcon
-    end
-    
-    -- Text
+    -- Text (no icons)
     local buttonText = button:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    if icon then
-        buttonText:SetPoint("LEFT", button.icon, "RIGHT", 5, 0)
-    else
-        buttonText:SetPoint("CENTER", 0, 0)
-    end
+    buttonText:SetPoint("CENTER", 0, 0)
     buttonText:SetText(text)
     button.text = buttonText
     
@@ -116,16 +101,10 @@ local function CreateTabButton(parent, text, icon, index, totalTabs)
             self.bg:SetColorTexture(0.08, 0.08, 0.08, 1)
             self.text:SetTextColor(unpack(BLU.Design.Colors.Primary))
             self.border:SetBackdropBorderColor(unpack(BLU.Design.Colors.Primary))
-            if self.icon then
-                self.icon:SetVertexColor(unpack(BLU.Design.Colors.Primary))
-            end
         else
             self.bg:SetColorTexture(0.1, 0.1, 0.1, 0.8)
             self.text:SetTextColor(0.7, 0.7, 0.7, 1)
             self.border:SetBackdropBorderColor(0.3, 0.3, 0.3, 1)
-            if self.icon then
-                self.icon:SetVertexColor(0.7, 0.7, 0.7, 1)
-            end
         end
     end
     
@@ -158,7 +137,7 @@ function Options:CreateOptionsPanel()
     
     -- Create header
     local header = CreateFrame("Frame", nil, container, "BackdropTemplate")
-    header:SetHeight(80)
+    header:SetHeight(70)  -- Reduced header height
     header:SetPoint("TOPLEFT", 10, -10)
     header:SetPoint("TOPRIGHT", -10, -10)
     header:SetBackdrop(BLU.Design.Backdrops.Dark)
@@ -167,13 +146,9 @@ function Options:CreateOptionsPanel()
     
     -- Logo/Icon
     local logo = header:CreateTexture(nil, "ARTWORK")
-    logo:SetSize(64, 64)
+    logo:SetSize(48, 48)
     logo:SetPoint("LEFT", 15, 0)
-    if BLU.HasCustomIcon then
-        logo:SetTexture("Interface\\AddOns\\BLU\\media\\images\\icon")
-    else
-        logo:SetTexture("Interface\\Icons\\Achievement_Level_100")
-    end
+    logo:SetTexture("Interface\\AddOns\\BLU\\media\\images\\icon")
     
     -- Title (with colored letters like SQP)
     local title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalHuge")
@@ -202,33 +177,39 @@ function Options:CreateOptionsPanel()
     branding:SetPoint("BOTTOMRIGHT", -15, 10)
     branding:SetText("|cffffd700RGX Mods|r")
     
-    -- Tab container (SQP style tabs)
+    -- Tab container (SQP style tabs) - multiple rows
     local tabContainer = CreateFrame("Frame", nil, container)
-    tabContainer:SetHeight(32)
+    tabContainer:SetHeight(52)  -- 2 rows * 24 height + spacing
     tabContainer:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -10)
     tabContainer:SetPoint("TOPRIGHT", header, "BOTTOMRIGHT", 0, -10)
     
-    -- Create tabs for each sound event type
+    -- Create tabs for each sound event type (no icons)
     local tabs = {
-        {text = "General", icon = "Interface\\Icons\\INV_Misc_Gear_01", create = BLU.CreateGeneralPanel},
-        {text = "Level Up", icon = "Interface\\Icons\\Achievement_Level_100", eventType = "levelup"},
-        {text = "Achievement", icon = "Interface\\Icons\\Achievement_GuildPerk_MobileMailbox", eventType = "achievement"},
-        {text = "Quest", icon = "Interface\\Icons\\INV_Misc_Note_01", eventType = "quest"},
-        {text = "Reputation", icon = "Interface\\Icons\\Achievement_Reputation_01", eventType = "reputation"},
-        {text = "Battle Pets", icon = "Interface\\Icons\\INV_Pet_BattlePetTraining", eventType = "battlepet"},
-        {text = "About", icon = "Interface\\Icons\\INV_Misc_Book_09", create = BLU.CreateAboutPanel}
+        -- Row 1
+        {text = "General", create = BLU.CreateGeneralPanel, row = 1, col = 1},
+        {text = "Level Up", eventType = "levelup", row = 1, col = 2},
+        {text = "Achievement", eventType = "achievement", row = 1, col = 3},
+        {text = "Quest", eventType = "quest", row = 1, col = 4},
+        {text = "Reputation", eventType = "reputation", row = 1, col = 5},
+        {text = "Battle Pets", eventType = "battlepet", row = 1, col = 6},
+        -- Row 2
+        {text = "Honor", eventType = "honorrank", row = 2, col = 1},
+        {text = "Renown", eventType = "renownrank", row = 2, col = 2},
+        {text = "Trading Post", eventType = "tradingpost", row = 2, col = 3},
+        {text = "Delve", eventType = "delvecompanion", row = 2, col = 4},
+        {text = "About", create = BLU.CreateAboutPanel, row = 2, col = 5}
     }
     
     panel.tabs = {}
     panel.contents = {}
     
     for i, tabInfo in ipairs(tabs) do
-        local tab = CreateTabButton(tabContainer, tabInfo.text, tabInfo.icon, i, #tabs)
+        local tab = CreateTabButton(tabContainer, tabInfo.text, i, tabInfo.row, tabInfo.col)
         panel.tabs[i] = tab
         
         -- Create content frame
         local content = CreateFrame("Frame", nil, container, "BackdropTemplate")
-        content:SetPoint("TOPLEFT", tabContainer, "BOTTOMLEFT", 0, -2)
+        content:SetPoint("TOPLEFT", tabContainer, "BOTTOMLEFT", 0, -5)
         content:SetPoint("BOTTOMRIGHT", container, "BOTTOMRIGHT", -10, 10)
         content:SetBackdrop(BLU.Design.Backdrops.Dark)
         content:SetBackdropColor(0.08, 0.08, 0.08, 0.8)
@@ -240,7 +221,7 @@ function Options:CreateOptionsPanel()
             tabInfo.create(content)
         elseif tabInfo.eventType then
             -- Create sound selection panel for this event type
-            BLU.CreateEventSoundPanel(content, tabInfo.eventType, tabInfo.text, tabInfo.icon)
+            BLU.CreateEventSoundPanel(content, tabInfo.eventType, tabInfo.text)
         end
         
         panel.contents[i] = content
@@ -304,7 +285,7 @@ function Options:OpenOptions()
 end
 
 -- Create event sound panel for each tab
-function BLU.CreateEventSoundPanel(panel, eventType, eventName, eventIcon)
+function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     -- Create scrollable content
     local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
     scrollFrame:SetPoint("TOPLEFT", 10, -10)
@@ -323,7 +304,19 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName, eventIcon)
     local icon = header:CreateTexture(nil, "ARTWORK")
     icon:SetSize(32, 32)
     icon:SetPoint("LEFT", 0, 0)
-    icon:SetTexture(eventIcon)
+    -- Set appropriate icon based on event type
+    local icons = {
+        levelup = "Interface\\Icons\\Achievement_Level_100",
+        achievement = "Interface\\Icons\\Achievement_GuildPerk_MobileMailbox",
+        quest = "Interface\\Icons\\INV_Misc_Note_01",
+        reputation = "Interface\\Icons\\Achievement_Reputation_01",
+        battlepet = "Interface\\Icons\\INV_Pet_BattlePetTraining",
+        honorrank = "Interface\\Icons\\PVPCurrency-Honor-Horde",
+        renownrank = "Interface\\Icons\\UI_MajorFaction_Renown",
+        tradingpost = "Interface\\Icons\\INV_TradingPostCurrency",
+        delvecompanion = "Interface\\Icons\\UI_MajorFaction_Delve"
+    }
+    icon:SetTexture(icons[eventType] or "Interface\\Icons\\INV_Misc_QuestionMark")
     
     local title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     title:SetPoint("LEFT", icon, "RIGHT", 10, 0)
@@ -372,13 +365,19 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName, eventIcon)
     -- Create sound buttons
     local sounds = {
         {id = "default", name = "Default WoW Sound", icon = "Interface\\Icons\\INV_Misc_QuestionMark"},
-        {id = "wowdefault", name = "WoW Built-in", icon = "Interface\\Icons\\INV_Misc_Book_09"},
+        {id = "blu_default", name = "BLU Defaults", icon = "Interface\\Icons\\INV_Misc_Bell_01"},
         {id = "finalfantasy", name = "Final Fantasy", icon = "Interface\\Icons\\INV_Sword_39"},
         {id = "zelda", name = "Legend of Zelda", icon = "Interface\\Icons\\INV_Shield_05"},
         {id = "pokemon", name = "Pokemon", icon = "Interface\\Icons\\INV_Pet_BabyBlizzardBear"},
         {id = "mario", name = "Super Mario", icon = "Interface\\Icons\\INV_Mushroom_11"},
         {id = "sonic", name = "Sonic", icon = "Interface\\Icons\\INV_Boots_01"},
-        {id = "metalgear", name = "Metal Gear Solid", icon = "Interface\\Icons\\INV_Misc_Bomb_04"}
+        {id = "metalgear", name = "Metal Gear Solid", icon = "Interface\\Icons\\INV_Misc_Bomb_04"},
+        {id = "elderscrolls", name = "Elder Scrolls", icon = "Interface\\Icons\\INV_Misc_Book_06"},
+        {id = "warcraft", name = "Warcraft", icon = "Interface\\Icons\\Achievement_Arena_2v2_7"},
+        {id = "eldenring", name = "Elden Ring", icon = "Interface\\Icons\\INV_Sword_1H_ArtifactSoulrend_D_06"},
+        {id = "castlevania", name = "Castlevania", icon = "Interface\\Icons\\INV_Weapon_Shortblade_07"},
+        {id = "diablo", name = "Diablo", icon = "Interface\\Icons\\INV_DiabloStone"},
+        {id = "fallout", name = "Fallout", icon = "Interface\\Icons\\INV_Gizmo_FelIronBomb"}
     }
     
     local yOffset = -50

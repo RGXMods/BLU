@@ -3,8 +3,9 @@
     <!-- Sound system modules -->
     <Script file="soundpak.lua"/>
     <Script file="browser.lua"/>
+    <Script file="internal_sounds.lua"/>
     
-    <!-- Sound packs - loaded but initialized on demand -->
-    <Script file="packs/wowdefault.lua"/>
-    <Script file="packs/finalfantasy.lua"/>
+    <!-- Legacy sound packs - will be removed -->
+    <!-- <Script file="packs/wowdefault.lua"/> -->
+    <!-- <Script file="packs/finalfantasy.lua"/> -->
 </Ui>

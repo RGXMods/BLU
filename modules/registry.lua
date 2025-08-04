@@ -129,8 +129,29 @@ function SoundRegistry:PlaySound(soundId, volume)
         willPlay = PlaySound(sound.soundKit, channel)
         handle = sound.soundKit
     elseif sound.file then
-        -- Use PlaySoundFile for custom sound files
-        willPlay, handle = PlaySoundFile(sound.file, channel)
+        -- For BLU's internal sounds with volume variants
+        if sound.isInternal and volume < 1.0 then
+            -- Choose appropriate volume variant based on volume setting
+            local variant
+            if volume <= 0.33 then
+                variant = "low"
+            elseif volume <= 0.66 then
+                variant = "med"
+            else
+                variant = "high"
+            end
+            
+            -- Try to find volume variant file
+            local variantFile = sound.file:gsub("%.ogg$", "_" .. variant .. ".ogg")
+            if variantFile ~= sound.file then
+                willPlay, handle = PlaySoundFile(variantFile, channel)
+            else
+                willPlay, handle = PlaySoundFile(sound.file, channel)
+            end
+        else
+            -- External sounds or full volume - play as is
+            willPlay, handle = PlaySoundFile(sound.file, channel)
+        end
     else
         BLU:PrintError("Sound has no file or soundKit: " .. soundId)
         return false

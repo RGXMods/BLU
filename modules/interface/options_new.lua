@@ -464,10 +464,14 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName, eventIcon)
         externalLabel:SetText("External Sounds (from other addons):")
         externalLabel:SetTextColor(0.7, 0.7, 0.7)
         
+        local noteLabel = soundSection.content:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+        noteLabel:SetPoint("TOPLEFT", externalLabel, "BOTTOMLEFT", 0, -2)
+        noteLabel:SetText("|cff888888Note: External sounds play at full volume|r")
+        
         -- Show detected sounds
         local externalSounds = BLU.Modules.sharedmedia:GetExternalSounds()
         if externalSounds and next(externalSounds) then
-            yOffset = yOffset - 35
+            yOffset = yOffset - 50
             for soundName, soundData in pairs(externalSounds) do
                 if yOffset < -350 then break end -- Limit display
                 
@@ -475,14 +479,81 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName, eventIcon)
                 btn:SetSize(300, 28)
                 btn:SetPoint("TOPLEFT", 0, yOffset)
                 
-                -- Similar button setup but for external sounds
-                -- ... (abbreviated for space)
+                -- Selection highlight
+                local highlight = btn:CreateTexture(nil, "BACKGROUND")
+                highlight:SetAllPoints()
+                highlight:SetColorTexture(0.02, 0.37, 1, 0.2)
+                highlight:Hide()
+                btn.highlight = highlight
+                
+                -- Hover
+                btn:SetHighlightTexture("Interface\\Buttons\\WHITE8x8")
+                local hover = btn:GetHighlightTexture()
+                hover:SetVertexColor(1, 1, 1, 0.1)
+                
+                -- Icon
+                local icon = btn:CreateTexture(nil, "ARTWORK")
+                icon:SetSize(20, 20)
+                icon:SetPoint("LEFT", 5, 0)
+                icon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
+                
+                -- Name
+                local name = btn:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+                name:SetPoint("LEFT", icon, "RIGHT", 8, 0)
+                name:SetText(soundName)
+                
+                -- Source addon
+                local source = btn:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+                source:SetPoint("RIGHT", -10, 0)
+                source:SetText("|cff888888" .. (soundData.source or "Unknown") .. "|r")
+                
+                -- Selected indicator
+                if BLU.db.profile.selectedSounds and BLU.db.profile.selectedSounds[eventType] == "external:" .. soundName then
+                    highlight:Show()
+                    name:SetTextColor(0.02, 0.87, 0.98)
+                end
+                
+                btn:SetScript("OnClick", function(self)
+                    -- Update selection
+                    BLU.db.profile.selectedSounds = BLU.db.profile.selectedSounds or {}
+                    BLU.db.profile.selectedSounds[eventType] = "external:" .. soundName
+                    
+                    -- Update UI
+                    currentSound:SetText(soundName .. " (External)")
+                    
+                    -- Update all highlights
+                    for _, button in ipairs(soundSection.content.soundButtons or {}) do
+                        if button.highlight then
+                            button.highlight:Hide()
+                            if button.name then
+                                button.name:SetTextColor(1, 1, 1)
+                            end
+                        end
+                    end
+                    
+                    -- Highlight this one
+                    highlight:Show()
+                    name:SetTextColor(0.02, 0.87, 0.98)
+                    
+                    -- Play test sound
+                    if BLU.PlayExternalSound then
+                        BLU:PlayExternalSound(soundName)
+                    end
+                end)
+                
+                -- Store reference
+                soundSection.content.soundButtons = soundSection.content.soundButtons or {}
+                soundSection.content.soundButtons[#soundSection.content.soundButtons + 1] = {
+                    button = btn,
+                    highlight = highlight,
+                    name = name
+                }
                 
                 yOffset = yOffset - 30
             end
         else
             local noSounds = soundSection.content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-            noSounds:SetPoint("TOPLEFT", externalLabel, "BOTTOMLEFT", 0, -5)
+            noSounds:SetPoint("TOPLEFT", noteLabel, "BOTTOMLEFT", 0, -5)
             noSounds:SetText("No external sounds detected")
             noSounds:SetTextColor(0.5, 0.5, 0.5)
         end

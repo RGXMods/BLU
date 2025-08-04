@@ -46,10 +46,10 @@ BLU:RegisterEvent("ADDON_LOADED", function(event, addon)
     for _, moduleName in ipairs(initOrder) do
         local module = BLU.Modules[moduleName]
         if module and module.Init then
-            -- print("|cff05dffaBLU Initializing module: " .. moduleName .. "|r")
+            BLU:PrintDebug("[Init] Initializing module: " .. moduleName)
             module:Init()
         else
-            BLU:PrintDebug("Module not found or has no Init: " .. moduleName)
+            BLU:PrintDebug("[Init] Module not found or has no Init: " .. moduleName)
         end
     end
     
@@ -75,7 +75,7 @@ BLU:RegisterEvent("PLAYER_LOGIN", function()
     if BLU.db and BLU.db.profile and BLU.db.profile.showWelcomeMessage then
         BLU:Print("v" .. (BLU.version or "Unknown") .. " loaded! Type |cff05dffa/blu|r for options")
         BLU:Print("Join our community at |cffffd700discord.gg/rgxmods|r")
-        BLU:Print("|cff00ff00Build: 2025-08-04 - New UI active|r")
+        -- BLU:Print("|cff00ff00Build: 2025-08-04 - New UI active|r")
     end
 end)
 

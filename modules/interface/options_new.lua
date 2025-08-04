@@ -16,7 +16,7 @@ local PANEL_HEIGHT = 600
 
 -- Initialize options module
 function Options:Init()
-    BLU:PrintDebug("Initializing new options module")
+    BLU:PrintDebug("[Options] Initializing new options module")
     
     -- Make functions available globally
     BLU.CreateOptionsPanel = function()
@@ -26,6 +26,8 @@ function Options:Init()
     BLU.OpenOptions = function()
         return self:OpenOptions()
     end
+    
+    BLU:PrintDebug("[Options] Functions registered")
     
     -- Create the panel after a short delay
     C_Timer.After(0.1, function()

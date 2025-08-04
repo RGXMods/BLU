@@ -19,7 +19,7 @@
     <Script file="interface/options_new.lua"/>
     <!-- Keep old options as fallback -->
     <!-- <Script file="interface/options.lua"/> -->
-    <Script file="interface/simple_options.lua"/>
+    <!-- <Script file="interface/simple_options.lua"/> -->
     
     <!-- Feature Modules (loaded at startup, enabled/disabled at runtime) -->
     <Include file="features.xml"/>

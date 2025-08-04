@@ -131,12 +131,21 @@ SlashCmdList["BLU"] = function(msg)
     
     -- Use new tabbed options panel
     if BLU.OpenOptions then
-        BLU:Print("|cff00ff00Opening tabbed options panel...|r")
         BLU:OpenOptions()
-    elseif BLU.OpenSimpleOptions then
-        BLU:Print("|cff00ff00Opening simple options panel (Build: 2025-08-04)|r")
-        BLU:OpenSimpleOptions()
     else
-        BLU:Print("Options panel not available - try /blu status for info")
+        -- Try to create it if it doesn't exist
+        if BLU.Modules and BLU.Modules.options_new and not BLU.OptionsPanel then
+            BLU:Print("|cffff0000Options panel not initialized. Creating now...|r")
+            if BLU.Modules.options_new.Init then
+                BLU.Modules.options_new:Init()
+            end
+            C_Timer.After(0.1, function()
+                if BLU.OpenOptions then
+                    BLU:OpenOptions()
+                end
+            end)
+        else
+            BLU:Print("Options panel not available - type |cff05dffa/reload|r")
+        end
     end
 end

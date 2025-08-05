@@ -6,19 +6,31 @@
 local addonName, BLU = ...
 
 function BLU.CreateAboutPanel(panel)
-    -- Create scrollable content
+    -- Create scrollable content with proper sizing aligned to parent content frame
     local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
-    scrollFrame:SetPoint("TOPLEFT", 20, -20)
-    scrollFrame:SetPoint("BOTTOMRIGHT", -40, 20)
+    scrollFrame:SetPoint("TOPLEFT", BLU.Design.Layout.Spacing, -BLU.Design.Layout.Spacing)
+    scrollFrame:SetPoint("BOTTOMRIGHT", -30, BLU.Design.Layout.Spacing)
+    
+    -- Add scroll frame background
+    local scrollBg = scrollFrame:CreateTexture(nil, "BACKGROUND")
+    scrollBg:SetAllPoints()
+    scrollBg:SetColorTexture(0.05, 0.05, 0.05, 0.3)
     
     local content = CreateFrame("Frame", nil, scrollFrame)
-    content:SetSize(scrollFrame:GetWidth() - 20, 800)
+    -- Calculate proper content width based on scroll frame
+    C_Timer.After(0.01, function()
+        if scrollFrame:GetWidth() then
+            content:SetSize(scrollFrame:GetWidth() - 25, 900)
+        else
+            content:SetSize(600, 900)
+        end
+    end)
     scrollFrame:SetScrollChild(content)
     
     -- BLU Logo/Header
     local logoFrame = CreateFrame("Frame", nil, content)
-    logoFrame:SetPoint("TOPLEFT", 0, 0)
-    logoFrame:SetPoint("RIGHT", -20, 0)
+    logoFrame:SetPoint("TOPLEFT", BLU.Design.Layout.Spacing, -BLU.Design.Layout.Spacing)
+    logoFrame:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
     logoFrame:SetHeight(120)
     
     -- Logo background
@@ -50,8 +62,8 @@ function BLU.CreateAboutPanel(panel)
     
     -- Info Section
     local infoSection = BLU.Design:CreateSection(content, "Information", "Interface\\Icons\\INV_Misc_Book_09")
-    infoSection:SetPoint("TOPLEFT", logoFrame, "BOTTOMLEFT", 0, -20)
-    infoSection:SetPoint("RIGHT", -20, 0)
+    infoSection:SetPoint("TOPLEFT", logoFrame, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
+    infoSection:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
     infoSection:SetHeight(180)
     
     -- Create info grid
@@ -91,8 +103,8 @@ function BLU.CreateAboutPanel(panel)
     
     -- Features Section
     local featuresSection = BLU.Design:CreateSection(content, "Features", "Interface\\Icons\\Achievement_General")
-    featuresSection:SetPoint("TOPLEFT", infoSection, "BOTTOMLEFT", 0, -20)
-    featuresSection:SetPoint("RIGHT", -20, 0)
+    featuresSection:SetPoint("TOPLEFT", infoSection, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
+    featuresSection:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
     featuresSection:SetHeight(200)
     
     local features = {
@@ -117,8 +129,8 @@ function BLU.CreateAboutPanel(panel)
     
     -- Statistics Section
     local statsSection = BLU.Design:CreateSection(content, "Statistics", "Interface\\Icons\\Achievement_GuildPerk_CashFlow_Rank2")
-    statsSection:SetPoint("TOPLEFT", featuresSection, "BOTTOMLEFT", 0, -20)
-    statsSection:SetPoint("RIGHT", -20, 0)
+    statsSection:SetPoint("TOPLEFT", featuresSection, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
+    statsSection:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
     statsSection:SetHeight(120)
     
     -- Create stats display
@@ -158,8 +170,8 @@ function BLU.CreateAboutPanel(panel)
     
     -- Credits Section
     local creditsSection = BLU.Design:CreateSection(content, "Credits & Thanks", "Interface\\Icons\\Achievement_GuildPerk_Honorable Mention")
-    creditsSection:SetPoint("TOPLEFT", statsSection, "BOTTOMLEFT", 0, -20)
-    creditsSection:SetPoint("RIGHT", -20, 0)
+    creditsSection:SetPoint("TOPLEFT", statsSection, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
+    creditsSection:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
     creditsSection:SetHeight(100)
     
     local creditsText = creditsSection.content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")

@@ -35,7 +35,7 @@
 
 <!-- WoW Compatibility -->
 [![WoW Retail](https://img.shields.io/badge/WoW-The%20War%20Within-green?style=flat-square&logo=worldofwarcraft)](https://worldofwarcraft.com)
-[![Version](https://img.shields.io/badge/Version-v5.3.0--alpha-red?style=flat-square)](https://github.com/donniedice/BLU/releases)
+[![Version](https://img.shields.io/badge/Version-v6.0.0--alpha-red?style=flat-square)](https://github.com/donniedice/BLU/releases)
 
 </div>
 
@@ -96,12 +96,15 @@
 | 📈 **Reputation** | Custom sounds for reputation increases |
 | 📜 **Quests** | Unique sounds for quest accept/turn-in |
 | 🛒 **Trading Post** | Sounds for Trading Post activities |
-| 🔊 **Volume Control** | Independent volume adjustment for each sound type |
-| ⚙️ **Smart Management** | Automatically mutes default WoW sounds when replacing | All Versions |
-| 💾 **Persistent Settings** | Your preferences are saved between sessions | All Versions |
-| 🎨 **Professional UI** | Clean options panel with intuitive controls | All Versions |
-| 🛡️ **Error-Free** | Comprehensive error handling and validation | All Versions |
-| 🔧 **Debug Mode** | Built-in debugging for troubleshooting | All Versions |
+| 🔊 **Volume Control** | 3-tier volume system for BLU sounds (low/med/high) |
+| 🎚️ **Sound Channels** | Choose which audio channel to use (Master, Sound, Music, etc.) |
+| 🎛️ **Per-Event Override** | Customize volume for specific events |
+| 📦 **SharedMedia Support** | Compatible with external sound packs |
+| ⚙️ **Modular System** | Only load the features you need |
+| 💾 **Profile Support** | Save different configurations |
+| 🎨 **Modern UI** | Clean tabbed interface with dropdown menus |
+| 🛡️ **No Dependencies** | Standalone addon with no external libraries |
+| 🔧 **Debug Mode** | Built-in debugging for troubleshooting |
 
 </div>
 
@@ -172,11 +175,15 @@
 - **Renown**: Sounds for renown reputation gains (Retail only)
 - **Delve Companion**: Level-up sounds for your companion (Retail only)
 
-### Volume Options:
-Each sound type has three volume levels:
-- **High**: Full volume for maximum impact
-- **Medium**: Balanced volume (default)
-- **Low**: Subtle volume for background play
+### Sound System:
+**BLU uses a 3-tier sound system:**
+
+1. **Default WoW Sounds**: Original game sounds (no volume control)
+2. **BLU Internal Sounds**: Custom sounds with 3 volume variants:
+   - **High**: Full volume for maximum impact
+   - **Medium**: Balanced volume (default)
+   - **Low**: Subtle volume for background play
+3. **External Sounds**: SharedMedia/SoundPak integration (plays at full volume)
 
 ## 🎮 Compatibility
 
@@ -184,7 +191,7 @@ Each sound type has three volume levels:
 
 ### 🌍 **Supported WoW Versions**
 
-**BLU v5.3.0-alpha supports World of Warcraft Retail only.**
+**BLU v6.0.0-alpha supports World of Warcraft Retail only.**
 
 | WoW Version | Interface | Status |
 |-------------|-----------|---------|
@@ -207,11 +214,17 @@ Each sound type has three volume levels:
 
 3. **Restart** WoW and enable in AddOns menu
 
-## 🆕 Looking for Classic Support?
+## 🆕 What's New in v6.0.0-alpha
 
+### Major Updates:
+- **Complete Rewrite**: No external dependencies (removed Ace3)
+- **Modern UI**: Tabbed interface with dropdown menus
+- **Enhanced Volume Control**: Per-event volume overrides
+- **Better Performance**: Modular loading system
+- **RGXMods Integration**: Community features and support
+
+### Looking for Classic Support?
 <div align="center">
-
-### 🌟 **Try BLU Classic!**
 
 [![BLU Classic](https://img.shields.io/badge/BLU%20Classic-Universal%20Version-FFD700?style=for-the-badge&logo=worldofwarcraft)](https://github.com/donniedice/BLU_Classic)
 

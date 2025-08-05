@@ -129,27 +129,31 @@ function SoundRegistry:PlaySound(soundId, volume)
         willPlay = PlaySound(sound.soundKit, channel)
         handle = sound.soundKit
     elseif sound.file then
-        -- For BLU's internal sounds with volume variants
-        if sound.isInternal and volume < 1.0 then
-            -- Choose appropriate volume variant based on volume setting
+        -- Check if this is a BLU internal sound with volume variants
+        if sound.isInternal or sound.hasVolumeVariants then
+            -- BLU internal sounds have _low, _med, _high variants
             local variant
             if volume <= 0.33 then
-                variant = "low"
+                variant = "_low"
             elseif volume <= 0.66 then
-                variant = "med"
+                variant = "_med"
             else
-                variant = "high"
+                variant = "_high"
             end
             
-            -- Try to find volume variant file
-            local variantFile = sound.file:gsub("%.ogg$", "_" .. variant .. ".ogg")
-            if variantFile ~= sound.file then
-                willPlay, handle = PlaySoundFile(variantFile, channel)
-            else
+            -- Build the variant file path
+            local baseFile = sound.baseFile or sound.file:gsub("_high%.ogg$", ""):gsub("_med%.ogg$", ""):gsub("_low%.ogg$", ""):gsub("%.ogg$", "")
+            local variantFile = baseFile .. variant .. ".ogg"
+            
+            willPlay, handle = PlaySoundFile(variantFile, channel)
+            
+            if not willPlay then
+                -- Fallback to base file if variant not found
                 willPlay, handle = PlaySoundFile(sound.file, channel)
             end
         else
-            -- External sounds or full volume - play as is
+            -- External sounds, SoundPaks, or BLU sounds without variants
+            -- These play at full volume on the specified channel
             willPlay, handle = PlaySoundFile(sound.file, channel)
         end
     else
@@ -160,8 +164,8 @@ function SoundRegistry:PlaySound(soundId, volume)
     if willPlay then
         BLU:PrintDebug(string.format("Playing sound: %s (volume: %.2f, channel: %s)", soundId, volume, channel))
         
-        -- Show in chat if debug mode is on
-        if BLU.db and BLU.db.profile and BLU.db.profile.debugMode then
+        -- Show in chat if enabled
+        if BLU.db and BLU.db.profile and BLU.db.profile.showSoundNames then
             BLU:Print(string.format("|cff00ff00Playing:|r %s", sound.name or soundId))
         end
         
@@ -184,115 +188,91 @@ end
 
 -- Play sound for a specific event category
 function SoundRegistry:PlayCategorySound(category, forceSound)
+    -- Check if muted in instances
+    if BLU.db and BLU.db.profile and BLU.db.profile.muteInInstances then
+        local inInstance, instanceType = IsInInstance()
+        if inInstance and (instanceType == "party" or instanceType == "raid" or instanceType == "arena" or instanceType == "pvp") then
+            BLU:PrintDebug("Sound muted in instance")
+            return false
+        end
+    end
+    
+    -- Check if muted in combat
+    if BLU.db and BLU.db.profile and BLU.db.profile.muteInCombat and InCombatLockdown() then
+        BLU:PrintDebug("Sound muted in combat")
+        return false
+    end
+    
+    -- Check if module is enabled
+    if BLU.db and BLU.db.profile and BLU.db.profile.modules and BLU.db.profile.modules[category] == false then
+        BLU:PrintDebug("Module disabled for category: " .. category)
+        return false
+    end
+    
     -- Get selected sound for category
     local selectedSound = forceSound
     if not selectedSound and BLU.db and BLU.db.profile and BLU.db.profile.selectedSounds then
         selectedSound = BLU.db.profile.selectedSounds[category]
     end
     
-    -- Check if it's an external sound
-    if selectedSound and selectedSound:match("^external:") then
+    -- Default to "default" if nothing selected
+    if not selectedSound then
+        selectedSound = "default"
+    end
+    
+    -- Handle different sound types
+    if selectedSound == "default" then
+        -- Play the default WoW sound for this category
+        local defaultSounds = {
+            levelup = 888,  -- LEVELUPSOUND
+            achievement = 12891,  -- Achievement sound
+            quest = 618,  -- QuestComplete
+            reputation = 12197,  -- Reputation change
+            honorrank = 12173,  -- PVP Reward sound
+            renownrank = 167404,  -- Renown rank up
+            tradingpost = 179114,  -- Trading post sound
+            battlepet = 65978,  -- Pet battle victory
+            delvecompanion = 182235  -- Delve companion sound
+        }
+        
+        local soundKit = defaultSounds[category]
+        if soundKit then
+            local channel = BLU.db.profile.soundChannel or "Master"
+            return PlaySound(soundKit, channel)
+        end
+        
+    elseif selectedSound:match("^external:") then
+        -- External sound from SharedMedia
         local externalName = selectedSound:gsub("^external:", "")
         if BLU.PlayExternalSound then
             return BLU:PlayExternalSound(externalName)
         end
-    end
-    
-    -- Check if random sounds are enabled
-    if BLU.db and BLU.db.profile and BLU.db.profile.randomSounds then
-        -- Get all sounds for this category
-        local categorySounds = self:GetSoundsByCategory(category)
-        local soundList = {}
         
-        for soundId in pairs(categorySounds) do
-            table.insert(soundList, soundId)
-        end
+    elseif selectedSound:match("^blu_") or selectedSound:match("^%w+_") then
+        -- BLU internal sound pack
+        local soundId = selectedSound .. "_" .. category
+        return self:PlaySound(soundId)
         
-        if #soundList > 0 then
-            local randomIndex = math.random(1, #soundList)
-            return self:PlaySound(soundList[randomIndex])
-        end
     else
-        -- Use selected sound for category
-        if selectedSound and selectedSound ~= "default" and not selectedSound:match("^external:") then
-            -- Build sound ID from game + category
-            local soundId = selectedSound .. "_" .. category
-            
-            -- Try to play the sound
-            if self.sounds[soundId] then
-                return self:PlaySound(soundId)
-            else
-                BLU:PrintDebug("Sound not found: " .. soundId)
-            end
-        elseif selectedSound == "default" then
-            -- Play default WoW sound if available
-            return self:PlayDefaultSound(category)
-        end
+        -- Direct sound ID
+        return self:PlaySound(selectedSound)
     end
     
     return false
 end
 
--- Play default WoW sounds
-function SoundRegistry:PlayDefaultSound(category)
-    local defaultSounds = {
-        levelup = 888,     -- gsTitleIntroMovie
-        achievement = 12891, -- Achievement sound
-        quest = 618,       -- QuestComplete
-        reputation = 12198, -- Reputation change
-        honorrank = 8455,  -- PVP Reward
-        renownrank = 168610, -- Renown rank up
-        tradingpost = 179115, -- Trading post fanfare
-        battlepet = 65973,  -- Pet battle victory
-        delvecompanion = 182216 -- Delve complete
+-- Helper to get sound info
+function SoundRegistry:GetSoundInfo(soundId)
+    local sound = self.sounds[soundId]
+    if not sound then return nil end
+    
+    return {
+        id = soundId,
+        name = sound.name,
+        file = sound.file,
+        soundKit = sound.soundKit,
+        duration = sound.duration,
+        category = sound.category,
+        hasVolumeVariants = sound.hasVolumeVariants
     }
-    
-    local soundKit = defaultSounds[category]
-    if soundKit then
-        local channel = "Master"
-        if BLU.db and BLU.db.profile and BLU.db.profile.soundChannel then
-            channel = BLU.db.profile.soundChannel
-        end
-        PlaySound(soundKit, channel)
-        BLU:PrintDebug(string.format("Playing default sound for %s (soundKit: %d)", category, soundKit))
-        return true
-    end
-    
-    return false
 end
-
--- Get sound list for UI
-function SoundRegistry:GetSoundList(category, includeNone)
-    local list = {}
-    
-    if includeNone then
-        list["None"] = BLU:Loc("SOUND_NONE") or "None"
-    end
-    
-    -- Add sounds from category or all
-    local sounds = category and self:GetSoundsByCategory(category) or self.sounds
-    
-    for soundId, soundData in pairs(sounds) do
-        list[soundId] = soundData.name or soundId
-    end
-    
-    return list
-end
-
--- Helper functions for options
-function BLU:GetSoundList(soundType)
-    if not BLU.Modules.registry then return {} end
-    return BLU.Modules.registry:GetSoundList(soundType)
-end
-
-function BLU:GetSoundName(soundId)
-    if not soundId or not BLU.Modules.registry then return nil end
-    local sounds = BLU.Modules.registry:GetAllSounds()
-    return sounds[soundId] and sounds[soundId].name or nil
-end
-
--- Export module
--- Register module
-BLU.Modules = BLU.Modules or {}
-BLU.Modules["registry"] = SoundRegistry
-return SoundRegistry

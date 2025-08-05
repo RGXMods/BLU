@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-BLU (Better Level-Up!) is a World of Warcraft addon that replaces default sounds with iconic audio from 50+ games. It's currently in v5.3.0-alpha, undergoing a complete modular rewrite without external library dependencies.
+BLU (Better Level-Up!) is a World of Warcraft addon that replaces default sounds with iconic audio from 50+ games. It's currently in v6.0.0-alpha, featuring a complete modular rewrite without external library dependencies.
 
 **Key Points:**
 - Retail WoW only (Classic support moved to BLU_Classic repo)
@@ -73,7 +73,7 @@ xcopy /E /Y /I "C:\Users\donniedice\BLU" "C:\Program Files (x86)\World of Warcra
 - Alpha branch: active development
 - Commit with co-author: `Co-Authored-By: Claude <noreply@anthropic.com>`
 
-## Current State (v5.3.0-alpha)
+## Current State (v6.0.0-alpha)
 
 ### Completed Features
 - Complete modular rewrite without Ace3

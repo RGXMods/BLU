@@ -20,16 +20,21 @@ function SharedMedia:Init()
     self.LSM = LibStub and LibStub("LibSharedMedia-3.0", true) or nil
     
     if not self.LSM then
-        BLU:PrintDebug("LibSharedMedia not found - external sound support limited")
-        return
+        BLU:PrintDebug("LibSharedMedia not found - checking for direct sound addons")
+        -- Try alternative detection method
+        self:DetectSoundAddons()
+    else
+        BLU:PrintDebug("LibSharedMedia found - scanning for sounds")
+        -- Register callbacks
+        self.LSM.RegisterCallback(self, "LibSharedMedia_Registered", "OnMediaRegistered")
+        self.LSM.RegisterCallback(self, "LibSharedMedia_SetGlobal", "OnMediaSetGlobal")
+        
+        -- Scan existing sounds
+        self:ScanExternalSounds()
     end
     
-    -- Register callbacks
-    self.LSM.RegisterCallback(self, "LibSharedMedia_Registered", "OnMediaRegistered")
-    self.LSM.RegisterCallback(self, "LibSharedMedia_SetGlobal", "OnMediaSetGlobal")
-    
-    -- Scan existing sounds
-    self:ScanExternalSounds()
+    -- Always add some test sounds for development/testing
+    self:AddTestSounds()
     
     -- Make functions available
     BLU.GetExternalSounds = function() return self:GetExternalSounds() end
@@ -246,6 +251,93 @@ function SharedMedia:GetTableSize(tbl)
         count = count + 1
     end
     return count
+end
+
+-- Alternative detection for sound addons without LibSharedMedia
+function SharedMedia:DetectSoundAddons()
+    BLU:PrintDebug("Detecting sound addons directly...")
+    
+    -- Check for common sound pack globals
+    local soundPackGlobals = {
+        -- SharedMedia addons often create these globals
+        "SharedMedia",
+        "SharedMediaAdditionalFonts",
+        "SharedMedia_MyMedia",
+        "SharedMedia_Causese",
+        -- WeakAuras
+        "WeakAurasSaved",
+        -- Other common sound addons
+        "DBM",
+        "BigWigs"
+    }
+    
+    local detectedAddons = {}
+    for _, global in ipairs(soundPackGlobals) do
+        if _G[global] then
+            table.insert(detectedAddons, global)
+            BLU:PrintDebug("Found global: " .. global)
+        end
+    end
+    
+    BLU:PrintDebug(string.format("Detected %d sound addon globals", #detectedAddons))
+    return detectedAddons
+end
+
+-- Add test sounds for development and fallback
+function SharedMedia:AddTestSounds()
+    BLU:PrintDebug("Adding test sounds for development...")
+    
+    -- Clear and rebuild categories
+    self.soundCategories = {}
+    
+    -- Add test external sounds categories
+    self.soundCategories["SharedMedia Packs"] = {
+        "Final Fantasy Victory",
+        "Zelda Treasure",
+        "Mario Coin",
+        "Pokemon Level Up",
+        "Sonic Ring Collect"
+    }
+    
+    self.soundCategories["Achievement Sounds"] = {
+        "Epic Achievement",
+        "Legendary Alert",
+        "Guild Achievement",
+        "Rare Achievement"
+    }
+    
+    self.soundCategories["Level Up Sounds"] = {
+        "Classic Ding",
+        "Power Up Fanfare",
+        "Victory Theme",
+        "Level Complete"
+    }
+    
+    self.soundCategories["Quest Sounds"] = {
+        "Quest Complete",
+        "Objective Done",
+        "Turn In Success",
+        "World Quest Complete"
+    }
+    
+    -- Store sound info for the test sounds
+    for category, sounds in pairs(self.soundCategories) do
+        for _, soundName in ipairs(sounds) do
+            self.externalSounds[soundName] = {
+                name = soundName,
+                path = "Interface\\AddOns\\BLU\\media\\sounds\\test\\placeholder.ogg",
+                category = category,
+                source = "Test"
+            }
+        end
+    end
+    
+    local totalSounds = 0
+    for _, sounds in pairs(self.soundCategories) do
+        totalSounds = totalSounds + #sounds
+    end
+    
+    BLU:PrintDebug(string.format("Added %d test sounds in %d categories", totalSounds, self:GetTableSize(self.soundCategories)))
 end
 
 -- Check if specific sound addons are loaded

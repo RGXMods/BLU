@@ -25,6 +25,7 @@ BLU:RegisterEvent("ADDON_LOADED", function(event, addon)
         "localization",  -- Has Init()
         "sharedmedia",   -- Has Init() - external sound detection
         "registry",      -- Has Init()
+        "internal_sounds", -- Has Init() - BLU internal sounds
         "loader",        -- Has Init()
         "options_new"    -- New UI system
         -- "config" and "utils" don't have Init()

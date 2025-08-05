@@ -53,7 +53,10 @@ BLU.Design = {
         PanelWidth = 700,
         PanelHeight = 600,
         HeaderHeight = 100,
-        TabHeight = 32,
+        TabWidth = 85,
+        TabHeight = 24,
+        TabSpacing = 3,
+        TabRowHeight = 27, -- 24 height + 3 spacing
         Padding = 20,
         Spacing = 10,
         ColumnGap = 20,
@@ -192,6 +195,62 @@ function BLU.Design:CreateCheckbox(parent, label, tooltip)
     return frame
 end
 
+-- Create styled dropdown
+function BLU.Design:CreateDropdown(parent, label, width)
+    local container = CreateFrame("Frame", nil, parent)
+    container:SetHeight(45)
+    
+    -- Label
+    local labelText = container:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    labelText:SetPoint("TOPLEFT", 0, 0)
+    labelText:SetText(label)
+    labelText:SetTextColor(unpack(self.Colors.Text))
+    
+    -- Dropdown with better styling
+    local dropdown = CreateFrame("Frame", nil, container, "UIDropDownMenuTemplate")
+    dropdown:SetPoint("TOPLEFT", labelText, "BOTTOMLEFT", -16, -5)
+    UIDropDownMenu_SetWidth(dropdown, width or 200)
+    
+    -- Store reference to self for the delayed function
+    local design = self
+    
+    -- Style the dropdown after it's created (needs to be delayed)
+    C_Timer.After(0.01, function()
+        local button = _G[dropdown:GetName() .. "Button"]
+        if button then
+            -- Update button texture for better visibility
+            button:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Up")
+            button:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Down")
+            button:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+            
+            -- Resize and position
+            button:SetSize(16, 16)
+            button:ClearAllPoints()
+            button:SetPoint("RIGHT", dropdown, "RIGHT", -10, 0)
+        end
+        
+        -- Style the dropdown background parts
+        local middle = _G[dropdown:GetName() .. "Middle"]
+        local left = _G[dropdown:GetName() .. "Left"]  
+        local right = _G[dropdown:GetName() .. "Right"]
+        
+        if middle then middle:SetVertexColor(0.15, 0.15, 0.15, 1) end
+        if left then left:SetVertexColor(0.15, 0.15, 0.15, 1) end
+        if right then right:SetVertexColor(0.15, 0.15, 0.15, 1) end
+        
+        -- Style the dropdown text
+        local text = _G[dropdown:GetName() .. "Text"]
+        if text then
+            text:SetTextColor(unpack(design.Colors.Text))
+        end
+    end)
+    
+    container.label = labelText
+    container.dropdown = dropdown
+    
+    return container
+end
+
 -- Create section container
 function BLU.Design:CreateSection(parent, title, icon)
     local section = CreateFrame("Frame", nil, parent)
@@ -216,12 +275,12 @@ function BLU.Design:CreateSection(parent, title, icon)
         header:SetPoint("TOPRIGHT", -8, -8)
         section.header = header
         section.content = CreateFrame("Frame", nil, section)
-        section.content:SetPoint("TOPLEFT", 8, -32)
-        section.content:SetPoint("BOTTOMRIGHT", -8, 8)
+        section.content:SetPoint("TOPLEFT", 15, -32)
+        section.content:SetPoint("BOTTOMRIGHT", -15, 8)
     else
         section.content = CreateFrame("Frame", nil, section)
-        section.content:SetPoint("TOPLEFT", 8, -8)
-        section.content:SetPoint("BOTTOMRIGHT", -8, 8)
+        section.content:SetPoint("TOPLEFT", 15, -8)
+        section.content:SetPoint("BOTTOMRIGHT", -15, 8)
     end
     
     return section

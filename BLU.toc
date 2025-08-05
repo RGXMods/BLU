@@ -1,5 +1,5 @@
 ## Interface: 110105
-## Version: v5.3.0-alpha
+## Version: v6.0.0-alpha
 ## Title: |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel-|r|cff05dffaU|r|cffffffffp!|r |cffff0000[ALPHA]|r 
 ## Notes: Play sounds from other games!  |n|r  |cff05dffa/blu -|r Open options panel  |n|r   |cff05dffaBy DonnieDice|r
 ## Author: DonnieDice

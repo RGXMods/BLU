@@ -1,4 +1,4 @@
-# BLU Architecture Documentation
+# BLU v6.0.0-alpha Architecture Documentation
 
 ## Core Architecture Overview
 

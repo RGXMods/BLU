@@ -1,4 +1,4 @@
-# SharedMedia Compatibility Guide
+# BLU v6.0.0-alpha SharedMedia Compatibility Guide
 
 ## Overview
 

@@ -5,6 +5,9 @@
     <Script file="browser.lua"/>
     <Script file="internal_sounds.lua"/>
     
+    <!-- WoW built-in sounds -->
+    <Script file="packs/wowsounds.lua"/>
+    
     <!-- Legacy sound packs - will be removed -->
     <!-- <Script file="packs/wowdefault.lua"/> -->
     <!-- <Script file="packs/finalfantasy.lua"/> -->

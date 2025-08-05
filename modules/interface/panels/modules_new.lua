@@ -6,13 +6,25 @@
 local addonName, BLU = ...
 
 function BLU.CreateModulesPanel(panel)
-    -- Create scrollable content
+    -- Create scrollable content with proper sizing
     local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
-    scrollFrame:SetPoint("TOPLEFT", 20, -20)
-    scrollFrame:SetPoint("BOTTOMRIGHT", -40, 20)
+    scrollFrame:SetPoint("TOPLEFT", 20, -15)
+    scrollFrame:SetPoint("BOTTOMRIGHT", -40, 15)
+    
+    -- Add scroll frame background
+    local scrollBg = scrollFrame:CreateTexture(nil, "BACKGROUND")
+    scrollBg:SetAllPoints()
+    scrollBg:SetColorTexture(0.05, 0.05, 0.05, 0.3)
     
     local content = CreateFrame("Frame", nil, scrollFrame)
-    content:SetSize(scrollFrame:GetWidth() - 20, 800)
+    -- Calculate proper content width based on scroll frame
+    C_Timer.After(0.01, function()
+        if scrollFrame:GetWidth() then
+            content:SetSize(scrollFrame:GetWidth() - 25, 800)
+        else
+            content:SetSize(600, 800)
+        end
+    end)
     scrollFrame:SetScrollChild(content)
     
     -- Header

@@ -1,5 +1,1 @@
-.git\
-.github\
-.vscode\
-.gitignore
-exclude.txt
+.git

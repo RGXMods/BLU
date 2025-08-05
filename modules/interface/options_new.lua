@@ -27,6 +27,11 @@ function Options:Init()
         return self:OpenOptions()
     end
     
+    -- Test SharedMedia availability
+    BLU.TestSharedMedia = function()
+        return self:TestSharedMedia()
+    end
+    
     BLU:PrintDebug("[Options] Functions registered")
     
     -- Create the panel after database is initialized
@@ -42,6 +47,59 @@ function Options:Init()
     end
     
     C_Timer.After(0.1, tryCreatePanel)
+end
+
+-- Test SharedMedia functionality
+function Options:TestSharedMedia()
+    BLU:Print("=== SharedMedia Debug Test ===")
+    
+    -- Test LibStub
+    local hasLibStub = LibStub ~= nil
+    BLU:Print(string.format("LibStub available: %s", tostring(hasLibStub)))
+    
+    if hasLibStub then
+        local LSM = LibStub("LibSharedMedia-3.0", true)
+        local hasLSM = LSM ~= nil
+        BLU:Print(string.format("LibSharedMedia-3.0 available: %s", tostring(hasLSM)))
+        
+        if hasLSM then
+            local soundList = LSM:List("sound")
+            BLU:Print(string.format("LSM sound count: %d", soundList and #soundList or 0))
+            
+            if soundList and #soundList > 0 then
+                BLU:Print("First 5 LSM sounds:")
+                for i = 1, math.min(5, #soundList) do
+                    BLU:Print(string.format("  %d. %s", i, soundList[i]))
+                end
+            end
+        end
+    end
+    
+    -- Test BLU SharedMedia module
+    local hasBLUSharedMedia = BLU.Modules.sharedmedia ~= nil
+    BLU:Print(string.format("BLU SharedMedia module exists: %s", tostring(hasBLUSharedMedia)))
+    
+    if hasBLUSharedMedia then
+        local hasGetSoundCategories = BLU.Modules.sharedmedia.GetSoundCategories ~= nil
+        BLU:Print(string.format("GetSoundCategories function exists: %s", tostring(hasGetSoundCategories)))
+        
+        if hasGetSoundCategories then
+            local categories = BLU.Modules.sharedmedia:GetSoundCategories()
+            local categoriesType = type(categories)
+            BLU:Print(string.format("Categories type: %s", categoriesType))
+            
+            if categoriesType == "table" then
+                local count = 0
+                for category, sounds in pairs(categories) do
+                    count = count + 1
+                    BLU:Print(string.format("  Category '%s': %d sounds", category, sounds and #sounds or 0))
+                end
+                BLU:Print(string.format("Total categories: %d", count))
+            end
+        end
+    end
+    
+    BLU:Print("=== End SharedMedia Test ===")
 end
 
 -- Create tab button with SimpleQuestPlates style
@@ -61,11 +119,11 @@ local function CreateTabButton(parent, text, index, row, col, panel)
     bg:SetColorTexture(0.1, 0.1, 0.1, 0.8)
     button.bg = bg
     
-    -- Border frame (SQP style)
+    -- Border frame (Updated for Dragonflight)
     local border = CreateFrame("Frame", nil, button, "BackdropTemplate")
     border:SetAllPoints()
     border:SetBackdrop({
-        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+        edgeFile = "Interface\\Buttons\\WHITE8x8",
         edgeSize = 1,
     })
     border:SetBackdropBorderColor(0.3, 0.3, 0.3, 1)
@@ -201,7 +259,7 @@ function Options:CreateOptionsPanel()
     
     -- Tab container (SQP style tabs) - multiple rows
     local tabContainer = CreateFrame("Frame", nil, container)
-    tabContainer:SetHeight(85)  -- 3 rows * 26 height + spacing + padding
+    tabContainer:SetHeight(60)  -- 2 rows * 27 height + spacing
     tabContainer:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -10)
     tabContainer:SetPoint("TOPRIGHT", header, "BOTTOMRIGHT", 0, -10)
     
@@ -210,7 +268,7 @@ function Options:CreateOptionsPanel()
     tabBg:SetAllPoints()
     tabBg:SetColorTexture(0.03, 0.03, 0.03, 0.6)
     
-    -- Create tabs for each sound event type (no icons) - modules tab removed
+    -- Create tabs for each sound event type (no icons)
     local tabs = {
         -- Row 1
         {text = "General", create = BLU.CreateGeneralPanel, row = 1, col = 1},
@@ -224,10 +282,7 @@ function Options:CreateOptionsPanel()
         {text = "Renown", eventType = "renownrank", row = 2, col = 2},
         {text = "Trading Post", eventType = "tradingpost", row = 2, col = 3},
         {text = "Delve", eventType = "delvecompanion", row = 2, col = 4},
-        {text = "Sounds", create = BLU.CreateSoundsPanel, row = 2, col = 5},
-        {text = "About", create = BLU.CreateAboutPanel, row = 2, col = 6},
-        -- Row 3
-        {text = "RGXMods", create = BLU.CreateRGXModsPanel, row = 3, col = 1}
+        {text = "About", create = BLU.CreateAboutPanel, row = 2, col = 5}
     }
     
     panel.tabs = {}
@@ -237,10 +292,10 @@ function Options:CreateOptionsPanel()
         local tab = CreateTabButton(tabContainer, tabInfo.text, i, tabInfo.row, tabInfo.col, panel)
         panel.tabs[i] = tab
         
-        -- Create content frame with proper positioning
+        -- Create content frame with proper positioning using design constants
         local content = CreateFrame("Frame", nil, container, "BackdropTemplate")
-        content:SetPoint("TOPLEFT", tabContainer, "BOTTOMLEFT", 10, -10)
-        content:SetPoint("BOTTOMRIGHT", container, "BOTTOMRIGHT", -15, 15)
+        content:SetPoint("TOPLEFT", tabContainer, "BOTTOMLEFT", BLU.Design.Layout.Padding, -BLU.Design.Layout.Spacing)
+        content:SetPoint("BOTTOMRIGHT", container, "BOTTOMRIGHT", -BLU.Design.Layout.Padding, BLU.Design.Layout.Spacing)
         content:SetBackdrop(BLU.Design.Backdrops.Dark)
         content:SetBackdropColor(0.08, 0.08, 0.08, 0.9)
         content:SetBackdropBorderColor(0.15, 0.15, 0.15, 1)
@@ -316,10 +371,10 @@ end
 
 -- Create event sound panel for each tab
 function BLU.CreateEventSoundPanel(panel, eventType, eventName)
-    -- Create scrollable content with proper sizing
+    -- Create scrollable content with proper sizing aligned to content frame
     local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
-    scrollFrame:SetPoint("TOPLEFT", BLU.Design.Layout.Padding, -BLU.Design.Layout.Spacing)
-    scrollFrame:SetPoint("BOTTOMRIGHT", -35, BLU.Design.Layout.Spacing)
+    scrollFrame:SetPoint("TOPLEFT", BLU.Design.Layout.Padding/2, -BLU.Design.Layout.Padding/2)
+    scrollFrame:SetPoint("BOTTOMRIGHT", -30, BLU.Design.Layout.Padding/2)
     
     -- Add scroll frame background for better visibility
     local scrollBg = scrollFrame:CreateTexture(nil, "BACKGROUND")
@@ -329,19 +384,19 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     local content = CreateFrame("Frame", nil, scrollFrame)
     -- Set size dynamically after frame is ready
     C_Timer.After(0.01, function()
-        if scrollFrame:GetWidth() then
-            content:SetSize(scrollFrame:GetWidth() - 25, 600) -- Increased height for volume control
+        if scrollFrame:GetWidth() and scrollFrame:GetWidth() > 0 then
+            content:SetSize(scrollFrame:GetWidth() - 25, 800) -- Increased height for all sections
         else
-            content:SetSize(600, 600) -- Increased height for volume control
+            content:SetSize(650, 800) -- Increased fallback size
         end
     end)
     scrollFrame:SetScrollChild(content)
     
     -- Event header
     local header = CreateFrame("Frame", nil, content)
-    header:SetHeight(40)
-    header:SetPoint("TOPLEFT", BLU.Design.Layout.Spacing, -BLU.Design.Layout.Spacing)
-    header:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
+    header:SetHeight(50)
+    header:SetPoint("TOPLEFT", BLU.Design.Layout.Padding, -BLU.Design.Layout.Padding)
+    header:SetPoint("RIGHT", -BLU.Design.Layout.Padding, 0)
     
     local icon = header:CreateTexture(nil, "ARTWORK")
     icon:SetSize(32, 32)
@@ -367,13 +422,13 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     -- Module enable/disable section with better styling
     local moduleSection = BLU.Design:CreateSection(content, "Module Control", "Interface\\Icons\\INV_Misc_Gear_08")
     moduleSection:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
-    moduleSection:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
-    moduleSection:SetHeight(80)
+    moduleSection:SetPoint("RIGHT", -BLU.Design.Layout.Padding, 0)
+    moduleSection:SetHeight(120) -- Increased height for better spacing
     
     -- Enable toggle with description
     local toggleFrame = CreateFrame("Frame", nil, moduleSection.content)
     toggleFrame:SetPoint("TOPLEFT", BLU.Design.Layout.Spacing, -BLU.Design.Layout.Spacing)
-    toggleFrame:SetSize(400, 50)
+    toggleFrame:SetSize(500, 60)
     
     -- Toggle switch (styled like the modules panel)
     local switchFrame = CreateFrame("Frame", nil, toggleFrame)
@@ -453,8 +508,8 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     -- Sound selection section
     local soundSection = BLU.Design:CreateSection(content, "Sound Selection", "Interface\\Icons\\INV_Misc_Bell_01")
     soundSection:SetPoint("TOPLEFT", moduleSection, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
-    soundSection:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
-    soundSection:SetHeight(350) -- Increased height for volume control
+    soundSection:SetPoint("RIGHT", -BLU.Design.Layout.Padding, 0)
+    soundSection:SetHeight(500) -- Increased height for all content
     
     -- Current sound display
     local currentLabel = soundSection.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
@@ -465,8 +520,8 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     currentSound:SetPoint("LEFT", currentLabel, "RIGHT", BLU.Design.Layout.Spacing, 0)
     
     -- Test button
-    local testBtn = BLU.Design:CreateButton(soundSection.content, "Test", 60, 22)
-    testBtn:SetPoint("LEFT", currentSound, "RIGHT", BLU.Design.Layout.Spacing, 0)
+    local testBtn = BLU.Design:CreateButton(soundSection.content, "Test", 80, 25)
+    testBtn:SetPoint("LEFT", currentSound, "RIGHT", BLU.Design.Layout.Padding, 0)
     testBtn:SetScript("OnClick", function(self)
         -- Visual feedback
         self:SetText("Playing...")
@@ -488,13 +543,35 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     
     -- Sound dropdown with submenus using new design system
     local dropdownContainer = BLU.Design:CreateDropdown(soundSection.content, "Select Sound:", 280)
-    dropdownContainer:SetPoint("TOPLEFT", currentLabel, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
+    dropdownContainer:SetPoint("TOPLEFT", currentLabel, "BOTTOMLEFT", 0, -(BLU.Design.Layout.Spacing + 10))
     local dropdown = dropdownContainer.dropdown
     
     -- Initialize dropdown with sounds
     dropdown.eventId = eventType
     UIDropDownMenu_Initialize(dropdown, function(self, level, menuList)
         level = level or 1
+        
+        -- Debug SharedMedia state
+        if level == 1 then
+            BLU:PrintDebug(string.format("[Options] Initializing dropdown for %s", eventType))
+            BLU:PrintDebug(string.format("[Options] SharedMedia module exists: %s", tostring(BLU.Modules.sharedmedia ~= nil)))
+            if BLU.Modules.sharedmedia then
+                BLU:PrintDebug(string.format("[Options] GetSoundCategories function exists: %s", 
+                    tostring(BLU.Modules.sharedmedia.GetSoundCategories ~= nil)))
+                if BLU.Modules.sharedmedia.GetSoundCategories then
+                    local categories = BLU.Modules.sharedmedia:GetSoundCategories()
+                    BLU:PrintDebug(string.format("[Options] Categories type: %s", type(categories)))
+                    if type(categories) == "table" then
+                        local count = 0
+                        for k, v in pairs(categories) do
+                            count = count + 1
+                            BLU:PrintDebug(string.format("[Options] Category '%s' has %d sounds", k, v and #v or 0))
+                        end
+                        BLU:PrintDebug(string.format("[Options] Total categories: %d", count))
+                    end
+                end
+            end
+        end
         
         -- Ensure database exists
         if not BLU.db or not BLU.db.profile then
@@ -511,6 +588,7 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
                 BLU.db.profile.selectedSounds[self.eventId] = "default"
                 UIDropDownMenu_SetText(self, "Default WoW Sound")
                 currentSound:SetText("Default WoW Sound")
+                CloseDropDownMenus()
                 if dropdown.UpdateVolumeVisibility then
                     dropdown.UpdateVolumeVisibility()
                 end
@@ -535,18 +613,29 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
             UIDropDownMenu_AddButton(info, level)
             
             -- External sounds by category
-            if BLU.Modules.sharedmedia then
-                local categories = BLU.Modules.sharedmedia:GetSoundCategories()
-                for category, sounds in pairs(categories) do
-                    if #sounds > 0 then
-                        info = UIDropDownMenu_CreateInfo()
-                        info.text = category .. " (" .. #sounds .. ")"
-                        info.value = category
-                        info.hasArrow = true
-                        info.menuList = category
-                        UIDropDownMenu_AddButton(info, level)
+            if BLU.Modules.sharedmedia and BLU.Modules.sharedmedia.GetSoundCategories then
+                local success, categories = pcall(function() return BLU.Modules.sharedmedia:GetSoundCategories() end)
+                if success and categories and type(categories) == "table" then
+                    local categoryCount = 0
+                    for category, sounds in pairs(categories) do
+                        if sounds and type(sounds) == "table" and #sounds > 0 then
+                            categoryCount = categoryCount + 1
+                            info = UIDropDownMenu_CreateInfo()
+                            info.text = category .. " (" .. #sounds .. ")"
+                            info.value = category
+                            info.hasArrow = true
+                            info.menuList = category
+                            UIDropDownMenu_AddButton(info, level)
+                        end
                     end
+                    if categoryCount == 0 then
+                        BLU:PrintDebug("[Options] SharedMedia has no valid sound categories")
+                    end
+                else
+                    BLU:PrintDebug("[Options] SharedMedia GetSoundCategories failed or returned invalid data")
                 end
+            else
+                BLU:PrintDebug("[Options] SharedMedia module not available or missing GetSoundCategories function")
             end
         elseif level == 2 then
             if menuList == "blu_builtin" then
@@ -670,24 +759,31 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
                 end
             else
                 -- External sounds from category
-                local sounds = BLU.Modules.sharedmedia:GetSoundCategories()[menuList]
-                if sounds then
-                    for _, soundName in ipairs(sounds) do
-                        local info = UIDropDownMenu_CreateInfo()
-                        info.text = soundName
-                        info.value = "external:" .. soundName
-                        info.func = function()
-                            BLU.db.profile.selectedSounds[dropdown.eventId] = "external:" .. soundName
-                            UIDropDownMenu_SetText(dropdown, soundName .. " (External)")
-                            currentSound:SetText(soundName .. " (External)")
-                            CloseDropDownMenus()
-                            if dropdown.UpdateVolumeVisibility then
-                                dropdown.UpdateVolumeVisibility()
+                if BLU.Modules.sharedmedia and BLU.Modules.sharedmedia.GetSoundCategories then
+                    local categories = BLU.Modules.sharedmedia:GetSoundCategories()
+                    local sounds = categories and categories[menuList]
+                    if sounds and type(sounds) == "table" then
+                        for _, soundName in ipairs(sounds) do
+                            local info = UIDropDownMenu_CreateInfo()
+                            info.text = soundName
+                            info.value = "external:" .. soundName
+                            info.func = function()
+                                BLU.db.profile.selectedSounds[dropdown.eventId] = "external:" .. soundName
+                                UIDropDownMenu_SetText(dropdown, soundName .. " (External)")
+                                currentSound:SetText(soundName .. " (External)")
+                                CloseDropDownMenus()
+                                if dropdown.UpdateVolumeVisibility then
+                                    dropdown.UpdateVolumeVisibility()
+                                end
                             end
+                            info.checked = BLU.db.profile.selectedSounds[dropdown.eventId] == "external:" .. soundName
+                            UIDropDownMenu_AddButton(info, level)
                         end
-                        info.checked = BLU.db.profile.selectedSounds[dropdown.eventId] == "external:" .. soundName
-                        UIDropDownMenu_AddButton(info, level)
+                    else
+                        BLU:PrintDebug("[Options] No sounds found for category: " .. (menuList or "unknown"))
                     end
+                else
+                    BLU:PrintDebug("[Options] SharedMedia module not available for external sounds")
                 end
             end
         end
@@ -765,9 +861,9 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     
     -- BLU Volume Control Section (dynamic visibility)
     local volumeContainer = CreateFrame("Frame", nil, soundSection.content)
-    volumeContainer:SetPoint("TOPLEFT", dropdownContainer, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
-    volumeContainer:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
-    volumeContainer:SetHeight(60)
+    volumeContainer:SetPoint("TOPLEFT", dropdownContainer, "BOTTOMLEFT", 0, -(BLU.Design.Layout.Spacing + 5))
+    volumeContainer:SetPoint("RIGHT", -BLU.Design.Layout.Padding, 0)
+    volumeContainer:SetHeight(90)
     volumeContainer:Hide() -- Hidden by default
     
     -- Volume label
@@ -782,7 +878,7 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     -- Volume slider
     local volumeSlider = CreateFrame("Slider", nil, volumeContainer, "OptionsSliderTemplate")
     volumeSlider:SetPoint("TOPLEFT", volumeLabel, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
-    volumeSlider:SetSize(200, 20)
+    volumeSlider:SetSize(250, 20)
     volumeSlider:SetMinMaxValues(0, 100)
     volumeSlider:SetValueStep(1)
     volumeSlider:SetObeyStepOnDrag(true)
@@ -841,11 +937,11 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
             volumeContainer:Show()
             UpdateVolumeDisplay()
             -- Adjust sound section height
-            soundSection:SetHeight(410) -- Increased to show volume control
+            soundSection:SetHeight(580) -- Increased to show volume control
         else
             volumeContainer:Hide()
             -- Reset sound section height
-            soundSection:SetHeight(350)
+            soundSection:SetHeight(500)
         end
     end
     
@@ -858,12 +954,12 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     
     -- Info text
     local infoText = soundSection.content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    infoText:SetPoint("TOPLEFT", volumeContainer, "BOTTOMLEFT", BLU.Design.Layout.Spacing, -BLU.Design.Layout.Spacing)
-    infoText:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
+    infoText:SetPoint("TOPLEFT", volumeContainer, "BOTTOMLEFT", BLU.Design.Layout.Spacing, -(BLU.Design.Layout.Spacing + 5))
+    infoText:SetPoint("RIGHT", -BLU.Design.Layout.Padding, 0)
     infoText:SetText("|cff888888Note: BLU internal sounds respect the volume slider. External and default sounds use game audio settings.|r")
     infoText:SetJustifyH("LEFT")
     
-    content:SetHeight(550) -- Increased to accommodate volume control section
+    content:SetHeight(850) -- Increased to accommodate all sections with proper spacing
 end
 
 -- Cleanup module
@@ -876,134 +972,4 @@ if BLU.RegisterModule then
     BLU:RegisterModule(Options, "options_new", "Options Interface")
 end
 
--- Create RGXMods panel
-function BLU.CreateRGXModsPanel(panel)
-    -- Create scrollable content
-    local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
-    scrollFrame:SetPoint("TOPLEFT", 15, -10)
-    scrollFrame:SetPoint("BOTTOMRIGHT", -35, 10)
-    
-    local content = CreateFrame("Frame", nil, scrollFrame)
-    content:SetSize(scrollFrame:GetWidth() - 20, 700)
-    scrollFrame:SetScrollChild(content)
-    
-    -- Header
-    local header = BLU.Design:CreateHeader(content, "RGX Mods Community", "Interface\\Icons\\INV_Misc_GroupLooking")
-    header:SetPoint("TOPLEFT", 0, 0)
-    header:SetPoint("RIGHT", -20, 0)
-    
-    -- Logo section
-    local logoSection = BLU.Design:CreateSection(content, "Welcome to RGX Mods", "Interface\\Icons\\INV_Misc_GroupNeedMore")
-    logoSection:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -20)
-    logoSection:SetPoint("RIGHT", -20, 0)
-    logoSection:SetHeight(150)
-    
-    -- RGX Logo
-    local logo = logoSection.content:CreateTexture(nil, "ARTWORK")
-    logo:SetSize(128, 128)
-    logo:SetPoint("LEFT", 10, 0)
-    logo:SetTexture("Interface\\AddOns\\BLU\\media\\images\\rgx_logo")
-    
-    -- Welcome text
-    local welcomeText = logoSection.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    welcomeText:SetPoint("TOPLEFT", logo, "TOPRIGHT", 20, -10)
-    welcomeText:SetPoint("RIGHT", -10, 0)
-    welcomeText:SetJustifyH("LEFT")
-    welcomeText:SetText(
-        "|cffffd700RGX Mods|r is a community of passionate World of Warcraft addon developers.\n\n" ..
-        "We create quality-of-life improvements and enhancements to make your gaming experience better.\n\n" ..
-        "BLU is proudly part of the RGX Mods family!"
-    )
-    
-    -- Community section
-    local communitySection = BLU.Design:CreateSection(content, "Join Our Community", "Interface\\Icons\\UI_Chat")
-    communitySection:SetPoint("TOPLEFT", logoSection, "BOTTOMLEFT", 0, -20)
-    communitySection:SetPoint("RIGHT", -20, 0)
-    communitySection:SetHeight(150)
-    
-    -- Discord button
-    local discordBtn = BLU.Design:CreateButton(communitySection.content, "Join Discord", 150, 40)
-    discordBtn:SetPoint("TOPLEFT", 10, -10)
-    discordBtn:SetScript("OnClick", function()
-        BLU:Print("|cffffd700Join us on Discord:|r |cff7289dadiscord.gg/rgxmods|r")
-        StaticPopup_Show("BLU_COPY_DISCORD")
-    end)
-    
-    -- Website button
-    local websiteBtn = BLU.Design:CreateButton(communitySection.content, "Visit Website", 150, 40)
-    websiteBtn:SetPoint("LEFT", discordBtn, "RIGHT", 10, 0)
-    websiteBtn:SetScript("OnClick", function()
-        BLU:Print("|cffffd700Visit our website:|r |cff05dffarealmgx.com|r")
-    end)
-    
-    -- Community info
-    local communityInfo = communitySection.content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    communityInfo:SetPoint("TOPLEFT", discordBtn, "BOTTOMLEFT", 0, -10)
-    communityInfo:SetPoint("RIGHT", -10, 0)
-    communityInfo:SetJustifyH("LEFT")
-    communityInfo:SetText(
-        "• Get help and support from our community\n" ..
-        "• Request features and report bugs\n" ..
-        "• Share your ideas and suggestions\n" ..
-        "• Connect with other WoW players"
-    )
-    
-    -- Other addons section
-    local addonsSection = BLU.Design:CreateSection(content, "Other RGX Mods Addons", "Interface\\Icons\\INV_Misc_Book_09")
-    addonsSection:SetPoint("TOPLEFT", communitySection, "BOTTOMLEFT", 0, -20)
-    addonsSection:SetPoint("RIGHT", -20, 0)
-    addonsSection:SetHeight(200)
-    
-    local addonsText = addonsSection.content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    addonsText:SetPoint("TOPLEFT", 0, -5)
-    addonsText:SetPoint("RIGHT", -10, 0)
-    addonsText:SetJustifyH("LEFT")
-    addonsText:SetText(
-        "|cffffd700SimpleQuestPlates|r - Enhanced quest mob nameplates\n" ..
-        "|cffffd700Breezy|r - Smooth camera transitions and controls\n" ..
-        "|cffffd700SortBags|r - One-click bag sorting solution\n" ..
-        "|cffffd700Loot Monitor|r - Track your loot and statistics\n" ..
-        "|cffffd700Auto Repair|r - Automatic equipment repairs\n\n" ..
-        "Find all our addons on CurseForge and Wago!"
-    )
-    
-    -- Credits section
-    local creditsSection = BLU.Design:CreateSection(content, "Special Thanks", "Interface\\Icons\\Achievement_GuildPerk_Everyones A Hero")
-    creditsSection:SetPoint("TOPLEFT", addonsSection, "BOTTOMLEFT", 0, -20)
-    creditsSection:SetPoint("RIGHT", -20, 0)
-    creditsSection:SetHeight(100)
-    
-    local creditsText = creditsSection.content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    creditsText:SetPoint("TOPLEFT", 0, -5)
-    creditsText:SetPoint("RIGHT", -10, 0)
-    creditsText:SetJustifyH("LEFT")
-    creditsText:SetText(
-        "• The entire RGX Mods community for their support and feedback\n" ..
-        "• All contributors who have helped improve our addons\n" ..
-        "• You, for using BLU and being part of our community!"
-    )
-    
-    -- Discord copy dialog
-    StaticPopupDialogs["BLU_COPY_DISCORD"] = {
-        text = "Discord invite link:\n\n|cff7289dadiscord.gg/rgxmods|r\n\nPress Ctrl+C to copy",
-        button1 = CLOSE,
-        timeout = 0,
-        whileDead = true,
-        hideOnEscape = true,
-        hasEditBox = true,
-        editBoxWidth = 250,
-        OnShow = function(self)
-            self.editBox:SetText("discord.gg/rgxmods")
-            self.editBox:HighlightText()
-            self.editBox:SetFocus()
-        end,
-        EditBoxOnEnterPressed = function(self)
-            self:GetParent():Hide()
-        end,
-        EditBoxOnEscapePressed = function(self)
-            self:GetParent():Hide()
-        end,
-    }
-    
-    content:SetHeight(700)
-end
+-- Note: CreateRGXModsPanel function removed - RGX Mods tab no longer exists

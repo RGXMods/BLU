@@ -6,7 +6,7 @@
 local addonName, BLU = ...
 
 -- Register slash commands
-SLASH_BLU1 = "/blu"
+-- SLASH_BLU1 = "/blu"  -- Handled by options_direct.lua now
 SLASH_BLU2 = "/bluesound"
 
 -- Test command for simulating events
@@ -60,6 +60,8 @@ SlashCmdList["BLUTEST"] = function(event)
     end
 end
 
+-- Disabled - handled by options_direct.lua
+--[[
 SlashCmdList["BLU"] = function(msg)
     -- Test which panel exists
     if msg == "test" then
@@ -164,3 +166,4 @@ SlashCmdList["BLU"] = function(msg)
         BLU:PrintDebug("BLU.CreateOptionsPanel: " .. tostring(BLU.CreateOptionsPanel))
     end
 end
+--]]

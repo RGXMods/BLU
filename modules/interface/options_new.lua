@@ -296,6 +296,7 @@ function Options:CreateOptionsPanel()
     BLU:PrintDebug("[Options] Checking panel functions...")
     BLU:PrintDebug("  CreateGeneralPanel: " .. tostring(BLU.CreateGeneralPanel))
     BLU:PrintDebug("  CreateSoundsPanel: " .. tostring(BLU.CreateSoundsPanel))
+    BLU:PrintDebug("  CreateModulesPanel: " .. tostring(BLU.CreateModulesPanel))
     BLU:PrintDebug("  CreateAboutPanel: " .. tostring(BLU.CreateAboutPanel))
     BLU:PrintDebug("  CreateEventSoundPanel: " .. tostring(BLU.CreateEventSoundPanel))
     
@@ -342,6 +343,16 @@ function Options:CreateOptionsPanel()
             local success, err = pcall(tabInfo.create, content)
             if not success then
                 BLU:PrintError("Failed to create tab content for " .. tabInfo.text .. ": " .. tostring(err))
+                -- Create error display
+                local errorText = content:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+                errorText:SetPoint("CENTER")
+                errorText:SetText("|cffff0000Error loading " .. tabInfo.text .. " panel|r")
+                local errorDetail = content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+                errorDetail:SetPoint("TOP", errorText, "BOTTOM", 0, -10)
+                errorDetail:SetText(tostring(err))
+                errorDetail:SetWidth(400)
+            else
+                BLU:PrintDebug("Successfully created content for " .. tabInfo.text)
             end
         elseif tabInfo.eventType then
             -- Create sound selection panel for this event type
@@ -349,6 +360,16 @@ function Options:CreateOptionsPanel()
             local success, err = pcall(BLU.CreateEventSoundPanel, content, tabInfo.eventType, tabInfo.text)
             if not success then
                 BLU:PrintError("Failed to create event panel for " .. tabInfo.text .. ": " .. tostring(err))
+                -- Create error display
+                local errorText = content:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+                errorText:SetPoint("CENTER")
+                errorText:SetText("|cffff0000Error loading " .. tabInfo.text .. " panel|r")
+                local errorDetail = content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+                errorDetail:SetPoint("TOP", errorText, "BOTTOM", 0, -10)
+                errorDetail:SetText(tostring(err))
+                errorDetail:SetWidth(400)
+            else
+                BLU:PrintDebug("Successfully created event content for " .. tabInfo.text)
             end
         end
         

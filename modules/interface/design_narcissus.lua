@@ -112,6 +112,69 @@ function ND:ApplyFont(fontString, size, color)
     end
 end
 
+-- Create Narcissus-style dropdown
+function ND:CreateDropdown(parent, label, width)
+    local container = CreateFrame("Frame", nil, parent)
+    container:SetHeight(45)
+    
+    -- Label with Narcissus font styling
+    local labelText = container:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    labelText:SetPoint("TOPLEFT", 0, 0)
+    labelText:SetText(label)
+    self:ApplyFont(labelText, "Normal", "Normal")
+    
+    -- Create unique dropdown name
+    local dropdownName = "BLUNarciDropdown" .. math.random(100000, 999999)
+    local dropdown = CreateFrame("Frame", dropdownName, container, "UIDropDownMenuTemplate")
+    dropdown:SetPoint("TOPLEFT", labelText, "BOTTOMLEFT", -16, -5)
+    UIDropDownMenu_SetWidth(dropdown, width or 200)
+    
+    -- Style dropdown after creation
+    C_Timer.After(0.01, function()
+        if _G[dropdownName] then
+            -- Style button
+            local button = _G[dropdownName .. "Button"]
+            if button then
+                button:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Up")
+                button:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Down")
+                button:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+                button:SetSize(16, 16)
+                button:ClearAllPoints()
+                button:SetPoint("RIGHT", dropdown, "RIGHT", -10, 0)
+            end
+            
+            -- Style background
+            local middle = _G[dropdownName .. "Middle"]
+            local left = _G[dropdownName .. "Left"]
+            local right = _G[dropdownName .. "Right"]
+            
+            if middle then 
+                middle:SetVertexColor(0.12, 0.12, 0.12, 1)
+                middle:SetAlpha(0.9)
+            end
+            if left then 
+                left:SetVertexColor(0.12, 0.12, 0.12, 1)
+                left:SetAlpha(0.9)
+            end
+            if right then 
+                right:SetVertexColor(0.12, 0.12, 0.12, 1)
+                right:SetAlpha(0.9)
+            end
+            
+            -- Style text
+            local text = _G[dropdownName .. "Text"]
+            if text then
+                ND:ApplyFont(text, "Small", "Muted")
+            end
+        end
+    end)
+    
+    container.label = labelText
+    container.dropdown = dropdown
+    
+    return container
+end
+
 -- Create Narcissus-style checkbox
 function ND:CreateCheckbox(parent, label, tooltip)
     local container = CreateFrame("Frame", nil, parent)

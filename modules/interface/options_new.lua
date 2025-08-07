@@ -356,9 +356,9 @@ function Options:CreateOptionsPanel()
                 BLU:PrintDebug("Successfully created content for " .. tabInfo.text)
             end
         elseif tabInfo.eventType then
-            -- Create sound selection panel for this event type
-            BLU:PrintDebug("Creating event panel for: " .. tabInfo.eventType)
-            local success, err = pcall(BLU.CreateEventSoundPanel, content, tabInfo.eventType, tabInfo.text)
+            -- Create simplified sound selection panel for this event type
+            BLU:PrintDebug("Creating simple event panel for: " .. tabInfo.eventType)
+            local success, err = pcall(BLU.CreateSimpleEventPanel, content, tabInfo.eventType, tabInfo.text)
             if not success then
                 BLU:PrintError("Failed to create event panel for " .. tabInfo.text .. ": " .. tostring(err))
                 -- Create error display

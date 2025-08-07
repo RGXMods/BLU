@@ -31,8 +31,8 @@ end
 function Quest:OnQuestAccepted(event, questId)
     if not BLU.db.profile.enabled then return end
     
-    -- Optionally play quest accept sound if configured
-    -- For now, we focus on quest completion
+    -- Play quest accept sound
+    BLU:PlayCategorySound("questaccept")
     
     if BLU.db.profile.debugMode then
         local questTitle = C_QuestLog.GetTitleForQuestID(questId) or "Unknown Quest"
@@ -44,8 +44,8 @@ end
 function Quest:OnQuestTurnedIn(event, questId, xpReward, moneyReward)
     if not BLU.db.profile.enabled then return end
     
-    -- Play quest completion sound
-    BLU:PlayCategorySound("quest")
+    -- Play quest turn-in sound
+    BLU:PlayCategorySound("questturnin")
     
     if BLU.db.profile.debugMode then
         local questTitle = C_QuestLog.GetTitleForQuestID(questId) or "Unknown Quest"

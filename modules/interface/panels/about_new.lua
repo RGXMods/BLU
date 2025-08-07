@@ -29,7 +29,7 @@ function BLU.CreateAboutPanel(panel)
     -- Title
     local title = logoFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalHuge")
     title:SetPoint("LEFT", logoIcon, "RIGHT", 20, 15)
-    title:SetText("Better Level-Up!")
+    title:SetText("|cff05dffaB|retter |cff05dffaL|revel-|cff05dffaU|rp!")
     local titleFont, _ = title:GetFont()
     title:SetFont(titleFont, 24)
     

@@ -219,7 +219,7 @@ function Options:CreateOptionsPanel()
     
     -- Create main frame
     local panel = CreateFrame("Frame", "BLUOptionsPanel", UIParent)
-    panel.name = "Better Level-Up!"
+    panel.name = "|cff05dffaB|retter |cff05dffaL|revel-|cff05dffaU|rp!"
     
     -- Custom icon for the settings menu
     panel.OnCommit = function() end
@@ -253,10 +253,10 @@ function Options:CreateOptionsPanel()
     -- Set icon with .tga extension
     logo:SetTexture("Interface\\AddOns\\BLU\\media\\images\\icon.tga")
     
-    -- Title with proper BLU branding (only BLU in color)
+    -- Title with proper BLU branding (B, L, U letters in color)
     local title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalHuge")
     title:SetPoint("LEFT", logo, "RIGHT", 15, 10)
-    title:SetText("Better Level-Up!")
+    title:SetText("|cff05dffaB|retter |cff05dffaL|revel-|cff05dffaU|rp!")
     local font, size = title:GetFont()
     title:SetFont(font, 22)
     
@@ -309,7 +309,7 @@ function Options:CreateOptionsPanel()
         {text = "Modules", create = BLU.CreateModulesPanel, row = 1, col = 3},
         {text = "Level Up", eventType = "levelup", row = 1, col = 4},
         {text = "Achievement", eventType = "achievement", row = 1, col = 5},
-        {text = "Quest", eventType = "quest", row = 1, col = 6},
+        {text = "Quest", create = BLU.CreateQuestPanel, row = 1, col = 6},
         -- Row 2 - Additional events
         {text = "Reputation", eventType = "reputation", row = 2, col = 1},
         {text = "Battle Pets", eventType = "battlepet", row = 2, col = 2},
@@ -473,7 +473,7 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     
     local title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     title:SetPoint("LEFT", icon, "RIGHT", 10, 0)
-    title:SetText("Better Level-Up|cff05dffa!|r |cff05dffa" .. eventName .. " Events|r")
+    title:SetText("|cff05dffaB|retter |cff05dffaL|revel-|cff05dffaU|rp! " .. eventName .. " Events")
     
     -- Module enable/disable section with better styling
     local moduleSection = BLU.Design:CreateSection(content, "Module Control", "Interface\\Icons\\INV_Misc_Gear_08")
@@ -925,7 +925,7 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     -- Volume label
     local volumeLabel = volumeContainer:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     volumeLabel:SetPoint("TOPLEFT", BLU.Design.Layout.Spacing, -BLU.Design.Layout.Spacing)
-    volumeLabel:SetText("Better Level-Up|cff05dffa!|r Volume:")
+    volumeLabel:SetText("|cff05dffaB|retter |cff05dffaL|revel-|cff05dffaU|rp! Volume:")
     
     -- Volume percentage display
     local volumePercent = volumeContainer:CreateFontString(nil, "OVERLAY", "GameFontHighlight")

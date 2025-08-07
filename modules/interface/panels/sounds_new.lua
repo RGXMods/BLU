@@ -22,10 +22,10 @@ function BLU.CreateSoundsPanel(panel)
     
     local title = headerFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     title:SetPoint("LEFT", icon, "RIGHT", 10, 0)
-    title:SetText("|cff05dffaBetter Level-Up|r |cff05dffa!|r |cff05dffaSound Management|r")
+    title:SetText("|cff05dffaB|retter |cff05dffaL|revel-|cff05dffaU|rp! Sound Management")
     
     -- BLU Internal Sounds section
-    local internalSection = BLU.Design:CreateSection(content, "Better Level-Up|cff05dffa!|r Built-in Sound Packs", "Interface\\Icons\\INV_Misc_Bell_01")
+    local internalSection = BLU.Design:CreateSection(content, "|cff05dffaB|retter |cff05dffaL|revel-|cff05dffaU|rp! Built-in Sound Packs", "Interface\\Icons\\INV_Misc_Bell_01")
     internalSection:SetPoint("TOPLEFT", headerFrame, "BOTTOMLEFT", 0, -BLU.Design.Layout.SectionSpacing)
     internalSection:SetPoint("RIGHT", -BLU.Design.Layout.ContentMargin, 0)
     internalSection:SetHeight(250)
@@ -157,15 +157,19 @@ function BLU.CreateSoundsPanel(panel)
     sharedMediaSection:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
     sharedMediaSection:SetHeight(200)
     
-    -- SharedMedia status
-    local smStatus = sharedMediaSection.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    smStatus:SetPoint("TOPLEFT", BLU.Design.Layout.Spacing, -BLU.Design.Layout.Spacing)
+    -- Container for addon display
+    local addonContainer = CreateFrame("Frame", nil, sharedMediaSection.content)
+    addonContainer:SetPoint("TOPLEFT", BLU.Design.Layout.Spacing, -BLU.Design.Layout.Spacing)
+    addonContainer:SetPoint("BOTTOMRIGHT", -BLU.Design.Layout.Spacing, BLU.Design.Layout.Spacing)
     
-    -- Check SharedMedia availability
+    -- Get SharedMedia and sound addon information
     local hasLibStub = LibStub ~= nil
     local hasLSM = false
     local lsmSoundCount = 0
+    local soundCategories = {}
+    local detectedAddons = {}
     
+    -- Check for LibSharedMedia sounds
     if hasLibStub then
         local LSM = LibStub("LibSharedMedia-3.0", true)
         hasLSM = LSM ~= nil
@@ -175,28 +179,96 @@ function BLU.CreateSoundsPanel(panel)
         end
     end
     
-    if hasLSM and lsmSoundCount > 0 then
-        smStatus:SetText("|cff00ff00SharedMedia Available|r")
-        smStatus:SetTextColor(0.2, 0.8, 0.2)
-    else
-        smStatus:SetText("|cffff8800SharedMedia Not Available|r")
-        smStatus:SetTextColor(1, 0.5, 0)
+    -- Get categories from BLU's SharedMedia module
+    if BLU.Modules and BLU.Modules.sharedmedia then
+        soundCategories = BLU.Modules.sharedmedia:GetSoundCategories() or {}
     end
     
-    -- SharedMedia info
-    local smInfo = sharedMediaSection.content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    smInfo:SetPoint("TOPLEFT", smStatus, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
-    smInfo:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
-    if hasLSM and lsmSoundCount > 0 then
-        smInfo:SetText(string.format("Found %d external sounds from SharedMedia-compatible addons. These can be selected in individual event tabs.", lsmSoundCount))
-    else
-        smInfo:SetText("SharedMedia is not available or no external sounds are registered. Install addons like SharedMedia_MyMedia or SoundPaks to add external sounds.")
+    -- Check for loaded sound addons
+    local knownSoundAddons = {
+        {name = "SharedMedia", displayName = "SharedMedia Core", icon = "Interface\\Icons\\Trade_Engineering"},
+        {name = "SharedMedia_MyMedia", displayName = "SharedMedia MyMedia", icon = "Interface\\Icons\\INV_Misc_Bell_01"},
+        {name = "SharedMedia_Causese", displayName = "Causese's SharedMedia", icon = "Interface\\Icons\\INV_Misc_Bell_01"},
+        {name = "BigWigs", displayName = "BigWigs (Boss Mod)", icon = "Interface\\Icons\\INV_Misc_Head_Dragon_01"},
+        {name = "DBM-Core", displayName = "DBM (Boss Mod)", icon = "Interface\\Icons\\Spell_Shadow_RaiseDead"},
+        {name = "WeakAuras", displayName = "WeakAuras", icon = "Interface\\Icons\\Spell_Nature_WispSplode"},
+        {name = "SoundPack_FF14", displayName = "FF14 Sound Pack", icon = "Interface\\Icons\\INV_Sword_39"},
+        {name = "SoundPack_Zelda", displayName = "Zelda Sound Pack", icon = "Interface\\Icons\\INV_Sword_48"},
+    }
+    
+    for _, addon in ipairs(knownSoundAddons) do
+        if C_AddOns.IsAddOnLoaded(addon.name) then
+            table.insert(detectedAddons, addon)
+        end
     end
-    smInfo:SetJustifyH("LEFT")
+    
+    -- Display header
+    local statusHeader = addonContainer:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    statusHeader:SetPoint("TOPLEFT", 0, 0)
+    if hasLSM and lsmSoundCount > 0 then
+        statusHeader:SetText("|cff00ff00SharedMedia Integration Active|r")
+    else
+        statusHeader:SetText("|cffff8800SharedMedia Integration|r")
+    end
+    
+    -- Display detected addons
+    local yOffset = -25
+    if #detectedAddons > 0 then
+        local addonsLabel = addonContainer:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        addonsLabel:SetPoint("TOPLEFT", 0, yOffset)
+        addonsLabel:SetText("Detected Sound Addons:")
+        yOffset = yOffset - 20
+        
+        for _, addon in ipairs(detectedAddons) do
+            local addonFrame = CreateFrame("Frame", nil, addonContainer)
+            addonFrame:SetPoint("TOPLEFT", 20, yOffset)
+            addonFrame:SetSize(300, 20)
+            
+            local icon = addonFrame:CreateTexture(nil, "ARTWORK")
+            icon:SetSize(16, 16)
+            icon:SetPoint("LEFT", 0, 0)
+            icon:SetTexture(addon.icon)
+            
+            local name = addonFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+            name:SetPoint("LEFT", icon, "RIGHT", 5, 0)
+            name:SetText("|cff00ff00✓|r " .. addon.displayName)
+            
+            yOffset = yOffset - 20
+        end
+    else
+        local noAddonsText = addonContainer:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        noAddonsText:SetPoint("TOPLEFT", 0, yOffset)
+        noAddonsText:SetText("No external sound pack addons detected.")
+        yOffset = yOffset - 20
+    end
+    
+    -- Display sound categories if available
+    if next(soundCategories) then
+        yOffset = yOffset - 10
+        local categoriesLabel = addonContainer:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        categoriesLabel:SetPoint("TOPLEFT", 0, yOffset)
+        categoriesLabel:SetText(string.format("Available Sound Categories (%d):", BLU.Modules.sharedmedia:GetTableSize(soundCategories)))
+        yOffset = yOffset - 15
+        
+        for category, sounds in pairs(soundCategories) do
+            if yOffset < -150 then break end  -- Limit display height
+            local catText = addonContainer:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+            catText:SetPoint("TOPLEFT", 20, yOffset)
+            catText:SetText(string.format("|cff05dffa%s|r (%d sounds)", category, #sounds))
+            yOffset = yOffset - 15
+        end
+    end
+    
+    -- Info text at bottom
+    local infoText = sharedMediaSection.content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    infoText:SetPoint("BOTTOMLEFT", BLU.Design.Layout.Spacing, BLU.Design.Layout.Spacing)
+    infoText:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
+    infoText:SetText("|cff888888External sounds from these addons can be selected in each event tab's sound dropdown.|r")
+    infoText:SetJustifyH("LEFT")
     
     -- Test SharedMedia button
     local testSMBtn = BLU.Design:CreateButton(sharedMediaSection.content, "Test SharedMedia", 120, 24)
-    testSMBtn:SetPoint("TOPLEFT", smInfo, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
+    testSMBtn:SetPoint("BOTTOMLEFT", BLU.Design.Layout.Spacing, BLU.Design.Layout.Spacing + 20)
     testSMBtn:SetScript("OnClick", function()
         if BLU.TestSharedMedia then
             BLU:TestSharedMedia()
@@ -338,9 +410,9 @@ function BLU.CreateSoundsPanel(panel)
         "To configure sounds for each event:\n\n" ..
         "|cff05dffa1.|r Click on any event tab at the top (Level Up, Achievement, Quest, etc.)\n" ..
         "|cff05dffa2.|r Use the dropdown menu to select your preferred sound\n" ..
-        "|cff05dffa3.|r Choose from WoW sounds, Better Level-Up|cff05dffa!|r packs, or external addons\n" ..
+        "|cff05dffa3.|r Choose from WoW sounds, |cff05dffaB|retter |cff05dffaL|revel-|cff05dffaU|rp! packs, or external addons\n" ..
         "|cff05dffa4.|r Use the Test button to preview your selection\n" ..
-        "|cff05dffa5.|r BLU volume slider only affects Better Level-Up|cff05dffa!|r internal sounds"
+        "|cff05dffa5.|r |cff05dffaBLU|r volume slider only affects |cff05dffaB|retter |cff05dffaL|revel-|cff05dffaU|rp! internal sounds"
     )
     
     -- Set content height

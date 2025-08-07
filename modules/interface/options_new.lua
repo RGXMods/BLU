@@ -306,16 +306,16 @@ function Options:CreateOptionsPanel()
         -- Row 1 - Core management
         {text = "General", create = BLU.CreateGeneralPanel, row = 1, col = 1},
         {text = "Sounds", create = BLU.CreateSoundsPanel, row = 1, col = 2},
-        {text = "Modules", create = BLU.CreateModulesPanel, row = 1, col = 3},
-        {text = "Level Up", eventType = "levelup", row = 1, col = 4},
-        {text = "Achievement", eventType = "achievement", row = 1, col = 5},
-        {text = "Quest", create = BLU.CreateQuestPanel, row = 1, col = 6},
+        {text = "Level Up", eventType = "levelup", row = 1, col = 3},
+        {text = "Achievement", eventType = "achievement", row = 1, col = 4},
+        {text = "Quest", create = BLU.CreateQuestPanel, row = 1, col = 5},
+        {text = "Reputation", eventType = "reputation", row = 1, col = 6},
         -- Row 2 - Additional events
-        {text = "Reputation", eventType = "reputation", row = 2, col = 1},
-        {text = "Battle Pets", eventType = "battlepet", row = 2, col = 2},
-        {text = "Honor/PvP", eventType = "honorrank", row = 2, col = 3},
-        {text = "Renown", eventType = "renownrank", row = 2, col = 4},
-        {text = "Trading Post", eventType = "tradingpost", row = 2, col = 5},
+        {text = "Battle Pets", eventType = "battlepet", row = 2, col = 1},
+        {text = "Honor/PvP", eventType = "honorrank", row = 2, col = 2},
+        {text = "Renown", eventType = "renownrank", row = 2, col = 3},
+        {text = "Trading Post", eventType = "tradingpost", row = 2, col = 4},
+        {text = "Delves", eventType = "delvecompanion", row = 2, col = 5},
         {text = "About", create = BLU.CreateAboutPanel, row = 2, col = 6}
     }
     

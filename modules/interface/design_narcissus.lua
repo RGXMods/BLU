@@ -753,5 +753,6 @@ function ND:CreateTab(parent, text, index)
     return tab
 end
 
--- Export to main BLU namespace
-BLU.Design = BLU.NarciDesign
+-- Export to main BLU namespace (override default design)
+BLU.OriginalDesign = BLU.Design  -- Keep original as backup
+BLU.Design = BLU.NarciDesign      -- Use Narcissus style as default

@@ -8,8 +8,8 @@ local addonName, BLU = ...
 function BLU.CreateSoundsPanel(panel)
     -- Create scrollable content with proper spacing
     local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
-    scrollFrame:SetPoint("TOPLEFT", 15, -15)
-    scrollFrame:SetPoint("BOTTOMRIGHT", -35, 15)
+    scrollFrame:SetPoint("TOPLEFT", 10, -10)
+    scrollFrame:SetPoint("BOTTOMRIGHT", -30, 10)
     
     -- Add scroll frame background
     local scrollBg = scrollFrame:CreateTexture(nil, "BACKGROUND")
@@ -17,8 +17,7 @@ function BLU.CreateSoundsPanel(panel)
     scrollBg:SetColorTexture(0.05, 0.05, 0.05, 0.3)
     
     local content = CreateFrame("Frame", nil, scrollFrame)
-    content:SetWidth(scrollFrame:GetWidth() - 30)
-    content:SetHeight(1000)
+    content:SetSize(scrollFrame:GetWidth() - 20, 1000)
     scrollFrame:SetScrollChild(content)
     
     -- Header
@@ -39,7 +38,7 @@ function BLU.CreateSoundsPanel(panel)
     -- BLU Internal Sounds section
     local internalSection = BLU.Design:CreateSection(content, "Better Level-Up|cff05dffa!|r Built-in Sound Packs", "Interface\\Icons\\INV_Misc_Bell_01")
     internalSection:SetPoint("TOPLEFT", headerFrame, "BOTTOMLEFT", 0, -10)
-    internalSection:SetPoint("RIGHT", 0, 0)
+    internalSection:SetPoint("RIGHT", -10, 0)
     internalSection:SetHeight(250)
     
     -- Create a grid layout for BLU sound packs with load/unload functionality

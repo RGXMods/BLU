@@ -8,8 +8,8 @@ local addonName, BLU = ...
 function BLU.CreateAboutPanel(panel)
     -- Create scrollable content with proper sizing aligned to parent content frame
     local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
-    scrollFrame:SetPoint("TOPLEFT", 15, -15)
-    scrollFrame:SetPoint("BOTTOMRIGHT", -35, 15)
+    scrollFrame:SetPoint("TOPLEFT", 10, -10)
+    scrollFrame:SetPoint("BOTTOMRIGHT", -30, 10)
     
     -- Add scroll frame background
     local scrollBg = scrollFrame:CreateTexture(nil, "BACKGROUND")
@@ -17,14 +17,13 @@ function BLU.CreateAboutPanel(panel)
     scrollBg:SetColorTexture(0.05, 0.05, 0.05, 0.3)
     
     local content = CreateFrame("Frame", nil, scrollFrame)
-    content:SetWidth(scrollFrame:GetWidth() - 30)
-    content:SetHeight(900)
+    content:SetSize(scrollFrame:GetWidth() - 20, 900)
     scrollFrame:SetScrollChild(content)
     
     -- BLU Logo/Header
     local logoFrame = CreateFrame("Frame", nil, content)
-    logoFrame:SetPoint("TOPLEFT", 0, -10)
-    logoFrame:SetPoint("RIGHT", 0, 0)
+    logoFrame:SetPoint("TOPLEFT", 10, -10)
+    logoFrame:SetPoint("RIGHT", -10, 0)
     logoFrame:SetHeight(120)
     
     -- Logo background
@@ -57,7 +56,7 @@ function BLU.CreateAboutPanel(panel)
     -- Info Section
     local infoSection = BLU.Design:CreateSection(content, "Information", "Interface\\Icons\\INV_Misc_Book_09")
     infoSection:SetPoint("TOPLEFT", logoFrame, "BOTTOMLEFT", 0, -10)
-    infoSection:SetPoint("RIGHT", 0, 0)
+    infoSection:SetPoint("RIGHT", -10, 0)
     infoSection:SetHeight(180)
     
     -- Create info grid
@@ -98,7 +97,7 @@ function BLU.CreateAboutPanel(panel)
     -- Features Section
     local featuresSection = BLU.Design:CreateSection(content, "Features", "Interface\\Icons\\Achievement_General")
     featuresSection:SetPoint("TOPLEFT", infoSection, "BOTTOMLEFT", 0, -10)
-    featuresSection:SetPoint("RIGHT", 0, 0)
+    featuresSection:SetPoint("RIGHT", -10, 0)
     featuresSection:SetHeight(200)
     
     local features = {

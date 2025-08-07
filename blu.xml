@@ -1,43 +1,43 @@
 <!-- BLU Main Loader -->
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
     <!-- Core Systems (Load Order Matters) -->
-    <Script file="Core/Core.lua"/>
-    <Script file="Core/Database.lua"/>
-    <Script file="Core/Config.lua"/>
-    <Script file="Core/Utils.lua"/>
-    <Script file="Core/Registry.lua"/>
-    <Script file="Core/Loader.lua"/>
-    <Script file="Core/SharedMedia.lua"/>
-    <Script file="Core/Commands.lua"/>
-    <Script file="Core/OptionsLauncher.lua"/>
-    <Script file="Core/Init.lua"/>
+    <Script file="core/core.lua"/>
+    <Script file="core/database.lua"/>
+    <Script file="core/config.lua"/>
+    <Script file="core/utils.lua"/>
+    <Script file="core/registry.lua"/>
+    <Script file="core/loader.lua"/>
+    <Script file="core/sharedmedia.lua"/>
+    <Script file="core/commands.lua"/>
+    <Script file="core/optionslauncher.lua"/>
+    <Script file="core/init.lua"/>
     
     <!-- Localization -->
-    <Script file="Localization/enUS.lua"/>
+    <Script file="localization/enUS.lua"/>
     
     <!-- Interface Framework -->
-    <Script file="Interface/Design.lua"/>
-    <Script file="Interface/Widgets.lua"/>
-    <Script file="Interface/Tabs.lua"/>
-    <Script file="Interface/Settings.lua"/>
+    <Script file="interface/design.lua"/>
+    <Script file="interface/widgets.lua"/>
+    <Script file="interface/tabs.lua"/>
+    <Script file="interface/settings.lua"/>
     
     <!-- Interface Panels -->
-    <Script file="Interface/Panels/General.lua"/>
-    <Script file="Interface/Panels/Sounds.lua"/>
-    <Script file="Interface/Panels/About.lua"/>
-    <Script file="Interface/Panels/EventSimple.lua"/>
+    <Script file="interface/panels/general.lua"/>
+    <Script file="interface/panels/sounds.lua"/>
+    <Script file="interface/panels/about.lua"/>
+    <Script file="interface/panels/eventsimple.lua"/>
     
     <!-- Feature Modules -->
-    <Script file="Modules/Quest/Quest.lua"/>
-    <Script file="Modules/Quest/QuestPanel.lua"/>
-    <Script file="Modules/LevelUp/LevelUp.lua"/>
-    <Script file="Modules/Achievement/Achievement.lua"/>
-    <Script file="Modules/Reputation/Reputation.lua"/>
-    <Script file="Modules/BattlePet/BattlePet.lua"/>
-    <Script file="Modules/Honor/Honor.lua"/>
-    <Script file="Modules/Renown/Renown.lua"/>
-    <Script file="Modules/TradingPost/TradingPost.lua"/>
-    <Script file="Modules/Delve/Delve.lua"/>
+    <Script file="modules/quest/quest.lua"/>
+    <Script file="modules/quest/questpanel.lua"/>
+    <Script file="modules/levelup/levelup.lua"/>
+    <Script file="modules/achievement/achievement.lua"/>
+    <Script file="modules/reputation/reputation.lua"/>
+    <Script file="modules/battlepet/battlepet.lua"/>
+    <Script file="modules/honor/honor.lua"/>
+    <Script file="modules/renown/renown.lua"/>
+    <Script file="modules/tradingpost/tradingpost.lua"/>
+    <Script file="modules/delve/delve.lua"/>
     
     <!-- Sound Packs (Loaded Dynamically) -->
     <Include file="sound/packs/packs.xml"/>

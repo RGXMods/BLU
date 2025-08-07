@@ -1,2 +1,0 @@
-- Updated - TOC version bump for Retail, Vanilla, and Cata [BLU.toc, BLU_Vanilla.toc, BLU_Cata.toc]
-- Updated - Email address updated in TOC files for Retail, Vanilla, and Cata [BLU.toc, BLU_Vanilla.toc, BLU_Cata.toc]

@@ -45,6 +45,19 @@ end)
 -- Override the /blu command directly
 SLASH_BLUDIRECT1 = "/blu"
 SlashCmdList["BLUDIRECT"] = function(msg)
+    -- Create the full tabbed panel if it doesn't exist
+    if not BLU.FullOptionsPanel and BLU.Modules and BLU.Modules.options_new then
+        BLU:Print("Creating full options panel with tabs...")
+        if BLU.Modules.options_new.CreateOptionsPanel then
+            BLU.Modules.options_new:CreateOptionsPanel()
+            BLU.FullOptionsPanel = BLU.OptionsPanel
+        end
+    end
+    
+    -- If we have the full panel, use that instead
+    if BLU.FullOptionsPanel then
+        panel = BLU.FullOptionsPanel
+    end
     -- Handle debug
     if msg == "debug" then
         BLU:Print("Panel exists: " .. tostring(BLU.SimplePanel ~= nil))

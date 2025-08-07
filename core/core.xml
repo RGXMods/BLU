@@ -7,7 +7,8 @@
     <!-- Core systems -->
     <!-- <Script file="addon.lua"/> --> <!-- Disabled: functionality already in framework.lua -->
     <!-- <Script file="events.lua"/> --> <!-- Disabled: using framework event system instead -->
-    <Script file="options_direct.lua"/>
+    <!-- <Script file="options_direct.lua"/> --> <!-- Replaced with launcher -->
+    <Script file="options_launcher.lua"/>
     <Script file="commands.lua"/>
     
     <!-- Core initialization -->

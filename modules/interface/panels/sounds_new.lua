@@ -17,20 +17,14 @@ function BLU.CreateSoundsPanel(panel)
     scrollBg:SetColorTexture(0.05, 0.05, 0.05, 0.3)
     
     local content = CreateFrame("Frame", nil, scrollFrame)
-    -- Set size dynamically after frame is ready
-    C_Timer.After(0.01, function()
-        if scrollFrame:GetWidth() then
-            content:SetSize(scrollFrame:GetWidth() - 25, 1000)
-        else
-            content:SetSize(600, 1000)
-        end
-    end)
+    content:SetWidth(scrollFrame:GetWidth() - 30)
+    content:SetHeight(1000)
     scrollFrame:SetScrollChild(content)
     
     -- Header
     local headerFrame = CreateFrame("Frame", nil, content)
-    headerFrame:SetPoint("TOPLEFT", BLU.Design.Layout.Spacing, -BLU.Design.Layout.Spacing)
-    headerFrame:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
+    headerFrame:SetPoint("TOPLEFT", 10, -10)
+    headerFrame:SetPoint("RIGHT", -10, 0)
     headerFrame:SetHeight(50)
     
     local icon = headerFrame:CreateTexture(nil, "ARTWORK")
@@ -44,8 +38,8 @@ function BLU.CreateSoundsPanel(panel)
     
     -- BLU Internal Sounds section
     local internalSection = BLU.Design:CreateSection(content, "Better Level-Up|cff05dffa!|r Built-in Sound Packs", "Interface\\Icons\\INV_Misc_Bell_01")
-    internalSection:SetPoint("TOPLEFT", headerFrame, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
-    internalSection:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
+    internalSection:SetPoint("TOPLEFT", headerFrame, "BOTTOMLEFT", 0, -10)
+    internalSection:SetPoint("RIGHT", 0, 0)
     internalSection:SetHeight(250)
     
     -- Create a grid layout for BLU sound packs with load/unload functionality

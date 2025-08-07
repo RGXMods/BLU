@@ -17,22 +17,16 @@ function BLU.CreateGeneralPanel(panel)
     scrollBg:SetColorTexture(0.05, 0.05, 0.05, 0.3)
     
     local content = CreateFrame("Frame", nil, scrollFrame)
-    -- Calculate proper content width based on scroll frame
-    C_Timer.After(0.01, function()
-        if scrollFrame:GetWidth() then
-            content:SetSize(scrollFrame:GetWidth() - 25, 580)
-        else
-            content:SetSize(600, 580)
-        end
-    end)
+    content:SetWidth(scrollFrame:GetWidth() - 30)
+    content:SetHeight(580)
     scrollFrame:SetScrollChild(content)
     
     -- No header needed - more compact
     
     -- Core Settings Section
     local coreSection = BLU.Design:CreateSection(content, "Core Settings", "Interface\\Icons\\Achievement_General")
-    coreSection:SetPoint("TOPLEFT", 10, -10)
-    coreSection:SetPoint("RIGHT", -10, 0)
+    coreSection:SetPoint("TOPLEFT", 0, -10)
+    coreSection:SetPoint("RIGHT", 0, 0)
     coreSection:SetHeight(150)
     
     -- Enable addon
@@ -102,7 +96,7 @@ function BLU.CreateGeneralPanel(panel)
     -- Audio Settings Section
     local audioSection = BLU.Design:CreateSection(content, "Audio Settings", "Interface\\Icons\\INV_Misc_Ear_Human_01")
     audioSection:SetPoint("TOPLEFT", coreSection, "BOTTOMLEFT", 0, -10)
-    audioSection:SetPoint("RIGHT", -10, 0)
+    audioSection:SetPoint("RIGHT", 0, 0)
     audioSection:SetHeight(190)
     
     -- Volume slider
@@ -220,7 +214,7 @@ function BLU.CreateGeneralPanel(panel)
     -- Behavior Settings Section
     local behaviorSection = BLU.Design:CreateSection(content, "Behavior Settings", "Interface\\Icons\\INV_Misc_GroupLooking")
     behaviorSection:SetPoint("TOPLEFT", audioSection, "BOTTOMLEFT", 0, -10)
-    behaviorSection:SetPoint("RIGHT", -10, 0)
+    behaviorSection:SetPoint("RIGHT", 0, 0)
     behaviorSection:SetHeight(130)
     
     -- Random sounds

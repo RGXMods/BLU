@@ -434,21 +434,15 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     scrollBg:SetColorTexture(0.05, 0.05, 0.05, 0.3)
     
     local content = CreateFrame("Frame", nil, scrollFrame)
-    -- Set size dynamically after frame is ready
-    C_Timer.After(0.01, function()
-        if scrollFrame:GetWidth() and scrollFrame:GetWidth() > 0 then
-            content:SetSize(scrollFrame:GetWidth() - 25, 800) -- Increased height for all sections
-        else
-            content:SetSize(650, 800) -- Increased fallback size
-        end
-    end)
+    content:SetWidth(scrollFrame:GetWidth() - 30)
+    content:SetHeight(800)
     scrollFrame:SetScrollChild(content)
     
     -- Event header
     local header = CreateFrame("Frame", nil, content)
     header:SetHeight(50)
-    header:SetPoint("TOPLEFT", 10, -10)
-    header:SetPoint("RIGHT", -10, 0)
+    header:SetPoint("TOPLEFT", 0, -10)
+    header:SetPoint("RIGHT", 0, 0)
     
     local icon = header:CreateTexture(nil, "ARTWORK")
     icon:SetSize(32, 32)
@@ -474,7 +468,7 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     -- Module enable/disable section with better styling
     local moduleSection = BLU.Design:CreateSection(content, "Module Control", "Interface\\Icons\\INV_Misc_Gear_08")
     moduleSection:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -10)
-    moduleSection:SetPoint("RIGHT", -10, 0)
+    moduleSection:SetPoint("RIGHT", 0, 0)
     moduleSection:SetHeight(120) -- Increased height for better spacing
     
     -- Enable toggle with description
@@ -560,7 +554,7 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     -- Sound selection section
     local soundSection = BLU.Design:CreateSection(content, "Sound Selection", "Interface\\Icons\\INV_Misc_Bell_01")
     soundSection:SetPoint("TOPLEFT", moduleSection, "BOTTOMLEFT", 0, -10)
-    soundSection:SetPoint("RIGHT", -10, 0)
+    soundSection:SetPoint("RIGHT", 0, 0)
     soundSection:SetHeight(500) -- Increased height for all content
     
     -- Current sound display

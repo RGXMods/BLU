@@ -17,20 +17,14 @@ function BLU.CreateAboutPanel(panel)
     scrollBg:SetColorTexture(0.05, 0.05, 0.05, 0.3)
     
     local content = CreateFrame("Frame", nil, scrollFrame)
-    -- Calculate proper content width based on scroll frame
-    C_Timer.After(0.01, function()
-        if scrollFrame:GetWidth() then
-            content:SetSize(scrollFrame:GetWidth() - 25, 900)
-        else
-            content:SetSize(600, 900)
-        end
-    end)
+    content:SetWidth(scrollFrame:GetWidth() - 30)
+    content:SetHeight(900)
     scrollFrame:SetScrollChild(content)
     
     -- BLU Logo/Header
     local logoFrame = CreateFrame("Frame", nil, content)
-    logoFrame:SetPoint("TOPLEFT", 10, -10)
-    logoFrame:SetPoint("RIGHT", -10, 0)
+    logoFrame:SetPoint("TOPLEFT", 0, -10)
+    logoFrame:SetPoint("RIGHT", 0, 0)
     logoFrame:SetHeight(120)
     
     -- Logo background
@@ -63,7 +57,7 @@ function BLU.CreateAboutPanel(panel)
     -- Info Section
     local infoSection = BLU.Design:CreateSection(content, "Information", "Interface\\Icons\\INV_Misc_Book_09")
     infoSection:SetPoint("TOPLEFT", logoFrame, "BOTTOMLEFT", 0, -10)
-    infoSection:SetPoint("RIGHT", -10, 0)
+    infoSection:SetPoint("RIGHT", 0, 0)
     infoSection:SetHeight(180)
     
     -- Create info grid
@@ -104,7 +98,7 @@ function BLU.CreateAboutPanel(panel)
     -- Features Section
     local featuresSection = BLU.Design:CreateSection(content, "Features", "Interface\\Icons\\Achievement_General")
     featuresSection:SetPoint("TOPLEFT", infoSection, "BOTTOMLEFT", 0, -10)
-    featuresSection:SetPoint("RIGHT", -10, 0)
+    featuresSection:SetPoint("RIGHT", 0, 0)
     featuresSection:SetHeight(200)
     
     local features = {

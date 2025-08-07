@@ -6,7 +6,7 @@
 ## Email: 60427166+donniedice@users.noreply.github.com
 ## SavedVariables: BLUDB, BLU_SavedVariables
 ## OptionalDeps: Ace3
-## IconTexture: Interface\AddOns\BLU\media\images\icon
+## IconTexture: Interface\AddOns\BLU\Media\Textures\icon
 
 ## X-Category: UI Media, Questing & Leveling, Audio & Video, Miscellaneous
 ## X-Website: https://github.com/donniedice/BLU
@@ -18,4 +18,4 @@
 # debug.lua
 
 ## Main Loader
-blu.xml
+BLU.xml

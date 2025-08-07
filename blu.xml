@@ -1,12 +1,44 @@
-<!-- BLU Main XML Loader -->
+<!-- BLU Main Loader -->
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
-    <!-- Core Framework -->
-    <Include file="core\core.xml"/>
+    <!-- Core Systems (Load Order Matters) -->
+    <Script file="Core/Core.lua"/>
+    <Script file="Core/Database.lua"/>
+    <Script file="Core/Config.lua"/>
+    <Script file="Core/Utils.lua"/>
+    <Script file="Core/Registry.lua"/>
+    <Script file="Core/Loader.lua"/>
+    <Script file="Core/SharedMedia.lua"/>
+    <Script file="Core/Commands.lua"/>
+    <Script file="Core/OptionsLauncher.lua"/>
+    <Script file="Core/Init.lua"/>
     
-    <!-- Modules -->
-    <Include file="modules\modules.xml"/>
+    <!-- Localization -->
+    <Script file="Localization/enUS.lua"/>
     
-    <!-- Sound System -->
-    <Include file="sound\sound.xml"/>
+    <!-- Interface Framework -->
+    <Script file="Interface/Design.lua"/>
+    <Script file="Interface/Widgets.lua"/>
+    <Script file="Interface/Tabs.lua"/>
+    <Script file="Interface/Settings.lua"/>
     
+    <!-- Interface Panels -->
+    <Script file="Interface/Panels/General.lua"/>
+    <Script file="Interface/Panels/Sounds.lua"/>
+    <Script file="Interface/Panels/About.lua"/>
+    <Script file="Interface/Panels/EventSimple.lua"/>
+    
+    <!-- Feature Modules -->
+    <Script file="Modules/Quest/Quest.lua"/>
+    <Script file="Modules/Quest/QuestPanel.lua"/>
+    <Script file="Modules/LevelUp/LevelUp.lua"/>
+    <Script file="Modules/Achievement/Achievement.lua"/>
+    <Script file="Modules/Reputation/Reputation.lua"/>
+    <Script file="Modules/BattlePet/BattlePet.lua"/>
+    <Script file="Modules/Honor/Honor.lua"/>
+    <Script file="Modules/Renown/Renown.lua"/>
+    <Script file="Modules/TradingPost/TradingPost.lua"/>
+    <Script file="Modules/Delve/Delve.lua"/>
+    
+    <!-- Sound Packs (Loaded Dynamically) -->
+    <Include file="sound/packs/packs.xml"/>
 </Ui>

@@ -6,24 +6,13 @@
 local addonName, BLU = ...
 
 function BLU.CreateAboutPanel(panel)
-    -- Create scrollable content with proper sizing aligned to parent content frame
-    local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
-    scrollFrame:SetPoint("TOPLEFT", 10, -10)
-    scrollFrame:SetPoint("BOTTOMRIGHT", -30, 10)
-    
-    -- Add scroll frame background
-    local scrollBg = scrollFrame:CreateTexture(nil, "BACKGROUND")
-    scrollBg:SetAllPoints()
-    scrollBg:SetColorTexture(0.05, 0.05, 0.05, 0.3)
-    
-    local content = CreateFrame("Frame", nil, scrollFrame)
-    content:SetSize(scrollFrame:GetWidth() - 20, 900)
-    scrollFrame:SetScrollChild(content)
+    -- Create scrollable content with standardized positioning
+    local scrollFrame, content = BLU.Design:CreatePanelScrollFrame(panel, 900)
     
     -- BLU Logo/Header
     local logoFrame = CreateFrame("Frame", nil, content)
-    logoFrame:SetPoint("TOPLEFT", 10, -10)
-    logoFrame:SetPoint("RIGHT", -10, 0)
+    logoFrame:SetPoint("TOPLEFT", BLU.Design.Layout.ContentMargin, -BLU.Design.Layout.ContentMargin)
+    logoFrame:SetPoint("RIGHT", -BLU.Design.Layout.ContentMargin, 0)
     logoFrame:SetHeight(120)
     
     -- Logo background
@@ -55,8 +44,8 @@ function BLU.CreateAboutPanel(panel)
     
     -- Info Section
     local infoSection = BLU.Design:CreateSection(content, "Information", "Interface\\Icons\\INV_Misc_Book_09")
-    infoSection:SetPoint("TOPLEFT", logoFrame, "BOTTOMLEFT", 0, -10)
-    infoSection:SetPoint("RIGHT", -10, 0)
+    infoSection:SetPoint("TOPLEFT", logoFrame, "BOTTOMLEFT", 0, -BLU.Design.Layout.SectionSpacing)
+    infoSection:SetPoint("RIGHT", -BLU.Design.Layout.ContentMargin, 0)
     infoSection:SetHeight(180)
     
     -- Create info grid
@@ -96,8 +85,8 @@ function BLU.CreateAboutPanel(panel)
     
     -- Features Section
     local featuresSection = BLU.Design:CreateSection(content, "Features", "Interface\\Icons\\Achievement_General")
-    featuresSection:SetPoint("TOPLEFT", infoSection, "BOTTOMLEFT", 0, -10)
-    featuresSection:SetPoint("RIGHT", -10, 0)
+    featuresSection:SetPoint("TOPLEFT", infoSection, "BOTTOMLEFT", 0, -BLU.Design.Layout.SectionSpacing)
+    featuresSection:SetPoint("RIGHT", -BLU.Design.Layout.ContentMargin, 0)
     featuresSection:SetHeight(200)
     
     local features = {
@@ -177,5 +166,5 @@ function BLU.CreateAboutPanel(panel)
         "Thanks to the WoW addon development community for inspiration and guidance."
     )
     
-    content:SetHeight(850)
+    -- Content height already set by CreatePanelScrollFrame
 end

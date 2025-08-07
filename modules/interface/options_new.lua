@@ -423,25 +423,14 @@ end
 
 -- Create event sound panel for each tab
 function BLU.CreateEventSoundPanel(panel, eventType, eventName)
-    -- Create scrollable content with proper sizing aligned to content frame
-    local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
-    scrollFrame:SetPoint("TOPLEFT", 10, -10)
-    scrollFrame:SetPoint("BOTTOMRIGHT", -30, 10)
-    
-    -- Add scroll frame background for better visibility
-    local scrollBg = scrollFrame:CreateTexture(nil, "BACKGROUND")
-    scrollBg:SetAllPoints()
-    scrollBg:SetColorTexture(0.05, 0.05, 0.05, 0.3)
-    
-    local content = CreateFrame("Frame", nil, scrollFrame)
-    content:SetSize(scrollFrame:GetWidth() - 20, 800)
-    scrollFrame:SetScrollChild(content)
+    -- Create scrollable content with standardized positioning
+    local scrollFrame, content = BLU.Design:CreatePanelScrollFrame(panel, 850)
     
     -- Event header
     local header = CreateFrame("Frame", nil, content)
     header:SetHeight(50)
-    header:SetPoint("TOPLEFT", 10, -10)
-    header:SetPoint("RIGHT", -10, 0)
+    header:SetPoint("TOPLEFT", BLU.Design.Layout.ContentMargin, -BLU.Design.Layout.ContentMargin)
+    header:SetPoint("RIGHT", -BLU.Design.Layout.ContentMargin, 0)
     
     local icon = header:CreateTexture(nil, "ARTWORK")
     icon:SetSize(32, 32)
@@ -466,8 +455,8 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     
     -- Module enable/disable section with better styling
     local moduleSection = BLU.Design:CreateSection(content, "Module Control", "Interface\\Icons\\INV_Misc_Gear_08")
-    moduleSection:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -10)
-    moduleSection:SetPoint("RIGHT", -10, 0)
+    moduleSection:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -BLU.Design.Layout.SectionSpacing)
+    moduleSection:SetPoint("RIGHT", -BLU.Design.Layout.ContentMargin, 0)
     moduleSection:SetHeight(120) -- Increased height for better spacing
     
     -- Enable toggle with description
@@ -552,8 +541,8 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     
     -- Sound selection section
     local soundSection = BLU.Design:CreateSection(content, "Sound Selection", "Interface\\Icons\\INV_Misc_Bell_01")
-    soundSection:SetPoint("TOPLEFT", moduleSection, "BOTTOMLEFT", 0, -10)
-    soundSection:SetPoint("RIGHT", -10, 0)
+    soundSection:SetPoint("TOPLEFT", moduleSection, "BOTTOMLEFT", 0, -BLU.Design.Layout.SectionSpacing)
+    soundSection:SetPoint("RIGHT", -BLU.Design.Layout.ContentMargin, 0)
     soundSection:SetHeight(500) -- Increased height for all content
     
     -- Current sound display
@@ -1004,7 +993,7 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     infoText:SetText("|cff888888Note: Better Level-Up|cff05dffa!|r internal sounds respect the volume slider. External and default sounds use game audio settings.|r")
     infoText:SetJustifyH("LEFT")
     
-    content:SetHeight(850) -- Increased to accommodate all sections with proper spacing
+    -- Content height already set by CreatePanelScrollFrame
 end
 
 -- Cleanup module

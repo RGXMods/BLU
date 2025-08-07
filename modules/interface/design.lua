@@ -60,6 +60,12 @@ BLU.Design = {
         Padding = 20,
         Spacing = 10,
         ColumnGap = 20,
+        -- Alignment constants for consistent positioning
+        ContentMargin = 10,      -- Standard margin from panel edges
+        ScrollMargin = 30,       -- Extra margin for scroll bar
+        SectionSpacing = 10,     -- Space between sections
+        ElementSpacing = 8,      -- Space between elements in sections
+        ContentPadding = 15,     -- Inner padding for section content
     },
     
     -- Font styles
@@ -288,4 +294,33 @@ function BLU.Design:CreateSection(parent, title, icon)
     end
     
     return section
+end
+
+-- Create standardized scroll frame for panels
+function BLU.Design:CreatePanelScrollFrame(panel, contentHeight)
+    contentHeight = contentHeight or 800
+    
+    -- Create scroll frame with consistent positioning
+    local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
+    scrollFrame:SetPoint("TOPLEFT", self.Layout.ContentMargin, -self.Layout.ContentMargin)
+    scrollFrame:SetPoint("BOTTOMRIGHT", -self.Layout.ScrollMargin, self.Layout.ContentMargin)
+    
+    -- Add background for better visibility
+    local scrollBg = scrollFrame:CreateTexture(nil, "BACKGROUND")
+    scrollBg:SetAllPoints()
+    scrollBg:SetColorTexture(0.05, 0.05, 0.05, 0.3)
+    
+    -- Create content frame with proper width calculation
+    local content = CreateFrame("Frame", nil, scrollFrame)
+    local scrollWidth = scrollFrame:GetWidth()
+    if scrollWidth <= 0 then
+        -- Fallback calculation if width not available yet
+        scrollWidth = panel:GetWidth() - self.Layout.ContentMargin - self.Layout.ScrollMargin - 20
+    else
+        scrollWidth = scrollWidth - 20 -- Account for potential scroll bar
+    end
+    content:SetSize(scrollWidth, contentHeight)
+    scrollFrame:SetScrollChild(content)
+    
+    return scrollFrame, content
 end

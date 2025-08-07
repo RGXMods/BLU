@@ -6,26 +6,15 @@
 local addonName, BLU = ...
 
 function BLU.CreateGeneralPanel(panel)
-    -- Create scrollable content with proper sizing aligned to parent content frame
-    local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
-    scrollFrame:SetPoint("TOPLEFT", 10, -10)
-    scrollFrame:SetPoint("BOTTOMRIGHT", -30, 10)
-    
-    -- Add scroll frame background
-    local scrollBg = scrollFrame:CreateTexture(nil, "BACKGROUND")
-    scrollBg:SetAllPoints()
-    scrollBg:SetColorTexture(0.05, 0.05, 0.05, 0.3)
-    
-    local content = CreateFrame("Frame", nil, scrollFrame)
-    content:SetSize(scrollFrame:GetWidth() - 20, 580)
-    scrollFrame:SetScrollChild(content)
+    -- Create scrollable content with standardized positioning
+    local scrollFrame, content = BLU.Design:CreatePanelScrollFrame(panel, 700)
     
     -- No header needed - more compact
     
     -- Core Settings Section
     local coreSection = BLU.Design:CreateSection(content, "Core Settings", "Interface\\Icons\\Achievement_General")
-    coreSection:SetPoint("TOPLEFT", 10, -10)
-    coreSection:SetPoint("RIGHT", -10, 0)
+    coreSection:SetPoint("TOPLEFT", BLU.Design.Layout.ContentMargin, -BLU.Design.Layout.ContentMargin)
+    coreSection:SetPoint("RIGHT", -BLU.Design.Layout.ContentMargin, 0)
     coreSection:SetHeight(150)
     
     -- Enable addon
@@ -94,8 +83,8 @@ function BLU.CreateGeneralPanel(panel)
     
     -- Audio Settings Section
     local audioSection = BLU.Design:CreateSection(content, "Audio Settings", "Interface\\Icons\\INV_Misc_Ear_Human_01")
-    audioSection:SetPoint("TOPLEFT", coreSection, "BOTTOMLEFT", 0, -10)
-    audioSection:SetPoint("RIGHT", -10, 0)
+    audioSection:SetPoint("TOPLEFT", coreSection, "BOTTOMLEFT", 0, -BLU.Design.Layout.SectionSpacing)
+    audioSection:SetPoint("RIGHT", -BLU.Design.Layout.ContentMargin, 0)
     audioSection:SetHeight(190)
     
     -- Volume slider
@@ -182,7 +171,7 @@ function BLU.CreateGeneralPanel(panel)
     -- Volume info text
     local volumeInfo = audioSection.content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     volumeInfo:SetPoint("TOPLEFT", channelDropdown, "BOTTOMLEFT", 20, -10)
-    volumeInfo:SetPoint("RIGHT", -10, 0)
+    volumeInfo:SetPoint("RIGHT", -BLU.Design.Layout.ContentMargin, 0)
     volumeInfo:SetText("|cff888888Note: Volume control applies only to BLU internal sounds. External sounds and default WoW sounds use your system volume settings.|r")
     volumeInfo:SetJustifyH("LEFT")
     
@@ -212,8 +201,8 @@ function BLU.CreateGeneralPanel(panel)
     
     -- Behavior Settings Section
     local behaviorSection = BLU.Design:CreateSection(content, "Behavior Settings", "Interface\\Icons\\INV_Misc_GroupLooking")
-    behaviorSection:SetPoint("TOPLEFT", audioSection, "BOTTOMLEFT", 0, -10)
-    behaviorSection:SetPoint("RIGHT", -10, 0)
+    behaviorSection:SetPoint("TOPLEFT", audioSection, "BOTTOMLEFT", 0, -BLU.Design.Layout.SectionSpacing)
+    behaviorSection:SetPoint("RIGHT", -BLU.Design.Layout.ContentMargin, 0)
     behaviorSection:SetHeight(130)
     
     -- Random sounds
@@ -391,5 +380,5 @@ function BLU.CreateGeneralPanel(panel)
         preferredIndex = 3
     }
     
-    content:SetHeight(700)
+    -- Content height already set by CreatePanelScrollFrame
 end

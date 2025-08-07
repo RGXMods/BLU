@@ -6,24 +6,13 @@
 local addonName, BLU = ...
 
 function BLU.CreateSoundsPanel(panel)
-    -- Create scrollable content with proper spacing
-    local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
-    scrollFrame:SetPoint("TOPLEFT", 10, -10)
-    scrollFrame:SetPoint("BOTTOMRIGHT", -30, 10)
-    
-    -- Add scroll frame background
-    local scrollBg = scrollFrame:CreateTexture(nil, "BACKGROUND")
-    scrollBg:SetAllPoints()
-    scrollBg:SetColorTexture(0.05, 0.05, 0.05, 0.3)
-    
-    local content = CreateFrame("Frame", nil, scrollFrame)
-    content:SetSize(scrollFrame:GetWidth() - 20, 1000)
-    scrollFrame:SetScrollChild(content)
+    -- Create scrollable content with standardized positioning
+    local scrollFrame, content = BLU.Design:CreatePanelScrollFrame(panel, 1000)
     
     -- Header
     local headerFrame = CreateFrame("Frame", nil, content)
-    headerFrame:SetPoint("TOPLEFT", 10, -10)
-    headerFrame:SetPoint("RIGHT", -10, 0)
+    headerFrame:SetPoint("TOPLEFT", BLU.Design.Layout.ContentMargin, -BLU.Design.Layout.ContentMargin)
+    headerFrame:SetPoint("RIGHT", -BLU.Design.Layout.ContentMargin, 0)
     headerFrame:SetHeight(50)
     
     local icon = headerFrame:CreateTexture(nil, "ARTWORK")
@@ -37,8 +26,8 @@ function BLU.CreateSoundsPanel(panel)
     
     -- BLU Internal Sounds section
     local internalSection = BLU.Design:CreateSection(content, "Better Level-Up|cff05dffa!|r Built-in Sound Packs", "Interface\\Icons\\INV_Misc_Bell_01")
-    internalSection:SetPoint("TOPLEFT", headerFrame, "BOTTOMLEFT", 0, -10)
-    internalSection:SetPoint("RIGHT", -10, 0)
+    internalSection:SetPoint("TOPLEFT", headerFrame, "BOTTOMLEFT", 0, -BLU.Design.Layout.SectionSpacing)
+    internalSection:SetPoint("RIGHT", -BLU.Design.Layout.ContentMargin, 0)
     internalSection:SetHeight(250)
     
     -- Create a grid layout for BLU sound packs with load/unload functionality
@@ -355,5 +344,5 @@ function BLU.CreateSoundsPanel(panel)
     )
     
     -- Set content height
-    content:SetHeight(900)
+    -- Content height already set by CreatePanelScrollFrame
 end

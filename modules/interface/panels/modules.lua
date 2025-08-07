@@ -8,14 +8,8 @@ local addonName, BLU = ...
 function BLU.CreateModulesPanel(panel)
     local widgets = BLU.Widgets
     
-    -- Create scrollable content
-    local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
-    scrollFrame:SetPoint("TOPLEFT", 10, -10)
-    scrollFrame:SetPoint("BOTTOMRIGHT", -30, 10)
-    
-    local content = CreateFrame("Frame", nil, scrollFrame)
-    content:SetSize(scrollFrame:GetWidth(), 600)
-    scrollFrame:SetScrollChild(content)
+    -- Create scrollable content with standardized positioning
+    local scrollFrame, content = BLU.Design:CreatePanelScrollFrame(panel, 800)
     
     -- Module Management header with icon
     local header = widgets:CreateHeader(content, "|TInterface\\Icons\\INV_Misc_Gear_08:20:20|t Module Management")

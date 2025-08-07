@@ -27,7 +27,7 @@ function BLU.CreateGeneralPanel(panel)
     coreSection:SetHeight(150)
     
     -- Enable addon
-    local enableCheck = BLU.Design:CreateCheckbox(coreSection.content, "Enable BLU", "Enable or disable all BLU functionality")
+    local enableCheck = BLU.Design:CreateCheckbox(coreSection.content, "Enable |cff05dffaBLU|r", "Enable or disable all |cff05dffaBLU|r functionality")
     enableCheck:SetPoint("TOPLEFT", 5, -5)
     
     -- Set checkbox state with database check
@@ -40,10 +40,10 @@ function BLU.CreateGeneralPanel(panel)
         BLU.db.profile.enabled = self:GetChecked()
         if BLU.db.profile.enabled then
             BLU:Enable()
-            BLU:Print("|cff00ff00BLU Enabled|r")
+            BLU:Print("|cff00ff00|cff05dffaBLU|r Enabled|r")
         else
             BLU:Disable()
-            BLU:Print("|cffff0000BLU Disabled|r")
+            BLU:Print("|cffff0000|cff05dffaBLU|r Disabled|r")
         end
     end)
     
@@ -99,7 +99,7 @@ function BLU.CreateGeneralPanel(panel)
     -- Volume slider
     local volumeLabel = audioSection.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     volumeLabel:SetPoint("TOPLEFT", 5, -5)
-    volumeLabel:SetText("BLU Sound Volume")
+    volumeLabel:SetText("|cff05dffaBLU|r Sound Volume")
     
     local volumeSlider = CreateFrame("Slider", "BLUVolumeSlider", audioSection.content, "OptionsSliderTemplate")
     volumeSlider:SetPoint("TOPLEFT", volumeLabel, "BOTTOMLEFT", 0, -5)
@@ -135,7 +135,7 @@ function BLU.CreateGeneralPanel(panel)
     -- Volume note
     local volumeNote = audioSection.content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     volumeNote:SetPoint("TOPLEFT", volumeLabel, "TOPRIGHT", 10, 0)
-    volumeNote:SetText("|cff888888(BLU sounds only)|r")
+    volumeNote:SetText("|cff888888(|cff05dffaBLU|r|cff888888 sounds only)|r")
     
     local channelDropdown = CreateFrame("Frame", "BLUChannelDropdown", audioSection.content, "UIDropDownMenuTemplate")
     channelDropdown:SetPoint("TOPLEFT", channelLabel, "BOTTOMLEFT", -20, -5)
@@ -181,7 +181,7 @@ function BLU.CreateGeneralPanel(panel)
     local volumeInfo = audioSection.content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     volumeInfo:SetPoint("TOPLEFT", channelDropdown, "BOTTOMLEFT", 20, -10)
     volumeInfo:SetPoint("RIGHT", -BLU.Design.Layout.ContentMargin, 0)
-    volumeInfo:SetText("|cff888888Note: Volume control applies only to BLU internal sounds. External sounds and default WoW sounds use your system volume settings.|r")
+    volumeInfo:SetText("|cff888888Note: Volume control applies only to |cff05dffaBLU|r|cff888888 internal sounds. External sounds and default WoW sounds use your system volume settings.|r")
     volumeInfo:SetJustifyH("LEFT")
     
     -- Test button
@@ -376,7 +376,7 @@ function BLU.CreateGeneralPanel(panel)
     
     -- Reset confirmation dialog
     StaticPopupDialogs["BLU_RESET_CONFIRM"] = {
-        text = "Are you sure you want to reset all BLU settings to defaults?\n\nThis cannot be undone.",
+        text = "Are you sure you want to reset all |cff05dffaBLU|r settings to defaults?\n\nThis cannot be undone.",
         button1 = YES,
         button2 = NO,
         OnAccept = function()

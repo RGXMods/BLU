@@ -24,12 +24,12 @@ function BLU.CreateAboutPanel(panel)
     local logoIcon = logoFrame:CreateTexture(nil, "ARTWORK")
     logoIcon:SetSize(80, 80)
     logoIcon:SetPoint("LEFT", 20, 0)
-    logoIcon:SetTexture("Interface\\AddOns\\BLU\\media\\images\\icon")
+    logoIcon:SetTexture("Interface\\AddOns\\BLU\\media\\images\\icon.tga")
     
     -- Title
     local title = logoFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalHuge")
     title:SetPoint("LEFT", logoIcon, "RIGHT", 20, 15)
-    title:SetText("|cff05dffaBetter Level-Up!|r")
+    title:SetText("Better Level-Up!")
     local titleFont, _ = title:GetFont()
     title:SetFont(titleFont, 24)
     

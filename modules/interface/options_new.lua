@@ -219,7 +219,7 @@ function Options:CreateOptionsPanel()
     
     -- Create main frame
     local panel = CreateFrame("Frame", "BLUOptionsPanel", UIParent)
-    panel.name = "|cff05dffaBetter Level-Up!|r"
+    panel.name = "Better Level-Up!"
     
     -- Custom icon for the settings menu
     panel.OnCommit = function() end
@@ -250,17 +250,13 @@ function Options:CreateOptionsPanel()
     local logo = header:CreateTexture(nil, "ARTWORK")
     logo:SetSize(48, 48)
     logo:SetPoint("LEFT", 15, 0)
-    -- Try multiple icon paths
-    local iconPath = "Interface\\AddOns\\BLU\\media\\images\\icon"
-    if not logo:SetTexture(iconPath) then
-        -- Fallback to a default WoW icon if custom icon not found
-        logo:SetTexture("Interface\\Icons\\Achievement_Level_100")
-    end
+    -- Set icon with .tga extension
+    logo:SetTexture("Interface\\AddOns\\BLU\\media\\images\\icon.tga")
     
-    -- Title with proper BLU branding
+    -- Title with proper BLU branding (only BLU in color)
     local title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalHuge")
     title:SetPoint("LEFT", logo, "RIGHT", 15, 10)
-    title:SetText("|cff05dffaBetter Level-Up!|r")
+    title:SetText("Better Level-Up!")
     local font, size = title:GetFont()
     title:SetFont(font, 22)
     

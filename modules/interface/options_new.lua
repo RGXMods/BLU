@@ -304,16 +304,16 @@ function Options:CreateOptionsPanel()
         -- Row 1 - Core management
         {text = "General", create = BLU.CreateGeneralPanel, row = 1, col = 1},
         {text = "Sounds", create = BLU.CreateSoundsPanel, row = 1, col = 2},
-        {text = "Level Up", eventType = "levelup", row = 1, col = 3},
-        {text = "Achievement", eventType = "achievement", row = 1, col = 4},
-        {text = "Quest", eventType = "quest", row = 1, col = 5},
-        {text = "Reputation", eventType = "reputation", row = 1, col = 6},
+        {text = "Modules", create = BLU.CreateModulesPanel, row = 1, col = 3},
+        {text = "Level Up", eventType = "levelup", row = 1, col = 4},
+        {text = "Achievement", eventType = "achievement", row = 1, col = 5},
+        {text = "Quest", eventType = "quest", row = 1, col = 6},
         -- Row 2 - Additional events
-        {text = "Battle Pets", eventType = "battlepet", row = 2, col = 1},
-        {text = "Honor/PvP", eventType = "honorrank", row = 2, col = 2},
-        {text = "Renown", eventType = "renownrank", row = 2, col = 3},
-        {text = "Trading Post", eventType = "tradingpost", row = 2, col = 4},
-        {text = "Delve", eventType = "delvecompanion", row = 2, col = 5},
+        {text = "Reputation", eventType = "reputation", row = 2, col = 1},
+        {text = "Battle Pets", eventType = "battlepet", row = 2, col = 2},
+        {text = "Honor/PvP", eventType = "honorrank", row = 2, col = 3},
+        {text = "Renown", eventType = "renownrank", row = 2, col = 4},
+        {text = "Trading Post", eventType = "tradingpost", row = 2, col = 5},
         {text = "About", create = BLU.CreateAboutPanel, row = 2, col = 6}
     }
     
@@ -338,10 +338,18 @@ function Options:CreateOptionsPanel()
         
         -- Create tab content
         if tabInfo.create then
-            tabInfo.create(content)
+            BLU:PrintDebug("Creating content with function: " .. tostring(tabInfo.create))
+            local success, err = pcall(tabInfo.create, content)
+            if not success then
+                BLU:PrintError("Failed to create tab content for " .. tabInfo.text .. ": " .. tostring(err))
+            end
         elseif tabInfo.eventType then
             -- Create sound selection panel for this event type
-            BLU.CreateEventSoundPanel(content, tabInfo.eventType, tabInfo.text)
+            BLU:PrintDebug("Creating event panel for: " .. tabInfo.eventType)
+            local success, err = pcall(BLU.CreateEventSoundPanel, content, tabInfo.eventType, tabInfo.text)
+            if not success then
+                BLU:PrintError("Failed to create event panel for " .. tabInfo.text .. ": " .. tostring(err))
+            end
         end
         
         panel.contents[i] = content
@@ -349,9 +357,18 @@ function Options:CreateOptionsPanel()
     
     -- Tab selection function
     function panel:SelectTab(index)
+        BLU:PrintDebug("Selecting tab: " .. tostring(index))
         for i, tab in ipairs(self.tabs) do
-            tab:SetActive(i == index)
-            self.contents[i]:SetShown(i == index)
+            local isActive = (i == index)
+            tab:SetActive(isActive)
+            if self.contents[i] then
+                self.contents[i]:SetShown(isActive)
+                if isActive then
+                    BLU:PrintDebug("Showing content for tab " .. i)
+                end
+            else
+                BLU:PrintError("No content for tab " .. i)
+            end
         end
     end
     

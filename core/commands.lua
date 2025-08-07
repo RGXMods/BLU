@@ -129,23 +129,38 @@ SlashCmdList["BLU"] = function(msg)
         return
     end
     
-    -- Use new tabbed options panel
+    -- Try multiple approaches to open options
+    local opened = false
+    
+    -- Method 1: Try BLU.OpenOptions
     if BLU.OpenOptions then
         BLU:OpenOptions()
-    else
-        -- Try to create it if it doesn't exist
-        if BLU.Modules and BLU.Modules.options_new and not BLU.OptionsPanel then
-            BLU:Print("|cffff0000Options panel not initialized. Creating now...|r")
-            if BLU.Modules.options_new.Init then
-                BLU.Modules.options_new:Init()
+        opened = true
+    -- Method 2: Try through the module
+    elseif BLU.Modules and BLU.Modules.options_new and BLU.Modules.options_new.OpenOptions then
+        BLU.Modules.options_new:OpenOptions()
+        opened = true
+    -- Method 3: Create panel if needed and try again
+    elseif BLU.CreateOptionsPanel then
+        BLU:Print("Creating options panel...")
+        BLU:CreateOptionsPanel()
+        C_Timer.After(0.1, function()
+            if BLU.OpenOptions then
+                BLU:OpenOptions()
+            elseif BLU.Modules and BLU.Modules.options_new and BLU.Modules.options_new.OpenOptions then
+                BLU.Modules.options_new:OpenOptions()
+            else
+                BLU:Print("Options panel not properly registered. Try |cff05dffa/reload|r")
             end
-            C_Timer.After(0.1, function()
-                if BLU.OpenOptions then
-                    BLU:OpenOptions()
-                end
-            end)
-        else
-            BLU:Print("Options panel not available - type |cff05dffa/reload|r")
-        end
+        end)
+        opened = true
+    end
+    
+    -- If nothing worked, show error
+    if not opened then
+        BLU:Print("Options panel not properly registered. Try |cff05dffa/reload|r")
+        BLU:PrintDebug("BLU.OpenOptions: " .. tostring(BLU.OpenOptions))
+        BLU:PrintDebug("BLU.OptionsPanel: " .. tostring(BLU.OptionsPanel))
+        BLU:PrintDebug("BLU.CreateOptionsPanel: " .. tostring(BLU.CreateOptionsPanel))
     end
 end

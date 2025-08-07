@@ -34,12 +34,19 @@ function Options:Init()
     
     -- Make functions available globally
     BLU.CreateOptionsPanel = function()
+        BLU:PrintDebug("Global CreateOptionsPanel called")
         return self:CreateOptionsPanel()
     end
     
     BLU.OpenOptions = function()
+        BLU:PrintDebug("Global OpenOptions called")
         return self:OpenOptions()
     end
+    
+    -- Also ensure they're available immediately
+    _G.BLU = BLU
+    _G.BLU.CreateOptionsPanel = BLU.CreateOptionsPanel
+    _G.BLU.OpenOptions = BLU.OpenOptions
     
     -- Test SharedMedia availability
     BLU.TestSharedMedia = function()
@@ -400,19 +407,59 @@ function Options:CreateOptionsPanel()
     -- Add a custom icon check
     BLU.HasCustomIcon = select(3, C_AddOns.GetAddOnInfo(addonName)) ~= nil
     
-    -- Register the panel
-    local category
+    -- Register the panel with multiple fallback methods
+    local registered = false
+    
+    -- Method 1: New Settings API with category
     if Settings and Settings.RegisterCanvasLayoutCategory then
-        -- Dragonflight+ (10.0+)
-        category = Settings.RegisterCanvasLayoutCategory(panel, panel.name)
-        Settings.RegisterAddOnCategory(category)
-        BLU.OptionsCategory = category
-        BLU:PrintDebug("Options panel registered with new Settings API")
-    else
-        -- Pre-Dragonflight
-        InterfaceOptions_AddCategory(panel)
-        BLU.OptionsCategory = panel
-        BLU:PrintDebug("Options panel registered with legacy API")
+        local success, category = pcall(function()
+            local cat = Settings.RegisterCanvasLayoutCategory(panel, panel.name)
+            Settings.RegisterAddOnCategory(cat)
+            return cat
+        end)
+        
+        if success and category then
+            BLU.OptionsCategory = category
+            BLU:PrintDebug("Options panel registered with new Settings API")
+            registered = true
+        end
+    end
+    
+    -- Method 2: Legacy API
+    if not registered and InterfaceOptions_AddCategory then
+        local success = pcall(function()
+            InterfaceOptions_AddCategory(panel)
+        end)
+        
+        if success then
+            BLU.OptionsCategory = panel
+            BLU:PrintDebug("Options panel registered with legacy API")
+            registered = true
+        end
+    end
+    
+    -- Method 3: Direct registration to Settings if available
+    if not registered and Settings and Settings.RegisterAddOnCategory then
+        local success = pcall(function()
+            local category = {
+                name = panel.name,
+                category = panel,
+                layout = panel,
+                ID = panel.name
+            }
+            Settings.RegisterAddOnCategory(category)
+            return category
+        end)
+        
+        if success then
+            BLU.OptionsCategory = panel
+            BLU:PrintDebug("Options panel registered directly to Settings")
+            registered = true
+        end
+    end
+    
+    if not registered then
+        BLU:PrintError("Failed to register options panel with any method!")
     end
     
     return panel

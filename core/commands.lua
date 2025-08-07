@@ -3,7 +3,8 @@
 -- Slash command handling
 --=====================================================================================
 
-local addonName, BLU = ...
+local addonName = ...
+local BLU = _G.BLU or {}
 
 -- Register slash commands
 SLASH_BLU1 = "/blu"
@@ -63,39 +64,39 @@ end
 SlashCmdList["BLU"] = function(msg)
     -- Test which panel exists
     if msg == "test" then
-        print("|cff05dffa=== BLU Panel Test ===|r")
+        BLU:Print("=== BLU Panel Test ===")
         if _G["BLUOptionsPanel"] then
             local panel = _G["BLUOptionsPanel"]
-            print("BLUOptionsPanel exists")
-            print("Panel name:", panel.name or "no name")
+            BLU:PrintDebug("BLUOptionsPanel exists")
+            BLU:PrintDebug("Panel name: " .. (panel.name or "no name"))
             -- Check for children
             local children = {panel:GetChildren()}
-            print("Number of children:", #children)
+            BLU:PrintDebug("Number of children: " .. #children)
             for i, child in ipairs(children) do
                 if child.GetText and child:GetText() then
-                    print("Child " .. i .. " text:", child:GetText())
+                    BLU:PrintDebug("Child " .. i .. " text: " .. child:GetText())
                 end
             end
         else
-            print("BLUOptionsPanel does NOT exist")
+            BLU:PrintDebug("BLUOptionsPanel does NOT exist")
         end
         return
     end
     
     -- Debug information
     if msg == "debug" then
-        print("|cff05dffa=== BLU Debug Info ===|r")
-        print("Database loaded:", BLU.db and "Yes" or "No")
-        print("Options panel created:", BLU.OptionsPanel and "Yes" or "No")
-        print("Options category registered:", BLU.OptionsCategory and "Yes" or "No")
-        print("OpenSimpleOptions function:", BLU.OpenSimpleOptions and "Yes" or "No")
-        print("CreateSimpleOptionsPanel function:", BLU.CreateSimpleOptionsPanel and "Yes" or "No")
+        BLU:Print("=== BLU Debug Info ===")
+        BLU:PrintDebug("Database loaded: " .. (BLU.db and "Yes" or "No"))
+        BLU:PrintDebug("Options panel created: " .. (BLU.OptionsPanel and "Yes" or "No"))
+        BLU:PrintDebug("Options category registered: " .. (BLU.OptionsCategory and "Yes" or "No"))
+        BLU:PrintDebug("OpenSimpleOptions function: " .. (BLU.OpenSimpleOptions and "Yes" or "No"))
+        BLU:PrintDebug("CreateSimpleOptionsPanel function: " .. (BLU.CreateSimpleOptionsPanel and "Yes" or "No"))
         if BLU.db and BLU.db.profile then
-            print("Addon enabled:", BLU.db.profile.enabled and "Yes" or "No")
+            BLU:PrintDebug("Addon enabled: " .. (BLU.db.profile.enabled and "Yes" or "No"))
         end
         -- Try to create panel manually
         if msg == "debug create" and BLU.CreateOptionsPanel then
-            print("Attempting to create options panel...")
+            BLU:PrintDebug("Attempting to create options panel...")
             BLU:CreateOptionsPanel()
         end
         return
@@ -108,13 +109,13 @@ SlashCmdList["BLU"] = function(msg)
     
     -- Debug what's available
     if msg == "status" then
-        print("|cff05dffa=== BLU Options Status ===|r")
-        print("OpenOptions:", BLU.OpenOptions and "Available" or "Not found")
-        print("OpenSimpleOptions:", BLU.OpenSimpleOptions and "Available" or "Not found") 
-        print("CreateOptionsPanel:", BLU.CreateOptionsPanel and "Available" or "Not found")
-        print("OptionsPanel:", BLU.OptionsPanel and "Exists" or "Not created")
-        print("Tabs system:", BLU.Tabs and "Loaded" or "Not loaded")
-        print("Widgets system:", BLU.Widgets and "Loaded" or "Not loaded")
+        BLU:Print("=== BLU Options Status ===")
+        BLU:PrintDebug("OpenOptions: " .. (BLU.OpenOptions and "Available" or "Not found"))
+        BLU:PrintDebug("OpenSimpleOptions: " .. (BLU.OpenSimpleOptions and "Available" or "Not found"))
+        BLU:PrintDebug("CreateOptionsPanel: " .. (BLU.CreateOptionsPanel and "Available" or "Not found"))
+        BLU:PrintDebug("OptionsPanel: " .. (BLU.OptionsPanel and "Exists" or "Not created"))
+        BLU:PrintDebug("Tabs system: " .. (BLU.Tabs and "Loaded" or "Not loaded"))
+        BLU:PrintDebug("Widgets system: " .. (BLU.Widgets and "Loaded" or "Not loaded"))
         return
     end
     

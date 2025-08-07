@@ -4,7 +4,7 @@
 -- Handles battle pet level up sounds
 --=====================================================================================
 
-local addonName, addonTable = ...
+local addonName, BLU = ...
 local BattlePet = {}
 
 -- Module variables

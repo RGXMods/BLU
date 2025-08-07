@@ -7,7 +7,7 @@ local addonName, BLU = ...
 
 -- Create a simple options panel that definitely works
 function BLU:CreateSimpleOptionsPanel()
-    print("|cff05dffaBLU: Creating simple options panel...|r")
+    BLU:PrintDebug("Creating simple options panel...")
     
     -- Create the main panel frame
     local panel = CreateFrame("Frame", "BLUSimpleOptionsPanel")
@@ -16,12 +16,12 @@ function BLU:CreateSimpleOptionsPanel()
     -- Title
     local title = panel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
     title:SetPoint("TOPLEFT", 16, -16)
-    title:SetText("|cff05dffaBLU|r - Better Level-Up! v5.3.0-alpha")
+    title:SetText("|cff05dffaBLU|r - Better Level-Up! v6.0.0-alpha")
     
     -- Version
     local version = panel:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
     version:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -8)
-    version:SetText("Version: " .. (BLU.version or "Unknown") .. " - Updated: 2025-08-04")
+    version:SetText("Version: 6.0.0-alpha - Updated: 2025-08-04")
     
     -- Enable checkbox
     local enableCheck = CreateFrame("CheckButton", nil, panel, "InterfaceOptionsCheckButtonTemplate")
@@ -300,37 +300,37 @@ function BLU:CreateSimpleOptionsPanel()
         category = Settings.RegisterCanvasLayoutCategory(panel, panel.name)
         Settings.RegisterAddOnCategory(category)
         BLU.OptionsCategory = category
-        print("|cff05dffaBLU: Options panel registered with new Settings API|r")
+        BLU:PrintDebug("Options panel registered with new Settings API")
     else
         -- Pre-Dragonflight
         InterfaceOptions_AddCategory(panel)
         BLU.OptionsCategory = panel
-        print("|cff05dffaBLU: Options panel registered with legacy API|r")
+        BLU:PrintDebug("Options panel registered with legacy API")
     end
     
-    print("|cff05dffaBLU: Panel creation complete. Type /blu to open.|r")
+    BLU:PrintDebug("Panel creation complete. Type /blu to open.")
     
     return panel
 end
 
 -- Simple open function
 function BLU:OpenSimpleOptions()
-    print("|cff05dffaBLU: OpenSimpleOptions called|r")
+    BLU:PrintDebug("OpenSimpleOptions called")
     
     if not BLU.OptionsPanel then
-        print("|cff05dffaBLU: Panel doesn't exist, creating now...|r")
+        BLU:PrintDebug("Panel doesn't exist, creating now...")
         BLU:CreateSimpleOptionsPanel()
     else
-        print("|cff05dffaBLU: Panel already exists|r")
+        BLU:PrintDebug("Panel already exists")
     end
     
     if Settings and Settings.OpenToCategory and BLU.OptionsCategory then
         -- Try new API
-        print("|cff05dffaBLU: Using new Settings API|r")
+        BLU:PrintDebug("Using new Settings API")
         Settings.OpenToCategory(BLU.OptionsCategory)
     elseif InterfaceOptionsFrame then
         -- Try legacy API
-        print("|cff05dffaBLU: Using legacy InterfaceOptions API|r")
+        BLU:PrintDebug("Using legacy InterfaceOptions API")
         InterfaceOptionsFrame_OpenToCategory(BLU.OptionsPanel)
         -- Call twice to ensure it opens to the right panel
         InterfaceOptionsFrame_OpenToCategory(BLU.OptionsPanel)

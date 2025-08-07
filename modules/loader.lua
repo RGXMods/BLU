@@ -3,7 +3,7 @@
 -- Handles dynamic loading and unloading of modules based on user settings
 --=====================================================================================
 
-local addonName, addonTable = ...
+local addonName, BLU = ...
 BLU = BLU or {}
 BLU.Modules = BLU.Modules or {}
 BLU.LoadedModules = {}
@@ -175,9 +175,4 @@ function BLU:UpdateModuleLoading(feature, enabled)
     end
 end
 
--- Debug print function
-function BLU:PrintDebug(message)
-    if self.debugMode then
-        print("|cff05dffaBLU Debug:|r " .. message)
-    end
-end
+-- Debug print function removed - using core framework BLU:PrintDebug() instead

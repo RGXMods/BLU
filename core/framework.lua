@@ -3,36 +3,32 @@
 -- Our own lightweight addon framework (no external dependencies)
 --=====================================================================================
 
--- Early print function with icon
-local function BluPrint(msg)
-    print("|TInterface\\AddOns\\BLU\\media\\images\\icon:16:16|t |cff05dffa[BLU]|r " .. msg)
-end
-
--- Remove redundant loading message
+-- Removed redundant BluPrint function - using BLU:Print() instead
 
 local addonName, addonTable = ...
 
 -- Create the main addon object
-BLU = {
+local BLU = {
     name = addonName,
-    version = C_AddOns.GetAddOnMetadata(addonName, "Version"),
+    version = "6.0.0-alpha",
     author = C_AddOns.GetAddOnMetadata(addonName, "Author"),
     
     -- Core tables
     Modules = {},
+    LoadedModules = {},
     events = {},
     hooks = {},
     timers = {},
     
     -- Settings
-    debugMode = true,  -- Enable debug for now
+    debugMode = true,  -- Debug on to see tab creation
     isInitialized = false
 }
 
 -- Make globally accessible
-_G[addonName] = BLU
+_G["BLU"] = BLU
 
--- Framework loaded
+-- Framework loaded - functions will be copied to addonTable at the end of this file
 
 --=====================================================================================
 -- Event System
@@ -226,20 +222,30 @@ end
 --=====================================================================================
 
 -- Register module
-function BLU:RegisterModule(name, module)
-    self.Modules[name] = module
-    
-    -- Call module init if exists
-    if module.Init then
-        module:Init()
+function BLU:RegisterModule(module, name, description)
+    -- Handle both calling conventions
+    if type(module) == "string" then
+        -- Old style: (name, module)
+        local temp = module
+        module = name
+        name = temp
     end
     
-    self:PrintDebug("Module registered: " .. name)
+    self.Modules[name] = module
+    
+    -- Don't auto-init modules here, they're initialized in init.lua
+    
+    self:PrintDebug("Module registered: " .. name .. (description and (" - " .. description) or ""))
 end
 
 -- Get module
 function BLU:GetModule(name)
     return self.Modules[name]
+end
+
+-- Copy all BLU functions to addon table so other files can access them via local addonName, addonTable = ...
+for k, v in pairs(BLU) do
+    addonTable[k] = v
 end
 
 -- Export

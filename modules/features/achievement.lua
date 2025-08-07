@@ -3,7 +3,7 @@
 -- Handles achievement completion sounds
 --=====================================================================================
 
-local addonName, addonTable = ...
+local addonName, BLU = ...
 local Achievement = {}
 
 -- Module initialization

@@ -3,7 +3,7 @@
 -- Simple saved variables management (no external dependencies)
 --=====================================================================================
 
-local addonName, addonTable = ...
+local addonName, BLU = ...
 local Database = {}
 
 -- Remove loading message - not needed

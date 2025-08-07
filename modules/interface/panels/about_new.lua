@@ -47,13 +47,13 @@ function BLU.CreateAboutPanel(panel)
     -- Title
     local title = logoFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalHuge")
     title:SetPoint("LEFT", logoIcon, "RIGHT", 20, 15)
-    title:SetText("|cff05dffaBLU - Better Level Up!|r")
+    title:SetText("Better Level-Up|cff05dffa!|r")
     title:SetFont(title:GetFont(), 24)
     
     -- Version and tagline
     local version = logoFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     version:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -5)
-    version:SetText("Version " .. (BLU.version or "Unknown") .. " - RGX Mods")
+    version:SetText("Version 6.0.0-alpha |cffff0000[ALPHA]|r - |cffffd700RGX |r|cff05dffaMods|r")
     version:SetTextColor(0.8, 0.8, 0.8)
     
     local tagline = logoFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
@@ -114,7 +114,7 @@ function BLU.CreateAboutPanel(panel)
         "|cff05dffaPer-Event Customization|r - Different sounds for each event type",
         "|cff05dffaLightweight Design|r - No external library dependencies",
         "|cff05dffaModular Architecture|r - Load only what you need",
-        "|cff05dffaFull Retail Support|r - Optimized for the latest WoW version"
+        "|cff05dffaFull Retail Support|r - Optimized for War Within (11.0.5)"
     }
     
     local yOffset = -10
@@ -166,7 +166,7 @@ function BLU.CreateAboutPanel(panel)
     
     CreateStatDisplay(statsSection.content, 20, -10, "Modules Active", tostring(enabledModules), {r=0.02, g=0.87, b=0.98})
     CreateStatDisplay(statsSection.content, 180, -10, "Sound Packs", "50+", {r=0.02, g=0.87, b=0.98})
-    CreateStatDisplay(statsSection.content, 340, -10, "Version", BLU.version or "?", {r=0.02, g=0.87, b=0.98})
+    CreateStatDisplay(statsSection.content, 340, -10, "Version", "6.0.0-alpha", {r=0.02, g=0.87, b=0.98})
     
     -- Credits Section
     local creditsSection = BLU.Design:CreateSection(content, "Credits & Thanks", "Interface\\Icons\\Achievement_GuildPerk_Honorable Mention")

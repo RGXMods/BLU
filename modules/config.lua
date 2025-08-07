@@ -3,7 +3,7 @@
 -- Handles configuration and settings management
 --=====================================================================================
 
-local addonName, addonTable = ...
+local addonName, BLU = ...
 local Config = {}
 BLU.Modules["config"] = Config
 

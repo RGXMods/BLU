@@ -31,7 +31,7 @@ function BLU.CreateAboutPanel(panel)
     -- Version
     local version = content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     version:SetPoint("TOP", title, "BOTTOM", 0, -5)
-    version:SetText("Version " .. (BLU.version or "v5.3.0-alpha"))
+    version:SetText("Version 6.0.0-alpha")
     version:SetTextColor(0.7, 0.7, 0.7)
     
     -- Tagline

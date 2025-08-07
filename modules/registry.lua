@@ -3,7 +3,7 @@
 -- Manages all sound registrations and playback
 --=====================================================================================
 
-local addonName, addonTable = ...
+local addonName, BLU = ...
 local SoundRegistry = {}
 BLU.Modules["registry"] = SoundRegistry
 

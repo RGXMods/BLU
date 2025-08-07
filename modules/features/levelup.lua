@@ -3,7 +3,7 @@
 -- Handles character level up sounds
 --=====================================================================================
 
-local addonName, addonTable = ...
+local addonName, BLU = ...
 local LevelUp = {}
 
 -- Module initialization

@@ -3,7 +3,7 @@
 -- Uses built-in WoW sounds as placeholders
 --=====================================================================================
 
-local addonName, addonTable = ...
+local addonName, BLU = ...
 local WoWDefault = {}
 
 -- Sound definitions using WoW soundkit IDs

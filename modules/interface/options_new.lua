@@ -5,10 +5,24 @@
 
 local addonName, BLU = ...
 
+-- Ensure we have the global BLU if vararg fails
+BLU = BLU or _G.BLU
+
+-- Debug output
+if BLU and BLU.PrintDebug then
+    BLU:PrintDebug("[options_new] Loading options_new module")
+else
+    print("[BLU] ERROR: BLU not available when loading options_new.lua")
+end
+
 -- Create options module
 local Options = {}
 BLU.Modules = BLU.Modules or {}
 BLU.Modules["options_new"] = Options
+
+if BLU and BLU.PrintDebug then
+    BLU:PrintDebug("[options_new] Module registered to BLU.Modules")
+end
 
 -- Panel dimensions
 local PANEL_WIDTH = 700
@@ -34,19 +48,21 @@ function Options:Init()
     
     BLU:PrintDebug("[Options] Functions registered")
     
-    -- Create the panel after database is initialized
-    local function tryCreatePanel()
-        if BLU.db and BLU.db.profile then
-            if not BLU.OptionsPanel then
-                self:CreateOptionsPanel()
-            end
-        else
-            -- Database not ready yet, try again in 0.2 seconds
-            C_Timer.After(0.2, tryCreatePanel)
-        end
+    -- Create the panel if it doesn't exist yet
+    if not BLU.OptionsPanel then
+        BLU:PrintDebug("[Options] Creating panel in Init")
+        self:CreateOptionsPanel()
     end
-    
-    C_Timer.After(0.1, tryCreatePanel)
+end
+
+-- Early panel creation function called from ADDON_LOADED
+function Options:CreatePanelEarly()
+    if not BLU.OptionsPanel then
+        BLU:PrintDebug("[Options] Creating panel early for immediate addon settings registration")
+        self:CreateOptionsPanel()
+        return true
+    end
+    return false
 end
 
 -- Test SharedMedia functionality
@@ -195,9 +211,15 @@ end
 function Options:CreateOptionsPanel()
     BLU:PrintDebug("Creating new options panel...")
     
+    -- Check if Design module is loaded
+    if not BLU.Design then
+        BLU:PrintError("[Options] BLU.Design not available! Cannot create panel.")
+        return nil
+    end
+    
     -- Create main frame
     local panel = CreateFrame("Frame", "BLUOptionsPanel", UIParent)
-    panel.name = "|T" .. "Interface\\AddOns\\BLU\\media\\images\\icon:0|t |cff05dffaB|r|cffffffffLU|r - |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel-|r|cff05dffaU|r|cffffffffp!|r"
+    panel.name = "Better Level-Up|cff05dffa!|r"
     
     -- Custom icon for the settings menu
     panel.OnCommit = function() end
@@ -233,7 +255,8 @@ function Options:CreateOptionsPanel()
     -- Title (with colored letters like SQP)
     local title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalHuge")
     title:SetPoint("LEFT", logo, "RIGHT", 15, 10)
-    title:SetText("|cff05dffaB|r|cffffffffLU|r - |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel-|r|cff05dffaU|r|cffffffffp!|r")
+    title:SetText("Better Level-Up|cff05dffa!|r")
+    title:SetFont(title:GetFont(), 22)
     
     -- Subtitle
     local subtitle = header:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
@@ -244,7 +267,7 @@ function Options:CreateOptionsPanel()
     -- Version & Author
     local version = header:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     version:SetPoint("TOPRIGHT", -15, -15)
-    version:SetText("v" .. (BLU.version or "6.0.0-alpha"))
+    version:SetText("v6.0.0-alpha |cffff0000[ALPHA]|r")
     version:SetTextColor(unpack(BLU.Design.Colors.Primary))
     
     local author = header:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
@@ -255,49 +278,61 @@ function Options:CreateOptionsPanel()
     -- RGX Mods branding
     local branding = header:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     branding:SetPoint("BOTTOMRIGHT", -15, 10)
-    branding:SetText("|cffffd700RGX Mods|r")
+    branding:SetText("|cffffd700RGX |r|cff05dffaMods|r")
+    branding:SetFont(branding:GetFont(), 11)
     
-    -- Tab container (SQP style tabs) - multiple rows
+    -- Tab container (SQP style tabs) - multiple rows with better spacing
     local tabContainer = CreateFrame("Frame", nil, container)
-    tabContainer:SetHeight(60)  -- 2 rows * 27 height + spacing
-    tabContainer:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -10)
-    tabContainer:SetPoint("TOPRIGHT", header, "BOTTOMRIGHT", 0, -10)
+    tabContainer:SetHeight(70)  -- 2 rows * 27 height + extra spacing
+    tabContainer:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -5)
+    tabContainer:SetPoint("TOPRIGHT", header, "BOTTOMRIGHT", 0, -5)
     
     -- Add background for tab container
     local tabBg = tabContainer:CreateTexture(nil, "BACKGROUND")
     tabBg:SetAllPoints()
     tabBg:SetColorTexture(0.03, 0.03, 0.03, 0.6)
     
-    -- Create tabs for each sound event type (no icons)
+    -- Debug: Check if panel creation functions exist
+    BLU:PrintDebug("[Options] Checking panel functions...")
+    BLU:PrintDebug("  CreateGeneralPanel: " .. tostring(BLU.CreateGeneralPanel))
+    BLU:PrintDebug("  CreateSoundsPanel: " .. tostring(BLU.CreateSoundsPanel))
+    BLU:PrintDebug("  CreateAboutPanel: " .. tostring(BLU.CreateAboutPanel))
+    BLU:PrintDebug("  CreateEventSoundPanel: " .. tostring(BLU.CreateEventSoundPanel))
+    
+    -- Create tabs for each sound event type (organized layout)
     local tabs = {
-        -- Row 1
+        -- Row 1 - Core management
         {text = "General", create = BLU.CreateGeneralPanel, row = 1, col = 1},
-        {text = "Level Up", eventType = "levelup", row = 1, col = 2},
-        {text = "Achievement", eventType = "achievement", row = 1, col = 3},
-        {text = "Quest", eventType = "quest", row = 1, col = 4},
-        {text = "Reputation", eventType = "reputation", row = 1, col = 5},
-        {text = "Battle Pets", eventType = "battlepet", row = 1, col = 6},
-        -- Row 2
-        {text = "Honor", eventType = "honorrank", row = 2, col = 1},
-        {text = "Renown", eventType = "renownrank", row = 2, col = 2},
-        {text = "Trading Post", eventType = "tradingpost", row = 2, col = 3},
-        {text = "Delve", eventType = "delvecompanion", row = 2, col = 4},
-        {text = "About", create = BLU.CreateAboutPanel, row = 2, col = 5}
+        {text = "Sounds", create = BLU.CreateSoundsPanel, row = 1, col = 2},
+        {text = "Level Up", eventType = "levelup", row = 1, col = 3},
+        {text = "Achievement", eventType = "achievement", row = 1, col = 4},
+        {text = "Quest", eventType = "quest", row = 1, col = 5},
+        {text = "Reputation", eventType = "reputation", row = 1, col = 6},
+        -- Row 2 - Additional events
+        {text = "Battle Pets", eventType = "battlepet", row = 2, col = 1},
+        {text = "Honor/PvP", eventType = "honorrank", row = 2, col = 2},
+        {text = "Renown", eventType = "renownrank", row = 2, col = 3},
+        {text = "Trading Post", eventType = "tradingpost", row = 2, col = 4},
+        {text = "Delve", eventType = "delvecompanion", row = 2, col = 5},
+        {text = "About", create = BLU.CreateAboutPanel, row = 2, col = 6}
     }
     
     panel.tabs = {}
     panel.contents = {}
     
+    BLU:PrintDebug("[Options] Creating " .. #tabs .. " tabs...")
+    
     for i, tabInfo in ipairs(tabs) do
+        BLU:PrintDebug("[Options] Creating tab " .. i .. ": " .. tabInfo.text)
         local tab = CreateTabButton(tabContainer, tabInfo.text, i, tabInfo.row, tabInfo.col, panel)
         panel.tabs[i] = tab
         
         -- Create content frame with proper positioning using design constants
         local content = CreateFrame("Frame", nil, container, "BackdropTemplate")
-        content:SetPoint("TOPLEFT", tabContainer, "BOTTOMLEFT", BLU.Design.Layout.Padding, -BLU.Design.Layout.Spacing)
-        content:SetPoint("BOTTOMRIGHT", container, "BOTTOMRIGHT", -BLU.Design.Layout.Padding, BLU.Design.Layout.Spacing)
+        content:SetPoint("TOPLEFT", tabContainer, "BOTTOMLEFT", 8, -8)
+        content:SetPoint("BOTTOMRIGHT", container, "BOTTOMRIGHT", -8, 8)
         content:SetBackdrop(BLU.Design.Backdrops.Dark)
-        content:SetBackdropColor(0.08, 0.08, 0.08, 0.9)
+        content:SetBackdropColor(0.08, 0.08, 0.08, 0.95)
         content:SetBackdropBorderColor(0.15, 0.15, 0.15, 1)
         content:Hide()
         
@@ -373,8 +408,8 @@ end
 function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     -- Create scrollable content with proper sizing aligned to content frame
     local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
-    scrollFrame:SetPoint("TOPLEFT", BLU.Design.Layout.Padding/2, -BLU.Design.Layout.Padding/2)
-    scrollFrame:SetPoint("BOTTOMRIGHT", -30, BLU.Design.Layout.Padding/2)
+    scrollFrame:SetPoint("TOPLEFT", 5, -5)
+    scrollFrame:SetPoint("BOTTOMRIGHT", -28, 5)
     
     -- Add scroll frame background for better visibility
     local scrollBg = scrollFrame:CreateTexture(nil, "BACKGROUND")
@@ -395,8 +430,8 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     -- Event header
     local header = CreateFrame("Frame", nil, content)
     header:SetHeight(50)
-    header:SetPoint("TOPLEFT", BLU.Design.Layout.Padding, -BLU.Design.Layout.Padding)
-    header:SetPoint("RIGHT", -BLU.Design.Layout.Padding, 0)
+    header:SetPoint("TOPLEFT", 10, -10)
+    header:SetPoint("RIGHT", -10, 0)
     
     local icon = header:CreateTexture(nil, "ARTWORK")
     icon:SetSize(32, 32)
@@ -417,17 +452,17 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     
     local title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     title:SetPoint("LEFT", icon, "RIGHT", 10, 0)
-    title:SetText("|cff05dffa" .. eventName .. " Sounds|r")
+    title:SetText("Better Level-Up|cff05dffa!|r |cff05dffa" .. eventName .. " Events|r")
     
     -- Module enable/disable section with better styling
     local moduleSection = BLU.Design:CreateSection(content, "Module Control", "Interface\\Icons\\INV_Misc_Gear_08")
-    moduleSection:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
-    moduleSection:SetPoint("RIGHT", -BLU.Design.Layout.Padding, 0)
+    moduleSection:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -10)
+    moduleSection:SetPoint("RIGHT", -10, 0)
     moduleSection:SetHeight(120) -- Increased height for better spacing
     
     -- Enable toggle with description
     local toggleFrame = CreateFrame("Frame", nil, moduleSection.content)
-    toggleFrame:SetPoint("TOPLEFT", BLU.Design.Layout.Spacing, -BLU.Design.Layout.Spacing)
+    toggleFrame:SetPoint("TOPLEFT", 10, -10)
     toggleFrame:SetSize(500, 60)
     
     -- Toggle switch (styled like the modules panel)
@@ -457,7 +492,7 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     
     local moduleDesc = toggleFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     moduleDesc:SetPoint("TOPLEFT", moduleText, "BOTTOMLEFT", 0, -3)
-    moduleDesc:SetText("When enabled, BLU will respond to " .. eventName:lower() .. " events and play custom sounds")
+    moduleDesc:SetText("When enabled, Better Level-Up|cff05dffa!|r will respond to " .. eventName:lower() .. " events and play custom sounds")
     moduleDesc:SetTextColor(0.7, 0.7, 0.7)
     
     -- Status text
@@ -507,8 +542,8 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     
     -- Sound selection section
     local soundSection = BLU.Design:CreateSection(content, "Sound Selection", "Interface\\Icons\\INV_Misc_Bell_01")
-    soundSection:SetPoint("TOPLEFT", moduleSection, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
-    soundSection:SetPoint("RIGHT", -BLU.Design.Layout.Padding, 0)
+    soundSection:SetPoint("TOPLEFT", moduleSection, "BOTTOMLEFT", 0, -10)
+    soundSection:SetPoint("RIGHT", -10, 0)
     soundSection:SetHeight(500) -- Increased height for all content
     
     -- Current sound display
@@ -869,7 +904,7 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     -- Volume label
     local volumeLabel = volumeContainer:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     volumeLabel:SetPoint("TOPLEFT", BLU.Design.Layout.Spacing, -BLU.Design.Layout.Spacing)
-    volumeLabel:SetText("BLU Volume:")
+    volumeLabel:SetText("Better Level-Up|cff05dffa!|r Volume:")
     
     -- Volume percentage display
     local volumePercent = volumeContainer:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
@@ -956,7 +991,7 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     local infoText = soundSection.content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     infoText:SetPoint("TOPLEFT", volumeContainer, "BOTTOMLEFT", BLU.Design.Layout.Spacing, -(BLU.Design.Layout.Spacing + 5))
     infoText:SetPoint("RIGHT", -BLU.Design.Layout.Padding, 0)
-    infoText:SetText("|cff888888Note: BLU internal sounds respect the volume slider. External and default sounds use game audio settings.|r")
+    infoText:SetText("|cff888888Note: Better Level-Up|cff05dffa!|r internal sounds respect the volume slider. External and default sounds use game audio settings.|r")
     infoText:SetJustifyH("LEFT")
     
     content:SetHeight(850) -- Increased to accommodate all sections with proper spacing
@@ -971,5 +1006,8 @@ end
 if BLU.RegisterModule then
     BLU:RegisterModule(Options, "options_new", "Options Interface")
 end
+
+-- Panel will be created during PLAYER_LOGIN event in core/events.lua
+-- This ensures proper initialization order and immediate addon settings registration
 
 -- Note: CreateRGXModsPanel function removed - RGX Mods tab no longer exists

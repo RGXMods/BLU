@@ -3,7 +3,7 @@
 -- Handles multi-language support
 --=====================================================================================
 
-local addonName, addonTable = ...
+local addonName, BLU = ...
 local Localization = {}
 
 -- Register module

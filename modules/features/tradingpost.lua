@@ -3,7 +3,7 @@
 -- Handles Trading Post activity sounds
 --=====================================================================================
 
-local addonName, addonTable = ...
+local addonName, BLU = ...
 local TradingPost = {}
 
 -- Module initialization

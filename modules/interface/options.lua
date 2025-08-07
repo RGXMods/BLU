@@ -105,7 +105,7 @@ function Options:CreateOptionsPanel()
     
     local version = versionFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     version:SetPoint("CENTER")
-    version:SetText("v" .. (BLU.version or "5.3.0-alpha"))
+    version:SetText("v6.0.0-alpha")
     version:SetTextColor(0.02, 0.37, 1, 1)
     
     -- Subtitle with author info

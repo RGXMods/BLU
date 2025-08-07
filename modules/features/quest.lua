@@ -3,7 +3,7 @@
 -- Handles quest accept and turn-in sounds
 --=====================================================================================
 
-local addonName, addonTable = ...
+local addonName, BLU = ...
 local Quest = {}
 
 -- Module initialization

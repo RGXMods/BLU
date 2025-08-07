@@ -3,7 +3,7 @@
 -- Contains all Final Fantasy game sounds
 --=====================================================================================
 
-local addonName, addonTable = ...
+local addonName, BLU = ...
 local FinalFantasy = {}
 
 -- Sound definitions

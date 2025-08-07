@@ -3,7 +3,7 @@
 -- Handles Honor rank up sounds
 --=====================================================================================
 
-local addonName, addonTable = ...
+local addonName, BLU = ...
 local HonorRank = {}
 
 -- Module variables

@@ -3,7 +3,7 @@
 -- Provides compatibility with SoundPak addons using Ace libraries
 --=====================================================================================
 
-local addonName, addonTable = ...
+local addonName, BLU = ...
 local SoundPakBridge = {}
 
 -- LibSharedMedia integration

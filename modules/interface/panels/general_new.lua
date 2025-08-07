@@ -8,8 +8,8 @@ local addonName, BLU = ...
 function BLU.CreateGeneralPanel(panel)
     -- Create scrollable content with proper sizing aligned to parent content frame
     local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
-    scrollFrame:SetPoint("TOPLEFT", BLU.Design.Layout.Spacing, -BLU.Design.Layout.Spacing)
-    scrollFrame:SetPoint("BOTTOMRIGHT", -30, BLU.Design.Layout.Spacing)
+    scrollFrame:SetPoint("TOPLEFT", 5, -5)
+    scrollFrame:SetPoint("BOTTOMRIGHT", -28, 5)
     
     -- Add scroll frame background
     local scrollBg = scrollFrame:CreateTexture(nil, "BACKGROUND")
@@ -31,13 +31,13 @@ function BLU.CreateGeneralPanel(panel)
     
     -- Core Settings Section
     local coreSection = BLU.Design:CreateSection(content, "Core Settings", "Interface\\Icons\\Achievement_General")
-    coreSection:SetPoint("TOPLEFT", BLU.Design.Layout.Spacing, -BLU.Design.Layout.Spacing)
-    coreSection:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
-    coreSection:SetHeight(140)
+    coreSection:SetPoint("TOPLEFT", 10, -10)
+    coreSection:SetPoint("RIGHT", -10, 0)
+    coreSection:SetHeight(150)
     
     -- Enable addon
     local enableCheck = BLU.Design:CreateCheckbox(coreSection.content, "Enable BLU", "Enable or disable all BLU functionality")
-    enableCheck:SetPoint("TOPLEFT", BLU.Design.Layout.Spacing/2, -BLU.Design.Layout.Spacing/2)
+    enableCheck:SetPoint("TOPLEFT", 5, -5)
     
     -- Set checkbox state with database check
     local enabled = true
@@ -58,7 +58,7 @@ function BLU.CreateGeneralPanel(panel)
     
     -- Welcome message
     local welcomeCheck = BLU.Design:CreateCheckbox(coreSection.content, "Show welcome message", "Display addon loaded message on login")
-    welcomeCheck:SetPoint("TOPLEFT", enableCheck, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
+    welcomeCheck:SetPoint("TOPLEFT", enableCheck, "BOTTOMLEFT", 0, -8)
     
     -- Set checkbox state with database check
     local showWelcome = true
@@ -72,7 +72,7 @@ function BLU.CreateGeneralPanel(panel)
     
     -- Debug mode
     local debugCheck = BLU.Design:CreateCheckbox(coreSection.content, "Debug mode", "Show debug messages in chat")
-    debugCheck:SetPoint("TOPLEFT", welcomeCheck, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
+    debugCheck:SetPoint("TOPLEFT", welcomeCheck, "BOTTOMLEFT", 0, -8)
     
     -- Set checkbox state with database check
     local debugMode = false
@@ -87,7 +87,7 @@ function BLU.CreateGeneralPanel(panel)
     
     -- Show sound names
     local showNamesCheck = BLU.Design:CreateCheckbox(coreSection.content, "Show sound names in chat", "Display the name of sounds when they play")
-    showNamesCheck:SetPoint("TOPLEFT", debugCheck, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
+    showNamesCheck:SetPoint("TOPLEFT", debugCheck, "BOTTOMLEFT", 0, -8)
     
     -- Set checkbox state with database check
     local showNames = false
@@ -101,13 +101,13 @@ function BLU.CreateGeneralPanel(panel)
     
     -- Audio Settings Section
     local audioSection = BLU.Design:CreateSection(content, "Audio Settings", "Interface\\Icons\\INV_Misc_Ear_Human_01")
-    audioSection:SetPoint("TOPLEFT", coreSection, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
-    audioSection:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
-    audioSection:SetHeight(180)
+    audioSection:SetPoint("TOPLEFT", coreSection, "BOTTOMLEFT", 0, -10)
+    audioSection:SetPoint("RIGHT", -10, 0)
+    audioSection:SetHeight(190)
     
     -- Volume slider
     local volumeLabel = audioSection.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    volumeLabel:SetPoint("TOPLEFT", 0, -BLU.Design.Layout.Spacing/2)
+    volumeLabel:SetPoint("TOPLEFT", 5, -5)
     volumeLabel:SetText("BLU Sound Volume")
     
     local volumeSlider = CreateFrame("Slider", "BLUVolumeSlider", audioSection.content, "OptionsSliderTemplate")
@@ -219,13 +219,13 @@ function BLU.CreateGeneralPanel(panel)
     
     -- Behavior Settings Section
     local behaviorSection = BLU.Design:CreateSection(content, "Behavior Settings", "Interface\\Icons\\INV_Misc_GroupLooking")
-    behaviorSection:SetPoint("TOPLEFT", audioSection, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
-    behaviorSection:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
-    behaviorSection:SetHeight(120)
+    behaviorSection:SetPoint("TOPLEFT", audioSection, "BOTTOMLEFT", 0, -10)
+    behaviorSection:SetPoint("RIGHT", -10, 0)
+    behaviorSection:SetHeight(130)
     
     -- Random sounds
     local randomCheck = BLU.Design:CreateCheckbox(behaviorSection.content, "Random sounds", "Play random sounds from all available packs")
-    randomCheck:SetPoint("TOPLEFT", 0, -BLU.Design.Layout.Spacing/2)
+    randomCheck:SetPoint("TOPLEFT", 5, -5)
     
     -- Set checkbox state with database check
     local randomSounds = false
@@ -239,7 +239,7 @@ function BLU.CreateGeneralPanel(panel)
     
     -- Mute in instances
     local muteCheck = BLU.Design:CreateCheckbox(behaviorSection.content, "Mute in instances", "Disable sounds while in dungeons, raids, or PvP")
-    muteCheck:SetPoint("TOPLEFT", randomCheck, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
+    muteCheck:SetPoint("TOPLEFT", randomCheck, "BOTTOMLEFT", 0, -8)
     
     -- Set checkbox state with database check
     local muteInInstances = false
@@ -265,9 +265,74 @@ function BLU.CreateGeneralPanel(panel)
         BLU.db.profile.muteInCombat = self:GetChecked()
     end)
     
+    -- Module Management Section
+    local moduleSection = BLU.Design:CreateSection(content, "Module Management", "Interface\\Icons\\INV_Misc_Gear_08")
+    moduleSection:SetPoint("TOPLEFT", behaviorSection, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
+    moduleSection:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
+    moduleSection:SetHeight(120)
+    
+    -- Module status display
+    local moduleStatus = moduleSection.content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    moduleStatus:SetPoint("TOPLEFT", BLU.Design.Layout.Spacing/2, -BLU.Design.Layout.Spacing/2)
+    moduleStatus:SetPoint("RIGHT", -BLU.Design.Layout.Spacing/2, 0)
+    moduleStatus:SetJustifyH("LEFT")
+    
+    -- Count enabled modules
+    local enabledCount = 0
+    local totalCount = 0
+    local modules = {"levelup", "achievement", "quest", "reputation", "battlepet", "honorrank", "renownrank", "tradingpost", "delvecompanion"}
+    
+    for _, moduleId in ipairs(modules) do
+        totalCount = totalCount + 1
+        if BLU.db and BLU.db.profile and BLU.db.profile.modules then
+            if BLU.db.profile.modules[moduleId] ~= false then
+                enabledCount = enabledCount + 1
+            end
+        else
+            enabledCount = enabledCount + 1 -- Default enabled
+        end
+    end
+    
+    moduleStatus:SetText(string.format("Event Modules Status: |cff05dffa%d/%d|r enabled\\n\\nEach event module can be individually controlled in its respective tab.", enabledCount, totalCount))
+    
+    -- Module management buttons
+    local enableAllBtn = BLU.Design:CreateButton(moduleSection.content, "Enable All", 80, 22)
+    enableAllBtn:SetPoint("TOPLEFT", moduleStatus, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
+    enableAllBtn:SetScript("OnClick", function(self)
+        if not BLU.db or not BLU.db.profile then return end
+        BLU.db.profile.modules = BLU.db.profile.modules or {}
+        
+        for _, moduleId in ipairs(modules) do
+            BLU.db.profile.modules[moduleId] = true
+            if BLU.LoadModule then
+                BLU:LoadModule("features", moduleId)
+            end
+        end
+        
+        BLU:Print("All event modules enabled")
+        moduleStatus:SetText(string.format("Event Modules Status: |cff05dffa%d/%d|r enabled\\n\\nEach event module can be individually controlled in its respective tab.", #modules, #modules))
+    end)
+    
+    local disableAllBtn = BLU.Design:CreateButton(moduleSection.content, "Disable All", 80, 22)
+    disableAllBtn:SetPoint("LEFT", enableAllBtn, "RIGHT", 10, 0)
+    disableAllBtn:SetScript("OnClick", function(self)
+        if not BLU.db or not BLU.db.profile then return end
+        BLU.db.profile.modules = BLU.db.profile.modules or {}
+        
+        for _, moduleId in ipairs(modules) do
+            BLU.db.profile.modules[moduleId] = false
+            if BLU.UnloadModule then
+                BLU:UnloadModule(moduleId)
+            end
+        end
+        
+        BLU:Print("All event modules disabled")
+        moduleStatus:SetText(string.format("Event Modules Status: |cff05dffa%d/%d|r enabled\\n\\nEach event module can be individually controlled in its respective tab.", 0, #modules))
+    end)
+    
     -- Actions Section
     local actionsSection = BLU.Design:CreateSection(content, "Actions", "Interface\\Icons\\ACHIEVEMENT_GUILDPERK_QUICK AND DEAD")
-    actionsSection:SetPoint("TOPLEFT", behaviorSection, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
+    actionsSection:SetPoint("TOPLEFT", moduleSection, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
     actionsSection:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
     actionsSection:SetHeight(60)
     
@@ -333,5 +398,5 @@ function BLU.CreateGeneralPanel(panel)
         preferredIndex = 3
     }
     
-    content:SetHeight(550)
+    content:SetHeight(700)
 end

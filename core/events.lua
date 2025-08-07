@@ -40,7 +40,18 @@ BLU:RegisterEvent("ADDON_LOADED", function(event, addon)
 end)
 
 BLU:RegisterEvent("PLAYER_LOGIN", function()
-    -- Options panel created during ADDON_LOADED
+    -- Initialize options module if not already done
+    if BLU.Modules.options_new and not BLU.LoadedModules["options_new"] then
+        BLU:PrintDebug("Initializing options_new module during PLAYER_LOGIN")
+        BLU.Modules.options_new:Init()
+        BLU.LoadedModules["options_new"] = BLU.Modules.options_new
+    end
+    
+    -- Create options panel for immediate addon settings registration
+    if BLU.CreateOptionsPanel and not BLU.OptionsPanel then
+        BLU:PrintDebug("Creating options panel during PLAYER_LOGIN for immediate registration")
+        BLU:CreateOptionsPanel()
+    end
     
     -- Show welcome
     if BLU.db.profile.showWelcomeMessage then

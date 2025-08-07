@@ -6,8 +6,17 @@
 local addonName, BLU = ...
 
 function BLU.CreateGeneralPanel(panel)
+    -- Debug: Check panel dimensions
+    BLU:PrintDebug("Creating General Panel - Panel size: " .. tostring(panel:GetWidth()) .. "x" .. tostring(panel:GetHeight()))
+    
     -- Create scrollable content with standardized positioning
     local scrollFrame, content = BLU.Design:CreatePanelScrollFrame(panel, 700)
+    
+    -- Debug: Check if scroll frame was created
+    if not scrollFrame then
+        BLU:PrintError("Failed to create scroll frame for General panel")
+        return
+    end
     
     -- No header needed - more compact
     

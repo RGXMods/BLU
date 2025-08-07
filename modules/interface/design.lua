@@ -300,6 +300,11 @@ end
 function BLU.Design:CreatePanelScrollFrame(panel, contentHeight)
     contentHeight = contentHeight or 800
     
+    -- Debug output
+    if BLU.PrintDebug then
+        BLU:PrintDebug("CreatePanelScrollFrame - Panel: " .. tostring(panel:GetName()) .. " Size: " .. panel:GetWidth() .. "x" .. panel:GetHeight())
+    end
+    
     -- Create scroll frame with consistent positioning
     local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
     scrollFrame:SetPoint("TOPLEFT", self.Layout.ContentMargin, -self.Layout.ContentMargin)
@@ -310,17 +315,19 @@ function BLU.Design:CreatePanelScrollFrame(panel, contentHeight)
     scrollBg:SetAllPoints()
     scrollBg:SetColorTexture(0.05, 0.05, 0.05, 0.3)
     
-    -- Create content frame with proper width calculation
+    -- Create content frame - use a fixed width that works with the scroll frame
     local content = CreateFrame("Frame", nil, scrollFrame)
-    local scrollWidth = scrollFrame:GetWidth()
-    if scrollWidth <= 0 then
-        -- Fallback calculation if width not available yet
-        scrollWidth = panel:GetWidth() - self.Layout.ContentMargin - self.Layout.ScrollMargin - 20
-    else
-        scrollWidth = scrollWidth - 20 -- Account for potential scroll bar
-    end
-    content:SetSize(scrollWidth, contentHeight)
+    -- Fixed width calculation: typical panel width minus margins and scrollbar
+    local contentWidth = 650 -- Safe default width for content
+    content:SetSize(contentWidth, contentHeight)
     scrollFrame:SetScrollChild(content)
+    
+    -- Ensure content is positioned correctly
+    content:SetPoint("TOPLEFT")
+    
+    -- Make sure scroll frame is visible
+    scrollFrame:Show()
+    content:Show()
     
     return scrollFrame, content
 end

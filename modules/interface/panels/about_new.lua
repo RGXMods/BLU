@@ -8,8 +8,8 @@ local addonName, BLU = ...
 function BLU.CreateAboutPanel(panel)
     -- Create scrollable content with proper sizing aligned to parent content frame
     local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
-    scrollFrame:SetPoint("TOPLEFT", BLU.Design.Layout.Spacing, -BLU.Design.Layout.Spacing)
-    scrollFrame:SetPoint("BOTTOMRIGHT", -30, BLU.Design.Layout.Spacing)
+    scrollFrame:SetPoint("TOPLEFT", 5, -5)
+    scrollFrame:SetPoint("BOTTOMRIGHT", -28, 5)
     
     -- Add scroll frame background
     local scrollBg = scrollFrame:CreateTexture(nil, "BACKGROUND")
@@ -29,8 +29,8 @@ function BLU.CreateAboutPanel(panel)
     
     -- BLU Logo/Header
     local logoFrame = CreateFrame("Frame", nil, content)
-    logoFrame:SetPoint("TOPLEFT", BLU.Design.Layout.Spacing, -BLU.Design.Layout.Spacing)
-    logoFrame:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
+    logoFrame:SetPoint("TOPLEFT", 10, -10)
+    logoFrame:SetPoint("RIGHT", -10, 0)
     logoFrame:SetHeight(120)
     
     -- Logo background
@@ -42,7 +42,7 @@ function BLU.CreateAboutPanel(panel)
     local logoIcon = logoFrame:CreateTexture(nil, "ARTWORK")
     logoIcon:SetSize(80, 80)
     logoIcon:SetPoint("LEFT", 20, 0)
-    logoIcon:SetTexture("Interface\\Icons\\Achievement_Level_100")
+    logoIcon:SetTexture("Interface\\AddOns\\BLU\\media\\images\\icon")
     
     -- Title
     local title = logoFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalHuge")
@@ -62,8 +62,8 @@ function BLU.CreateAboutPanel(panel)
     
     -- Info Section
     local infoSection = BLU.Design:CreateSection(content, "Information", "Interface\\Icons\\INV_Misc_Book_09")
-    infoSection:SetPoint("TOPLEFT", logoFrame, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
-    infoSection:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
+    infoSection:SetPoint("TOPLEFT", logoFrame, "BOTTOMLEFT", 0, -10)
+    infoSection:SetPoint("RIGHT", -10, 0)
     infoSection:SetHeight(180)
     
     -- Create info grid
@@ -103,8 +103,8 @@ function BLU.CreateAboutPanel(panel)
     
     -- Features Section
     local featuresSection = BLU.Design:CreateSection(content, "Features", "Interface\\Icons\\Achievement_General")
-    featuresSection:SetPoint("TOPLEFT", infoSection, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
-    featuresSection:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
+    featuresSection:SetPoint("TOPLEFT", infoSection, "BOTTOMLEFT", 0, -10)
+    featuresSection:SetPoint("RIGHT", -10, 0)
     featuresSection:SetHeight(200)
     
     local features = {

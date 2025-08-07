@@ -1,67 +1,33 @@
 --=====================================================================================
--- BLU Final Fantasy Sound Module
--- Contains all Final Fantasy game sounds
+-- BLU - sound/packs/finalfantasy.lua
+-- Final Fantasy sound pack
 --=====================================================================================
 
 local addonName, BLU = ...
-local FinalFantasy = {}
 
--- Sound definitions
-FinalFantasy.sounds = {
-    -- Victory Fanfare
+-- Register Final Fantasy sounds
+local sounds = {
     finalfantasy_levelup = {
         name = "Final Fantasy - Victory Fanfare",
-        file = "Interface\\AddOns\\BLU\\media\\sounds\\finalfantasy\\victory.ogg",
+        file = "Interface\\AddOns\\BLU\\Media\\Sounds\\final_fantasy_med.ogg",
         duration = 3.5,
         category = "levelup"
     },
-    
-    -- Item Get
-    finalfantasy_quest = {
-        name = "Final Fantasy - Item Get",
-        file = "Interface\\AddOns\\BLU\\media\\sounds\\finalfantasy\\itemget.ogg",
-        duration = 1.5,
-        category = "quest"
-    },
-    
-    -- Save Complete
     finalfantasy_achievement = {
-        name = "Final Fantasy - Save Complete",
-        file = "Interface\\AddOns\\BLU\\media\\sounds\\finalfantasy\\save.ogg",
-        duration = 1.0,
+        name = "Final Fantasy - Achievement",
+        file = "Interface\\AddOns\\BLU\\Media\\Sounds\\final_fantasy_high.ogg",
+        duration = 2.5,
         category = "achievement"
     },
-    
-    -- Crystal Theme
-    finalfantasy_reputation = {
-        name = "Final Fantasy - Crystal Theme",
-        file = "Interface\\AddOns\\BLU\\media\\sounds\\finalfantasy\\crystal.ogg",
-        duration = 4.0,
-        category = "reputation"
+    finalfantasy_quest = {
+        name = "Final Fantasy - Quest Complete",
+        file = "Interface\\AddOns\\BLU\\Media\\Sounds\\final_fantasy_low.ogg",
+        duration = 2.0,
+        category = "quest"
     }
 }
 
--- Initialize sound module
-function FinalFantasy:Init()
-    -- Register sounds with the main addon
-    for soundId, soundData in pairs(self.sounds) do
-        BLU:RegisterSound(soundId, soundData)
-    end
-    
-    BLU:PrintDebug("Final Fantasy sound module loaded")
+-- Register with sound registry
+if BLU.RegisterSoundPack then
+    BLU:RegisterSoundPack("finalfantasy", "Final Fantasy", sounds)
 end
-
--- Cleanup (if needed)
-function FinalFantasy:Cleanup()
-    -- Unregister sounds
-    for soundId in pairs(self.sounds) do
-        BLU:UnregisterSound(soundId)
-    end
-end
-
--- Register module
-BLU.Modules = BLU.Modules or {}
-BLU.Modules["FinalFantasy"] = FinalFantasy
-
--- Export module
-return FinalFantasy

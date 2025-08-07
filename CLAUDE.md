@@ -4,29 +4,55 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-BLU (Better Level-Up!) is a World of Warcraft addon that replaces default sounds with iconic audio from 50+ games. It's currently in v6.0.0-alpha, featuring a complete modular rewrite without external library dependencies.
+BLU (Better Level-Up!) is a World of Warcraft addon that replaces default sounds with iconic audio from 50+ games. Currently in v6.0.0-alpha with a complete professional reorganization.
 
 **Key Points:**
-- Retail WoW only (Classic support moved to BLU_Classic repo)
-- No external libraries (removed Ace3, implementing custom framework)
-- Optional LibSharedMedia support for SoundPak compatibility
-- Modular architecture for performance optimization
-- All filenames use lowercase convention
+- Retail WoW only (TWW 11.0.5)
+- No external library dependencies
+- Professional folder structure with proper capitalization
+- Modular architecture for performance
 - RGX Mods branding (RealmGX Community Project)
+- Directory junction in place for auto-testing
+
+## Current Directory Structure
+
+```
+BLU/
+├── core/               # Framework and core systems
+├── modules/            # Feature modules (quest, levelup, etc)
+├── interface/          # UI panels and widgets
+│   └── panels/         # Individual panel files
+├── media/              # Sounds and textures
+│   ├── sounds/         # Game sound files
+│   └── textures/       # Icons and images
+├── localization/       # Language files
+├── sound/              # Sound pack definitions
+│   └── packs/          # Individual game sound packs
+├── libs/               # External libraries (currently empty)
+├── BLU.toc             # Table of Contents (uppercase)
+├── BLU.xml             # Main XML loader (uppercase)
+├── README.md           # Public documentation
+└── CLAUDE.md           # This file
+```
 
 ## Architecture
 
-### Loading Order
-1. `blu.xml` → `core/core.xml` → Framework loads first
-2. `modules/modules.xml` → Core modules loaded
-3. Feature modules loaded dynamically based on user settings
-4. Sound modules loaded on-demand when sounds are selected
+### Loading Order (via BLU.xml)
+1. Core systems (core.lua, database.lua, config.lua, etc)
+2. Localization files (enUS.lua)
+3. Interface framework (design.lua, widgets.lua, tabs.lua)
+4. Interface panels (general.lua, sounds.lua, about.lua)
+5. Feature modules (quest, levelup, achievement, etc)
+6. Sound packs (dynamically loaded)
 
 ### Core Systems
-- **Framework** (`core/framework.lua`): Custom event system, timers, hooks, slash commands
-- **Database** (`core/database.lua`): SavedVariables management, profile system
-- **Module Loader** (`modules/loader.lua`): Dynamic loading/unloading of feature modules
-- **Sound Registry** (`modules/registry.lua`): Central sound management system
+- **core.lua**: Main framework, event system, timers, hooks
+- **database.lua**: SavedVariables management
+- **config.lua**: Configuration defaults
+- **registry.lua**: Sound registry system
+- **loader.lua**: Dynamic module loading
+- **sharedmedia.lua**: Optional SharedMedia support
+- **optionslauncher.lua**: Options panel launcher (/blu command)
 
 ### Module Types
 1. **Core Modules** (always loaded): framework, database, events, localization, config, utils
@@ -42,75 +68,86 @@ BLU (Better Level-Up!) is a World of Warcraft addon that replaces default sounds
 ## Common Development Tasks
 
 ### Testing the Addon
-```bash
-# Copy to WoW for testing (Windows)
-xcopy /E /Y /I "C:\Users\donniedice\BLU" "C:\Program Files (x86)\World of Warcraft\_retail_\Interface\AddOns\BLU" /EXCLUDE:.git
+A directory junction is already in place that automatically syncs files:
 ```
+C:\Users\donniedice\BLU → C:\Program Files (x86)\World of Warcraft\_retail_\Interface\AddOns\BLU
+```
+All changes are instantly available in-game after /reload.
 
 ### Adding a New Sound Pack
 1. Create `sound/packs/gamename.lua`
 2. Define sounds with structure:
    ```lua
-   sounds = {
-       gamename_soundtype = {
-           name = "Game - Sound Name",
-           file = "Interface\\AddOns\\BLU\\media\\sounds\\gamename\\sound.ogg",
+   local sounds = {
+       gamename_levelup = {
+           name = "Game Name - Level Up",
+           file = "Interface\\AddOns\\BLU\\Media\\Sounds\\gamename.ogg",
            duration = 2.0,
            category = "levelup"
        }
    }
+   BLU:RegisterSoundPack("gamename", "Game Name", sounds)
    ```
-3. Add actual .ogg files to `media/sounds/gamename/`
+3. Add to `sound/packs/packs.xml`
+4. Add .ogg files to `Media/Sounds/`
 
 ### Adding a New Feature Module
-1. Create `modules/features/featurename.lua`
-2. Implement Init() and Cleanup() functions
-3. Register events and handle them
-4. Update module loader registry in `modules/loader.lua`
+1. Create `Modules/FeatureName/FeatureName.lua`
+2. Implement module structure:
+   ```lua
+   local module = BLU:NewModule("FeatureName")
+   function module:Init() ... end
+   function module:Cleanup() ... end
+   ```
+3. Update `BLU.xml` to include the new module
 
 ### Git Workflow
 - Main branch: stable releases
 - Alpha branch: active development
-- Commit with co-author: `Co-Authored-By: Claude <noreply@anthropic.com>`
+- **IMPORTANT**: Do NOT add Claude as co-author in commits
+- Do NOT include any AI assistant attribution
+- Commits should be made as the repository owner only
 
 ## Current State (v6.0.0-alpha)
 
-### Completed Features
-- Complete modular rewrite without Ace3
-- Custom framework implementation
-- File structure reorganization
-- Options panel with tabs (General, Sounds, Modules, About)
+### Latest Changes (2025-08-07)
+- **MAJOR**: Complete directory reorganization to professional structure
+- Cleaned up ~180MB of duplicate/unused files
+- Converted ALL directories and files to lowercase naming
+- Removed all test files, old options files, and artifacts
+- Created proper sound pack structure
+- Updated BLU.xml and BLU.toc with lowercase paths
+- Removed Claude co-author attribution from git commits
+
+### Working Features
+- Options panel accessible via `/blu` command
+- Tabbed interface (General, Sounds, About)
 - Volume control system (0-100%)
 - Sound channel selection
-- Sound registry with category-based playback
-- Event handlers for all game events
-- Sound browser UI for previewing sounds
-- SharedMedia/SoundPak compatibility bridge
+- Event-based sound playback
+- Narcissus-style UI design
+- Sound registry system
 
-### In Development
-- Additional sound packs (Zelda, Pokemon, Mario, etc.)
-- Advanced sound categorization
-- Profile system for multiple configurations
+### Known Issues
+- Some feature modules may need path updates
+- Sound packs need to be fully implemented
+- Options panel alignment needs fine-tuning
 
-### Technical Status
-- All core systems functional
-- Options panel accessible via `/blu` command
-- Sound playback working with volume control
-- SharedMedia integration ready (optional)
-
-### TOC File Requirements
-- Must use `BLU.toc` (uppercase) for addon name
-- Interface version: 110105 (The War Within)
-- Main loader: `blu.xml` (lowercase)
+### Technical Requirements
+- WoW Version: 11.0.5 (The War Within)
+- Interface: 110105
+- TOC: BLU.toc (uppercase)
+- XML: BLU.xml (uppercase)
 
 ## Important Conventions
 
-### Naming
-- All lua/xml files: lowercase (e.g., `levelup.lua`, `modules.xml`)
-- TOC file: uppercase (`BLU.toc`)
-- Addon name in code: `BLU` (uppercase)
-- Author: donniedice
-- Email: 60427166+donniedice@users.noreply.github.com
+### Naming Conventions
+- **ALL files and directories**: lowercase only (e.g., `core/`, `modules/`, `interface/`)
+- **Lua/XML files**: lowercase (e.g., `levelup.lua`, `modules.xml`)
+- **TOC file**: uppercase (`BLU.toc`)
+- **Addon name in code**: `BLU` (uppercase)
+- **Author**: donniedice
+- **Email**: 60427166+donniedice@users.noreply.github.com
 
 ### Sound File Structure
 - No more high/med/low variants in filenames

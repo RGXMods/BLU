@@ -425,8 +425,8 @@ end
 function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     -- Create scrollable content with proper sizing aligned to content frame
     local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
-    scrollFrame:SetPoint("TOPLEFT", 5, -5)
-    scrollFrame:SetPoint("BOTTOMRIGHT", -28, 5)
+    scrollFrame:SetPoint("TOPLEFT", 15, -15)
+    scrollFrame:SetPoint("BOTTOMRIGHT", -35, 15)
     
     -- Add scroll frame background for better visibility
     local scrollBg = scrollFrame:CreateTexture(nil, "BACKGROUND")

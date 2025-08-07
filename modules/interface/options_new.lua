@@ -219,7 +219,7 @@ function Options:CreateOptionsPanel()
     
     -- Create main frame
     local panel = CreateFrame("Frame", "BLUOptionsPanel", UIParent)
-    panel.name = "Better Level-Up|cff05dffa!|r"
+    panel.name = "|cff05dffaBetter Level-Up!|r"
     
     -- Custom icon for the settings menu
     panel.OnCommit = function() end
@@ -250,13 +250,19 @@ function Options:CreateOptionsPanel()
     local logo = header:CreateTexture(nil, "ARTWORK")
     logo:SetSize(48, 48)
     logo:SetPoint("LEFT", 15, 0)
-    logo:SetTexture("Interface\\AddOns\\BLU\\media\\images\\icon")
+    -- Try multiple icon paths
+    local iconPath = "Interface\\AddOns\\BLU\\media\\images\\icon"
+    if not logo:SetTexture(iconPath) then
+        -- Fallback to a default WoW icon if custom icon not found
+        logo:SetTexture("Interface\\Icons\\Achievement_Level_100")
+    end
     
-    -- Title (with colored letters like SQP)
+    -- Title with proper BLU branding
     local title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalHuge")
     title:SetPoint("LEFT", logo, "RIGHT", 15, 10)
-    title:SetText("Better Level-Up|cff05dffa!|r")
-    title:SetFont(title:GetFont(), 22)
+    title:SetText("|cff05dffaBetter Level-Up!|r")
+    local font, size = title:GetFont()
+    title:SetFont(font, 22)
     
     -- Subtitle
     local subtitle = header:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
@@ -267,19 +273,18 @@ function Options:CreateOptionsPanel()
     -- Version & Author
     local version = header:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     version:SetPoint("TOPRIGHT", -15, -15)
-    version:SetText("v6.0.0-alpha |cffff0000[ALPHA]|r")
-    version:SetTextColor(unpack(BLU.Design.Colors.Primary))
+    version:SetText("|cff05dffav6.0.0-alpha|r |cffff0000[ALPHA]|r")
     
     local author = header:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     author:SetPoint("TOP", version, "BOTTOM", 0, -2)
-    author:SetText("by donniedice")
-    author:SetTextColor(0.7, 0.7, 0.7)
+    author:SetText("by |cffffd700donniedice|r")
     
     -- RGX Mods branding
     local branding = header:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     branding:SetPoint("BOTTOMRIGHT", -15, 10)
     branding:SetText("|cffffd700RGX |r|cff05dffaMods|r")
-    branding:SetFont(branding:GetFont(), 11)
+    local brandFont, _ = branding:GetFont()
+    branding:SetFont(brandFont, 11)
     
     -- Tab container (SQP style tabs) - multiple rows with better spacing
     local tabContainer = CreateFrame("Frame", nil, container)

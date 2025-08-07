@@ -430,16 +430,28 @@ function Options:OpenOptions()
         return
     end
     
-    if Settings and Settings.OpenToCategory and BLU.OptionsCategory and BLU.OptionsCategory.ID then
-        Settings.OpenToCategory(BLU.OptionsCategory.ID)
-        C_Timer.After(0.1, function()
+    -- Try multiple methods to open the panel
+    if Settings and Settings.OpenToCategory then
+        if BLU.OptionsCategory and BLU.OptionsCategory.ID then
+            -- New API with category ID
             Settings.OpenToCategory(BLU.OptionsCategory.ID)
-        end)
-    elseif InterfaceOptionsFrame_OpenToCategory and BLU.OptionsCategory then
-        InterfaceOptionsFrame_OpenToCategory(BLU.OptionsCategory)
-        InterfaceOptionsFrame_OpenToCategory(BLU.OptionsCategory)
+            C_Timer.After(0.1, function()
+                Settings.OpenToCategory(BLU.OptionsCategory.ID)
+            end)
+        elseif BLU.OptionsCategory then
+            -- New API with category object
+            Settings.OpenToCategory(BLU.OptionsCategory)
+        else
+            -- Try with panel directly
+            Settings.OpenToCategory(BLU.OptionsPanel.name)
+        end
+    elseif InterfaceOptionsFrame_OpenToCategory then
+        -- Legacy API
+        InterfaceOptionsFrame_OpenToCategory(BLU.OptionsPanel)
+        -- Call twice to ensure it opens (Blizzard bug workaround)
+        InterfaceOptionsFrame_OpenToCategory(BLU.OptionsPanel)
     else
-        BLU:Print("Unable to open options panel")
+        BLU:Print("Unable to open options panel - try /blu config")
     end
 end
 
@@ -1026,9 +1038,34 @@ end
 -- Register module
 if BLU.RegisterModule then
     BLU:RegisterModule(Options, "options_new", "Options Interface")
+else
+    -- Fallback registration
+    BLU.Modules = BLU.Modules or {}
+    BLU.Modules.options_new = Options
+    BLU:PrintDebug("Fallback registration for options_new module")
 end
 
 -- Panel will be created during PLAYER_LOGIN event in core/events.lua
 -- This ensures proper initialization order and immediate addon settings registration
 
--- Note: CreateRGXModsPanel function removed - RGX Mods tab no longer exists
+-- Create panel on ADDON_LOADED if needed
+local frame = CreateFrame("Frame")
+frame:RegisterEvent("ADDON_LOADED")
+frame:RegisterEvent("PLAYER_LOGIN")
+frame:SetScript("OnEvent", function(self, event, ...)
+    if event == "ADDON_LOADED" then
+        local addon = ...
+        if addon == addonName then
+            BLU:PrintDebug("Options panel: ADDON_LOADED for " .. addonName)
+            if not BLU.OptionsPanel and Options.CreateOptionsPanel then
+                BLU:PrintDebug("Creating options panel on ADDON_LOADED")
+                Options:CreateOptionsPanel()
+            end
+        end
+    elseif event == "PLAYER_LOGIN" then
+        if not BLU.OptionsPanel and Options.CreateOptionsPanel then
+            BLU:PrintDebug("Creating options panel on PLAYER_LOGIN")
+            Options:CreateOptionsPanel()
+        end
+    end
+end)

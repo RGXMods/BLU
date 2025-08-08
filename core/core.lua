@@ -67,14 +67,22 @@ function BLU:UnregisterEvent(event, id)
     end
 end
 
--- Fire event
+-- Fire event with performance optimization
 function BLU:FireEvent(event, ...)
-    if self.events[event] then
-        for id, callback in pairs(self.events[event]) do
-            local success, err = pcall(callback, event, ...)
-            if not success then
-                self:PrintError("Error in event " .. event .. " for " .. id .. ": " .. err)
-            end
+    local eventTable = self.events[event]
+    if not eventTable then return end
+    
+    -- Cache event callbacks to avoid issues if they're modified during iteration
+    local callbacks = {}
+    for id, callback in pairs(eventTable) do
+        callbacks[#callbacks + 1] = {id = id, callback = callback}
+    end
+    
+    for i = 1, #callbacks do
+        local entry = callbacks[i]
+        local success, err = pcall(entry.callback, event, ...)
+        if not success then
+            self:PrintError("Error in event " .. event .. " for " .. entry.id .. ": " .. err)
         end
     end
 end

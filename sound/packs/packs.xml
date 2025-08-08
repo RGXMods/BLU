@@ -10,5 +10,5 @@
     <Script file="witcher.lua"/>
     <Script file="diablo.lua"/>
     <Script file="warcraft.lua"/>
-    <Script file="overwatch.lua"/>
+    <Script file="allgames.lua"/>
 </Ui>

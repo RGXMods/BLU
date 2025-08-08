@@ -37,13 +37,20 @@ BLU/
 
 ## Architecture
 
-### Loading Order (via BLU.xml)
+### Loading Order (via BLU.xml + _manifest.lua)
 1. Core systems (core.lua, database.lua, config.lua, etc)
 2. Localization files (enUS.lua)
 3. Interface framework (design.lua, widgets.lua, tabs.lua)
 4. Interface panels (general.lua, sounds.lua, about.lua)
-5. Feature modules (quest, levelup, achievement, etc)
+5. Feature modules loaded via `modules/_manifest.lua` for dependency resolution
 6. Sound packs (dynamically loaded)
+
+### AI Assistant Integration
+This project uses Claude Code Router with multiple AI models:
+- **GPT-4**: General code analysis and best practices
+- **Deepseek Coder**: Architecture optimization and performance
+- **Gemini Pro**: Organization and maintainability recommendations
+- Access via: `gpt`, `deepseek`, or `gemini` commands when router is running
 
 ### Core Systems
 - **core.lua**: Main framework, event system, timers, hooks
@@ -110,7 +117,14 @@ All changes are instantly available in-game after /reload.
 
 ## Current State (v6.0.0-alpha)
 
-### Latest Changes (2025-08-07)
+### Latest Changes (2025-08-08)
+- **AI Consensus Update**: Used GPT-4, Deepseek Coder, and Gemini Pro to analyze architecture
+- Fixed ALL uppercase files in modules/ and interface/ directories  
+- Created `modules/_manifest.lua` for explicit load ordering and dependency management
+- Standardized all filenames to lowercase (modules, interface panels)
+- Documented AI recommendations in `AI_CONSENSUS_REPORT.md`
+
+### Previous Changes (2025-08-07)
 - **MAJOR**: Complete directory reorganization to professional structure
 - Cleaned up ~180MB of duplicate/unused files
 - Converted ALL directories and files to lowercase naming
@@ -141,13 +155,19 @@ All changes are instantly available in-game after /reload.
 
 ## Important Conventions
 
-### Naming Conventions
-- **ALL files and directories**: lowercase only (e.g., `core/`, `modules/`, `interface/`)
-- **Lua/XML files**: lowercase (e.g., `levelup.lua`, `modules.xml`)
-- **TOC file**: uppercase (`BLU.toc`)
-- **Addon name in code**: `BLU` (uppercase)
+### Naming Conventions (STRICT REQUIREMENT)
+- **ALL directories**: MUST be lowercase (e.g., `core/`, `modules/`, `interface/`, `media/textures/`)
+- **ALL subdirectories**: MUST be lowercase (e.g., `modules/achievement/`, `interface/panels/`)
+- **ALL Lua files**: MUST be lowercase (e.g., `levelup.lua`, `achievement.lua`)
+- **ALL XML files**: MUST be lowercase (e.g., `modules.xml`, `packs.xml`)
+- **ONLY EXCEPTIONS**:
+  - `BLU.toc` - TOC file MUST be uppercase
+  - `BLU.xml` - Main XML loader MUST be uppercase
+  - Addon name in code: `BLU` (uppercase)
 - **Author**: donniedice
 - **Email**: 60427166+donniedice@users.noreply.github.com
+
+**IMPORTANT**: Windows is case-insensitive but WoW's Lua is case-sensitive. All paths in XML/Lua must match exact case.
 
 ### Sound File Structure
 - No more high/med/low variants in filenames

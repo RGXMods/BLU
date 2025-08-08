@@ -1,0 +1,53 @@
+{
+  "project_name": "BLU WoW Addon",
+  "project_description": "Better Level-Up! World of Warcraft addon - modular sound replacement system",
+  "default_agent": "wow-ui-expert",
+  "agents": {
+    "wow-ui-expert": {
+      "file": "./agents/wow-ui-expert.json",
+      "triggers": [
+        "ui", "interface", "panel", "frame", "widget", "design", "ux", "user experience",
+        "options", "settings", "layout", "visual", "display", "interaction"
+      ]
+    },
+    "lua-optimizer": {
+      "file": "./agents/lua-optimizer.json", 
+      "triggers": [
+        "performance", "optimize", "speed", "memory", "efficiency", "slow", "lag",
+        "bottleneck", "profiling", "algorithm", "cache", "loading"
+      ]
+    },
+    "code-reviewer": {
+      "file": "./agents/code-reviewer.json",
+      "triggers": [
+        "review", "quality", "best practice", "security", "bug", "error", "test",
+        "architecture", "maintainability", "refactor", "clean up"
+      ]
+    }
+  },
+  "routing_rules": [
+    {
+      "description": "Route UI/UX related tasks to wow-ui-expert",
+      "condition": "contains_any(['ui', 'interface', 'panel', 'design', 'layout', 'visual'])",
+      "agent": "wow-ui-expert"
+    },
+    {
+      "description": "Route performance optimization tasks to lua-optimizer", 
+      "condition": "contains_any(['performance', 'optimize', 'speed', 'memory', 'slow'])",
+      "agent": "lua-optimizer"
+    },
+    {
+      "description": "Route code review tasks to code-reviewer",
+      "condition": "contains_any(['review', 'quality', 'security', 'bug', 'test'])",
+      "agent": "code-reviewer"
+    }
+  ],
+  "context": {
+    "project_type": "wow_addon",
+    "language": "lua",
+    "framework": "custom_modular",
+    "version": "6.0.0-alpha",
+    "target": "retail_wow",
+    "architecture": "modular_event_driven"
+  }
+}

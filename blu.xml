@@ -3,6 +3,9 @@
     <!-- Core Systems (Load Order Matters) -->
     <Script file="core/core.lua"/>
     <Script file="core/database.lua"/>
+    <Script file="core/database_safety.lua"/>
+    <Script file="core/combat_protection.lua"/>
+    <Script file="core/module_management.lua"/>
     <Script file="core/config.lua"/>
     <Script file="core/utils.lua"/>
     <Script file="core/registry.lua"/>
@@ -24,8 +27,10 @@
     <!-- Interface Panels -->
     <Script file="interface/panels/general.lua"/>
     <Script file="interface/panels/sounds.lua"/>
+    <Script file="interface/panels/modules.lua"/>
+    <Script file="interface/panels/profiles.lua"/>
+    <Script file="interface/panels/advanced.lua"/>
     <Script file="interface/panels/about.lua"/>
-    <Script file="interface/panels/eventsimple.lua"/>
     
     <!-- Feature Modules -->
     <Script file="modules/quest/quest.lua"/>

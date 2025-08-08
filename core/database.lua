@@ -194,7 +194,56 @@ function Database:MergeDefaults(tbl, defaults)
     end
 end
 
+-- Database accessor function for safe access
+function Database:Get(key)
+    if not BLU.db or not BLU.db.profile then
+        self:LoadSavedVariables()
+    end
+    
+    if not key then
+        return BLU.db.profile
+    end
+    
+    local keys = type(key) == "string" and {key} or key
+    local value = BLU.db.profile
+    
+    for _, k in ipairs(keys) do
+        if type(value) ~= "table" then return nil end
+        value = value[k]
+    end
+    
+    return value
+end
+
+-- Safe setter
+function Database:Set(key, value)
+    if not BLU.db or not BLU.db.profile then
+        self:LoadSavedVariables()
+    end
+    
+    local keys = type(key) == "string" and {key} or key
+    local target = BLU.db.profile
+    
+    for i = 1, #keys - 1 do
+        local k = keys[i]
+        if type(target[k]) ~= "table" then
+            target[k] = {}
+        end
+        target = target[k]
+    end
+    
+    target[keys[#keys]] = value
+end
+
 -- Hook into BLU
+function BLU:GetDB(key)
+    return Database:Get(key)
+end
+
+function BLU:SetDB(key, value)
+    Database:Set(key, value)
+end
+
 function BLU:LoadSettings()
     Database:Init()
 end

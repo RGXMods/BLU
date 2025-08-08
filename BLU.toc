@@ -4,9 +4,9 @@
 ## Notes: Play sounds from other games!  |n|r  |cff05dffa/blu -|r Open options panel  |n|r   |cff05dffaBy DonnieDice|r
 ## Author: DonnieDice
 ## Email: 60427166+donniedice@users.noreply.github.com
-## SavedVariables: BLUDB, BLU_SavedVariables
+## SavedVariables: BLUDB
 ## OptionalDeps: Ace3
-## IconTexture: Interface\AddOns\BLU\media\textures\icon
+## IconTexture: Interface\AddOns\BLU\media\textures\icon.tga
 
 ## X-Category: UI Media, Questing & Leveling, Audio & Video, Miscellaneous
 ## X-Website: https://github.com/donniedice/BLU

@@ -7,9 +7,11 @@ local addonName, BLU = ...
 local SoundRegistry = {}
 BLU.Modules["registry"] = SoundRegistry
 
--- Sound storage
+-- Sound storage with caching
 SoundRegistry.sounds = {}
 SoundRegistry.categories = {}
+SoundRegistry.soundCache = {} -- Performance cache
+SoundRegistry.lastCacheUpdate = 0
 
 -- Initialize
 function SoundRegistry:Init()

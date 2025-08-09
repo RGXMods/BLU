@@ -15,9 +15,8 @@
     <Script file="core/commands.lua"/>
     <Script file="core/init.lua"/>
     
-    <!-- Modern Glass-style Interface -->
-    <Script file="interface/glass_design.lua"/>
-    <Script file="core/interface_options_glass.lua"/>
+    <!-- Options Launcher -->
+    <Script file="interface/options_launcher.lua"/>
     
     <!-- Localization -->
     <Script file="localization/enUS.lua"/>

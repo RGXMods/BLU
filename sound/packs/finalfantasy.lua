@@ -9,19 +9,19 @@ local addonName, BLU = ...
 local sounds = {
     finalfantasy_levelup = {
         name = "Final Fantasy - Victory Fanfare",
-        file = "Interface\\AddOns\\BLU\\Media\\Sounds\\final_fantasy_med.ogg",
+        file = "Interface\\AddOns\\BLU\\media\\sounds\\final_fantasy.ogg",
         duration = 3.5,
         category = "levelup"
     },
     finalfantasy_achievement = {
         name = "Final Fantasy - Achievement",
-        file = "Interface\\AddOns\\BLU\\Media\\Sounds\\final_fantasy_high.ogg",
+        file = "Interface\\AddOns\\BLU\\media\\sounds\\final_fantasy.ogg",
         duration = 2.5,
         category = "achievement"
     },
     finalfantasy_quest = {
         name = "Final Fantasy - Quest Complete",
-        file = "Interface\\AddOns\\BLU\\Media\\Sounds\\final_fantasy_low.ogg",
+        file = "Interface\\AddOns\\BLU\\media\\sounds\\final_fantasy.ogg",
         duration = 2.0,
         category = "quest"
     }

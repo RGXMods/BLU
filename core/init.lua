@@ -169,10 +169,10 @@ BLU:RegisterEvent("PLAYER_LOGIN", function()
         BLU.OptionsPanel = panel
     end
     
-    -- Show welcome message only if enabled
-    if BLU.db and BLU.db.profile and BLU.db.profile.showWelcomeMessage then
-        BLU:Print("v6.0.0-alpha loaded! Type |cff05dffa/blu|r for options")
-    end
+    -- Show welcome message
+    C_Timer.After(1, function()
+        BLU:ShowWelcomeMessage()
+    end)
 end)
 
 -- Register for VARIABLES_LOADED to ensure database is ready

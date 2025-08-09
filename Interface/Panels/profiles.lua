@@ -1,74 +1,13 @@
 --=====================================================================================
--- BLU | Profiles Panel - Save/Load/Import/Export Configuration
+-- BLU | Profiles Panel
 -- Author: donniedice
--- Description: Complete profile management system with presets
+-- Description: Profile management - create, switch, delete, import/export
 --=====================================================================================
 
 local addonName, BLU = ...
 
--- Predefined profile presets
-local profilePresets = {
-    {
-        name = "Classic Gamer",
-        desc = "Retro 8-bit and 16-bit sounds",
-        settings = {
-            events = {
-                levelup = {sound = "final_fantasy.ogg", volume = 100},
-                achievement = {sound = "zelda_chest.ogg", volume = 90},
-                quest = {sound = "mario_coin.ogg", volume = 85},
-                reputation = {sound = "sonic_ring.ogg", volume = 80}
-            },
-            volume = 100,
-            channel = "Master"
-        }
-    },
-    {
-        name = "Modern RPG",
-        desc = "Contemporary RPG sounds",
-        settings = {
-            events = {
-                levelup = {sound = "skyrim.ogg", volume = 100},
-                achievement = {sound = "witcher_3-1.ogg", volume = 95},
-                quest = {sound = "elden_ring-1.ogg", volume = 90},
-                reputation = {sound = "skyrim.ogg", volume = 85}
-            },
-            volume = 90,
-            channel = "SFX"
-        }
-    },
-    {
-        name = "Warcraft Nostalgia",
-        desc = "Classic Warcraft sounds",
-        settings = {
-            events = {
-                levelup = {sound = "warcraft_3.ogg", volume = 100},
-                achievement = {sound = "warcraft_3-2.ogg", volume = 100},
-                quest = {sound = "warcraft_3-3.ogg", volume = 100},
-                reputation = {sound = "warcraft_3.ogg", volume = 100}
-            },
-            volume = 85,
-            channel = "Master"
-        }
-    },
-    {
-        name = "Minimal",
-        desc = "Subtle notification sounds",
-        settings = {
-            events = {
-                levelup = {sound = "minecraft.ogg", volume = 60},
-                achievement = {sound = "minecraft.ogg", volume = 50},
-                quest = {sound = "minecraft.ogg", volume = 40},
-                reputation = {sound = "minecraft.ogg", volume = 30}
-            },
-            volume = 70,
-            channel = "SFX"
-        }
-    }
-}
-
-function BLU.CreateProfilesPanel(parent)
-    local panel = CreateFrame("Frame", nil, parent)
-    panel:SetAllPoints()
+function BLU.CreateProfilesPanel()
+    local panel = CreateFrame("Frame", nil, UIParent)
     panel:Hide()
     
     -- Title
@@ -76,299 +15,333 @@ function BLU.CreateProfilesPanel(parent)
     title:SetPoint("TOPLEFT", 16, -16)
     title:SetText("Profile Management")
     
-    local subtitle = panel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    subtitle:SetPoint("TOPLEFT", 16, -35)
-    subtitle:SetText("Save and manage your sound configurations")
-    subtitle:SetTextColor(0.7, 0.7, 0.7)
-    
-    local yOffset = -60
+    local yOffset = -50
     
     -- Current Profile Section
-    local currentSection = panel:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    currentSection:SetPoint("TOPLEFT", 16, yOffset)
-    currentSection:SetText("Current Profile")
-    currentSection:SetTextColor(0, 0.8, 1)
+    local currentTitle = panel:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    currentTitle:SetPoint("TOPLEFT", 16, yOffset)
+    currentTitle:SetText("Current Profile")
+    currentTitle:SetTextColor(0, 0.8, 1)
     
     yOffset = yOffset - 30
     
-    -- Profile dropdown
-    local profileDropdown = CreateFrame("Frame", "BLUProfileDropdown", panel, "UIDropDownMenuTemplate")
-    profileDropdown:SetPoint("TOPLEFT", 30, yOffset)
-    UIDropDownMenu_SetWidth(profileDropdown, 200)
+    -- Current profile display
+    local currentProfileFrame = CreateFrame("Frame", nil, panel, "BackdropTemplate")
+    currentProfileFrame:SetPoint("TOPLEFT", 30, yOffset)
+    currentProfileFrame:SetSize(300, 40)
+    currentProfileFrame:SetBackdrop({
+        bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
+        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+        edgeSize = 1,
+        insets = { left = 1, right = 1, top = 1, bottom = 1 }
+    })
+    currentProfileFrame:SetBackdropColor(0.1, 0.1, 0.1, 0.5)
+    currentProfileFrame:SetBackdropBorderColor(0.02, 0.37, 1, 1)
     
-    -- Initialize profiles list
-    BLU.db.profiles = BLU.db.profiles or {
-        ["Default"] = {
-            name = "Default",
-            settings = {}
-        }
-    }
-    BLU.db.currentProfile = BLU.db.currentProfile or "Default"
-    UIDropDownMenu_SetText(profileDropdown, BLU.db.currentProfile)
+    local currentProfileText = currentProfileFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    currentProfileText:SetPoint("CENTER")
+    currentProfileText:SetText(BLU.db and BLU.db.currentProfile or "Default")
+    panel.currentProfileText = currentProfileText
     
-    UIDropDownMenu_Initialize(profileDropdown, function(self, level)
-        for name, profile in pairs(BLU.db.profiles) do
-            local info = UIDropDownMenu_CreateInfo()
-            info.text = name
-            info.value = name
-            info.func = function()
-                BLU.db.currentProfile = name
-                UIDropDownMenu_SetText(profileDropdown, name)
-                BLU:LoadProfile(name)
-                print("|cff00ccffBLU:|r Loaded profile: " .. name)
-            end
-            info.checked = (BLU.db.currentProfile == name)
-            UIDropDownMenu_AddButton(info, level)
-        end
-    end)
+    yOffset = yOffset - 60
     
-    -- Profile action buttons
-    local saveBtn = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
-    saveBtn:SetSize(80, 22)
-    saveBtn:SetPoint("LEFT", profileDropdown, "RIGHT", 10, 2)
-    saveBtn:SetText("Save")
-    saveBtn:SetScript("OnClick", function()
-        local profileName = BLU.db.currentProfile
-        BLU:SaveProfile(profileName)
-        print("|cff00ccffBLU:|r Profile saved: " .. profileName)
-    end)
-    
-    local newBtn = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
-    newBtn:SetSize(80, 22)
-    newBtn:SetPoint("LEFT", saveBtn, "RIGHT", 5, 0)
-    newBtn:SetText("New")
-    newBtn:SetScript("OnClick", function()
-        StaticPopup_Show("BLU_NEW_PROFILE")
-    end)
-    
-    local deleteBtn = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
-    deleteBtn:SetSize(80, 22)
-    deleteBtn:SetPoint("LEFT", newBtn, "RIGHT", 5, 0)
-    deleteBtn:SetText("Delete")
-    deleteBtn:SetScript("OnClick", function()
-        if BLU.db.currentProfile == "Default" then
-            print("|cff00ccffBLU:|r Cannot delete Default profile")
-            return
-        end
-        StaticPopup_Show("BLU_DELETE_PROFILE", BLU.db.currentProfile)
-    end)
-    
-    local renameBtn = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
-    renameBtn:SetSize(80, 22)
-    renameBtn:SetPoint("LEFT", deleteBtn, "RIGHT", 5, 0)
-    renameBtn:SetText("Rename")
-    renameBtn:SetScript("OnClick", function()
-        if BLU.db.currentProfile == "Default" then
-            print("|cff00ccffBLU:|r Cannot rename Default profile")
-            return
-        end
-        StaticPopup_Show("BLU_RENAME_PROFILE", BLU.db.currentProfile)
-    end)
-    
-    yOffset = yOffset - 50
-    
-    -- Profile Presets Section
-    local presetsSection = panel:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    presetsSection:SetPoint("TOPLEFT", 16, yOffset)
-    presetsSection:SetText("Profile Presets")
-    presetsSection:SetTextColor(0, 0.8, 1)
+    -- Profile List Section
+    local listTitle = panel:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    listTitle:SetPoint("TOPLEFT", 16, yOffset)
+    listTitle:SetText("Available Profiles")
+    listTitle:SetTextColor(0, 0.8, 1)
     
     yOffset = yOffset - 30
     
-    local presetsDesc = panel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    presetsDesc:SetPoint("TOPLEFT", 30, yOffset)
-    presetsDesc:SetText("Load a preset configuration:")
-    presetsDesc:SetTextColor(0.7, 0.7, 0.7)
+    -- Profile list frame
+    local listFrame = CreateFrame("Frame", nil, panel, "BackdropTemplate")
+    listFrame:SetPoint("TOPLEFT", 30, yOffset)
+    listFrame:SetSize(350, 150)
+    listFrame:SetBackdrop({
+        bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
+        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+        edgeSize = 1,
+        insets = { left = 1, right = 1, top = 1, bottom = 1 }
+    })
+    listFrame:SetBackdropColor(0.05, 0.05, 0.05, 0.5)
     
-    yOffset = yOffset - 25
+    -- Scroll frame for profile list
+    local scrollFrame = CreateFrame("ScrollFrame", nil, listFrame, "UIPanelScrollFrameTemplate")
+    scrollFrame:SetPoint("TOPLEFT", 5, -5)
+    scrollFrame:SetPoint("BOTTOMRIGHT", -25, 5)
     
-    -- Create preset buttons
-    for i, preset in ipairs(profilePresets) do
-        local presetFrame = CreateFrame("Frame", nil, panel)
-        presetFrame:SetSize(600, 40)
-        presetFrame:SetPoint("TOPLEFT", 30, yOffset)
-        
-        -- Background
-        local bg = presetFrame:CreateTexture(nil, "BACKGROUND")
-        bg:SetAllPoints()
-        bg:SetColorTexture(0.1, 0.1, 0.1, 0.3)
-        if i % 2 == 0 then
-            bg:SetColorTexture(0.15, 0.15, 0.15, 0.3)
+    local listContent = CreateFrame("Frame", nil, scrollFrame)
+    listContent:SetSize(320, 500)
+    scrollFrame:SetScrollChild(listContent)
+    
+    panel.profileButtons = {}
+    
+    -- Function to refresh profile list
+    function panel:RefreshProfileList()
+        -- Hide all existing buttons
+        for _, btn in ipairs(self.profileButtons) do
+            btn:Hide()
         end
         
-        -- Preset name
-        local nameText = presetFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        nameText:SetPoint("LEFT", 10, 5)
-        nameText:SetText(preset.name)
+        -- Get profiles
+        local profiles = BLU:GetProfiles()
+        local buttonYOffset = -5
+        local buttonIndex = 1
         
-        -- Preset description
-        local descText = presetFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-        descText:SetPoint("LEFT", 10, -8)
-        descText:SetText(preset.desc)
-        descText:SetTextColor(0.7, 0.7, 0.7)
-        
-        -- Load button
-        local loadBtn = CreateFrame("Button", nil, presetFrame, "UIPanelButtonTemplate")
-        loadBtn:SetSize(80, 24)
-        loadBtn:SetPoint("RIGHT", -10, 0)
-        loadBtn:SetText("Load Preset")
-        loadBtn:SetScript("OnClick", function()
-            -- Apply preset settings
-            for key, value in pairs(preset.settings) do
-                BLU.db[key] = value
+        for _, profileName in ipairs(profiles) do
+            local btn = self.profileButtons[buttonIndex]
+            if not btn then
+                btn = CreateFrame("Button", nil, listContent)
+                btn:SetSize(310, 25)
+                
+                local highlight = btn:CreateTexture(nil, "HIGHLIGHT")
+                highlight:SetAllPoints()
+                highlight:SetColorTexture(0.3, 0.3, 0.3, 0.3)
+                
+                btn.text = btn:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+                btn.text:SetPoint("LEFT", 10, 0)
+                
+                self.profileButtons[buttonIndex] = btn
             end
-            print("|cff00ccffBLU:|r Loaded preset: " .. preset.name)
-            -- Refresh UI
-            if BLU.RefreshOptions then
-                BLU:RefreshOptions()
+            
+            btn:SetPoint("TOPLEFT", 5, buttonYOffset)
+            btn.text:SetText(profileName)
+            
+            -- Highlight current profile
+            if profileName == (BLU.db and BLU.db.currentProfile or "Default") then
+                btn.text:SetTextColor(0.02, 0.37, 1)
+            else
+                btn.text:SetTextColor(1, 1, 1)
             end
-        end)
-        
-        yOffset = yOffset - 45
+            
+            btn:SetScript("OnClick", function()
+                self:SwitchProfile(profileName)
+            end)
+            
+            btn:Show()
+            buttonIndex = buttonIndex + 1
+            buttonYOffset = buttonYOffset - 30
+        end
     end
     
-    yOffset = yOffset - 30
+    -- Profile Controls
+    local controlsY = yOffset - 160
+    
+    -- New profile
+    local newButton = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+    newButton:SetSize(100, 25)
+    newButton:SetPoint("TOPLEFT", 30, controlsY)
+    newButton:SetText("New Profile")
+    
+    local newEditBox = CreateFrame("EditBox", nil, panel, "InputBoxTemplate")
+    newEditBox:SetSize(150, 25)
+    newEditBox:SetPoint("LEFT", newButton, "RIGHT", 10, 0)
+    newEditBox:SetAutoFocus(false)
+    newEditBox:SetText("Enter name...")
+    newEditBox:SetScript("OnEditFocusGained", function(self)
+        if self:GetText() == "Enter name..." then
+            self:SetText("")
+        end
+    end)
+    
+    newButton:SetScript("OnClick", function()
+        local name = newEditBox:GetText()
+        if name and name ~= "" and name ~= "Enter name..." then
+            if BLU:CreateProfile(name) then
+                BLU:Print("|cff00ff00Profile created:|r " .. name)
+                panel:RefreshProfileList()
+                newEditBox:SetText("Enter name...")
+            else
+                BLU:Print("|cffff0000Profile already exists:|r " .. name)
+            end
+        end
+    end)
+    
+    controlsY = controlsY - 35
+    
+    -- Copy profile
+    local copyButton = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+    copyButton:SetSize(100, 25)
+    copyButton:SetPoint("TOPLEFT", 30, controlsY)
+    copyButton:SetText("Copy Profile")
+    
+    local copyEditBox = CreateFrame("EditBox", nil, panel, "InputBoxTemplate")
+    copyEditBox:SetSize(150, 25)
+    copyEditBox:SetPoint("LEFT", copyButton, "RIGHT", 10, 0)
+    copyEditBox:SetAutoFocus(false)
+    copyEditBox:SetText("New name...")
+    copyEditBox:SetScript("OnEditFocusGained", function(self)
+        if self:GetText() == "New name..." then
+            self:SetText("")
+        end
+    end)
+    
+    copyButton:SetScript("OnClick", function()
+        local name = copyEditBox:GetText()
+        if name and name ~= "" and name ~= "New name..." then
+            if BLU:CopyProfile(BLU.db.currentProfile, name) then
+                BLU:Print("|cff00ff00Profile copied:|r " .. name)
+                panel:RefreshProfileList()
+                copyEditBox:SetText("New name...")
+            else
+                BLU:Print("|cffff0000Failed to copy profile|r")
+            end
+        end
+    end)
+    
+    controlsY = controlsY - 35
+    
+    -- Delete profile
+    local deleteButton = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+    deleteButton:SetSize(100, 25)
+    deleteButton:SetPoint("TOPLEFT", 30, controlsY)
+    deleteButton:SetText("Delete Profile")
+    
+    deleteButton:SetScript("OnClick", function()
+        local current = BLU.db.currentProfile
+        if current == "Default" then
+            BLU:Print("|cffff0000Cannot delete Default profile|r")
+            return
+        end
+        
+        StaticPopupDialogs["BLU_DELETE_PROFILE"] = {
+            text = "Delete profile: " .. current .. "?",
+            button1 = "Delete",
+            button2 = "Cancel",
+            OnAccept = function()
+                if BLU:DeleteProfile(current) then
+                    BLU:Print("|cff00ff00Profile deleted:|r " .. current)
+                    panel:RefreshProfileList()
+                    panel.currentProfileText:SetText("Default")
+                end
+            end,
+            timeout = 0,
+            whileDead = true,
+            hideOnEscape = true,
+        }
+        StaticPopup_Show("BLU_DELETE_PROFILE")
+    end)
+    
+    -- Reset profile
+    local resetButton = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+    resetButton:SetSize(100, 25)
+    resetButton:SetPoint("LEFT", deleteButton, "RIGHT", 10, 0)
+    resetButton:SetText("Reset Profile")
+    
+    resetButton:SetScript("OnClick", function()
+        StaticPopupDialogs["BLU_RESET_PROFILE"] = {
+            text = "Reset current profile to defaults?",
+            button1 = "Reset",
+            button2 = "Cancel",
+            OnAccept = function()
+                BLU:ResetProfile()
+                BLU:Print("|cff00ff00Profile reset to defaults|r")
+                panel:RefreshProfileList()
+            end,
+            timeout = 0,
+            whileDead = true,
+            hideOnEscape = true,
+        }
+        StaticPopup_Show("BLU_RESET_PROFILE")
+    end)
+    
+    controlsY = controlsY - 50
     
     -- Import/Export Section
-    local importExportSection = panel:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    importExportSection:SetPoint("TOPLEFT", 16, yOffset)
-    importExportSection:SetText("Import / Export")
-    importExportSection:SetTextColor(0, 0.8, 1)
+    local importExportTitle = panel:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    importExportTitle:SetPoint("TOPLEFT", 16, controlsY)
+    importExportTitle:SetText("Import / Export")
+    importExportTitle:SetTextColor(0, 0.8, 1)
     
-    yOffset = yOffset - 30
+    controlsY = controlsY - 30
     
     -- Export button
-    local exportBtn = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
-    exportBtn:SetSize(120, 24)
-    exportBtn:SetPoint("TOPLEFT", 30, yOffset)
-    exportBtn:SetText("Export Profile")
-    exportBtn:SetScript("OnClick", function()
-        local profileData = BLU:SerializeProfile(BLU.db.currentProfile)
-        BLU:ShowExportDialog(profileData)
-    end)
+    local exportButton = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+    exportButton:SetSize(100, 25)
+    exportButton:SetPoint("TOPLEFT", 30, controlsY)
+    exportButton:SetText("Export Profile")
     
     -- Import button
-    local importBtn = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
-    importBtn:SetSize(120, 24)
-    importBtn:SetPoint("LEFT", exportBtn, "RIGHT", 10, 0)
-    importBtn:SetText("Import Profile")
-    importBtn:SetScript("OnClick", function()
-        BLU:ShowImportDialog()
-    end)
+    local importButton = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+    importButton:SetSize(100, 25)
+    importButton:SetPoint("LEFT", exportButton, "RIGHT", 10, 0)
+    importButton:SetText("Import Profile")
     
-    -- Copy from character button
-    local copyCharBtn = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
-    copyCharBtn:SetSize(140, 24)
-    copyCharBtn:SetPoint("LEFT", importBtn, "RIGHT", 10, 0)
-    copyCharBtn:SetText("Copy from Character")
-    copyCharBtn:SetScript("OnClick", function()
-        BLU:ShowCharacterCopyDialog()
-    end)
+    -- Export/Import text box
+    local textBoxFrame = CreateFrame("Frame", nil, panel, "BackdropTemplate")
+    textBoxFrame:SetPoint("TOPLEFT", 30, controlsY - 35)
+    textBoxFrame:SetSize(400, 100)
+    textBoxFrame:SetBackdrop({
+        bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
+        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+        edgeSize = 1,
+        insets = { left = 1, right = 1, top = 1, bottom = 1 }
+    })
+    textBoxFrame:SetBackdropColor(0.05, 0.05, 0.05, 0.5)
     
-    yOffset = yOffset - 40
+    local textBox = CreateFrame("EditBox", nil, textBoxFrame)
+    textBox:SetMultiLine(true)
+    textBox:SetAutoFocus(false)
+    textBox:SetFontObject(GameFontNormalSmall)
+    textBox:SetPoint("TOPLEFT", 5, -5)
+    textBox:SetPoint("BOTTOMRIGHT", -5, 5)
+    textBox:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
     
-    -- Profile comparison
-    local compareCheck = CreateFrame("CheckButton", nil, panel, "UICheckButtonTemplate")
-    compareCheck:SetPoint("TOPLEFT", 30, yOffset)
-    compareCheck.text = compareCheck:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    compareCheck.text:SetPoint("LEFT", compareCheck, "RIGHT", 5, 0)
-    compareCheck.text:SetText("Show profile differences when switching")
-    compareCheck:SetChecked(BLU.db.showProfileDiff)
-    compareCheck:SetScript("OnClick", function(self)
-        BLU.db.showProfileDiff = self:GetChecked()
-    end)
-    
-    yOffset = yOffset - 30
-    
-    -- Auto-save option
-    local autoSaveCheck = CreateFrame("CheckButton", nil, panel, "UICheckButtonTemplate")
-    autoSaveCheck:SetPoint("TOPLEFT", 30, yOffset)
-    autoSaveCheck.text = autoSaveCheck:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    autoSaveCheck.text:SetPoint("LEFT", autoSaveCheck, "RIGHT", 5, 0)
-    autoSaveCheck.text:SetText("Auto-save profile changes")
-    autoSaveCheck:SetChecked(BLU.db.autoSaveProfile)
-    autoSaveCheck:SetScript("OnClick", function(self)
-        BLU.db.autoSaveProfile = self:GetChecked()
-    end)
-    
-    -- Info text
-    local infoText = panel:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    infoText:SetPoint("BOTTOMLEFT", 20, 40)
-    infoText:SetPoint("BOTTOMRIGHT", -20, 40)
-    infoText:SetJustifyH("LEFT")
-    infoText:SetText("Profiles allow you to save and switch between different sound configurations. Each profile stores all your sound selections, volume settings, and enabled modules.")
-    infoText:SetTextColor(0.7, 0.7, 0.7)
-    
-    -- Profile stats
-    local statsText = panel:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    statsText:SetPoint("BOTTOMLEFT", 20, 20)
-    local profileCount = 0
-    for _ in pairs(BLU.db.profiles or {}) do
-        profileCount = profileCount + 1
-    end
-    statsText:SetText(string.format("Total Profiles: %d | Current: %s", profileCount, BLU.db.currentProfile or "Default"))
-    statsText:SetTextColor(0.7, 0.7, 0.7)
-    panel.statsText = statsText
-    
-    -- Update stats function
-    function panel:UpdateStats()
-        local count = 0
-        for _ in pairs(BLU.db.profiles or {}) do
-            count = count + 1
+    exportButton:SetScript("OnClick", function()
+        local exportString = BLU:ExportProfile()
+        if exportString then
+            textBox:SetText(exportString)
+            textBox:HighlightText()
+            textBox:SetFocus()
+            BLU:Print("|cff00ff00Profile exported - Copy the text below|r")
         end
-        self.statsText:SetText(string.format("Total Profiles: %d | Current: %s", count, BLU.db.currentProfile or "Default"))
+    end)
+    
+    importButton:SetScript("OnClick", function()
+        local importString = textBox:GetText()
+        if importString and importString ~= "" then
+            if BLU:ImportProfile(importString) then
+                BLU:Print("|cff00ff00Profile imported successfully|r")
+                panel:RefreshProfileList()
+                textBox:SetText("")
+            else
+                BLU:Print("|cffff0000Failed to import profile - Invalid data|r")
+            end
+        end
+    end)
+    
+    -- Switch profile function
+    function panel:SwitchProfile(profileName)
+        if BLU:SwitchProfile(profileName) then
+            self.currentProfileText:SetText(profileName)
+            self:RefreshProfileList()
+            BLU:Print("|cff00ff00Switched to profile:|r " .. profileName)
+            
+            -- Reload UI prompt
+            StaticPopupDialogs["BLU_RELOAD_UI"] = {
+                text = "Profile switched. Reload UI for changes to take effect?",
+                button1 = "Reload",
+                button2 = "Later",
+                OnAccept = function()
+                    ReloadUI()
+                end,
+                timeout = 0,
+                whileDead = true,
+                hideOnEscape = true,
+            }
+            StaticPopup_Show("BLU_RELOAD_UI")
+        end
+    end
+    
+    -- Initialize list
+    panel:SetScript("OnShow", function(self)
+        self:RefreshProfileList()
+    end)
+    
+    -- Register with tab system
+    if BLU.TabSystem then
+        BLU.TabSystem:RegisterPanel("profiles", panel)
     end
     
     return panel
 end
-
--- Static popup dialogs
-StaticPopupDialogs["BLU_NEW_PROFILE"] = {
-    text = "Enter name for new profile:",
-    button1 = "Create",
-    button2 = "Cancel",
-    hasEditBox = true,
-    editBoxWidth = 200,
-    OnAccept = function(self)
-        local name = self.editBox:GetText()
-        if name and name ~= "" then
-            BLU:CreateProfile(name)
-            UIDropDownMenu_SetText(BLUProfileDropdown, name)
-            print("|cff00ccffBLU:|r Created new profile: " .. name)
-        end
-    end,
-    timeout = 0,
-    whileDead = true,
-    hideOnEscape = true
-}
-
-StaticPopupDialogs["BLU_DELETE_PROFILE"] = {
-    text = "Delete profile '%s'?",
-    button1 = "Delete",
-    button2 = "Cancel",
-    OnAccept = function(self, profileName)
-        BLU:DeleteProfile(profileName)
-        print("|cff00ccffBLU:|r Deleted profile: " .. profileName)
-    end,
-    timeout = 0,
-    whileDead = true,
-    hideOnEscape = true
-}
-
-StaticPopupDialogs["BLU_RENAME_PROFILE"] = {
-    text = "Enter new name for profile '%s':",
-    button1 = "Rename",
-    button2 = "Cancel",
-    hasEditBox = true,
-    editBoxWidth = 200,
-    OnAccept = function(self, oldName)
-        local newName = self.editBox:GetText()
-        if newName and newName ~= "" then
-            BLU:RenameProfile(oldName, newName)
-            print("|cff00ccffBLU:|r Renamed profile: " .. oldName .. " to " .. newName)
-        end
-    end,
-    timeout = 0,
-    whileDead = true,
-    hideOnEscape = true
-}

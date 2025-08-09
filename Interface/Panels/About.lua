@@ -11,9 +11,8 @@ local VERSION = GetAddOnMetadata(addonName, "Version") or "6.0.0-alpha"
 local AUTHOR = GetAddOnMetadata(addonName, "Author") or "donniedice"
 local BUILD_DATE = "2025-08-08"
 
-function BLU.CreateAboutPanel(parent)
-    local panel = CreateFrame("Frame", nil, parent)
-    panel:SetAllPoints()
+function BLU.CreateAboutPanel()
+    local panel = CreateFrame("Frame", nil, UIParent)
     panel:Hide()
     
     -- Logo/Title Section
@@ -298,3 +297,11 @@ StaticPopupDialogs["BLU_BUG_REPORT"] = {
     whileDead = true,
     hideOnEscape = true
 }
+
+    -- Register with tab system
+    if BLU.TabSystem then
+        BLU.TabSystem:RegisterPanel("about", panel)
+    end
+    
+    return panel
+end

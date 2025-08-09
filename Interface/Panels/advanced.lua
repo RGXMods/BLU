@@ -1,396 +1,326 @@
 --=====================================================================================
--- BLU | Advanced Settings Panel - Technical Configuration
+-- BLU | Advanced Settings Panel
 -- Author: donniedice
--- Description: Advanced technical settings, debugging, and experimental features
+-- Description: Debug options, cache management, database tools
 --=====================================================================================
 
 local addonName, BLU = ...
 
-function BLU.CreateAdvancedPanel(parent)
-    local panel = CreateFrame("Frame", nil, parent)
-    panel:SetAllPoints()
+function BLU.CreateAdvancedPanel()
+    local panel = CreateFrame("Frame", nil, UIParent)
     panel:Hide()
     
-    -- Create scrollable container
-    local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
-    scrollFrame:SetPoint("TOPLEFT", 10, -10)
-    scrollFrame:SetPoint("BOTTOMRIGHT", -30, 10)
-    
-    local content = CreateFrame("Frame", nil, scrollFrame)
-    content:SetSize(scrollFrame:GetWidth(), 800)
-    scrollFrame:SetScrollChild(content)
-    
     -- Title
-    local title = content:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    local title = panel:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     title:SetPoint("TOPLEFT", 16, -16)
     title:SetText("Advanced Settings")
     
-    local subtitle = content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    subtitle:SetPoint("TOPLEFT", 16, -35)
-    subtitle:SetText("Warning: These settings are for advanced users")
-    subtitle:SetTextColor(1, 0.8, 0)
+    local yOffset = -50
     
-    local yOffset = -60
-    
-    -- Sound Engine Section
-    local engineSection = content:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    engineSection:SetPoint("TOPLEFT", 16, yOffset)
-    engineSection:SetText("Sound Engine")
-    engineSection:SetTextColor(0, 0.8, 1)
+    -- Debug Section
+    local debugTitle = panel:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    debugTitle:SetPoint("TOPLEFT", 16, yOffset)
+    debugTitle:SetText("Debug Options")
+    debugTitle:SetTextColor(0, 0.8, 1)
     
     yOffset = yOffset - 30
     
-    -- Sound handle pooling
-    local poolingCheck = CreateFrame("CheckButton", nil, content, "UICheckButtonTemplate")
-    poolingCheck:SetPoint("TOPLEFT", 30, yOffset)
-    poolingCheck.text = poolingCheck:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    poolingCheck.text:SetPoint("LEFT", poolingCheck, "RIGHT", 5, 0)
-    poolingCheck.text:SetText("Enable sound handle pooling (reduces memory allocation)")
-    poolingCheck:SetChecked(BLU.db.soundPooling)
-    poolingCheck:SetScript("OnClick", function(self)
-        BLU.db.soundPooling = self:GetChecked()
+    -- Debug mode checkbox
+    local debugCheck = CreateFrame("CheckButton", nil, panel, "UICheckButtonTemplate")
+    debugCheck:SetPoint("TOPLEFT", 30, yOffset)
+    debugCheck.text = debugCheck:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    debugCheck.text:SetPoint("LEFT", debugCheck, "RIGHT", 5, 0)
+    debugCheck.text:SetText("Enable debug mode (verbose logging)")
+    debugCheck:SetChecked(BLU.debugMode or false)
+    debugCheck:SetScript("OnClick", function(self)
+        BLU.debugMode = self:GetChecked()
+        BLU:SetDB("debugMode", BLU.debugMode)
+        BLU:Print("Debug mode: " .. (BLU.debugMode and "|cff00ff00Enabled|r" or "|cffff0000Disabled|r"))
     end)
     
     yOffset = yOffset - 30
     
-    -- Async loading
-    local asyncCheck = CreateFrame("CheckButton", nil, content, "UICheckButtonTemplate")
-    asyncCheck:SetPoint("TOPLEFT", 30, yOffset)
-    asyncCheck.text = asyncCheck:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    asyncCheck.text:SetPoint("LEFT", asyncCheck, "RIGHT", 5, 0)
-    asyncCheck.text:SetText("Asynchronous sound loading (experimental)")
-    asyncCheck:SetChecked(BLU.db.asyncLoading)
-    asyncCheck:SetScript("OnClick", function(self)
-        BLU.db.asyncLoading = self:GetChecked()
+    -- Test mode checkbox
+    local testModeCheck = CreateFrame("CheckButton", nil, panel, "UICheckButtonTemplate")
+    testModeCheck:SetPoint("TOPLEFT", 30, yOffset)
+    testModeCheck.text = testModeCheck:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    testModeCheck.text:SetPoint("LEFT", testModeCheck, "RIGHT", 5, 0)
+    testModeCheck.text:SetText("Test mode (play sounds without events)")
+    testModeCheck:SetChecked(BLU:GetDB("testMode") or false)
+    testModeCheck:SetScript("OnClick", function(self)
+        BLU:SetDB("testMode", self:GetChecked())
+        BLU:Print("Test mode: " .. (self:GetChecked() and "|cff00ff00Enabled|r" or "|cffff0000Disabled|r"))
     end)
     
     yOffset = yOffset - 30
     
-    -- Sound queue size
-    local queueLabel = content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    queueLabel:SetPoint("TOPLEFT", 30, yOffset)
-    queueLabel:SetText("Sound queue size:")
-    
-    local queueSlider = CreateFrame("Slider", nil, content, "OptionsSliderTemplate")
-    queueSlider:SetPoint("LEFT", queueLabel, "RIGHT", 20, 0)
-    queueSlider:SetSize(200, 20)
-    queueSlider:SetMinMaxValues(1, 10)
-    queueSlider:SetValueStep(1)
-    queueSlider:SetObeyStepOnDrag(true)
-    queueSlider.Low:SetText("1")
-    queueSlider.High:SetText("10")
-    queueSlider.Text:SetText("")
-    
-    local queueValue = queueSlider:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    queueValue:SetPoint("LEFT", queueSlider, "RIGHT", 10, 0)
-    queueSlider:SetValue(BLU.db.soundQueueSize or 3)
-    queueValue:SetText(tostring(BLU.db.soundQueueSize or 3))
-    
-    queueSlider:SetScript("OnValueChanged", function(self, value)
-        BLU.db.soundQueueSize = value
-        queueValue:SetText(tostring(value))
-    end)
-    
-    yOffset = yOffset - 30
-    
-    -- Fade time
-    local fadeLabel = content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    fadeLabel:SetPoint("TOPLEFT", 30, yOffset)
-    fadeLabel:SetText("Sound fade time (ms):")
-    
-    local fadeSlider = CreateFrame("Slider", nil, content, "OptionsSliderTemplate")
-    fadeSlider:SetPoint("LEFT", fadeLabel, "RIGHT", 20, 0)
-    fadeSlider:SetSize(200, 20)
-    fadeSlider:SetMinMaxValues(0, 1000)
-    fadeSlider:SetValueStep(50)
-    fadeSlider:SetObeyStepOnDrag(true)
-    fadeSlider.Low:SetText("0")
-    fadeSlider.High:SetText("1000")
-    fadeSlider.Text:SetText("")
-    
-    local fadeValue = fadeSlider:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    fadeValue:SetPoint("LEFT", fadeSlider, "RIGHT", 10, 0)
-    fadeSlider:SetValue(BLU.db.fadeTime or 200)
-    fadeValue:SetText(tostring(BLU.db.fadeTime or 200) .. " ms")
-    
-    fadeSlider:SetScript("OnValueChanged", function(self, value)
-        BLU.db.fadeTime = value
-        fadeValue:SetText(tostring(value) .. " ms")
+    -- Auto preview checkbox
+    local autoPreviewCheck = CreateFrame("CheckButton", nil, panel, "UICheckButtonTemplate")
+    autoPreviewCheck:SetPoint("TOPLEFT", 30, yOffset)
+    autoPreviewCheck.text = autoPreviewCheck:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    autoPreviewCheck.text:SetPoint("LEFT", autoPreviewCheck, "RIGHT", 5, 0)
+    autoPreviewCheck.text:SetText("Auto-preview sounds on selection")
+    autoPreviewCheck:SetChecked(BLU:GetDB("autoPreview") or false)
+    autoPreviewCheck:SetScript("OnClick", function(self)
+        BLU:SetDB("autoPreview", self:GetChecked())
     end)
     
     yOffset = yOffset - 50
     
-    -- Module System Section
-    local moduleSection = content:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    moduleSection:SetPoint("TOPLEFT", 16, yOffset)
-    moduleSection:SetText("Module System")
-    moduleSection:SetTextColor(0, 0.8, 1)
+    -- Cache Management Section
+    local cacheTitle = panel:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    cacheTitle:SetPoint("TOPLEFT", 16, yOffset)
+    cacheTitle:SetText("Cache Management")
+    cacheTitle:SetTextColor(0, 0.8, 1)
     
     yOffset = yOffset - 30
     
-    -- Lazy loading
-    local lazyCheck = CreateFrame("CheckButton", nil, content, "UICheckButtonTemplate")
-    lazyCheck:SetPoint("TOPLEFT", 30, yOffset)
-    lazyCheck.text = lazyCheck:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    lazyCheck.text:SetPoint("LEFT", lazyCheck, "RIGHT", 5, 0)
-    lazyCheck.text:SetText("Enable lazy module loading")
-    lazyCheck:SetChecked(BLU.db.lazyLoading)
-    lazyCheck:SetScript("OnClick", function(self)
-        BLU.db.lazyLoading = self:GetChecked()
-    end)
-    
-    yOffset = yOffset - 30
-    
-    -- Module timeout
-    local timeoutLabel = content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    timeoutLabel:SetPoint("TOPLEFT", 30, yOffset)
-    timeoutLabel:SetText("Module load timeout (sec):")
-    
-    local timeoutSlider = CreateFrame("Slider", nil, content, "OptionsSliderTemplate")
-    timeoutSlider:SetPoint("LEFT", timeoutLabel, "RIGHT", 20, 0)
-    timeoutSlider:SetSize(200, 20)
-    timeoutSlider:SetMinMaxValues(1, 30)
-    timeoutSlider:SetValueStep(1)
-    timeoutSlider:SetObeyStepOnDrag(true)
-    timeoutSlider.Low:SetText("1")
-    timeoutSlider.High:SetText("30")
-    timeoutSlider.Text:SetText("")
-    
-    local timeoutValue = timeoutSlider:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    timeoutValue:SetPoint("LEFT", timeoutSlider, "RIGHT", 10, 0)
-    timeoutSlider:SetValue(BLU.db.moduleTimeout or 5)
-    timeoutValue:SetText(tostring(BLU.db.moduleTimeout or 5) .. " sec")
-    
-    timeoutSlider:SetScript("OnValueChanged", function(self, value)
-        BLU.db.moduleTimeout = value
-        timeoutValue:SetText(tostring(value) .. " sec")
-    end)
-    
-    yOffset = yOffset - 50
-    
-    -- Debugging Section
-    local debugSection = content:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    debugSection:SetPoint("TOPLEFT", 16, yOffset)
-    debugSection:SetText("Debugging")
-    debugSection:SetTextColor(0, 0.8, 1)
-    
-    yOffset = yOffset - 30
-    
-    -- Debug level dropdown
-    local debugLabel = content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    debugLabel:SetPoint("TOPLEFT", 30, yOffset)
-    debugLabel:SetText("Debug level:")
-    
-    local debugDropdown = CreateFrame("Frame", "BLUDebugDropdown", content, "UIDropDownMenuTemplate")
-    debugDropdown:SetPoint("LEFT", debugLabel, "RIGHT", 10, 0)
-    UIDropDownMenu_SetWidth(debugDropdown, 150)
-    
-    local debugLevels = {
-        {value = 0, text = "Off"},
-        {value = 1, text = "Errors only"},
-        {value = 2, text = "Warnings"},
-        {value = 3, text = "Info"},
-        {value = 4, text = "Verbose"},
-        {value = 5, text = "Trace"}
-    }
-    
-    UIDropDownMenu_SetText(debugDropdown, debugLevels[(BLU.db.debugLevel or 0) + 1].text)
-    
-    UIDropDownMenu_Initialize(debugDropdown, function(self, level)
-        for _, debugInfo in ipairs(debugLevels) do
-            local info = UIDropDownMenu_CreateInfo()
-            info.text = debugInfo.text
-            info.value = debugInfo.value
-            info.func = function()
-                BLU.db.debugLevel = debugInfo.value
-                UIDropDownMenu_SetText(debugDropdown, debugInfo.text)
-            end
-            info.checked = (BLU.db.debugLevel == debugInfo.value)
-            UIDropDownMenu_AddButton(info, level)
-        end
-    end)
-    
-    yOffset = yOffset - 30
-    
-    -- Console output
-    local consoleCheck = CreateFrame("CheckButton", nil, content, "UICheckButtonTemplate")
-    consoleCheck:SetPoint("TOPLEFT", 30, yOffset)
-    consoleCheck.text = consoleCheck:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    consoleCheck.text:SetPoint("LEFT", consoleCheck, "RIGHT", 5, 0)
-    consoleCheck.text:SetText("Output debug to console")
-    consoleCheck:SetChecked(BLU.db.debugToConsole)
-    consoleCheck:SetScript("OnClick", function(self)
-        BLU.db.debugToConsole = self:GetChecked()
-    end)
-    
-    yOffset = yOffset - 30
-    
-    -- Log to file
-    local logCheck = CreateFrame("CheckButton", nil, content, "UICheckButtonTemplate")
-    logCheck:SetPoint("TOPLEFT", 30, yOffset)
-    logCheck.text = logCheck:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    logCheck.text:SetPoint("LEFT", logCheck, "RIGHT", 5, 0)
-    logCheck.text:SetText("Log debug to SavedVariables")
-    logCheck:SetChecked(BLU.db.debugToFile)
-    logCheck:SetScript("OnClick", function(self)
-        BLU.db.debugToFile = self:GetChecked()
-    end)
-    
-    yOffset = yOffset - 30
-    
-    -- Performance profiling
-    local profilingCheck = CreateFrame("CheckButton", nil, content, "UICheckButtonTemplate")
-    profilingCheck:SetPoint("TOPLEFT", 30, yOffset)
-    profilingCheck.text = profilingCheck:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    profilingCheck.text:SetPoint("LEFT", profilingCheck, "RIGHT", 5, 0)
-    profilingCheck.text:SetText("Enable performance profiling")
-    profilingCheck:SetChecked(BLU.db.profiling)
-    profilingCheck:SetScript("OnClick", function(self)
-        BLU.db.profiling = self:GetChecked()
-    end)
-    
-    yOffset = yOffset - 50
-    
-    -- Experimental Features Section
-    local expSection = content:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    expSection:SetPoint("TOPLEFT", 16, yOffset)
-    expSection:SetText("Experimental Features")
-    expSection:SetTextColor(1, 0.5, 0)
-    
-    yOffset = yOffset - 30
-    
-    -- 3D positional audio
-    local posAudioCheck = CreateFrame("CheckButton", nil, content, "UICheckButtonTemplate")
-    posAudioCheck:SetPoint("TOPLEFT", 30, yOffset)
-    posAudioCheck.text = posAudioCheck:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    posAudioCheck.text:SetPoint("LEFT", posAudioCheck, "RIGHT", 5, 0)
-    posAudioCheck.text:SetText("3D positional audio (EXPERIMENTAL)")
-    posAudioCheck:SetChecked(BLU.db.positionalAudio)
-    posAudioCheck:SetScript("OnClick", function(self)
-        BLU.db.positionalAudio = self:GetChecked()
-    end)
-    
-    yOffset = yOffset - 30
-    
-    -- Dynamic compression
-    local compressionCheck = CreateFrame("CheckButton", nil, content, "UICheckButtonTemplate")
-    compressionCheck:SetPoint("TOPLEFT", 30, yOffset)
-    compressionCheck.text = compressionCheck:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    compressionCheck.text:SetPoint("LEFT", compressionCheck, "RIGHT", 5, 0)
-    compressionCheck.text:SetText("Dynamic audio compression")
-    compressionCheck:SetChecked(BLU.db.dynamicCompression)
-    compressionCheck:SetScript("OnClick", function(self)
-        BLU.db.dynamicCompression = self:GetChecked()
-    end)
-    
-    yOffset = yOffset - 30
-    
-    -- AI-powered sound selection
-    local aiSoundCheck = CreateFrame("CheckButton", nil, content, "UICheckButtonTemplate")
-    aiSoundCheck:SetPoint("TOPLEFT", 30, yOffset)
-    aiSoundCheck.text = aiSoundCheck:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    aiSoundCheck.text:SetPoint("LEFT", aiSoundCheck, "RIGHT", 5, 0)
-    aiSoundCheck.text:SetText("AI-powered contextual sound selection")
-    aiSoundCheck:SetChecked(BLU.db.aiSounds)
-    aiSoundCheck:SetScript("OnClick", function(self)
-        BLU.db.aiSounds = self:GetChecked()
-    end)
-    
-    yOffset = yOffset - 50
-    
-    -- Integration Section
-    local intSection = content:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    intSection:SetPoint("TOPLEFT", 16, yOffset)
-    intSection:SetText("Integration")
-    intSection:SetTextColor(0, 0.8, 1)
-    
-    yOffset = yOffset - 30
-    
-    -- WeakAuras integration
-    local waCheck = CreateFrame("CheckButton", nil, content, "UICheckButtonTemplate")
-    waCheck:SetPoint("TOPLEFT", 30, yOffset)
-    waCheck.text = waCheck:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    waCheck.text:SetPoint("LEFT", waCheck, "RIGHT", 5, 0)
-    waCheck.text:SetText("Enable WeakAuras integration")
-    waCheck:SetChecked(BLU.db.weakAurasIntegration)
-    waCheck:SetScript("OnClick", function(self)
-        BLU.db.weakAurasIntegration = self:GetChecked()
-    end)
-    
-    yOffset = yOffset - 30
-    
-    -- Discord Rich Presence
-    local discordCheck = CreateFrame("CheckButton", nil, content, "UICheckButtonTemplate")
-    discordCheck:SetPoint("TOPLEFT", 30, yOffset)
-    discordCheck.text = discordCheck:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    discordCheck.text:SetPoint("LEFT", discordCheck, "RIGHT", 5, 0)
-    discordCheck.text:SetText("Discord Rich Presence support")
-    discordCheck:SetChecked(BLU.db.discordIntegration)
-    discordCheck:SetScript("OnClick", function(self)
-        BLU.db.discordIntegration = self:GetChecked()
-    end)
-    
-    yOffset = yOffset - 50
-    
-    -- Maintenance Section
-    local maintSection = content:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    maintSection:SetPoint("TOPLEFT", 16, yOffset)
-    maintSection:SetText("Maintenance")
-    maintSection:SetTextColor(0, 0.8, 1)
+    -- Cache info
+    local cacheInfo = panel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    cacheInfo:SetPoint("TOPLEFT", 30, yOffset)
+    cacheInfo:SetText("Sound cache stores recently played sounds for faster playback")
+    cacheInfo:SetTextColor(0.7, 0.7, 0.7)
     
     yOffset = yOffset - 30
     
     -- Clear cache button
-    local clearCacheBtn = CreateFrame("Button", nil, content, "UIPanelButtonTemplate")
-    clearCacheBtn:SetSize(150, 24)
+    local clearCacheBtn = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+    clearCacheBtn:SetSize(120, 25)
     clearCacheBtn:SetPoint("TOPLEFT", 30, yOffset)
-    clearCacheBtn:SetText("Clear Sound Cache")
+    clearCacheBtn:SetText("Clear Cache")
     clearCacheBtn:SetScript("OnClick", function()
-        BLU:ClearSoundCache()
-        print("|cff00ccffBLU:|r Sound cache cleared")
+        if BLU.ClearSoundCache then
+            BLU:ClearSoundCache()
+        end
+        collectgarbage("collect")
+        BLU:Print("|cff00ff00Sound cache cleared|r")
     end)
     
-    -- Reset settings button
-    local resetBtn = CreateFrame("Button", nil, content, "UIPanelButtonTemplate")
-    resetBtn:SetSize(150, 24)
-    resetBtn:SetPoint("LEFT", clearCacheBtn, "RIGHT", 10, 0)
-    resetBtn:SetText("Reset Advanced Settings")
-    resetBtn:SetScript("OnClick", function()
-        StaticPopup_Show("BLU_RESET_ADVANCED")
+    -- Cache size display
+    local cacheSizeText = panel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    cacheSizeText:SetPoint("LEFT", clearCacheBtn, "RIGHT", 20, 0)
+    cacheSizeText:SetText("Cache size: calculating...")
+    
+    -- Update cache size
+    local function UpdateCacheSize()
+        UpdateAddOnMemoryUsage()
+        local memory = GetAddOnMemoryUsage(addonName)
+        cacheSizeText:SetText(string.format("Memory usage: %.2f MB", memory / 1024))
+    end
+    
+    -- Reload sounds button
+    local reloadSoundsBtn = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+    reloadSoundsBtn:SetSize(120, 25)
+    reloadSoundsBtn:SetPoint("LEFT", clearCacheBtn, "RIGHT", 200, 0)
+    reloadSoundsBtn:SetText("Reload Sounds")
+    reloadSoundsBtn:SetScript("OnClick", function()
+        if BLU.Registry then
+            BLU.Registry:ReloadAllSounds()
+        end
+        BLU:Print("|cff00ff00Sound registry reloaded|r")
     end)
+    
+    yOffset = yOffset - 50
+    
+    -- Database Tools Section
+    local dbTitle = panel:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    dbTitle:SetPoint("TOPLEFT", 16, yOffset)
+    dbTitle:SetText("Database Tools")
+    dbTitle:SetTextColor(0, 0.8, 1)
+    
+    yOffset = yOffset - 30
+    
+    -- Database info
+    local dbInfo = panel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    dbInfo:SetPoint("TOPLEFT", 30, yOffset)
+    dbInfo:SetText("Manage saved variables and settings database")
+    dbInfo:SetTextColor(0.7, 0.7, 0.7)
+    
+    yOffset = yOffset - 30
     
     -- Rebuild database button
-    local rebuildBtn = CreateFrame("Button", nil, content, "UIPanelButtonTemplate")
-    rebuildBtn:SetSize(150, 24)
-    rebuildBtn:SetPoint("LEFT", resetBtn, "RIGHT", 10, 0)
-    rebuildBtn:SetText("Rebuild Database")
-    rebuildBtn:SetScript("OnClick", function()
-        BLU:RebuildDatabase()
-        print("|cff00ccffBLU:|r Database rebuilt")
+    local rebuildDbBtn = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+    rebuildDbBtn:SetSize(120, 25)
+    rebuildDbBtn:SetPoint("TOPLEFT", 30, yOffset)
+    rebuildDbBtn:SetText("Rebuild Database")
+    rebuildDbBtn:SetScript("OnClick", function()
+        StaticPopupDialogs["BLU_REBUILD_DB"] = {
+            text = "This will rebuild the database with default values. Continue?",
+            button1 = "Rebuild",
+            button2 = "Cancel",
+            OnAccept = function()
+                if BLU.RebuildDatabase then
+                    BLU:RebuildDatabase()
+                end
+                BLU:Print("|cff00ff00Database rebuilt|r")
+                ReloadUI()
+            end,
+            timeout = 0,
+            whileDead = true,
+            hideOnEscape = true,
+        }
+        StaticPopup_Show("BLU_REBUILD_DB")
     end)
     
-    -- Warning text
-    local warningText = content:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    warningText:SetPoint("BOTTOMLEFT", 20, 40)
-    warningText:SetPoint("BOTTOMRIGHT", -20, 40)
-    warningText:SetJustifyH("LEFT")
-    warningText:SetText("WARNING: These settings can affect addon performance and stability. Only change them if you know what you're doing.")
-    warningText:SetTextColor(1, 0.5, 0)
+    -- Validate database button
+    local validateDbBtn = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+    validateDbBtn:SetSize(120, 25)
+    validateDbBtn:SetPoint("LEFT", rebuildDbBtn, "RIGHT", 10, 0)
+    validateDbBtn:SetText("Validate Database")
+    validateDbBtn:SetScript("OnClick", function()
+        local issues = BLU:ValidateDatabase()
+        if issues == 0 then
+            BLU:Print("|cff00ff00Database validation passed|r")
+        else
+            BLU:Print(string.format("|cffff0000Database validation found %d issues (auto-fixed)|r", issues))
+        end
+    end)
+    
+    -- Export database button
+    local exportDbBtn = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+    exportDbBtn:SetSize(120, 25)
+    exportDbBtn:SetPoint("LEFT", validateDbBtn, "RIGHT", 10, 0)
+    exportDbBtn:SetText("Export Database")
+    exportDbBtn:SetScript("OnClick", function()
+        if BLU.ExportDatabase then
+            local data = BLU:ExportDatabase()
+            BLU:Print("|cff00ff00Database exported to clipboard (use Ctrl+V to paste)|r")
+            -- Note: WoW doesn't have clipboard API, would need to show in editbox
+        end
+    end)
+    
+    yOffset = yOffset - 50
+    
+    -- Module Debugging Section
+    local moduleDebugTitle = panel:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    moduleDebugTitle:SetPoint("TOPLEFT", 16, yOffset)
+    moduleDebugTitle:SetText("Module Debugging")
+    moduleDebugTitle:SetTextColor(0, 0.8, 1)
+    
+    yOffset = yOffset - 30
+    
+    -- List loaded modules button
+    local listModulesBtn = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+    listModulesBtn:SetSize(120, 25)
+    listModulesBtn:SetPoint("TOPLEFT", 30, yOffset)
+    listModulesBtn:SetText("List Modules")
+    listModulesBtn:SetScript("OnClick", function()
+        BLU:Print("|cff00ff00Loaded modules:|r")
+        if BLU.Modules then
+            for name, module in pairs(BLU.Modules) do
+                local status = module.enabled and "|cff00ff00enabled|r" or "|cffff0000disabled|r"
+                BLU:Print(string.format("  %s: %s", name, status))
+            end
+        end
+    end)
+    
+    -- Test all sounds button
+    local testAllBtn = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+    testAllBtn:SetSize(120, 25)
+    testAllBtn:SetPoint("LEFT", listModulesBtn, "RIGHT", 10, 0)
+    testAllBtn:SetText("Test All Sounds")
+    testAllBtn:SetScript("OnClick", function()
+        StaticPopupDialogs["BLU_TEST_ALL"] = {
+            text = "This will play all registered sounds. Continue?",
+            button1 = "Test",
+            button2 = "Cancel",
+            OnAccept = function()
+                BLU:TestAllSounds()
+            end,
+            timeout = 0,
+            whileDead = true,
+            hideOnEscape = true,
+        }
+        StaticPopup_Show("BLU_TEST_ALL")
+    end)
+    
+    -- Force reload modules
+    local reloadModulesBtn = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+    reloadModulesBtn:SetSize(120, 25)
+    reloadModulesBtn:SetPoint("LEFT", testAllBtn, "RIGHT", 10, 0)
+    reloadModulesBtn:SetText("Reload Modules")
+    reloadModulesBtn:SetScript("OnClick", function()
+        if BLU.ReloadAllModules then
+            BLU:ReloadAllModules()
+        end
+        BLU:Print("|cff00ff00All modules reloaded|r")
+    end)
+    
+    yOffset = yOffset - 50
+    
+    -- Reset Section
+    local resetTitle = panel:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    resetTitle:SetPoint("TOPLEFT", 16, yOffset)
+    resetTitle:SetText("Reset Options")
+    resetTitle:SetTextColor(1, 0.3, 0.3)
+    
+    yOffset = yOffset - 30
+    
+    -- Reset warning
+    local resetWarning = panel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    resetWarning:SetPoint("TOPLEFT", 30, yOffset)
+    resetWarning:SetText("|cffff0000Warning: These actions cannot be undone!|r")
+    
+    yOffset = yOffset - 30
+    
+    -- Reset to defaults button
+    local resetDefaultsBtn = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+    resetDefaultsBtn:SetSize(150, 25)
+    resetDefaultsBtn:SetPoint("TOPLEFT", 30, yOffset)
+    resetDefaultsBtn:SetText("Reset to Defaults")
+    resetDefaultsBtn:SetScript("OnClick", function()
+        StaticPopupDialogs["BLU_RESET_DEFAULTS"] = {
+            text = "Reset all settings to default values?",
+            button1 = "Reset",
+            button2 = "Cancel",
+            OnAccept = function()
+                BLU:ResetToDefaults()
+                BLU:Print("|cff00ff00Settings reset to defaults|r")
+                ReloadUI()
+            end,
+            timeout = 0,
+            whileDead = true,
+            hideOnEscape = true,
+        }
+        StaticPopup_Show("BLU_RESET_DEFAULTS")
+    end)
+    
+    -- Full reset button
+    local fullResetBtn = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+    fullResetBtn:SetSize(150, 25)
+    fullResetBtn:SetPoint("LEFT", resetDefaultsBtn, "RIGHT", 10, 0)
+    fullResetBtn:SetText("Full Reset (All Data)")
+    fullResetBtn:SetScript("OnClick", function()
+        StaticPopupDialogs["BLU_FULL_RESET"] = {
+            text = "|cffff0000WARNING: This will delete ALL saved data including profiles!|r\n\nAre you sure?",
+            button1 = "DELETE ALL",
+            button2 = "Cancel",
+            OnAccept = function()
+                BLUDB = nil
+                BLU:Print("|cffff0000All data deleted. Reloading UI...|r")
+                C_Timer.After(1, ReloadUI)
+            end,
+            timeout = 0,
+            whileDead = true,
+            hideOnEscape = true,
+        }
+        StaticPopup_Show("BLU_FULL_RESET")
+    end)
+    
+    -- Update functions
+    panel:SetScript("OnShow", function()
+        UpdateCacheSize()
+        C_Timer.NewTicker(2, function()
+            if panel:IsVisible() then
+                UpdateCacheSize()
+            end
+        end)
+    end)
+    
+    -- Register with tab system
+    if BLU.TabSystem then
+        BLU.TabSystem:RegisterPanel("advanced", panel)
+    end
     
     return panel
 end
-
--- Reset dialog
-StaticPopupDialogs["BLU_RESET_ADVANCED"] = {
-    text = "Reset all advanced settings to defaults?",
-    button1 = "Reset",
-    button2 = "Cancel",
-    OnAccept = function()
-        BLU:ResetAdvancedSettings()
-        print("|cff00ccffBLU:|r Advanced settings reset to defaults")
-        ReloadUI()
-    end,
-    timeout = 0,
-    whileDead = true,
-    hideOnEscape = true
-}

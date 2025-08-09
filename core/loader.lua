@@ -32,15 +32,15 @@ local moduleRegistry = {
     
     -- Feature modules (loaded on demand)
     features = {
-        levelUp = "LevelUp",
+        levelup = "LevelUp",
         achievement = "Achievement",
-        reputation = "Reputation",
+        reputation = "Reputation", 
         quest = "Quest",
-        battlePet = "BattlePet",
-        delveCompanion = "DelveCompanion",
-        honorRank = "HonorRank",
-        renownRank = "RenownRank",
-        tradingPost = "TradingPost"
+        battlepet = "BattlePet",
+        delve = "DelveCompanion",
+        honor = "HonorRank",
+        renown = "RenownRank",
+        tradingpost = "TradingPost"
     },
     
     -- Sound modules (loaded per game selection)
@@ -126,15 +126,15 @@ function BLU:LoadModulesFromSettings()
     
     -- Load all feature modules if addon is enabled
     if db.enabled then
-        self:LoadModule("features", "levelUp")
+        self:LoadModule("features", "levelup")
         self:LoadModule("features", "achievement")
         self:LoadModule("features", "reputation")
         self:LoadModule("features", "quest")
-        self:LoadModule("features", "battlePet")
-        self:LoadModule("features", "delveCompanion")
-        self:LoadModule("features", "honorRank")
-        self:LoadModule("features", "renownRank")
-        self:LoadModule("features", "tradingPost")
+        self:LoadModule("features", "battlepet")
+        self:LoadModule("features", "delve")
+        self:LoadModule("features", "honor")
+        self:LoadModule("features", "renown")
+        self:LoadModule("features", "tradingpost")
     end
     
     -- Load sound modules for selected games

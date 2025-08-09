@@ -157,6 +157,16 @@ L["ERROR_PROFILE_NOT_FOUND"] = "Profile '%s' not found, switching to Default"
 L["ERROR_EVENT_CALLBACK"] = "Error in event %s for %s: %s"
 L["ERROR_TIMER_CALLBACK"] = "Error in timer callback: %s"
 L["ERROR_HOOK_CALLBACK"] = "Error in hook %s: %s"
+
+-- Module initialization
+local Localization = {}
+function Localization:Init()
+    BLU:PrintDebug("Localization module initialized")
+end
+
+-- Register the module
+BLU.Modules = BLU.Modules or {}
+BLU.Modules["localization"] = Localization
 L["ERROR_OPTIONS_PANEL"] = "Cannot register options panel - unsupported WoW version"
 
 -- Debug messages

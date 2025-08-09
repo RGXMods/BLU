@@ -11,8 +11,10 @@
     <Script file="core/registry.lua"/>
     <Script file="core/loader.lua"/>
     <Script file="core/sharedmedia.lua"/>
+    <Script file="core/internal_sounds.lua"/>
     <Script file="core/commands.lua"/>
     <Script file="core/optionslauncher.lua"/>
+    <Script file="core/options_new.lua"/>
     <Script file="core/init.lua"/>
     
     <!-- Localization -->

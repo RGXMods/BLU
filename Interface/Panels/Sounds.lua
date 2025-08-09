@@ -96,9 +96,8 @@ local function GetAllSounds()
     return sounds
 end
 
-function BLU.CreateSoundsPanel(parent)
-    local panel = CreateFrame("Frame", nil, parent)
-    panel:SetAllPoints()
+function BLU.CreateSoundsPanel()
+    local panel = CreateFrame("Frame", nil, UIParent)
     panel:Hide()
     
     -- Create scrollable container
@@ -434,6 +433,11 @@ function BLU.CreateSoundsPanel(parent)
                 btn:Hide()
             end
         end
+    end
+    
+    -- Register with tab system
+    if BLU.TabSystem then
+        BLU.TabSystem:RegisterPanel("sounds", panel)
     end
     
     return panel

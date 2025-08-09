@@ -6,9 +6,8 @@
 
 local addonName, BLU = ...
 
-function BLU.CreateGeneralPanel(parent)
-    local panel = CreateFrame("Frame", nil, parent)
-    panel:SetAllPoints()
+function BLU.CreateGeneralPanel()
+    local panel = CreateFrame("Frame", nil, UIParent)
     panel:Hide()
     
     -- Title
@@ -184,6 +183,11 @@ function BLU.CreateGeneralPanel(parent)
     infoText:SetJustifyH("LEFT")
     infoText:SetText("Tip: Use Test Mode to preview sounds without triggering game events. Access more options in the other tabs.")
     infoText:SetTextColor(0.7, 0.7, 0.7)
+    
+    -- Register with tab system
+    if BLU.TabSystem then
+        BLU.TabSystem:RegisterPanel("general", panel)
+    end
     
     return panel
 end

@@ -278,3 +278,69 @@ function SoundRegistry:GetSoundInfo(soundId)
         hasVolumeVariants = sound.hasVolumeVariants
     }
 end
+
+-- Test/preview functions
+function BLU:PlayTestSound(category, volume)
+    if not BLU.Registry then
+        self:PrintDebug("Registry not available")
+        return false
+    end
+    
+    -- Use selected sound for category or default
+    local selectedSound = self:GetDB({"selectedSounds", category})
+    if not selectedSound then
+        -- Try to play first available sound for category
+        local sounds = BLU.Registry:GetSoundsByCategory(category)
+        if sounds and next(sounds) then
+            local firstId = next(sounds)
+            return BLU.Registry:PlaySound(firstId, volume)
+        end
+    else
+        return BLU.Registry:PlayCategorySound(category, volume)
+    end
+    
+    return false
+end
+
+function BLU:PlayCategorySound(category, volume)
+    if BLU.Registry then
+        return BLU.Registry:PlayCategorySound(category, volume)
+    end
+    return false
+end
+
+function BLU:TestAllSounds()
+    if not BLU.Registry then
+        self:Print("Sound registry not available")
+        return
+    end
+    
+    local sounds = BLU.Registry:GetAllSounds()
+    local count = 0
+    local delay = 0
+    
+    self:Print("Testing all sounds...")
+    
+    for soundId, soundData in pairs(sounds) do
+        count = count + 1
+        C_Timer.After(delay, function()
+            self:Print(string.format("[%d] Playing: %s", count, soundData.name or soundId))
+            BLU.Registry:PlaySound(soundId)
+        end)
+        delay = delay + (soundData.duration or 2) + 0.5
+    end
+    
+    self:Print(string.format("Scheduled %d sounds for testing", count))
+end
+
+-- Reload all sounds
+function SoundRegistry:ReloadAllSounds()
+    -- Clear cache
+    self.sounds = {}
+    self.categories = {}
+    
+    -- Re-initialize
+    self:Init()
+    
+    BLU:PrintDebug("Sound registry reloaded")
+end

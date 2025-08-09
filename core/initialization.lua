@@ -145,34 +145,11 @@ function BLU:InitializeModule(moduleName)
     end
 end
 
--- Register slash command
+-- Register slash command (now handled in commands.lua)
 function BLU:RegisterSlashCommand()
-    if self.initialized.slashCommand then
-        return
-    end
-    
-    SLASH_BLU1 = "/blu"
-    SlashCmdList["BLU"] = function(msg)
-        msg = msg:trim():lower()
-        
-        if msg == "" or msg == "options" or msg == "config" then
-            self:OpenOptions()
-        elseif msg == "test" then
-            self:PlayTestSound("levelup")
-        elseif msg == "debug" then
-            self.db.debugMode = not self.db.debugMode
-            self:Print("Debug mode " .. (self.db.debugMode and "enabled" or "disabled"))
-        elseif msg == "reload" then
-            ReloadUI()
-        elseif msg == "help" then
-            self:ShowHelp()
-        else
-            self:ShowHelp()
-        end
-    end
-    
+    -- Slash command is now registered in commands.lua
     self.initialized.slashCommand = true
-    self:PrintDebug("[Init] Slash command registered")
+    self:PrintDebug("[Init] Slash command already registered in commands.lua")
 end
 
 -- Open options panel

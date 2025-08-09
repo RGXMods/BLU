@@ -6,8 +6,45 @@
 local addonName, BLU = ...
 
 -- Register slash commands
--- SLASH_BLU1 = "/blu"  -- Handled by options_direct.lua now
+SLASH_BLU1 = "/blu"
 SLASH_BLU2 = "/bluesound"
+
+SlashCmdList["BLU"] = function(msg)
+    msg = (msg or ""):trim():lower()
+    
+    if msg == "" or msg == "options" or msg == "config" then
+        -- Try to open options
+        if BLU.Modules and BLU.Modules.options_new and BLU.Modules.options_new.OpenOptions then
+            BLU.Modules.options_new:OpenOptions()
+        else
+            BLU:Print("|cff00ccffBLU:|r Options panel not available yet. Please wait a moment and try again.")
+        end
+    elseif msg == "test" then
+        if BLU.PlayTestSound then
+            BLU:PlayTestSound("levelup")
+        else
+            BLU:Print("|cff00ccffBLU:|r Playing test sound...")
+        end
+    elseif msg == "debug" then
+        if BLU.db then
+            BLU.db.debugMode = not BLU.db.debugMode
+            BLU:Print("|cff00ccffBLU:|r Debug mode " .. (BLU.db.debugMode and "enabled" or "disabled"))
+        else
+            BLU:Print("|cff00ccffBLU:|r Database not loaded yet")
+        end
+    elseif msg == "reload" then
+        ReloadUI()
+    elseif msg == "help" then
+        BLU:Print("|cff00ccffBLU Commands:|r")
+        BLU:Print("  |cffffff00/blu|r - Open options")
+        BLU:Print("  |cffffff00/blu test|r - Play test sound")
+        BLU:Print("  |cffffff00/blu debug|r - Toggle debug mode")
+        BLU:Print("  |cffffff00/blu reload|r - Reload UI")
+    else
+        -- Unknown command, show help
+        BLU:Print("|cff00ccffBLU:|r Unknown command. Type |cffffff00/blu help|r for help.")
+    end
+end
 
 -- Test command for simulating events
 SLASH_BLUTEST1 = "/blutest"

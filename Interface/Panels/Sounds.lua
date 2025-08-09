@@ -23,6 +23,21 @@ local eventTypes = {
 local function GetAllSounds()
     local sounds = {}
     
+    -- Add default WoW sounds
+    local wowSounds = {
+        {value = "wow:default_levelup", text = "Default Level Up", category = "WoW Default Sounds", source = "WoW"},
+        {value = "wow:default_achievement", text = "Default Achievement", category = "WoW Default Sounds", source = "WoW"},
+        {value = "wow:default_quest", text = "Default Quest Complete", category = "WoW Default Sounds", source = "WoW"},
+        {value = "wow:default_reputation", text = "Default Reputation", category = "WoW Default Sounds", source = "WoW"},
+        {value = "wow:default_pvp", text = "Default PvP Sound", category = "WoW Default Sounds", source = "WoW"},
+        {value = "wow:garrison_complete", text = "Garrison Complete", category = "WoW Default Sounds", source = "WoW"},
+        {value = "wow:ready_check", text = "Ready Check", category = "WoW Default Sounds", source = "WoW"},
+    }
+    
+    for _, sound in ipairs(wowSounds) do
+        table.insert(sounds, sound)
+    end
+    
     -- Add BLU built-in sounds (with volume variants)
     -- These are organized by game franchise
     local bluSounds = {
@@ -249,8 +264,10 @@ function BLU.CreateSoundsPanel()
         volumeText:SetText(currentVolume .. "%")
         
         volumeSlider:SetScript("OnValueChanged", function(self, value)
-            -- Individual event volumes not implemented yet
-            volumeText:SetText(value .. "%")
+            local vol = math.floor(value)
+            volumeText:SetText(vol .. "%")
+            -- Store per-event volume
+            BLU:SetDB({"eventVolumes", event.id}, vol)
         end)
         
         -- Test button
@@ -436,6 +453,147 @@ function BLU.CreateSoundsPanel()
         end
     end
     
+    -- Sound Pack Management Section (added after browse section)
+    yOffset = yOffset - 40
+    
+    local packTitle = content:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    packTitle:SetPoint("TOPLEFT", 16, yOffset)
+    packTitle:SetText("Sound Pack Management")
+    packTitle:SetTextColor(0, 0.8, 1)
+    
+    yOffset = yOffset - 30
+    
+    local packDesc = content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    packDesc:SetPoint("TOPLEFT", 20, yOffset)
+    packDesc:SetPoint("TOPRIGHT", -20, yOffset)
+    packDesc:SetText("Manage external sound packs from SharedMedia-compatible addons")
+    packDesc:SetTextColor(0.7, 0.7, 0.7)
+    packDesc:SetJustifyH("LEFT")
+    
+    yOffset = yOffset - 30
+    
+    -- Available sound packs list
+    local packListFrame = CreateFrame("Frame", nil, content)
+    packListFrame:SetPoint("TOPLEFT", 20, yOffset)
+    packListFrame:SetPoint("TOPRIGHT", -20, yOffset)
+    packListFrame:SetHeight(200)
+    
+    local packListBg = packListFrame:CreateTexture(nil, "BACKGROUND")
+    packListBg:SetAllPoints()
+    packListBg:SetColorTexture(0.1, 0.1, 0.1, 0.3)
+    
+    -- Create scroll frame for pack list
+    local packScrollFrame = CreateFrame("ScrollFrame", nil, packListFrame, "UIPanelScrollFrameTemplate")
+    packScrollFrame:SetPoint("TOPLEFT", 5, -5)
+    packScrollFrame:SetPoint("BOTTOMRIGHT", -25, 5)
+    
+    local packContent = CreateFrame("Frame", nil, packScrollFrame)
+    packContent:SetSize(packScrollFrame:GetWidth(), 1)
+    packScrollFrame:SetScrollChild(packContent)
+    
+    -- Function to populate pack list
+    local function UpdatePackList()
+        -- Clear existing
+        for i = 1, packContent:GetNumChildren() do
+            local child = select(i, packContent:GetChildren())
+            child:Hide()
+            child:SetParent(nil)
+        end
+        
+        local packYOffset = 0
+        
+        -- Get available sound packs
+        local packs = {}
+        if BLU.Modules and BLU.Modules.sharedmedia then
+            packs = BLU.Modules.sharedmedia:GetLoadedSoundAddons() or {}
+        end
+        
+        if #packs == 0 then
+            local noPacks = packContent:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+            noPacks:SetPoint("CENTER", packContent, "CENTER", 0, 0)
+            noPacks:SetText("No external sound packs detected")
+            noPacks:SetTextColor(0.5, 0.5, 0.5)
+        else
+            for i, packName in ipairs(packs) do
+                local packRow = CreateFrame("Frame", nil, packContent)
+                packRow:SetSize(packContent:GetWidth() - 10, 30)
+                packRow:SetPoint("TOPLEFT", 5, -packYOffset)
+                
+                -- Background
+                local packBg = packRow:CreateTexture(nil, "BACKGROUND")
+                packBg:SetAllPoints()
+                packBg:SetColorTexture(0.15, 0.15, 0.15, 0.3)
+                if i % 2 == 0 then
+                    packBg:SetColorTexture(0.2, 0.2, 0.2, 0.3)
+                end
+                
+                -- Pack name
+                local packNameText = packRow:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+                packNameText:SetPoint("LEFT", 10, 0)
+                packNameText:SetText(packName)
+                
+                -- Status indicator
+                local statusText = packRow:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+                statusText:SetPoint("RIGHT", -10, 0)
+                statusText:SetText("|cff00ff00Loaded|r")
+                
+                packYOffset = packYOffset + 32
+            end
+        end
+        
+        packContent:SetHeight(math.max(packYOffset, 190))
+    end
+    
+    -- Update pack list on show
+    if not panel.hasOnShowHandler then
+        panel:SetScript("OnShow", function()
+            UpdatePackList()
+            UpdateSharedMediaStatus()
+        end)
+        panel.hasOnShowHandler = true
+    end
+    
+    -- Buttons for pack management
+    local scanBtn = CreateFrame("Button", nil, content, "UIPanelButtonTemplate")
+    scanBtn:SetSize(120, 24)
+    scanBtn:SetPoint("TOPLEFT", packListFrame, "BOTTOMLEFT", 0, -10)
+    scanBtn:SetText("Scan for Packs")
+    scanBtn:SetScript("OnClick", function()
+        if BLU.Modules and BLU.Modules.sharedmedia then
+            BLU.Modules.sharedmedia:ScanExternalSounds()
+            UpdatePackList()
+            UpdateSharedMediaStatus()
+            
+            -- Refresh dropdowns
+            for _, row in ipairs(panel.eventRows) do
+                if row.dropdown then
+                    local allSounds = GetAllSounds()
+                    row.dropdown:SetItems(allSounds)
+                end
+            end
+            
+            BLU:Print("|cff00ff00Sound packs scanned successfully!|r")
+        else
+            BLU:Print("|cffff0000SharedMedia module not loaded|r")
+        end
+    end)
+    
+    local reloadBtn = CreateFrame("Button", nil, content, "UIPanelButtonTemplate")
+    reloadBtn:SetSize(120, 24)
+    reloadBtn:SetPoint("LEFT", scanBtn, "RIGHT", 10, 0)
+    reloadBtn:SetText("Reload UI")
+    reloadBtn:SetScript("OnClick", function()
+        ReloadUI()
+    end)
+    
+    local helpBtn = CreateFrame("Button", nil, content, "UIPanelButtonTemplate")
+    helpBtn:SetSize(120, 24)
+    helpBtn:SetPoint("LEFT", reloadBtn, "RIGHT", 10, 0)
+    helpBtn:SetText("Get More Packs")
+    helpBtn:SetScript("OnClick", function()
+        StaticPopup_Show("BLU_SOUNDPACK_INFO")
+    end)
+    
     -- Register with tab system
     if BLU.TabSystem then
         BLU.TabSystem:RegisterPanel("sounds", panel)
@@ -443,3 +601,12 @@ function BLU.CreateSoundsPanel()
     
     return panel
 end
+
+-- Sound pack info dialog
+StaticPopupDialogs["BLU_SOUNDPACK_INFO"] = {
+    text = "To add more sound packs:\n\n1. Install SharedMedia addons from CurseForge\n2. Install SoundPak addons\n3. Reload UI after installing\n4. Click 'Scan for Packs' to detect new sounds\n\nPopular sound pack addons:\n- SharedMedia_MyMedia\n- SoundPak_Various\n- Epic Music Player",
+    button1 = "Got it!",
+    timeout = 0,
+    whileDead = true,
+    hideOnEscape = true
+}

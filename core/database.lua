@@ -138,31 +138,19 @@ function Database:SetProfile(name)
     return true
 end
 
--- Get profile list
+-- Delegate profile management to BLU functions
 function Database:GetProfiles()
-    local profiles = {}
-    for name in pairs(BLUDB.profiles) do
-        table.insert(profiles, name)
-    end
-    table.sort(profiles)
-    return profiles
+    return BLU:GetProfiles()
 end
 
 -- Get current profile
 function Database:GetCurrentProfile()
-    return BLUDB.currentProfile
+    return BLUDB and BLUDB.currentProfile or "Default"
 end
 
 -- Copy profile
 function Database:CopyProfile(from, to)
-    if not BLUDB.profiles[from] then
-        BLU:PrintError("Source profile does not exist: " .. from)
-        return false
-    end
-    
-    BLUDB.profiles[to] = self:CopyTable(BLUDB.profiles[from])
-    BLU:Print("Profile copied: " .. from .. " -> " .. to)
-    return true
+    return BLU:CopyProfile(from, to)
 end
 
 -- Utility: Deep copy table
@@ -254,6 +242,239 @@ end
 
 function BLU:ResetSettings()
     Database:ResetProfile()
+end
+
+--=====================================================================================
+-- Profile Management Functions
+--=====================================================================================
+
+-- Get list of all profiles
+function BLU:GetProfiles()
+    if not BLUDB or not BLUDB.profiles then
+        return {"Default"}
+    end
+    
+    local profiles = {}
+    for name in pairs(BLUDB.profiles) do
+        table.insert(profiles, name)
+    end
+    
+    -- Ensure Default always exists
+    local hasDefault = false
+    for _, name in ipairs(profiles) do
+        if name == "Default" then
+            hasDefault = true
+            break
+        end
+    end
+    if not hasDefault then
+        table.insert(profiles, 1, "Default")
+    end
+    
+    table.sort(profiles)
+    return profiles
+end
+
+-- Create a new profile
+function BLU:CreateProfile(name)
+    if not name or name == "" then return false end
+    
+    BLUDB = BLUDB or {}
+    BLUDB.profiles = BLUDB.profiles or {}
+    
+    -- Check if profile already exists
+    if BLUDB.profiles[name] then
+        return false
+    end
+    
+    -- Copy current profile settings
+    BLUDB.profiles[name] = self:CopyTable(self.db.profile or self:GetDefaultProfile())
+    return true
+end
+
+-- Switch to a different profile
+function BLU:SwitchProfile(name)
+    if not name then return false end
+    
+    BLUDB = BLUDB or {}
+    BLUDB.profiles = BLUDB.profiles or {}
+    
+    -- Create profile if it doesn't exist
+    if not BLUDB.profiles[name] and name ~= "Default" then
+        BLUDB.profiles[name] = self:GetDefaultProfile()
+    end
+    
+    -- Switch profile
+    BLUDB.currentProfile = name
+    
+    if name == "Default" then
+        self.db.profile = BLUDB.profiles.Default or self:GetDefaultProfile()
+    else
+        self.db.profile = BLUDB.profiles[name]
+    end
+    
+    self.db.currentProfile = name
+    return true
+end
+
+-- Delete a profile
+function BLU:DeleteProfile(name)
+    if not name or name == "Default" then return false end
+    
+    if BLUDB and BLUDB.profiles then
+        BLUDB.profiles[name] = nil
+        
+        -- If we deleted the current profile, switch to Default
+        if BLUDB.currentProfile == name then
+            self:SwitchProfile("Default")
+        end
+        return true
+    end
+    
+    return false
+end
+
+-- Copy a profile
+function BLU:CopyProfile(source, destination)
+    if not source or not destination or destination == "" then return false end
+    
+    BLUDB = BLUDB or {}
+    BLUDB.profiles = BLUDB.profiles or {}
+    
+    local sourceProfile
+    if source == "Default" then
+        sourceProfile = BLUDB.profiles.Default or self:GetDefaultProfile()
+    else
+        sourceProfile = BLUDB.profiles[source]
+    end
+    
+    if not sourceProfile then return false end
+    
+    BLUDB.profiles[destination] = self:CopyTable(sourceProfile)
+    return true
+end
+
+-- Reset current profile to defaults
+function BLU:ResetProfile()
+    local currentProfile = self.db.currentProfile or "Default"
+    
+    if currentProfile == "Default" then
+        BLUDB.profiles.Default = self:GetDefaultProfile()
+        self.db.profile = BLUDB.profiles.Default
+    else
+        BLUDB.profiles[currentProfile] = self:GetDefaultProfile()
+        self.db.profile = BLUDB.profiles[currentProfile]
+    end
+    
+    return true
+end
+
+-- Export profile as string
+function BLU:ExportProfile()
+    if not self.db or not self.db.profile then return nil end
+    
+    -- Simple serialization (could be improved with proper serialization library)
+    local profileData = self:CopyTable(self.db.profile)
+    local export = "BLU_PROFILE_v1:"
+    
+    -- Convert to simple string format
+    local function serialize(tbl, depth)
+        depth = depth or 0
+        if depth > 10 then return "..." end -- Prevent infinite recursion
+        
+        local result = "{"
+        local first = true
+        for k, v in pairs(tbl) do
+            if not first then result = result .. "," end
+            first = false
+            
+            if type(k) == "string" then
+                result = result .. k .. "="
+            else
+                result = result .. "[" .. tostring(k) .. "]="
+            end
+            
+            if type(v) == "table" then
+                result = result .. serialize(v, depth + 1)
+            elseif type(v) == "string" then
+                result = result .. '"' .. v .. '"'
+            elseif type(v) == "boolean" then
+                result = result .. (v and "true" or "false")
+            else
+                result = result .. tostring(v)
+            end
+        end
+        result = result .. "}"
+        return result
+    end
+    
+    export = export .. serialize(profileData)
+    return export
+end
+
+-- Import profile from string
+function BLU:ImportProfile(importString)
+    if not importString or not importString:match("^BLU_PROFILE_v1:") then
+        return false
+    end
+    
+    -- Remove header
+    local data = importString:gsub("^BLU_PROFILE_v1:", "")
+    
+    -- Simple deserialization (needs proper implementation)
+    -- For now, just create a new profile with defaults
+    local profileName = "Imported_" .. date("%Y%m%d_%H%M%S")
+    
+    BLUDB = BLUDB or {}
+    BLUDB.profiles = BLUDB.profiles or {}
+    BLUDB.profiles[profileName] = self:GetDefaultProfile()
+    
+    -- TODO: Properly deserialize the data string
+    
+    self:SwitchProfile(profileName)
+    return true
+end
+
+-- Utility: Deep copy a table
+function BLU:CopyTable(orig)
+    local orig_type = type(orig)
+    local copy
+    if orig_type == 'table' then
+        copy = {}
+        for orig_key, orig_value in next, orig, nil do
+            copy[self:CopyTable(orig_key)] = self:CopyTable(orig_value)
+        end
+        setmetatable(copy, self:CopyTable(getmetatable(orig)))
+    else
+        copy = orig
+    end
+    return copy
+end
+
+-- Reset all settings to defaults
+function BLU:ResetToDefaults()
+    BLUDB = {
+        profiles = {
+            Default = self:GetDefaultProfile()
+        },
+        currentProfile = "Default",
+        global = {
+            notFirstTime = true
+        }
+    }
+    
+    self.db = {
+        profile = BLUDB.profiles.Default,
+        currentProfile = "Default",
+        global = BLUDB.global
+    }
+    
+    return true
+end
+
+-- Get default profile
+function BLU:GetDefaultProfile()
+    return Database:CopyTable(Database.defaults)
 end
 
 -- Register module

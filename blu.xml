@@ -13,10 +13,11 @@
     <Script file="core/sharedmedia.lua"/>
     <Script file="core/internal_sounds.lua"/>
     <Script file="core/commands.lua"/>
-    <Script file="core/interface_options.lua"/>
-    <!-- <Script file="core/optionslauncher.lua"/> Disabled - using interface_options.lua instead -->
-    <!-- <Script file="core/options_new.lua"/> Disabled - using interface_options.lua instead -->
+    <!-- Don't load these - they create duplicate panels -->
+    <!--<Script file="core/optionslauncher.lua"/>-->
+    <!--<Script file="core/options_new.lua"/>-->
     <Script file="core/init.lua"/>
+    <Script file="core/interface_options.lua"/>
     
     <!-- Localization -->
     <Script file="localization/enUS.lua"/>

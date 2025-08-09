@@ -26,8 +26,8 @@ BLU:RegisterEvent("ADDON_LOADED", function(event, addon)
         "sharedmedia",   -- Has Init() - external sound detection
         "registry",      -- Has Init()
         "internal_sounds", -- Has Init() - BLU internal sounds
-        "loader",        -- Has Init()
-        "options_new"    -- New UI system
+        "loader"         -- Has Init()
+        -- "options_new" removed - using interface_options.lua instead
         -- "config" and "utils" don't have Init()
         -- "events" is loaded but doesn't need Init()
     }
@@ -74,6 +74,14 @@ end)
 BLU:RegisterEvent("PLAYER_LOGIN", function()
     BLU:PrintDebug("[Init] PLAYER_LOGIN event fired")
     
+    -- Skip panel creation - interface_options.lua handles it now
+    if true then
+        BLU:PrintDebug("[Init] Skipping panel creation - handled by interface_options.lua")
+        return
+    end
+    
+    -- DISABLED: Old panel creation code below
+    --[[
     -- Force initialize the options_new module and create the FULL panel
     if not BLU.OptionsPanel then
         -- Make sure options_new module is initialized
@@ -168,6 +176,7 @@ BLU:RegisterEvent("PLAYER_LOGIN", function()
         
         BLU.OptionsPanel = panel
     end
+    --]] -- End of disabled code
     
     -- Show welcome message
     C_Timer.After(1, function()

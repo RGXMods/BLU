@@ -15,9 +15,9 @@
     <Script file="core/commands.lua"/>
     <Script file="core/init.lua"/>
     
-    <!-- Narcissus-style Interface -->
-    <Script file="interface/narcissus_design.lua"/>
-    <Script file="core/interface_options_narcissus.lua"/>
+    <!-- Modern Glass-style Interface -->
+    <Script file="interface/glass_design.lua"/>
+    <Script file="core/interface_options_glass.lua"/>
     
     <!-- Localization -->
     <Script file="localization/enUS.lua"/>

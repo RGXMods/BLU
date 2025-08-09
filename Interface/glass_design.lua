@@ -1,17 +1,17 @@
 --=====================================================================================
--- BLU | Narcissus-Style Design System
+-- BLU | Modern Glass Design System
 -- Author: donniedice
--- Description: Beautiful, modern UI design inspired by Narcissus addon
+-- Description: Beautiful, modern UI design with glass effects
 --=====================================================================================
 
 local addonName, BLU = ...
 
--- Create the Narcissus design system
-BLU.NarciDesign = {}
-local NarciDesign = BLU.NarciDesign
+-- Create the modern glass design system
+BLU.GlassDesign = {}
+local GlassDesign = BLU.GlassDesign
 
--- Color Palette (Narcissus-inspired)
-NarciDesign.Colors = {
+-- Color Palette (Modern glass theme)
+GlassDesign.Colors = {
     -- Primary colors with transparency
     Background = {0.05, 0.05, 0.05, 0.85},      -- Dark with glass effect
     BackgroundLight = {0.1, 0.1, 0.1, 0.75},    -- Lighter panels
@@ -24,7 +24,7 @@ NarciDesign.Colors = {
     TextDisabled = {0.5, 0.5, 0.5, 1},          -- Grayed out
     
     -- Accent colors
-    Accent = {0.82, 0.69, 0.36, 1},             -- Gold accent (Narcissus signature)
+    Accent = {0.82, 0.69, 0.36, 1},             -- Gold accent
     AccentBlue = {0.4, 0.73, 1, 1},             -- Blue for BLU branding
     Success = {0.4, 0.8, 0.4, 1},               -- Green
     Warning = {1, 0.8, 0.4, 1},                 -- Yellow/Orange
@@ -32,7 +32,7 @@ NarciDesign.Colors = {
 }
 
 -- Spacing and dimensions
-NarciDesign.Spacing = {
+GlassDesign.Spacing = {
     Tiny = 4,
     Small = 8,
     Medium = 12,
@@ -41,7 +41,7 @@ NarciDesign.Spacing = {
 }
 
 -- Font definitions
-NarciDesign.Fonts = {
+GlassDesign.Fonts = {
     Title = "SystemFont_Shadow_Huge2",          -- Large titles
     Header = "SystemFont_Shadow_Large",         -- Section headers
     Normal = "SystemFont_Shadow_Med1",          -- Regular text
@@ -50,7 +50,7 @@ NarciDesign.Fonts = {
 }
 
 -- Create a glass panel with blur effect
-function NarciDesign:CreateGlassPanel(parent, name)
+function GlassDesign:CreateGlassPanel(parent, name)
     local panel = CreateFrame("Frame", name, parent, "BackdropTemplate")
     
     -- Modern backdrop with blur effect simulation
@@ -76,18 +76,18 @@ function NarciDesign:CreateGlassPanel(parent, name)
     
     -- Hover effect
     panel:SetScript("OnEnter", function(self)
-        self:SetBackdropBorderColor(unpack(NarciDesign.Colors.BorderHighlight))
+        self:SetBackdropBorderColor(unpack(GlassDesign.Colors.BorderHighlight))
     end)
     
     panel:SetScript("OnLeave", function(self)
-        self:SetBackdropBorderColor(unpack(NarciDesign.Colors.Border))
+        self:SetBackdropBorderColor(unpack(GlassDesign.Colors.Border))
     end)
     
     return panel
 end
 
 -- Create a section with title
-function NarciDesign:CreateSection(parent, title)
+function GlassDesign:CreateSection(parent, title)
     local section = self:CreateGlassPanel(parent)
     section:SetHeight(200) -- Default height
     
@@ -121,7 +121,7 @@ function NarciDesign:CreateSection(parent, title)
 end
 
 -- Create a beautiful button
-function NarciDesign:CreateButton(parent, text, width, height)
+function GlassDesign:CreateButton(parent, text, width, height)
     local button = CreateFrame("Button", nil, parent, "BackdropTemplate")
     button:SetSize(width or 120, height or 32)
     
@@ -150,13 +150,13 @@ function NarciDesign:CreateButton(parent, text, width, height)
     
     -- Animations
     button:SetScript("OnEnter", function(self)
-        self:SetBackdropBorderColor(unpack(NarciDesign.Colors.AccentBlue))
-        self.text:SetTextColor(unpack(NarciDesign.Colors.TextHighlight))
+        self:SetBackdropBorderColor(unpack(GlassDesign.Colors.AccentBlue))
+        self.text:SetTextColor(unpack(GlassDesign.Colors.TextHighlight))
     end)
     
     button:SetScript("OnLeave", function(self)
-        self:SetBackdropBorderColor(unpack(NarciDesign.Colors.Border))
-        self.text:SetTextColor(unpack(NarciDesign.Colors.TextNormal))
+        self:SetBackdropBorderColor(unpack(GlassDesign.Colors.Border))
+        self.text:SetTextColor(unpack(GlassDesign.Colors.TextNormal))
     end)
     
     button:SetScript("OnMouseDown", function(self)
@@ -171,7 +171,7 @@ function NarciDesign:CreateButton(parent, text, width, height)
 end
 
 -- Create a slider with modern style
-function NarciDesign:CreateSlider(parent, label, min, max, step)
+function GlassDesign:CreateSlider(parent, label, min, max, step)
     local container = CreateFrame("Frame", nil, parent)
     container:SetSize(200, 50)
     
@@ -220,7 +220,7 @@ function NarciDesign:CreateSlider(parent, label, min, max, step)
 end
 
 -- Create a checkbox with modern style
-function NarciDesign:CreateCheckbox(parent, label)
+function GlassDesign:CreateCheckbox(parent, label)
     local checkbox = CreateFrame("CheckButton", nil, parent, "BackdropTemplate")
     checkbox:SetSize(24, 24)
     
@@ -270,7 +270,7 @@ function NarciDesign:CreateCheckbox(parent, label)
 end
 
 -- Create tab system with smooth transitions
-function NarciDesign:CreateTabSystem(parent)
+function GlassDesign:CreateTabSystem(parent)
     local tabContainer = CreateFrame("Frame", nil, parent)
     tabContainer:SetHeight(40)
     tabContainer:SetPoint("TOPLEFT", parent, "TOPLEFT", 0, 0)
@@ -289,14 +289,14 @@ function NarciDesign:CreateTabSystem(parent)
         -- Deselect all tabs
         for name, tab in pairs(tabs) do
             tab:SetBackdropColor(0.1, 0.1, 0.1, 0.5)
-            tab.text:SetTextColor(unpack(NarciDesign.Colors.TextNormal))
+            tab.text:SetTextColor(unpack(GlassDesign.Colors.TextNormal))
         end
         
         -- Show selected panel and highlight tab
         if panels[tabName] then
             panels[tabName]:Show()
             tabs[tabName]:SetBackdropColor(0.15, 0.15, 0.15, 0.8)
-            tabs[tabName].text:SetTextColor(unpack(NarciDesign.Colors.Accent))
+            tabs[tabName].text:SetTextColor(unpack(GlassDesign.Colors.Accent))
             currentTab = tabName
         end
     end
@@ -308,7 +308,7 @@ function NarciDesign:CreateTabSystem(parent)
         -- Position tabs horizontally
         local numTabs = 0
         for _ in pairs(tabs) do numTabs = numTabs + 1 end
-        tab:SetPoint("LEFT", numTabs * 125 + NarciDesign.Spacing.Medium, 0)
+        tab:SetPoint("LEFT", numTabs * 125 + GlassDesign.Spacing.Medium, 0)
         
         -- Tab backdrop
         tab:SetBackdrop({
@@ -318,13 +318,13 @@ function NarciDesign:CreateTabSystem(parent)
             insets = { left = 1, right = 1, top = 1, bottom = 1 }
         })
         tab:SetBackdropColor(0.1, 0.1, 0.1, 0.5)
-        tab:SetBackdropBorderColor(unpack(NarciDesign.Colors.Border))
+        tab:SetBackdropBorderColor(unpack(GlassDesign.Colors.Border))
         
         -- Tab text
-        tab.text = tab:CreateFontString(nil, "OVERLAY", NarciDesign.Fonts.Normal)
+        tab.text = tab:CreateFontString(nil, "OVERLAY", GlassDesign.Fonts.Normal)
         tab.text:SetPoint("CENTER")
         tab.text:SetText(text)
-        tab.text:SetTextColor(unpack(NarciDesign.Colors.TextNormal))
+        tab.text:SetTextColor(unpack(GlassDesign.Colors.TextNormal))
         
         -- Click handler
         tab:SetScript("OnClick", function()
@@ -336,7 +336,7 @@ function NarciDesign:CreateTabSystem(parent)
         
         -- Create associated panel
         local panel = CreateFrame("Frame", nil, parent)
-        panel:SetPoint("TOPLEFT", tabContainer, "BOTTOMLEFT", 0, -NarciDesign.Spacing.Small)
+        panel:SetPoint("TOPLEFT", tabContainer, "BOTTOMLEFT", 0, -GlassDesign.Spacing.Small)
         panel:SetPoint("BOTTOMRIGHT", parent, "BOTTOMRIGHT", 0, 0)
         panel:Hide()
         
@@ -354,16 +354,16 @@ function NarciDesign:CreateTabSystem(parent)
 end
 
 -- Initialize the design system
-function NarciDesign:Init()
+function GlassDesign:Init()
     -- Create gradient texture if it doesn't exist
     if not self.gradientTexture then
         self.gradientTexture = "Interface\\AddOns\\BLU\\media\\textures\\gradient"
     end
     
-    BLU:PrintDebug("Narcissus Design System initialized")
+    BLU:PrintDebug("Modern Glass Design System initialized")
 end
 
 -- Export to BLU namespace
-BLU.NarciDesign = NarciDesign
+BLU.GlassDesign = GlassDesign
 
-return NarciDesign
+return GlassDesign

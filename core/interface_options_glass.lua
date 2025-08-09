@@ -1,7 +1,7 @@
 --=====================================================================================
--- BLU | Interface Options with Narcissus Style
+-- BLU | Interface Options with Modern Glass Style
 -- Author: donniedice
--- Description: Beautiful Narcissus-style interface integrated with WoW Options
+-- Description: Beautiful glass-style interface integrated with WoW Options
 --=====================================================================================
 
 local addonName, BLU = ...
@@ -9,7 +9,7 @@ local addonName, BLU = ...
 local InterfaceOptions = {}
 BLU.InterfaceOptions = InterfaceOptions
 
--- Create the main options panel with Narcissus styling
+-- Create the main options panel with modern glass styling
 function InterfaceOptions:CreatePanel()
     if self.panel then
         return self.panel
@@ -19,7 +19,7 @@ function InterfaceOptions:CreatePanel()
     local panel = CreateFrame("Frame", "BLUInterfaceOptionsPanel", nil, "BackdropTemplate")
     panel.name = "Better Level-Up!"
     
-    -- Apply Narcissus-style glass effect backdrop
+    -- Apply modern glass effect backdrop
     panel:SetBackdrop({
         bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
         edgeFile = "Interface\\FriendsFrame\\UI-Toast-Border",
@@ -75,8 +75,8 @@ function InterfaceOptions:CreatePanel()
     contentFrame:SetBackdropColor(0.08, 0.08, 0.08, 0.6)
     contentFrame:SetBackdropBorderColor(0.3, 0.3, 0.3, 0.3)
     
-    -- Create Narcissus-style tab system
-    local tabSystem = self:CreateNarcissusTabSystem(contentFrame)
+    -- Create modern glass-style tab system
+    local tabSystem = self:CreateModernTabSystem(contentFrame)
     
     -- Create tab panels
     self:CreateGeneralTab(tabSystem)
@@ -97,8 +97,8 @@ function InterfaceOptions:CreatePanel()
     return panel
 end
 
--- Create Narcissus-style tab system
-function InterfaceOptions:CreateNarcissusTabSystem(parent)
+-- Create modern glass-style tab system
+function InterfaceOptions:CreateModernTabSystem(parent)
     local tabContainer = CreateFrame("Frame", nil, parent)
     tabContainer:SetHeight(36)
     tabContainer:SetPoint("TOPLEFT", 10, -10)
@@ -124,7 +124,7 @@ function InterfaceOptions:CreateNarcissusTabSystem(parent)
         tab:SetSize(100, 32)
         tab:SetPoint("LEFT", (i-1) * 102 + 5, 0)
         
-        -- Narcissus-style tab backdrop
+        -- Modern glass-style tab backdrop
         tab:SetBackdrop({
             bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
             edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -171,7 +171,7 @@ function InterfaceOptions:CreateNarcissusTabSystem(parent)
         
         -- Tab click handler
         tab:SetScript("OnClick", function()
-            tabSystem:SelectTab(data.id)
+            tabContainer:SelectTab(data.id)
             PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
         end)
         
@@ -194,7 +194,7 @@ function InterfaceOptions:CreateNarcissusTabSystem(parent)
     end
     
     -- Tab selection function
-    function tabSystem:SelectTab(tabId)
+    function tabContainer:SelectTab(tabId)
         -- Deselect all tabs
         for id, tab in pairs(tabs) do
             tab:SetBackdropColor(0.1, 0.1, 0.1, 0.7)
@@ -218,10 +218,10 @@ function InterfaceOptions:CreateNarcissusTabSystem(parent)
         end
     end
     
-    tabSystem.tabs = tabs
-    tabSystem.panels = panels
+    tabContainer.tabs = tabs
+    tabContainer.panels = panels
     
-    return tabSystem
+    return tabContainer
 end
 
 -- Create General tab content
@@ -337,7 +337,7 @@ function InterfaceOptions:Init()
         end
     end
     
-    BLU:PrintDebug("Narcissus-style Interface Options initialized")
+    BLU:PrintDebug("Modern glass-style Interface Options initialized")
 end
 
 -- Export

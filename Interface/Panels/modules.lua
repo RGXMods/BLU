@@ -1,23 +1,76 @@
 --=====================================================================================
--- BLU | Modules Management Panel
+-- BLU | Modules Management Panel with Sound Selection
 -- Author: donniedice  
--- Description: Enable/disable modules, view memory usage, manage dependencies
+-- Description: Enable/disable modules with integrated sound dropdown selection
 --=====================================================================================
 
 local addonName, BLU = ...
 
--- Module definitions from manifest
+-- Module definitions with icons
 local moduleDefinitions = {
-    {id = "levelup", name = "Level Up", desc = "Plays sounds when you level up", deps = {}},
-    {id = "achievement", name = "Achievement", desc = "Plays sounds for achievements", deps = {}},
-    {id = "quest", name = "Quest Complete", desc = "Plays sounds for quest completion", deps = {}},
-    {id = "reputation", name = "Reputation", desc = "Plays sounds for reputation changes", deps = {}},
-    {id = "honor", name = "Honor", desc = "Plays sounds for honor gains", deps = {}},
-    {id = "battlepet", name = "Battle Pet", desc = "Plays sounds for pet levels", deps = {}},
-    {id = "renown", name = "Renown", desc = "Plays sounds for renown increases", deps = {}},
-    {id = "tradingpost", name = "Trading Post", desc = "Plays sounds for trading post", deps = {}},
-    {id = "delve", name = "Delve", desc = "Plays sounds for delve completion", deps = {}}
+    {id = "levelup", name = "Level Up", desc = "Plays sounds when you level up", icon = "Interface\\Icons\\Achievement_Level_110", deps = {}},
+    {id = "achievement", name = "Achievement", desc = "Plays sounds for achievements", icon = "Interface\\Icons\\Achievement_General", deps = {}},
+    {id = "quest", name = "Quest Complete", desc = "Plays sounds for quest completion", icon = "Interface\\Icons\\Achievement_Quests_Completed_08", deps = {}},
+    {id = "reputation", name = "Reputation", desc = "Plays sounds for reputation changes", icon = "Interface\\Icons\\Achievement_Reputation_08", deps = {}},
+    {id = "honor", name = "Honor", desc = "Plays sounds for honor gains", icon = "Interface\\Icons\\Spell_Holy_ChampionsBond", deps = {}},
+    {id = "battlepet", name = "Battle Pet", desc = "Plays sounds for pet levels", icon = "Interface\\Icons\\INV_Pet_BattlePetTraining", deps = {}},
+    {id = "renown", name = "Renown", desc = "Plays sounds for renown increases", icon = "Interface\\Icons\\UI_MajorFaction_Tuskarr", deps = {}},
+    {id = "tradingpost", name = "Trading Post", desc = "Plays sounds for trading post", icon = "Interface\\Icons\\Inv_Currency_TradingPost", deps = {}},
+    {id = "delve", name = "Delve", desc = "Plays sounds for delve completion", icon = "Interface\\Icons\\Ui_DelvesCurrency", deps = {}}
 }
+
+-- Build comprehensive sound list (same as sounds panel)
+local function GetAllSounds()
+    local sounds = {}
+    
+    -- Add BLU built-in sounds
+    local bluSounds = {
+        -- Final Fantasy
+        {value = "blu:final_fantasy", text = "Final Fantasy Victory", category = "BLU - Final Fantasy", source = "BLU"},
+        {value = "blu:final_fantasy_levelup", text = "FF Level Up", category = "BLU - Final Fantasy", source = "BLU"},
+        
+        -- Zelda
+        {value = "blu:zelda_chest", text = "Zelda Chest Open", category = "BLU - Legend of Zelda", source = "BLU"},
+        {value = "blu:zelda_secret", text = "Zelda Secret", category = "BLU - Legend of Zelda", source = "BLU"},
+        
+        -- Pokemon
+        {value = "blu:pokemon_levelup", text = "Pokemon Level Up", category = "BLU - Pokemon", source = "BLU"},
+        {value = "blu:pokemon_evolve", text = "Pokemon Evolution", category = "BLU - Pokemon", source = "BLU"},
+        
+        -- Mario
+        {value = "blu:mario_coin", text = "Mario Coin", category = "BLU - Super Mario", source = "BLU"},
+        {value = "blu:mario_powerup", text = "Mario Power Up", category = "BLU - Super Mario", source = "BLU"},
+        
+        -- Sonic
+        {value = "blu:sonic_ring", text = "Sonic Ring", category = "BLU - Sonic", source = "BLU"},
+        
+        -- Default
+        {value = "blu:default", text = "Default Sound", category = "BLU - Default", source = "BLU"},
+        {value = "none", text = "No Sound", category = "BLU - Default", source = "BLU"}
+    }
+    
+    for _, sound in ipairs(bluSounds) do
+        table.insert(sounds, sound)
+    end
+    
+    -- Add SharedMedia sounds if available
+    if BLU.Modules and BLU.Modules.sharedmedia then
+        local sharedMedia = BLU.Modules.sharedmedia
+        local externalSounds = sharedMedia:GetExternalSounds()
+        
+        for name, info in pairs(externalSounds) do
+            table.insert(sounds, {
+                value = "external:" .. name,
+                text = name,
+                category = "SharedMedia - " .. (info.category or "Other"),
+                source = "SharedMedia",
+                path = info.path
+            })
+        end
+    end
+    
+    return sounds
+end
 
 function BLU.CreateModulesPanel(parent)
     local panel = CreateFrame("Frame", nil, parent)
@@ -101,23 +154,19 @@ function BLU.CreateModulesPanel(parent)
     
     local headerEnabled = content:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     headerEnabled:SetPoint("LEFT", 10, yOffset - 12)
-    headerEnabled:SetText("Enabled")
+    headerEnabled:SetText("On")
     
     local headerName = content:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    headerName:SetPoint("LEFT", 80, yOffset - 12)
-    headerName:SetText("Module")
+    headerName:SetPoint("LEFT", 120, yOffset - 12)
+    headerName:SetText("Module / Sound Selection")
     
-    local headerMemory = content:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    headerMemory:SetPoint("LEFT", 200, yOffset - 12)
-    headerMemory:SetText("Memory")
+    local headerControls = content:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    headerControls:SetPoint("LEFT", 340, yOffset - 12)
+    headerControls:SetText("Test / Volume")
     
     local headerStatus = content:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    headerStatus:SetPoint("LEFT", 280, yOffset - 12)
+    headerStatus:SetPoint("RIGHT", -80, yOffset - 12)
     headerStatus:SetText("Status")
-    
-    local headerLoad = content:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    headerLoad:SetPoint("LEFT", 380, yOffset - 12)
-    headerLoad:SetText("Load Order")
     
     yOffset = yOffset - 35
     
@@ -126,7 +175,7 @@ function BLU.CreateModulesPanel(parent)
         local row = CreateFrame("Frame", nil, content)
         row:SetPoint("TOPLEFT", 0, yOffset)
         row:SetPoint("TOPRIGHT", -20, yOffset)
-        row:SetHeight(50)
+        row:SetHeight(70) -- Increased height for dropdown
         
         -- Row background
         local bg = row:CreateTexture(nil, "BACKGROUND")
@@ -139,8 +188,14 @@ function BLU.CreateModulesPanel(parent)
         
         -- Enable checkbox
         local checkbox = CreateFrame("CheckButton", nil, row, "UICheckButtonTemplate")
-        checkbox:SetPoint("LEFT", 20, 0)
+        checkbox:SetPoint("LEFT", 20, 10)
         checkbox:SetSize(24, 24)
+        
+        -- Module icon
+        local icon = row:CreateTexture(nil, "ARTWORK")
+        icon:SetSize(32, 32)
+        icon:SetPoint("LEFT", checkbox, "RIGHT", 10, 0)
+        icon:SetTexture(module.icon or "Interface\\Icons\\INV_Misc_QuestionMark")
         
         local enabled = BLU.db and BLU.db.modules and BLU.db.modules[module.id]
         if enabled == nil then enabled = true end
@@ -162,25 +217,64 @@ function BLU.CreateModulesPanel(parent)
         
         -- Module name
         local nameText = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        nameText:SetPoint("LEFT", 80, 5)
+        nameText:SetPoint("LEFT", icon, "RIGHT", 10, 8)
         nameText:SetText(module.name)
         
         -- Module description
         local descText = row:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-        descText:SetPoint("LEFT", 80, -10)
+        descText:SetPoint("LEFT", icon, "RIGHT", 10, -8)
         descText:SetText(module.desc)
         descText:SetTextColor(0.7, 0.7, 0.7)
         
+        -- Sound dropdown
+        local dropdown = BLU.Dropdown:Create(row, 200, 28)
+        dropdown:SetPoint("LEFT", 80, -30)
+        
+        -- Get all available sounds
+        local allSounds = GetAllSounds()
+        dropdown:SetItems(allSounds)
+        
+        -- Set current selection
+        local currentSound = BLU:GetDB({"selectedSounds", module.id}) or "blu:default"
+        dropdown:SetValue(currentSound)
+        
+        -- Set callback for selection changes
+        dropdown:SetCallback(function(value, item)
+            BLU:SetDB({"selectedSounds", module.id}, value)
+            
+            -- Show notification
+            if BLU.db.profile.debugMode then
+                BLU:Print(string.format("|cff00ff00%s:|r Sound set to %s", module.name, item.text))
+            end
+        end)
+        
+        -- Test sound button
+        local testBtn = CreateFrame("Button", nil, row, "UIPanelButtonTemplate")
+        testBtn:SetSize(50, 22)
+        testBtn:SetPoint("LEFT", dropdown, "RIGHT", 5, 0)
+        testBtn:SetText("Test")
+        testBtn:SetScript("OnClick", function()
+            local soundValue = dropdown:GetValue()
+            if soundValue:find("^blu:") then
+                BLU:PlayTestSound(module.id)
+            elseif soundValue:find("^external:") then
+                local soundName = soundValue:gsub("^external:", "")
+                if BLU.Modules.sharedmedia then
+                    BLU.Modules.sharedmedia:PlayExternalSound(soundName)
+                end
+            end
+        end)
+        
         -- Memory usage
-        local memoryText = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        memoryText:SetPoint("LEFT", 200, 0)
+        local memoryText = row:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+        memoryText:SetPoint("RIGHT", -150, 10)
         memoryText:SetText("0 KB")
         memoryText:SetTextColor(0.7, 1, 0.7)
         row.memoryText = memoryText
         
         -- Status indicator
-        local statusText = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        statusText:SetPoint("LEFT", 280, 0)
+        local statusText = row:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+        statusText:SetPoint("RIGHT", -80, 10)
         if enabled then
             statusText:SetText("|cff00ff00Active|r")
         else
@@ -188,32 +282,27 @@ function BLU.CreateModulesPanel(parent)
         end
         row.statusText = statusText
         
-        -- Load order
-        local loadOrderText = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        loadOrderText:SetPoint("LEFT", 400, 0)
-        loadOrderText:SetText("#" .. i)
-        loadOrderText:SetTextColor(0.5, 0.5, 0.5)
+        -- Volume slider (mini)
+        local volumeSlider = CreateFrame("Slider", nil, row, "OptionsSliderTemplate")
+        volumeSlider:SetPoint("LEFT", testBtn, "RIGHT", 10, 0)
+        volumeSlider:SetSize(80, 20)
+        volumeSlider:SetMinMaxValues(0, 100)
+        volumeSlider:SetValueStep(1)
+        volumeSlider:SetObeyStepOnDrag(true)
+        volumeSlider.Low:SetText("")
+        volumeSlider.High:SetText("")
+        volumeSlider.Text:SetText("Vol")
         
-        -- Dependencies indicator
-        if module.deps and #module.deps > 0 then
-            local depsText = row:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-            depsText:SetPoint("LEFT", 450, 0)
-            depsText:SetText("Deps: " .. table.concat(module.deps, ", "))
-            depsText:SetTextColor(0.8, 0.8, 0.3)
-        end
+        local volumeValue = BLU:GetDB({"moduleVolumes", module.id}) or 100
+        volumeSlider:SetValue(volumeValue)
         
-        -- Configure button
-        local configBtn = CreateFrame("Button", nil, row, "UIPanelButtonTemplate")
-        configBtn:SetSize(60, 20)
-        configBtn:SetPoint("RIGHT", -10, 0)
-        configBtn:SetText("Config")
-        configBtn:SetScript("OnClick", function()
-            -- Open module-specific config
-            print("|cff00ccffBLU:|r Opening config for " .. module.name)
+        volumeSlider:SetScript("OnValueChanged", function(self, value)
+            BLU:SetDB({"moduleVolumes", module.id}, value)
+            self.Text:SetText("Vol " .. value .. "%")
         end)
         
         panel.moduleRows[module.id] = row
-        yOffset = yOffset - 55
+        yOffset = yOffset - 75 -- Increased spacing
     end
     
     -- Load order visualization

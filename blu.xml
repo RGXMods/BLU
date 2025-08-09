@@ -13,26 +13,20 @@
     <Script file="core/sharedmedia.lua"/>
     <Script file="core/internal_sounds.lua"/>
     <Script file="core/commands.lua"/>
-    <Script file="core/interface_options.lua"/>
     <Script file="core/init.lua"/>
     
     <!-- Localization -->
     <Script file="localization/enUS.lua"/>
     
-    <!-- Interface Framework -->
-    <Script file="interface/design.lua"/>
-    <Script file="interface/widgets.lua"/>
-    <Script file="interface/dropdown.lua"/>
-    <Script file="interface/tabs.lua"/>
-    <Script file="interface/settings.lua"/>
-    
-    <!-- Interface Panels -->
-    <Script file="interface/panels/general.lua"/>
-    <Script file="interface/panels/sounds.lua"/>
-    <Script file="interface/panels/modules.lua"/>
-    <Script file="interface/panels/profiles.lua"/>
-    <Script file="interface/panels/advanced.lua"/>
-    <Script file="interface/panels/about.lua"/>
+    <!-- Interface System from modules -->
+    <Script file="modules/interface/design.lua"/>
+    <Script file="modules/interface/widgets.lua"/>
+    <Script file="modules/interface/tabs.lua"/>
+    <Script file="modules/interface/panels/general_new.lua"/>
+    <Script file="modules/interface/panels/about_new.lua"/>
+    <Script file="modules/interface/panels/sounds_new.lua"/>
+    <Script file="modules/interface/panels/modules_new.lua"/>
+    <Script file="modules/interface/options_new.lua"/>
     
     <!-- Feature Modules -->
     <Script file="modules/quest/quest.lua"/>

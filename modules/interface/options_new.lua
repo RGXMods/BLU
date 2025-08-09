@@ -47,6 +47,12 @@ function Options:Init()
     end
     
     C_Timer.After(0.1, tryCreatePanel)
+    
+    -- Set up slash command
+    SLASH_BLU1 = "/blu"
+    SlashCmdList["BLU"] = function(msg)
+        self:OpenOptions()
+    end
 end
 
 -- Test SharedMedia functionality
@@ -197,7 +203,7 @@ function Options:CreateOptionsPanel()
     
     -- Create main frame
     local panel = CreateFrame("Frame", "BLUOptionsPanel", UIParent)
-    panel.name = "|T" .. "Interface\\AddOns\\BLU\\media\\images\\icon:0|t |cff05dffaB|r|cffffffffLU|r - |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel-|r|cff05dffaU|r|cffffffffp!|r"
+    panel.name = "Better Level-Up!"
     
     -- Custom icon for the settings menu
     panel.OnCommit = function() end
@@ -333,11 +339,13 @@ function Options:CreateOptionsPanel()
         category = Settings.RegisterCanvasLayoutCategory(panel, panel.name)
         Settings.RegisterAddOnCategory(category)
         BLU.OptionsCategory = category
+        BLU:Print("|cff00ccffBLU:|r Options panel registered in Interface Options")
         BLU:PrintDebug("Options panel registered with new Settings API")
     else
         -- Pre-Dragonflight
         InterfaceOptions_AddCategory(panel)
         BLU.OptionsCategory = panel
+        BLU:Print("|cff00ccffBLU:|r Options panel registered in Interface Options")
         BLU:PrintDebug("Options panel registered with legacy API")
     end
     

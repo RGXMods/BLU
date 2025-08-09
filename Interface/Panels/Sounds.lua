@@ -1,55 +1,10 @@
 --=====================================================================================
--- BLU | Sounds Panel - Complete Sound Browser and Event Configuration
--- Author: donniedice
--- Description: Browse all sounds, configure per-event, preview functionality
+-- BLU | Sounds Panel - Enhanced with Dropdown Menus and SharedMedia
+-- Author: donniedice  
+-- Description: Advanced sound configuration with nested dropdowns and external sound support
 --=====================================================================================
 
 local addonName, BLU = ...
-
--- Sound categories and their available sounds
-local soundCategories = {
-    ["Final Fantasy"] = {
-        "final_fantasy.ogg",
-        "final_fantasy_victory.ogg",
-        "final_fantasy_levelup.ogg"
-    },
-    ["Legend of Zelda"] = {
-        "legend_of_zelda.ogg",
-        "zelda_chest.ogg",
-        "zelda_secret.ogg"
-    },
-    ["Pokemon"] = {
-        "pokemon.ogg",
-        "pokemon_levelup.ogg",
-        "pokemon_evolve.ogg"
-    },
-    ["Sonic"] = {
-        "sonic_the_hedgehog.ogg",
-        "sonic_ring.ogg",
-        "sonic_speed.ogg"
-    },
-    ["Mario"] = {
-        "super_mario_bros_3.ogg",
-        "mario_coin.ogg", 
-        "mario_powerup.ogg"
-    },
-    ["Elder Scrolls"] = {
-        "skyrim.ogg",
-        "morrowind.ogg",
-        "oblivion.ogg"
-    },
-    ["Warcraft"] = {
-        "warcraft_3.ogg",
-        "warcraft_3-2.ogg",
-        "warcraft_3-3.ogg"
-    },
-    ["Other Games"] = {
-        "minecraft.ogg",
-        "fortnite.ogg",
-        "elden_ring-1.ogg",
-        "witcher_3-1.ogg"
-    }
-}
 
 -- Event types that can have custom sounds
 local eventTypes = {
@@ -63,6 +18,83 @@ local eventTypes = {
     {id = "tradingpost", name = "Trading Post", icon = "Interface\\Icons\\Inv_Currency_TradingPost"},
     {id = "delve", name = "Delve Complete", icon = "Interface\\Icons\\Ui_DelvesCurrency"}
 }
+
+-- Build comprehensive sound list from all sources
+local function GetAllSounds()
+    local sounds = {}
+    
+    -- Add BLU built-in sounds
+    local bluSounds = {
+        -- Final Fantasy
+        {value = "blu:final_fantasy", text = "Final Fantasy Victory", category = "BLU - Final Fantasy", source = "BLU"},
+        {value = "blu:final_fantasy_levelup", text = "FF Level Up", category = "BLU - Final Fantasy", source = "BLU"},
+        {value = "blu:final_fantasy_fanfare", text = "FF Fanfare", category = "BLU - Final Fantasy", source = "BLU"},
+        
+        -- Zelda
+        {value = "blu:zelda_chest", text = "Zelda Chest Open", category = "BLU - Legend of Zelda", source = "BLU"},
+        {value = "blu:zelda_secret", text = "Zelda Secret", category = "BLU - Legend of Zelda", source = "BLU"},
+        {value = "blu:zelda_item", text = "Zelda Item Get", category = "BLU - Legend of Zelda", source = "BLU"},
+        
+        -- Pokemon
+        {value = "blu:pokemon_levelup", text = "Pokemon Level Up", category = "BLU - Pokemon", source = "BLU"},
+        {value = "blu:pokemon_evolve", text = "Pokemon Evolution", category = "BLU - Pokemon", source = "BLU"},
+        {value = "blu:pokemon_caught", text = "Pokemon Caught", category = "BLU - Pokemon", source = "BLU"},
+        
+        -- Mario
+        {value = "blu:mario_coin", text = "Mario Coin", category = "BLU - Super Mario", source = "BLU"},
+        {value = "blu:mario_powerup", text = "Mario Power Up", category = "BLU - Super Mario", source = "BLU"},
+        {value = "blu:mario_1up", text = "Mario 1-Up", category = "BLU - Super Mario", source = "BLU"},
+        
+        -- Sonic
+        {value = "blu:sonic_ring", text = "Sonic Ring", category = "BLU - Sonic", source = "BLU"},
+        {value = "blu:sonic_emerald", text = "Sonic Emerald", category = "BLU - Sonic", source = "BLU"},
+        {value = "blu:sonic_speed", text = "Sonic Speed Boost", category = "BLU - Sonic", source = "BLU"},
+        
+        -- Elder Scrolls
+        {value = "blu:skyrim_levelup", text = "Skyrim Level Up", category = "BLU - Elder Scrolls", source = "BLU"},
+        {value = "blu:morrowind_levelup", text = "Morrowind Level Up", category = "BLU - Elder Scrolls", source = "BLU"},
+        {value = "blu:oblivion_levelup", text = "Oblivion Level Up", category = "BLU - Elder Scrolls", source = "BLU"},
+        
+        -- Witcher
+        {value = "blu:witcher_levelup", text = "Witcher Level Up", category = "BLU - The Witcher", source = "BLU"},
+        {value = "blu:witcher_quest", text = "Witcher Quest Complete", category = "BLU - The Witcher", source = "BLU"},
+        
+        -- Diablo
+        {value = "blu:diablo_levelup", text = "Diablo Level Up", category = "BLU - Diablo", source = "BLU"},
+        {value = "blu:diablo_legendary", text = "Diablo Legendary Drop", category = "BLU - Diablo", source = "BLU"},
+        
+        -- Warcraft
+        {value = "blu:warcraft3_questcomplete", text = "WC3 Quest Complete", category = "BLU - Warcraft", source = "BLU"},
+        {value = "blu:warcraft3_herolevelup", text = "WC3 Hero Level Up", category = "BLU - Warcraft", source = "BLU"},
+        
+        -- Default/Generic
+        {value = "blu:default", text = "Default Sound", category = "BLU - Default", source = "BLU"},
+        {value = "none", text = "No Sound", category = "BLU - Default", source = "BLU"}
+    }
+    
+    for _, sound in ipairs(bluSounds) do
+        table.insert(sounds, sound)
+    end
+    
+    -- Add SharedMedia sounds if available
+    if BLU.Modules and BLU.Modules.sharedmedia then
+        local sharedMedia = BLU.Modules.sharedmedia
+        local externalSounds = sharedMedia:GetExternalSounds()
+        
+        for name, info in pairs(externalSounds) do
+            table.insert(sounds, {
+                value = "external:" .. name,
+                text = name,
+                category = "SharedMedia - " .. (info.category or "Other"),
+                source = "SharedMedia",
+                path = info.path,
+                description = string.format("External sound from %s", info.source or "Unknown")
+            })
+        end
+    end
+    
+    return sounds
+end
 
 function BLU.CreateSoundsPanel(parent)
     local panel = CreateFrame("Frame", nil, parent)
@@ -93,8 +125,47 @@ function BLU.CreateSoundsPanel(parent)
     
     yOffset = yOffset - 30
     
+    -- SharedMedia detection status
+    local sharedMediaStatus = content:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    sharedMediaStatus:SetPoint("TOPRIGHT", -20, -50)
+    
+    -- Update SharedMedia status
+    local function UpdateSharedMediaStatus()
+        local loadedAddons = BLU.Modules.sharedmedia and BLU.Modules.sharedmedia:GetLoadedSoundAddons() or {}
+        if #loadedAddons > 0 then
+            sharedMediaStatus:SetText("|cff00ff00SharedMedia Detected:|r " .. table.concat(loadedAddons, ", "))
+        else
+            sharedMediaStatus:SetText("|cffff0000No SharedMedia addons found|r")
+        end
+    end
+    
+    -- Refresh button for scanning external sounds
+    local refreshBtn = CreateFrame("Button", nil, content, "UIPanelButtonTemplate")
+    refreshBtn:SetSize(100, 22)
+    refreshBtn:SetPoint("TOPRIGHT", -20, -70)
+    refreshBtn:SetText("Refresh Sounds")
+    refreshBtn:SetScript("OnClick", function()
+        if BLU.Modules.sharedmedia then
+            BLU.Modules.sharedmedia:ScanExternalSounds()
+            
+            -- Refresh all dropdowns
+            for _, row in ipairs(panel.eventRows) do
+                if row.dropdown then
+                    local allSounds = GetAllSounds()
+                    row.dropdown:SetItems(allSounds)
+                end
+            end
+            
+            UpdateSharedMediaStatus()
+            BLU:Print("|cff00ff00Sound list refreshed!|r")
+        end
+    end)
+    
+    UpdateSharedMediaStatus()
+    
     -- Create event rows
     panel.eventRows = {}
+    panel.dropdowns = {}
     
     for i, event in ipairs(eventTypes) do
         local row = CreateFrame("Frame", nil, content)
@@ -122,53 +193,40 @@ function BLU.CreateSoundsPanel(parent)
         name:SetWidth(120)
         name:SetJustifyH("LEFT")
         
-        -- Sound dropdown
-        local dropdown = CreateFrame("Frame", "BLUSoundDropdown"..i, row, "UIDropDownMenuTemplate")
+        -- Sound dropdown using enhanced dropdown system
+        local dropdown = BLU.Dropdown:Create(row, 250, 30)
         dropdown:SetPoint("LEFT", name, "RIGHT", 10, 0)
-        UIDropDownMenu_SetWidth(dropdown, 200)
+        row.dropdown = dropdown -- Store reference for refresh
         
-        local currentSound = BLU:GetDB({"selectedSounds", event.id}) or "default"
-        UIDropDownMenu_SetText(dropdown, currentSound)
+        -- Get all available sounds
+        local allSounds = GetAllSounds()
+        dropdown:SetItems(allSounds)
         
-        UIDropDownMenu_Initialize(dropdown, function(self, level)
-            -- Default option
-            local info = UIDropDownMenu_CreateInfo()
-            info.text = "Default"
-            info.value = "default"
-            info.func = function()
-                BLU:SetDB({"selectedSounds", event.id}, "default")
-                UIDropDownMenu_SetText(dropdown, "Default")
+        -- Set current selection
+        local currentSound = BLU:GetDB({"selectedSounds", event.id}) or "blu:default"
+        dropdown:SetValue(currentSound)
+        
+        -- Set callback for selection changes
+        dropdown:SetCallback(function(value, item)
+            BLU:SetDB({"selectedSounds", event.id}, value)
+            
+            -- Show notification
+            if BLU.db.profile.debugMode then
+                BLU:Print(string.format("|cff00ff00%s:|r Set to %s", event.name, item.text))
             end
-            UIDropDownMenu_AddButton(info, level)
             
-            -- Add separator
-            info = UIDropDownMenu_CreateInfo()
-            info.notCheckable = true
-            info.disabled = true
-            info.text = ""
-            UIDropDownMenu_AddButton(info, level)
-            
-            -- Add all sound categories
-            for category, sounds in pairs(soundCategories) do
-                info = UIDropDownMenu_CreateInfo()
-                info.text = category
-                info.value = category
-                info.hasArrow = true
-                info.notCheckable = true
-                info.menuList = {}
-                
-                for _, sound in ipairs(sounds) do
-                    local soundInfo = UIDropDownMenu_CreateInfo()
-                    soundInfo.text = sound:gsub("%.ogg", ""):gsub("_", " ")
-                    soundInfo.value = sound
-                    soundInfo.func = function()
-                        BLU:SetDB({"selectedSounds", event.id}, sound)
-                        UIDropDownMenu_SetText(dropdown, soundInfo.text)
+            -- Auto-play preview if enabled
+            if BLU.db.profile.autoPreview then
+                -- Play the selected sound
+                if value:find("^blu:") then
+                    local soundFile = value:gsub("^blu:", "")
+                    BLU:PlayTestSound(event.id)
+                elseif value:find("^external:") then
+                    local soundName = value:gsub("^external:", "")
+                    if BLU.Modules.sharedmedia then
+                        BLU.Modules.sharedmedia:PlayExternalSound(soundName)
                     end
-                    table.insert(info.menuList, soundInfo)
                 end
-                
-                UIDropDownMenu_AddButton(info, level)
             end
         end)
         
@@ -248,31 +306,37 @@ function BLU.CreateSoundsPanel(parent)
     searchLabel:SetPoint("RIGHT", searchBox, "LEFT", -10, 0)
     searchLabel:SetText("Search:")
     
-    -- Category filter dropdown
-    local categoryDropdown = CreateFrame("Frame", "BLUCategoryFilter", content, "UIDropDownMenuTemplate")
-    categoryDropdown:SetPoint("LEFT", searchBox, "RIGHT", 20, 0)
-    UIDropDownMenu_SetWidth(categoryDropdown, 150)
-    UIDropDownMenu_SetText(categoryDropdown, "All Categories")
+    -- Category filter dropdown using enhanced system
+    local categoryDropdown = BLU.Dropdown:Create(content, 200, 30)
+    categoryDropdown:SetPoint("LEFT", searchBox, "RIGHT", 20, 2)
     
-    UIDropDownMenu_Initialize(categoryDropdown, function(self, level)
-        local info = UIDropDownMenu_CreateInfo()
-        info.text = "All Categories"
-        info.value = "all"
-        info.func = function()
-            UIDropDownMenu_SetText(categoryDropdown, "All Categories")
-            panel:FilterCategory(nil)
+    -- Build category list
+    local categoryItems = {
+        {value = "all", text = "All Categories", category = "Filter"}
+    }
+    
+    -- Get unique categories from all sounds
+    local allSounds = GetAllSounds()
+    local uniqueCategories = {}
+    for _, sound in ipairs(allSounds) do
+        if sound.category and not uniqueCategories[sound.category] then
+            uniqueCategories[sound.category] = true
+            table.insert(categoryItems, {
+                value = sound.category,
+                text = sound.category,
+                category = "Categories"
+            })
         end
-        UIDropDownMenu_AddButton(info, level)
-        
-        for category, _ in pairs(soundCategories) do
-            info = UIDropDownMenu_CreateInfo()
-            info.text = category
-            info.value = category
-            info.func = function()
-                UIDropDownMenu_SetText(categoryDropdown, category)
-                panel:FilterCategory(category)
-            end
-            UIDropDownMenu_AddButton(info, level)
+    end
+    
+    categoryDropdown:SetItems(categoryItems)
+    categoryDropdown:SetValue("all")
+    
+    categoryDropdown:SetCallback(function(value, item)
+        if value == "all" then
+            panel:FilterCategory(nil)
+        else
+            panel:FilterCategory(value)
         end
     end)
     
@@ -290,26 +354,34 @@ function BLU.CreateSoundsPanel(parent)
     panel.soundList = soundList
     panel.soundButtons = {}
     
-    -- Populate sound list
+    -- Populate sound list with all available sounds
     local buttonYOffset = -5
     local buttonIndex = 1
     
-    for category, sounds in pairs(soundCategories) do
-        for _, sound in ipairs(sounds) do
-            local btn = CreateFrame("Button", nil, soundList)
-            btn:SetSize(660, 24)
-            btn:SetPoint("TOPLEFT", 5, buttonYOffset)
-            
-            local highlight = btn:CreateTexture(nil, "HIGHLIGHT")
-            highlight:SetAllPoints()
-            highlight:SetColorTexture(0.3, 0.3, 0.3, 0.3)
-            
-            local text = btn:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-            text:SetPoint("LEFT", 10, 0)
-            text:SetText(string.format("[%s] %s", category, sound:gsub("%.ogg", ""):gsub("_", " ")))
-            btn.text = text
-            btn.sound = sound
-            btn.category = category
+    for _, soundData in ipairs(allSounds) do
+        local btn = CreateFrame("Button", nil, soundList)
+        btn:SetSize(660, 24)
+        btn:SetPoint("TOPLEFT", 5, buttonYOffset)
+        
+        local highlight = btn:CreateTexture(nil, "HIGHLIGHT")
+        highlight:SetAllPoints()
+        highlight:SetColorTexture(0.3, 0.3, 0.3, 0.3)
+        
+        local text = btn:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        text:SetPoint("LEFT", 10, 0)
+        
+        -- Color code by source
+        local displayText = soundData.text
+        if soundData.source == "BLU" then
+            displayText = "|cff05dffa" .. displayText .. "|r"
+        elseif soundData.source == "SharedMedia" then
+            displayText = "|cff00ff00" .. displayText .. "|r"
+        end
+        
+        text:SetText(string.format("[%s] %s", soundData.category or "Unknown", displayText))
+        btn.text = text
+        btn.soundData = soundData
+        btn.category = soundData.category
             
             -- Play button
             local playBtn = CreateFrame("Button", nil, btn)
@@ -319,14 +391,22 @@ function BLU.CreateSoundsPanel(parent)
             playBtn:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Down")
             playBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
             
-            playBtn:SetScript("OnClick", function()
-                BLU:PlaySound(sound, 100)
-            end)
-            
-            panel.soundButtons[buttonIndex] = btn
-            buttonIndex = buttonIndex + 1
-            buttonYOffset = buttonYOffset - 25
-        end
+        playBtn:SetScript("OnClick", function()
+            -- Play sound based on type
+            if soundData.value:find("^blu:") then
+                local soundFile = soundData.value:gsub("^blu:", "")
+                BLU:PlayTestSound("levelup") -- Use levelup as test event
+            elseif soundData.value:find("^external:") then
+                local soundName = soundData.value:gsub("^external:", "")
+                if BLU.Modules.sharedmedia then
+                    BLU.Modules.sharedmedia:PlayExternalSound(soundName)
+                end
+            end
+        end)
+        
+        panel.soundButtons[buttonIndex] = btn
+        buttonIndex = buttonIndex + 1
+        buttonYOffset = buttonYOffset - 25
     end
     
     -- Filter functions

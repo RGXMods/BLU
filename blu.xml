@@ -21,6 +21,7 @@
     <!-- Interface Framework -->
     <Script file="interface/design.lua"/>
     <Script file="interface/widgets.lua"/>
+    <Script file="interface/dropdown.lua"/>
     <Script file="interface/tabs.lua"/>
     <Script file="interface/settings.lua"/>
     

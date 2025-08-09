@@ -14,8 +14,8 @@ SlashCmdList["BLU"] = function(msg)
     
     if msg == "" or msg == "options" or msg == "config" then
         -- Try to open options
-        if BLU.Modules and BLU.Modules.options_new and BLU.Modules.options_new.OpenOptions then
-            BLU.Modules.options_new:OpenOptions()
+        if BLU.Modules and BLU.Modules.options and BLU.Modules.options.OpenOptions then
+            BLU.Modules.options:OpenOptions()
         else
             BLU:Print("|cff00ccffBLU:|r Options panel not available yet. Please wait a moment and try again.")
         end

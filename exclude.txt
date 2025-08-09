@@ -1,4 +1,0 @@
-.git
-.claude
-wiki
-.gitignore

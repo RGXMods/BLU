@@ -1,195 +1,158 @@
 --=====================================================================================
--- BLU - interface/panels/sounds.lua
--- Sound selection panel with enhanced visual design
+-- BLU - interface/panels/sounds_new.lua
+-- Sound pack display panel showing installed packs
 --=====================================================================================
 
 local addonName, BLU = ...
 
 function BLU.CreateSoundsPanel(panel)
-    local widgets = BLU.Widgets
-    
-    -- Create scrollable content
+    -- Create scrollable content with proper spacing
     local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
-    scrollFrame:SetPoint("TOPLEFT", 10, -10)
-    scrollFrame:SetPoint("BOTTOMRIGHT", -30, 10)
+    scrollFrame:SetPoint("TOPLEFT", BLU.Design.Layout.Padding, -BLU.Design.Layout.Spacing)
+    scrollFrame:SetPoint("BOTTOMRIGHT", -35, BLU.Design.Layout.Spacing)
+    
+    -- Add scroll frame background
+    local scrollBg = scrollFrame:CreateTexture(nil, "BACKGROUND")
+    scrollBg:SetAllPoints()
+    scrollBg:SetColorTexture(0.05, 0.05, 0.05, 0.3)
     
     local content = CreateFrame("Frame", nil, scrollFrame)
-    content:SetSize(scrollFrame:GetWidth(), 800)
+    -- Set size dynamically after frame is ready
+    C_Timer.After(0.01, function()
+        if scrollFrame:GetWidth() then
+            content:SetSize(scrollFrame:GetWidth() - 25, 1000)
+        else
+            content:SetSize(600, 1000)
+        end
+    end)
     scrollFrame:SetScrollChild(content)
     
-    -- Sound Selection header with icon
-    local header = widgets:CreateHeader(content, "|TInterface\\Icons\\INV_Misc_Bell_01:20:20|t Sound Pack Selection")
+    -- Header
+    local header = BLU.Design:CreateHeader(content, "Installed Sound Packs", "Interface\\Icons\\INV_Misc_Bag_33")
     header:SetPoint("TOPLEFT", 0, 0)
+    header:SetPoint("RIGHT", -20, 0)
     
-    local divider = widgets:CreateDivider(content)
-    divider:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -5)
+    -- BLU Internal Sounds section
+    local internalSection = BLU.Design:CreateSection(content, "BLU Built-in Sound Packs", "Interface\\Icons\\INV_Misc_Bell_01")
+    internalSection:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -20)
+    internalSection:SetPoint("RIGHT", -20, 0)
+    internalSection:SetHeight(200)
     
-    -- Info text
-    local info = content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    info:SetPoint("TOPLEFT", divider, "BOTTOMLEFT", 0, -10)
-    info:SetWidth(550)
-    info:SetJustifyH("LEFT")
-    info:SetText("Choose sound packs for each event type. Mix and match from over 50 games!")
-    
-    -- Quick actions bar
-    local actionBar = CreateFrame("Frame", nil, content)
-    actionBar:SetPoint("TOPLEFT", info, "BOTTOMLEFT", 0, -15)
-    actionBar:SetSize(550, 30)
-    
-    -- Set all to dropdown
-    local setAllLabel = actionBar:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    setAllLabel:SetPoint("LEFT", 0, 0)
-    setAllLabel:SetText("Set all to:")
-    
-    local setAllDropdown = CreateFrame("Frame", "BLUSetAllDropdown", actionBar, "UIDropDownMenuTemplate")
-    setAllDropdown:SetPoint("LEFT", setAllLabel, "RIGHT", 5, -2)
-    UIDropDownMenu_SetWidth(setAllDropdown, 150)
-    
-    -- Available game packs with icons
-    local games = {
-        {value = "default", text = "|TInterface\\Icons\\INV_Misc_QuestionMark:16:16|t Default WoW", icon = "INV_Misc_QuestionMark"},
-        {value = "wowdefault", text = "|TInterface\\Icons\\Achievement_General:16:16|t WoW Built-in", icon = "Achievement_General"},
-        {value = "finalfantasy", text = "|TInterface\\Icons\\INV_Sword_39:16:16|t Final Fantasy", icon = "INV_Sword_39"},
-        {value = "zelda", text = "|TInterface\\Icons\\INV_Shield_09:16:16|t Legend of Zelda", icon = "INV_Shield_09"},
-        {value = "pokemon", text = "|TInterface\\Icons\\INV_Pet_PetTrap01:16:16|t Pokemon", icon = "INV_Pet_PetTrap01"},
-        {value = "mario", text = "|TInterface\\Icons\\INV_Mushroom_11:16:16|t Super Mario", icon = "INV_Mushroom_11"},
-        {value = "sonic", text = "|TInterface\\Icons\\INV_Jewelcrafting_Gem_37:16:16|t Sonic", icon = "INV_Jewelcrafting_Gem_37"},
-        {value = "metroid", text = "|TInterface\\Icons\\INV_Gizmo_02:16:16|t Metroid", icon = "INV_Gizmo_02"},
-        {value = "megaman", text = "|TInterface\\Icons\\INV_Gizmo_RocketBoot_01:16:16|t Mega Man", icon = "INV_Gizmo_RocketBoot_01"}
+    -- Create a grid layout for BLU sound packs
+    local bluPacks = {
+        {id = "finalfantasy", name = "Final Fantasy", icon = "Interface\\Icons\\INV_Sword_39"},
+        {id = "zelda", name = "Legend of Zelda", icon = "Interface\\Icons\\INV_Sword_48"},
+        {id = "pokemon", name = "Pokemon", icon = "Interface\\Icons\\INV_Misc_Ball_04"},
+        {id = "mario", name = "Super Mario", icon = "Interface\\Icons\\INV_Mushroom_11"},
+        {id = "sonic", name = "Sonic the Hedgehog", icon = "Interface\\Icons\\INV_Boots_01"},
+        {id = "metalgear", name = "Metal Gear Solid", icon = "Interface\\Icons\\INV_Misc_Bomb_04"},
+        {id = "elderscrolls", name = "Elder Scrolls", icon = "Interface\\Icons\\INV_Misc_Book_11"},
+        {id = "warcraft", name = "Warcraft", icon = "Interface\\Icons\\INV_Misc_Head_Orc_01"},
+        {id = "eldenring", name = "Elden Ring", icon = "Interface\\Icons\\INV_Sword_94"},
+        {id = "castlevania", name = "Castlevania", icon = "Interface\\Icons\\INV_Misc_Bone_Skull_02"},
+        {id = "diablo", name = "Diablo", icon = "Interface\\Icons\\INV_Misc_Gem_Bloodstone_02"},
+        {id = "fallout", name = "Fallout", icon = "Interface\\Icons\\INV_Gizmo_FelIronBomb"},
+        {id = "blu_default", name = "BLU Defaults", icon = "Interface\\Icons\\INV_Misc_QuestionMark"}
     }
     
-    UIDropDownMenu_Initialize(setAllDropdown, function(self)
-        for _, game in ipairs(games) do
-            local info = UIDropDownMenu_CreateInfo()
-            info.text = game.text
-            info.value = game.value
-            info.func = function()
-                -- Set all categories to this game
-                for catId in pairs(BLU.db.profile.selectedSounds) do
-                    BLU.db.profile.selectedSounds[catId] = game.value
-                end
-                UIDropDownMenu_SetText(self, game.text)
-                -- Refresh the panel
-                if BLU.Tabs and BLU.Tabs.RefreshCurrentTab then
-                    BLU.Tabs:RefreshCurrentTab()
-                end
-            end
-            UIDropDownMenu_AddButton(info)
+    local xOffset = 10
+    local yOffset = -10
+    local packWidth = 150
+    local packHeight = 30
+    local packsPerRow = 3
+    local currentRow = 0
+    local currentCol = 0
+    
+    for i, pack in ipairs(bluPacks) do
+        local packFrame = CreateFrame("Frame", nil, internalSection.content)
+        packFrame:SetSize(packWidth, packHeight)
+        packFrame:SetPoint("TOPLEFT", xOffset + (currentCol * (packWidth + 10)), yOffset - (currentRow * (packHeight + 5)))
+        
+        -- Icon
+        local icon = packFrame:CreateTexture(nil, "ARTWORK")
+        icon:SetSize(24, 24)
+        icon:SetPoint("LEFT", 3, 0)
+        icon:SetTexture(pack.icon)
+        
+        -- Name
+        local name = packFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        name:SetPoint("LEFT", icon, "RIGHT", 5, 0)
+        name:SetText(pack.name)
+        
+        -- Status
+        local status = packFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+        status:SetPoint("RIGHT", -5, 0)
+        status:SetText("|cff00ff00✓|r")
+        
+        -- Update position
+        currentCol = currentCol + 1
+        if currentCol >= packsPerRow then
+            currentCol = 0
+            currentRow = currentRow + 1
         end
-    end)
-    UIDropDownMenu_SetText(setAllDropdown, "Choose...")
-    
-    -- Random button
-    local randomButton = widgets:CreateButton(actionBar, "Randomize All", 100, 22, "Set all sounds to random selection")
-    randomButton:SetPoint("LEFT", setAllDropdown, "RIGHT", 10, 2)
-    randomButton:SetScript("OnClick", function()
-        for catId in pairs(BLU.db.profile.selectedSounds) do
-            local randomGame = games[math.random(#games)]
-            BLU.db.profile.selectedSounds[catId] = randomGame.value
-        end
-        if BLU.Tabs and BLU.Tabs.RefreshCurrentTab then
-            BLU.Tabs:RefreshCurrentTab()
-        end
-    end)
-    
-    -- Sound categories section
-    local catHeader = widgets:CreateHeader(content, "|TInterface\\Icons\\Spell_ChargePositive:20:20|t Event Sound Configuration")
-    catHeader:SetPoint("TOPLEFT", actionBar, "BOTTOMLEFT", 0, -20)
-    
-    local catDivider = widgets:CreateDivider(content)
-    catDivider:SetPoint("TOPLEFT", catHeader, "BOTTOMLEFT", 0, -5)
-    
-    local yOffset = 0
-    local soundCategories = {
-        {id = "levelup", name = "|TInterface\\Icons\\Achievement_Level_100:20:20|t Level Up", desc = "Played when you gain a level"},
-        {id = "achievement", name = "|TInterface\\Icons\\Achievement_GuildPerk_MobileMailbox:20:20|t Achievement", desc = "Played when you earn an achievement"},
-        {id = "quest", name = "|TInterface\\Icons\\INV_Misc_Note_01:20:20|t Quest Complete", desc = "Played when you complete a quest"},
-        {id = "reputation", name = "|TInterface\\Icons\\Achievement_Reputation_01:20:20|t Reputation", desc = "Played when you gain reputation"},
-        {id = "honorrank", name = "|TInterface\\Icons\\PVPCurrency-Honor-Horde:20:20|t Honor Rank", desc = "Played when you gain honor rank"},
-        {id = "renownrank", name = "|TInterface\\Icons\\UI_MajorFaction_Centaur:20:20|t Renown Rank", desc = "Played when you gain renown"},
-        {id = "tradingpost", name = "|TInterface\\Icons\\INV_Tradingpost_Currency:20:20|t Trading Post", desc = "Played for trading post rewards"},
-        {id = "battlepet", name = "|TInterface\\Icons\\INV_Pet_BattlePetTraining:20:20|t Battle Pet", desc = "Played for pet battle victories"},
-        {id = "delvecompanion", name = "|TInterface\\Icons\\UI_MajorFaction_Delve:20:20|t Delve Companion", desc = "Played for delve companion events"}
-    }
-    
-    local categoryStartY = select(5, catDivider:GetPoint())
-    
-    for i, category in ipairs(soundCategories) do
-        -- Category frame with background
-        local catFrame = CreateFrame("Frame", nil, content)
-        catFrame:SetPoint("TOPLEFT", 0, categoryStartY - 10 - (i-1) * 75)
-        catFrame:SetSize(540, 70)
-        
-        -- Alternating background
-        if i % 2 == 0 then
-            local bg = catFrame:CreateTexture(nil, "BACKGROUND")
-            bg:SetAllPoints()
-            bg:SetColorTexture(0.1, 0.1, 0.1, 0.3)
-        end
-        
-        -- Category name with icon
-        local catName = catFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        catName:SetPoint("TOPLEFT", 10, -10)
-        catName:SetText(category.name)
-        
-        -- Category description
-        local catDesc = catFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-        catDesc:SetPoint("TOPLEFT", catName, "BOTTOMLEFT", 22, -2)
-        catDesc:SetText(category.desc)
-        catDesc:SetTextColor(0.7, 0.7, 0.7)
-        
-        -- Dropdown
-        local dropdown = CreateFrame("Frame", "BLUSoundDropdown"..i, catFrame, "UIDropDownMenuTemplate")
-        dropdown:SetPoint("RIGHT", catFrame, "RIGHT", -80, 0)
-        UIDropDownMenu_SetWidth(dropdown, 180)
-        
-        UIDropDownMenu_Initialize(dropdown, function(self)
-            for _, game in ipairs(games) do
-                local info = UIDropDownMenu_CreateInfo()
-                info.text = game.text
-                info.value = game.value
-                info.func = function()
-                    BLU.db.profile.selectedSounds[category.id] = game.value
-                    UIDropDownMenu_SetText(self, game.text)
-                end
-                info.checked = BLU.db.profile.selectedSounds[category.id] == game.value
-                UIDropDownMenu_AddButton(info)
-            end
-        end)
-        
-        -- Set current selection
-        local currentSound = BLU.db.profile.selectedSounds[category.id] or "default"
-        for _, game in ipairs(games) do
-            if game.value == currentSound then
-                UIDropDownMenu_SetText(dropdown, game.text)
-                break
-            end
-        end
-        
-        -- Preview button with play icon
-        local previewBtn = CreateFrame("Button", nil, catFrame, "UIPanelButtonTemplate")
-        previewBtn:SetPoint("RIGHT", catFrame, "RIGHT", -5, 0)
-        previewBtn:SetSize(22, 22)
-        previewBtn:SetNormalTexture("Interface\\AddOns\\BLU\\media\\images\\play")
-        previewBtn:SetScript("OnClick", function()
-            local selected = BLU.db.profile.selectedSounds[category.id] or "default"
-            if BLU.PlayCategorySound then
-                BLU:PlayCategorySound(category.id, selected)
-            end
-        end)
-        previewBtn:SetScript("OnEnter", function(self)
-            GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-            GameTooltip:SetText("Preview Sound")
-            GameTooltip:AddLine("Click to play this sound", 1, 1, 1)
-            GameTooltip:Show()
-        end)
-        previewBtn:SetScript("OnLeave", GameTooltip_Hide)
     end
     
-    -- Footer info
-    local footerInfo = content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    footerInfo:SetPoint("BOTTOM", content, "BOTTOM", 0, 20)
-    footerInfo:SetText("|cff808080Note: Sound packs without .ogg files will use WoW default sounds|r")
+    -- External Sound Packs section
+    local externalSection = BLU.Design:CreateSection(content, "External Sound Packs", "Interface\\Icons\\INV_Misc_Book_09")
+    externalSection:SetPoint("TOPLEFT", internalSection, "BOTTOMLEFT", 0, -20)
+    externalSection:SetPoint("RIGHT", -20, 0)
+    externalSection:SetHeight(250)
     
-    content:SetHeight(750)
+    -- Check for loaded sound addons
+    local loadedAddons = {}
+    if BLU.Modules.sharedmedia then
+        loadedAddons = BLU.Modules.sharedmedia:GetLoadedSoundAddons()
+    end
+    
+    if #loadedAddons > 0 then
+        local addonsText = "|cff00ff00Detected Sound Addons:|r\n\n"
+        
+        for _, addon in ipairs(loadedAddons) do
+            addonsText = addonsText .. "• " .. addon .. " - |cff00ff00Loaded|r\n"
+        end
+        
+        local detectedText = externalSection.content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        detectedText:SetPoint("TOPLEFT", 0, -5)
+        detectedText:SetPoint("RIGHT", 0, 0)
+        detectedText:SetJustifyH("LEFT")
+        detectedText:SetText(addonsText)
+    else
+        local noAddonsText = externalSection.content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        noAddonsText:SetPoint("TOPLEFT", 0, -5)
+        noAddonsText:SetPoint("RIGHT", 0, 0)
+        noAddonsText:SetJustifyH("LEFT")
+        noAddonsText:SetText(
+            "|cffff0000No external sound addons detected.|r\n\n" ..
+            "To add more sounds, install sound pack addons from:\n" ..
+            "• CurseForge - Search for 'SharedMedia' sound packs\n" ..
+            "• WoWInterface - Browse the audio category\n" ..
+            "• Wago.io - Find WeakAuras with custom sounds\n\n" ..
+            "Popular sound pack addons:\n" ..
+            "• SharedMedia_MyMedia\n" ..
+            "• SharedMedia_Causese\n" ..
+            "• Epic Music Player"
+        )
+    end
+    
+    -- How to Use section
+    local usageSection = BLU.Design:CreateSection(content, "How to Configure Sounds", "Interface\\Icons\\INV_Misc_Note_02")
+    usageSection:SetPoint("TOPLEFT", externalSection, "BOTTOMLEFT", 0, -20)
+    usageSection:SetPoint("RIGHT", -20, 0)
+    usageSection:SetHeight(140)
+    
+    local usageText = usageSection.content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    usageText:SetPoint("TOPLEFT", 0, -5)
+    usageText:SetPoint("RIGHT", -10, 0)
+    usageText:SetJustifyH("LEFT")
+    usageText:SetText(
+        "To configure sounds for each event:\n\n" ..
+        "|cff05dffa1.|r Click on any event tab at the top (Level Up, Achievement, Quest, etc.)\n" ..
+        "|cff05dffa2.|r Use the dropdown menu to select your preferred sound\n" ..
+        "|cff05dffa3.|r Choose from WoW sounds, BLU packs, or external addons\n" ..
+        "|cff05dffa4.|r Use the Test button to preview your selection\n" ..
+        "|cff05dffa5.|r BLU volume slider only affects BLU internal sounds"
+    )
+    
+    -- Set content height
+    content:SetHeight(700)
 end

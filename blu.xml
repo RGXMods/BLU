@@ -22,11 +22,11 @@
     <Script file="modules/interface/design.lua"/>
     <Script file="modules/interface/widgets.lua"/>
     <Script file="modules/interface/tabs.lua"/>
-    <Script file="modules/interface/panels/general_new.lua"/>
-    <Script file="modules/interface/panels/about_new.lua"/>
-    <Script file="modules/interface/panels/sounds_new.lua"/>
-    <Script file="modules/interface/panels/modules_new.lua"/>
-    <Script file="modules/interface/options_new.lua"/>
+    <Script file="modules/interface/panels/general.lua"/>
+    <Script file="modules/interface/panels/about.lua"/>
+    <Script file="modules/interface/panels/sounds.lua"/>
+    <Script file="modules/interface/panels/modules.lua"/>
+    <Script file="modules/interface/options.lua"/>
     
     <!-- Feature Modules -->
     <Script file="modules/quest/quest.lua"/>

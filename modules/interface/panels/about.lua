@@ -1,153 +1,188 @@
 --=====================================================================================
--- BLU - interface/panels/about.lua
--- About panel with addon information and credits
+-- BLU - interface/panels/about_new.lua
+-- About panel with new design
 --=====================================================================================
 
 local addonName, BLU = ...
 
 function BLU.CreateAboutPanel(panel)
-    local widgets = BLU.Widgets
-    
-    -- Create scrollable content
+    -- Create scrollable content with proper sizing aligned to parent content frame
     local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
-    scrollFrame:SetPoint("TOPLEFT", 10, -10)
-    scrollFrame:SetPoint("BOTTOMRIGHT", -30, 10)
+    scrollFrame:SetPoint("TOPLEFT", BLU.Design.Layout.Spacing, -BLU.Design.Layout.Spacing)
+    scrollFrame:SetPoint("BOTTOMRIGHT", -30, BLU.Design.Layout.Spacing)
+    
+    -- Add scroll frame background
+    local scrollBg = scrollFrame:CreateTexture(nil, "BACKGROUND")
+    scrollBg:SetAllPoints()
+    scrollBg:SetColorTexture(0.05, 0.05, 0.05, 0.3)
     
     local content = CreateFrame("Frame", nil, scrollFrame)
-    content:SetSize(scrollFrame:GetWidth(), 700)
+    -- Calculate proper content width based on scroll frame
+    C_Timer.After(0.01, function()
+        if scrollFrame:GetWidth() then
+            content:SetSize(scrollFrame:GetWidth() - 25, 900)
+        else
+            content:SetSize(600, 900)
+        end
+    end)
     scrollFrame:SetScrollChild(content)
     
-    -- Large addon icon
-    local icon = content:CreateTexture(nil, "ARTWORK")
-    icon:SetSize(128, 128)
-    icon:SetPoint("TOP", 0, -20)
-    icon:SetTexture("Interface\\AddOns\\BLU\\media\\images\\icon")
+    -- BLU Logo/Header
+    local logoFrame = CreateFrame("Frame", nil, content)
+    logoFrame:SetPoint("TOPLEFT", BLU.Design.Layout.Spacing, -BLU.Design.Layout.Spacing)
+    logoFrame:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
+    logoFrame:SetHeight(120)
+    
+    -- Logo background
+    local logoBg = logoFrame:CreateTexture(nil, "BACKGROUND")
+    logoBg:SetAllPoints()
+    logoBg:SetColorTexture(0.02, 0.37, 1, 0.1)
+    
+    -- Logo icon
+    local logoIcon = logoFrame:CreateTexture(nil, "ARTWORK")
+    logoIcon:SetSize(80, 80)
+    logoIcon:SetPoint("LEFT", 20, 0)
+    logoIcon:SetTexture("Interface\\Icons\\Achievement_Level_100")
     
     -- Title
-    local title = content:CreateFontString(nil, "OVERLAY", "GameFontNormalHuge")
-    title:SetPoint("TOP", icon, "BOTTOM", 0, -10)
-    title:SetText("|cff05dffaBLU|r - Better Level-Up!")
+    local title = logoFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalHuge")
+    title:SetPoint("LEFT", logoIcon, "RIGHT", 20, 15)
+    title:SetText("|cff05dffaBLU - Better Level Up!|r")
+    title:SetFont(title:GetFont(), 24)
     
-    -- Version
-    local version = content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    version:SetPoint("TOP", title, "BOTTOM", 0, -5)
-    version:SetText("Version " .. (BLU.version or "v5.3.0-alpha"))
-    version:SetTextColor(0.7, 0.7, 0.7)
+    -- Version and tagline
+    local version = logoFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    version:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -5)
+    version:SetText("Version " .. (BLU.version or "Unknown") .. " - RGX Mods")
+    version:SetTextColor(0.8, 0.8, 0.8)
     
-    -- Tagline
-    local tagline = content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    tagline:SetPoint("TOP", version, "BOTTOM", 0, -10)
-    tagline:SetText("Play sounds from 50+ games when events fire in WoW!")
+    local tagline = logoFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    tagline:SetPoint("TOPLEFT", version, "BOTTOMLEFT", 0, -5)
+    tagline:SetText("Replace default sounds with iconic audio from 50+ games")
     
-    -- Author section
-    local authorHeader = widgets:CreateHeader(content, "|TInterface\\Icons\\Achievement_Character_Human_Male:20:20|t Author")
-    authorHeader:SetPoint("TOP", tagline, "BOTTOM", 0, -30)
+    -- Info Section
+    local infoSection = BLU.Design:CreateSection(content, "Information", "Interface\\Icons\\INV_Misc_Book_09")
+    infoSection:SetPoint("TOPLEFT", logoFrame, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
+    infoSection:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
+    infoSection:SetHeight(180)
     
-    local authorDivider = widgets:CreateDivider(content)
-    authorDivider:SetPoint("TOPLEFT", authorHeader, "BOTTOMLEFT", 0, -5)
-    authorDivider:SetPoint("RIGHT", content, "RIGHT", -20, 0)
+    -- Create info grid
+    local infoGrid = CreateFrame("Frame", nil, infoSection.content)
+    infoGrid:SetPoint("TOPLEFT", 0, -10)
+    infoGrid:SetPoint("RIGHT", 0, 0)
     
-    local authorInfo = content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    authorInfo:SetPoint("TOP", authorDivider, "BOTTOM", 0, -10)
-    authorInfo:SetText("Created by |cff05dffadonniedice|r\nEmail: 60427166+donniedice@users.noreply.github.com")
-    authorInfo:SetJustifyH("CENTER")
+    local function CreateInfoRow(parent, icon, label, value, yOffset)
+        local row = CreateFrame("Frame", nil, parent)
+        row:SetPoint("TOPLEFT", 0, yOffset)
+        row:SetPoint("RIGHT", 0, 0)
+        row:SetHeight(24)
+        
+        local iconTex = row:CreateTexture(nil, "ARTWORK")
+        iconTex:SetSize(20, 20)
+        iconTex:SetPoint("LEFT", 10, 0)
+        iconTex:SetTexture(icon)
+        
+        local labelText = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        labelText:SetPoint("LEFT", iconTex, "RIGHT", 10, 0)
+        labelText:SetText(label .. ":")
+        labelText:SetWidth(100)
+        labelText:SetJustifyH("LEFT")
+        
+        local valueText = row:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        valueText:SetPoint("LEFT", labelText, "RIGHT", 10, 0)
+        valueText:SetText(value)
+        
+        return row
+    end
     
-    -- RGX Mods section
-    local rgxHeader = widgets:CreateHeader(content, "|TInterface\\Icons\\VAS_RaceChange:20:20|t RGX Mods")
-    rgxHeader:SetPoint("TOP", authorInfo, "BOTTOM", 0, -30)
+    CreateInfoRow(infoGrid, "Interface\\Icons\\INV_Misc_Note_05", "Author", "|cffffd700donniedice|r", 0)
+    CreateInfoRow(infoGrid, "Interface\\Icons\\ACHIEVEMENT_GUILDPERK_EVERYONES A HERO_RANK2", "Discord", "|cffffd700discord.gg/rgxmods|r", -30)
+    CreateInfoRow(infoGrid, "Interface\\Icons\\INV_Misc_Web_01", "Website", "|cffffd700rgxmods.com|r", -60)
+    CreateInfoRow(infoGrid, "Interface\\Icons\\Trade_Engineering", "GitHub", "|cffffd700github.com/donniedice/BLU|r", -90)
+    CreateInfoRow(infoGrid, "Interface\\Icons\\INV_Misc_GroupLooking", "Support", "|cff00ff00/help|r for assistance", -120)
     
-    local rgxDivider = widgets:CreateDivider(content)
-    rgxDivider:SetPoint("TOPLEFT", rgxHeader, "BOTTOMLEFT", 0, -5)
-    rgxDivider:SetPoint("RIGHT", content, "RIGHT", -20, 0)
+    -- Features Section
+    local featuresSection = BLU.Design:CreateSection(content, "Features", "Interface\\Icons\\Achievement_General")
+    featuresSection:SetPoint("TOPLEFT", infoSection, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
+    featuresSection:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
+    featuresSection:SetHeight(200)
     
-    local rgxInfo = content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    rgxInfo:SetPoint("TOP", rgxDivider, "BOTTOM", 0, -10)
-    rgxInfo:SetText("A |cffffd700RealmGX Community Project|r\nJoin our community at |cffffd700discord.gg/rgxmods|r")
-    rgxInfo:SetJustifyH("CENTER")
-    
-    -- Features section
-    local featuresHeader = widgets:CreateHeader(content, "|TInterface\\Icons\\Trade_Engineering:20:20|t Features")
-    featuresHeader:SetPoint("TOP", rgxInfo, "BOTTOM", 0, -30)
-    
-    local featuresDivider = widgets:CreateDivider(content)
-    featuresDivider:SetPoint("TOPLEFT", featuresHeader, "BOTTOMLEFT", 0, -5)
-    featuresDivider:SetPoint("RIGHT", content, "RIGHT", -20, 0)
-    
-    -- Feature list
     local features = {
-        "|TInterface\\Icons\\INV_Misc_Bell_01:16:16|t Over 50 game sound packs to choose from",
-        "|TInterface\\Icons\\Achievement_Level_100:16:16|t Customizable sounds for every event type",
-        "|TInterface\\Icons\\INV_Misc_Gear_08:16:16|t Modular system - enable only what you need",
-        "|TInterface\\Icons\\Spell_ChargePositive:16:16|t Volume control and channel selection",
-        "|TInterface\\Icons\\INV_Misc_Book_09:16:16|t SharedMedia compatibility for custom sounds",
-        "|TInterface\\Icons\\Achievement_General:16:16|t Zero external dependencies",
-        "|TInterface\\Icons\\Spell_Nature_TimeStop:16:16|t Optimized for performance"
+        "|cff05dffa50+ Game Sound Packs|r - Iconic sounds from your favorite games",
+        "|cff05dffaSharedMedia Support|r - Use sounds from other addons",
+        "|cff05dffaVolume Control|r - Adjust sound levels to your preference",
+        "|cff05dffaPer-Event Customization|r - Different sounds for each event type",
+        "|cff05dffaLightweight Design|r - No external library dependencies",
+        "|cff05dffaModular Architecture|r - Load only what you need",
+        "|cff05dffaFull Retail Support|r - Optimized for the latest WoW version"
     }
     
-    local featureY = -10
+    local yOffset = -10
     for _, feature in ipairs(features) do
-        local featureText = content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-        featureText:SetPoint("TOP", featuresDivider, "BOTTOM", 0, featureY)
-        featureText:SetText(feature)
+        local featureText = featuresSection.content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        featureText:SetPoint("TOPLEFT", 20, yOffset)
+        featureText:SetPoint("RIGHT", -20, 0)
+        featureText:SetText("• " .. feature)
         featureText:SetJustifyH("LEFT")
-        featureText:SetWidth(400)
-        featureY = featureY - 20
+        yOffset = yOffset - 25
     end
     
-    -- Links section
-    local linksHeader = widgets:CreateHeader(content, "|TInterface\\Icons\\INV_Misc_Web_01:20:20|t Links")
-    linksHeader:SetPoint("TOP", featuresDivider, "BOTTOM", 0, featureY - 20)
+    -- Statistics Section
+    local statsSection = BLU.Design:CreateSection(content, "Statistics", "Interface\\Icons\\Achievement_GuildPerk_CashFlow_Rank2")
+    statsSection:SetPoint("TOPLEFT", featuresSection, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
+    statsSection:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
+    statsSection:SetHeight(120)
     
-    local linksDivider = widgets:CreateDivider(content)
-    linksDivider:SetPoint("TOPLEFT", linksHeader, "BOTTOMLEFT", 0, -5)
-    linksDivider:SetPoint("RIGHT", content, "RIGHT", -20, 0)
-    
-    -- Link buttons
-    local linkY = -15
-    local links = {
-        {text = "GitHub Repository", url = "https://github.com/donniedice/BLU", icon = "Achievement_Profession_Fishing_FindFish"},
-        {text = "Report Issues", url = "https://github.com/donniedice/BLU/issues", icon = "INV_Misc_Note_05"},
-        {text = "CurseForge", url = "https://www.curseforge.com/wow/addons/blu", icon = "INV_Misc_Gem_Bloodstone_01"},
-        {text = "Wago.io", url = "https://addons.wago.io/addons/blu", icon = "INV_Misc_Gem_Sapphire_01"},
-        {text = "WoWInterface", url = "https://www.wowinterface.com/downloads/info26465", icon = "INV_Misc_Gem_Emerald_01"}
-    }
-    
-    for _, link in ipairs(links) do
-        local linkFrame = CreateFrame("Frame", nil, content)
-        linkFrame:SetSize(300, 24)
-        linkFrame:SetPoint("TOP", linksDivider, "BOTTOM", 0, linkY)
+    -- Create stats display
+    local function CreateStatDisplay(parent, x, y, label, value, color)
+        local frame = CreateFrame("Frame", nil, parent)
+        frame:SetPoint("TOPLEFT", x, y)
+        frame:SetSize(150, 60)
         
-        local linkIcon = linkFrame:CreateTexture(nil, "ARTWORK")
-        linkIcon:SetSize(20, 20)
-        linkIcon:SetPoint("LEFT", 0, 0)
-        linkIcon:SetTexture("Interface\\Icons\\" .. link.icon)
+        local bg = frame:CreateTexture(nil, "BACKGROUND")
+        bg:SetAllPoints()
+        bg:SetColorTexture(0.1, 0.1, 0.1, 0.5)
         
-        local linkText = linkFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-        linkText:SetPoint("LEFT", linkIcon, "RIGHT", 5, 0)
-        linkText:SetText(link.text .. " - |cff05dffa" .. link.url .. "|r")
+        local valueText = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalHuge")
+        valueText:SetPoint("TOP", 0, -10)
+        valueText:SetText(value)
+        valueText:SetTextColor(color.r, color.g, color.b)
         
-        linkY = linkY - 25
+        local labelText = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        labelText:SetPoint("TOP", valueText, "BOTTOM", 0, -5)
+        labelText:SetText(label)
+        labelText:SetTextColor(0.7, 0.7, 0.7)
+        
+        return frame
     end
     
-    -- Support section
-    local supportHeader = widgets:CreateHeader(content, "|TInterface\\Icons\\INV_Misc_Coin_01:20:20|t Support")
-    supportHeader:SetPoint("TOP", linksDivider, "BOTTOM", 0, linkY - 20)
+    -- Calculate some stats
+    local enabledModules = 0
+    if BLU.db and BLU.db.profile and BLU.db.profile.modules then
+        for _, enabled in pairs(BLU.db.profile.modules) do
+            if enabled then enabledModules = enabledModules + 1 end
+        end
+    end
     
-    local supportDivider = widgets:CreateDivider(content)
-    supportDivider:SetPoint("TOPLEFT", supportHeader, "BOTTOMLEFT", 0, -5)
-    supportDivider:SetPoint("RIGHT", content, "RIGHT", -20, 0)
+    CreateStatDisplay(statsSection.content, 20, -10, "Modules Active", tostring(enabledModules), {r=0.02, g=0.87, b=0.98})
+    CreateStatDisplay(statsSection.content, 180, -10, "Sound Packs", "50+", {r=0.02, g=0.87, b=0.98})
+    CreateStatDisplay(statsSection.content, 340, -10, "Version", BLU.version or "?", {r=0.02, g=0.87, b=0.98})
     
-    local supportInfo = content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    supportInfo:SetPoint("TOP", supportDivider, "BOTTOM", 0, -10)
-    supportInfo:SetText("If you enjoy BLU, please consider:\n• Starring the project on GitHub\n• Leaving a review on addon sites\n• Sharing with your friends\n• Reporting bugs and suggesting features")
-    supportInfo:SetJustifyH("CENTER")
-    supportInfo:SetWidth(400)
+    -- Credits Section
+    local creditsSection = BLU.Design:CreateSection(content, "Credits & Thanks", "Interface\\Icons\\Achievement_GuildPerk_Honorable Mention")
+    creditsSection:SetPoint("TOPLEFT", statsSection, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
+    creditsSection:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
+    creditsSection:SetHeight(100)
     
-    -- Footer
-    local footer = content:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    footer:SetPoint("BOTTOM", content, "BOTTOM", 0, 20)
-    footer:SetText("Made with |cffff0000♥|r for the WoW community")
-    footer:SetTextColor(0.5, 0.5, 0.5)
+    local creditsText = creditsSection.content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    creditsText:SetPoint("TOPLEFT", 20, -10)
+    creditsText:SetPoint("RIGHT", -20, 0)
+    creditsText:SetJustifyH("LEFT")
+    creditsText:SetText(
+        "All game sounds are property of their respective owners and are used under fair use.\n" ..
+        "Special thanks to the RGX Mods community for their support and feedback.\n" ..
+        "Thanks to the WoW addon development community for inspiration and guidance."
+    )
     
-    content:SetHeight(700)
+    content:SetHeight(850)
 end

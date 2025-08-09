@@ -39,7 +39,7 @@ function BLU:Initialize()
         "design",         -- Design system (from modules/interface)
         "widgets",        -- Widget library
         "tabs",           -- Tab system
-        "options_new"     -- Options panel (from modules/interface)
+        "options"         -- Options panel (from modules/interface)
     })
     
     -- Phase 4: Feature Modules
@@ -154,9 +154,9 @@ end
 
 -- Open options panel
 function BLU:OpenOptions()
-    -- Try modules/interface/options_new first
-    if self.Modules and self.Modules.options_new and self.Modules.options_new.OpenOptions then
-        self.Modules.options_new:OpenOptions()
+    -- Try modules/interface/options first
+    if self.Modules and self.Modules.options and self.Modules.options.OpenOptions then
+        self.Modules.options:OpenOptions()
         return
     end
     
@@ -222,10 +222,10 @@ end)
 -- Hook into PLAYER_LOGIN for final setup
 BLU:RegisterEvent("PLAYER_LOGIN", function()
     -- Final initialization tasks that require player to be fully loaded
-    if BLU.Modules and BLU.Modules.options_new then
+    if BLU.Modules and BLU.Modules.options then
         -- Ensure options panel is created
-        if not BLU.OptionsPanel and BLU.Modules.options_new.CreateOptionsPanel then
-            BLU.Modules.options_new:CreateOptionsPanel()
+        if not BLU.OptionsPanel and BLU.Modules.options.CreateOptionsPanel then
+            BLU.Modules.options:CreateOptionsPanel()
         end
     end
     

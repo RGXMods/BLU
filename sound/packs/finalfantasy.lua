@@ -11,19 +11,25 @@ local sounds = {
         name = "Final Fantasy - Victory Fanfare",
         file = "Interface\\AddOns\\BLU\\media\\sounds\\final_fantasy.ogg",
         duration = 3.5,
-        category = "levelup"
+        category = "levelup",
+        source = "BLU",
+        isInternal = true
     },
     finalfantasy_achievement = {
         name = "Final Fantasy - Achievement",
         file = "Interface\\AddOns\\BLU\\media\\sounds\\final_fantasy.ogg",
         duration = 2.5,
-        category = "achievement"
+        category = "achievement",
+        source = "BLU",
+        isInternal = true
     },
     finalfantasy_quest = {
         name = "Final Fantasy - Quest Complete",
         file = "Interface\\AddOns\\BLU\\media\\sounds\\final_fantasy.ogg",
         duration = 2.0,
-        category = "quest"
+        category = "quest",
+        source = "BLU",
+        isInternal = true
     }
 }
 

@@ -6,14 +6,17 @@
 
 local addonName, BLU = ...
 
--- Version and build info
-local VERSION = GetAddOnMetadata(addonName, "Version") or "6.0.0-alpha"
-local AUTHOR = GetAddOnMetadata(addonName, "Author") or "donniedice"
-local BUILD_DATE = "2025-08-08"
+-- Version and build info (deferred to avoid nil error)
+local VERSION, AUTHOR, BUILD_DATE
 
 function BLU.CreateAboutPanel()
     local panel = CreateFrame("Frame", nil, UIParent)
     panel:Hide()
+    
+    -- Get version info when panel is created (inside WoW)
+    VERSION = GetAddOnMetadata and GetAddOnMetadata(addonName, "Version") or "6.0.0-alpha"
+    AUTHOR = GetAddOnMetadata and GetAddOnMetadata(addonName, "Author") or "donniedice"
+    BUILD_DATE = "2025-08-08"
     
     -- Logo/Title Section
     local logoFrame = CreateFrame("Frame", nil, panel)
@@ -269,10 +272,15 @@ function BLU.CreateAboutPanel()
         stats1:SetText(string.format("Memory: %.2f MB | Modules: %d | Sounds: 150+", mem / 1024, moduleCount))
     end)
     
+    -- Register with tab system
+    if BLU.TabSystem then
+        BLU.TabSystem:RegisterPanel("about", panel)
+    end
+    
     return panel
 end
 
--- Bug report dialog
+-- Bug report dialog (defined outside function)
 StaticPopupDialogs["BLU_BUG_REPORT"] = {
     text = "Describe the bug you encountered:",
     button1 = "Submit",
@@ -283,11 +291,12 @@ StaticPopupDialogs["BLU_BUG_REPORT"] = {
         local bugText = self.editBox:GetText()
         if bugText and bugText ~= "" then
             -- Store bug report in saved variables
-            BLU.db.bugReports = BLU.db.bugReports or {}
-            table.insert(BLU.db.bugReports, {
+            BLUDB = BLUDB or {}
+            BLUDB.bugReports = BLUDB.bugReports or {}
+            table.insert(BLUDB.bugReports, {
                 text = bugText,
                 date = date("%Y-%m-%d %H:%M:%S"),
-                version = VERSION,
+                version = (GetAddOnMetadata and GetAddOnMetadata("BLU", "Version")) or "unknown",
                 character = UnitName("player") .. "-" .. GetRealmName()
             })
             print("|cff00ccffBLU:|r Bug report saved. Please submit via GitHub Issues for fastest response.")
@@ -297,11 +306,3 @@ StaticPopupDialogs["BLU_BUG_REPORT"] = {
     whileDead = true,
     hideOnEscape = true
 }
-
-    -- Register with tab system
-    if BLU.TabSystem then
-        BLU.TabSystem:RegisterPanel("about", panel)
-    end
-    
-    return panel
-end

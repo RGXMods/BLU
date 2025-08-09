@@ -35,16 +35,32 @@ function BLU:GetDB(path, default)
         return self.db
     end
     
-    -- Parse path (e.g., "events.levelup.sound")
     local value = self.db
-    for key in string.gmatch(path, "[^%.]+") do
-        if type(value) ~= "table" then
-            return default
+    
+    -- Handle table path (e.g., {"selectedSounds", "levelup"})
+    if type(path) == "table" then
+        for _, key in ipairs(path) do
+            if type(value) ~= "table" then
+                return default
+            end
+            value = value[key]
+            if value == nil then
+                return default
+            end
         end
-        value = value[key]
-        if value == nil then
-            return default
+    -- Handle string path (e.g., "events.levelup.sound")
+    elseif type(path) == "string" then
+        for key in string.gmatch(path, "[^%.]+") do
+            if type(value) ~= "table" then
+                return default
+            end
+            value = value[key]
+            if value == nil then
+                return default
+            end
         end
+    else
+        return default
     end
     
     return value
@@ -62,8 +78,17 @@ function BLU:SetDB(path, value)
     
     -- Parse path and create tables as needed
     local keys = {}
-    for key in string.gmatch(path, "[^%.]+") do
-        table.insert(keys, key)
+    
+    -- Handle table path (e.g., {"selectedSounds", "levelup"})
+    if type(path) == "table" then
+        keys = path
+    -- Handle string path (e.g., "events.levelup.sound")
+    elseif type(path) == "string" then
+        for key in string.gmatch(path, "[^%.]+") do
+            table.insert(keys, key)
+        end
+    else
+        return false
     end
     
     local current = self.db

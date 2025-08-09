@@ -23,20 +23,21 @@ local eventTypes = {
 local function GetAllSounds()
     local sounds = {}
     
-    -- Add BLU built-in sounds
+    -- Add BLU built-in sounds (with volume variants)
+    -- These are organized by game franchise
     local bluSounds = {
         -- Final Fantasy
-        {value = "blu:final_fantasy", text = "Final Fantasy Victory", category = "BLU - Final Fantasy", source = "BLU"},
-        {value = "blu:final_fantasy_levelup", text = "FF Level Up", category = "BLU - Final Fantasy", source = "BLU"},
-        {value = "blu:final_fantasy_fanfare", text = "FF Fanfare", category = "BLU - Final Fantasy", source = "BLU"},
+        {value = "blu:final_fantasy", text = "Victory Fanfare", category = "BLU Sounds - Final Fantasy", source = "BLU"},
+        {value = "blu:final_fantasy_levelup", text = "Level Up", category = "BLU Sounds - Final Fantasy", source = "BLU"},
+        {value = "blu:final_fantasy_fanfare", text = "Fanfare", category = "BLU Sounds - Final Fantasy", source = "BLU"},
         
         -- Zelda
-        {value = "blu:zelda_chest", text = "Zelda Chest Open", category = "BLU - Legend of Zelda", source = "BLU"},
-        {value = "blu:zelda_secret", text = "Zelda Secret", category = "BLU - Legend of Zelda", source = "BLU"},
-        {value = "blu:zelda_item", text = "Zelda Item Get", category = "BLU - Legend of Zelda", source = "BLU"},
+        {value = "blu:zelda_chest", text = "Chest Open", category = "BLU Sounds - Legend of Zelda", source = "BLU"},
+        {value = "blu:zelda_secret", text = "Secret Found", category = "BLU Sounds - Legend of Zelda", source = "BLU"},
+        {value = "blu:zelda_item", text = "Item Get", category = "BLU Sounds - Legend of Zelda", source = "BLU"},
         
         -- Pokemon
-        {value = "blu:pokemon_levelup", text = "Pokemon Level Up", category = "BLU - Pokemon", source = "BLU"},
+        {value = "blu:pokemon_levelup", text = "Level Up", category = "BLU Sounds - Pokemon", source = "BLU"},
         {value = "blu:pokemon_evolve", text = "Pokemon Evolution", category = "BLU - Pokemon", source = "BLU"},
         {value = "blu:pokemon_caught", text = "Pokemon Caught", category = "BLU - Pokemon", source = "BLU"},
         

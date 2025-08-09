@@ -131,21 +131,31 @@ function SoundRegistry:PlaySound(soundId, volume)
         willPlay = PlaySound(sound.soundKit, channel)
         handle = sound.soundKit
     elseif sound.file then
-        -- Check if this is a BLU internal sound with volume variants
-        if sound.isInternal or sound.hasVolumeVariants then
-            -- BLU internal sounds have _low, _med, _high variants
+        local fileToPlay = sound.file
+        
+        -- Check if this is a BLU internal sound (should have volume variants)
+        if sound.source == "BLU" or sound.isInternal then
+            -- BLU internal sounds SHOULD have _low, _med, _high variants
+            -- Based on master volume, select appropriate variant
+            local volumePercent = (BLU.db and BLU.db.profile and BLU.db.profile.soundVolume) or 100
             local variant
-            if volume <= 0.33 then
+            
+            if volumePercent <= 33 then
                 variant = "_low"
-            elseif volume <= 0.66 then
+            elseif volumePercent <= 66 then
                 variant = "_med"
             else
                 variant = "_high"
             end
             
             -- Build the variant file path
-            local baseFile = sound.baseFile or sound.file:gsub("_high%.ogg$", ""):gsub("_med%.ogg$", ""):gsub("_low%.ogg$", ""):gsub("%.ogg$", "")
+            -- Remove any existing variant suffix and .ogg extension
+            local baseFile = sound.file:gsub("_high%.ogg$", ""):gsub("_med%.ogg$", ""):gsub("_low%.ogg$", ""):gsub("%.ogg$", "")
             local variantFile = baseFile .. variant .. ".ogg"
+            
+            -- Check if variant file exists (for now, fallback to base if not)
+            -- TODO: When volume variant files are added, remove this fallback
+            fileToPlay = variantFile
             
             willPlay, handle = PlaySoundFile(variantFile, channel)
             

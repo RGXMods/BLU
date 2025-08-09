@@ -13,7 +13,7 @@
     <Script file="core/sharedmedia.lua"/>
     <Script file="core/internal_sounds.lua"/>
     <Script file="core/commands.lua"/>
-    <Script file="core/init.lua"/>
+    <Script file="core/initialization.lua"/>
     
     <!-- Localization -->
     <Script file="localization/enUS.lua"/>

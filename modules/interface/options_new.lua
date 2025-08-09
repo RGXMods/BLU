@@ -47,12 +47,6 @@ function Options:Init()
     end
     
     C_Timer.After(0.1, tryCreatePanel)
-    
-    -- Set up slash command
-    SLASH_BLU1 = "/blu"
-    SlashCmdList["BLU"] = function(msg)
-        self:OpenOptions()
-    end
 end
 
 -- Test SharedMedia functionality

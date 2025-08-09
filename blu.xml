@@ -13,12 +13,8 @@
     <Script file="core/sharedmedia.lua"/>
     <Script file="core/internal_sounds.lua"/>
     <Script file="core/commands.lua"/>
+    <Script file="core/interface_options.lua"/>
     <Script file="core/init.lua"/>
-    
-    <!-- Glass Style Design System -->
-    <Script file="interface/glass_design.lua"/>
-    <!-- Interface Options Panel with Glass Style -->
-    <Script file="interface/options_panel.lua"/>
     
     <!-- Localization -->
     <Script file="localization/enUS.lua"/>

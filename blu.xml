@@ -13,11 +13,11 @@
     <Script file="core/sharedmedia.lua"/>
     <Script file="core/internal_sounds.lua"/>
     <Script file="core/commands.lua"/>
-    <!-- Don't load these - they create duplicate panels -->
-    <!--<Script file="core/optionslauncher.lua"/>-->
-    <!--<Script file="core/options_new.lua"/>-->
     <Script file="core/init.lua"/>
-    <Script file="core/interface_options.lua"/>
+    
+    <!-- Narcissus-style Interface -->
+    <Script file="interface/narcissus_design.lua"/>
+    <Script file="core/interface_options_narcissus.lua"/>
     
     <!-- Localization -->
     <Script file="localization/enUS.lua"/>

@@ -15,8 +15,8 @@
     <Script file="core/commands.lua"/>
     <Script file="core/init.lua"/>
     
-    <!-- Simple Options Interface -->
-    <Script file="interface/options_simple.lua"/>
+    <!-- Integrated Interface Options -->
+    <Script file="interface/options_integrated.lua"/>
     
     <!-- Localization -->
     <Script file="localization/enUS.lua"/>

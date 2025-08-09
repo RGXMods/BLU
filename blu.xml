@@ -33,10 +33,6 @@
     <Script file="interface/panels/advanced.lua"/>
     <Script file="interface/panels/about.lua"/>
     
-    <!-- NextUI Integration -->
-    <Script file="interface/nextui_integration.lua"/>
-    <Script file="components/Settings.tsx.lua"/>
-    
     <!-- Feature Modules -->
     <Script file="modules/quest/quest.lua"/>
     <Script file="modules/quest/questpanel.lua"/>

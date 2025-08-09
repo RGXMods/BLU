@@ -5,7 +5,7 @@
 ## Author: DonnieDice
 ## Email: 60427166+donniedice@users.noreply.github.com
 ## SavedVariables: BLUDB
-## OptionalDeps: Ace3
+## OptionalDeps: NextUI, LibSharedMedia-3.0
 ## IconTexture: Interface\AddOns\BLU\media\textures\icon.tga
 
 ## X-Category: UI Media, Questing & Leveling, Audio & Video, Miscellaneous

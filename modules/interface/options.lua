@@ -1222,7 +1222,6 @@ end
     infoText:SetJustifyH("LEFT")
     
 --]]
-end
 
 -- Cleanup module
 function Options:Cleanup()

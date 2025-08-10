@@ -8,8 +8,8 @@ local addonName, BLU = ...
 function BLU.CreateSoundsPanel(panel)
     -- Create scrollable content with proper spacing
     local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
-    scrollFrame:SetPoint("TOPLEFT", BLU.Design.Layout.Padding, -BLU.Design.Layout.Spacing)
-    scrollFrame:SetPoint("BOTTOMRIGHT", -35, BLU.Design.Layout.Spacing)
+    scrollFrame:SetPoint("TOPLEFT", 5, -5)
+    scrollFrame:SetPoint("BOTTOMRIGHT", -30, 5)
     
     -- Add scroll frame background
     local scrollBg = scrollFrame:CreateTexture(nil, "BACKGROUND")
@@ -17,25 +17,18 @@ function BLU.CreateSoundsPanel(panel)
     scrollBg:SetColorTexture(0.05, 0.05, 0.05, 0.3)
     
     local content = CreateFrame("Frame", nil, scrollFrame)
-    -- Set size dynamically after frame is ready
-    C_Timer.After(0.01, function()
-        if scrollFrame:GetWidth() then
-            content:SetSize(scrollFrame:GetWidth() - 25, 1000)
-        else
-            content:SetSize(600, 1000)
-        end
-    end)
+    content:SetWidth(680)  -- Fixed width to fill available space
     scrollFrame:SetScrollChild(content)
     
     -- Header
     local header = BLU.Design:CreateHeader(content, "Installed Sound Packs", "Interface\\Icons\\INV_Misc_Bag_33")
     header:SetPoint("TOPLEFT", 0, 0)
-    header:SetPoint("RIGHT", -20, 0)
+    header:SetPoint("RIGHT", 0, 0)
     
     -- BLU Internal Sounds section
     local internalSection = BLU.Design:CreateSection(content, "BLU Built-in Sound Packs", "Interface\\Icons\\INV_Misc_Bell_01")
-    internalSection:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -20)
-    internalSection:SetPoint("RIGHT", -20, 0)
+    internalSection:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -15)
+    internalSection:SetPoint("RIGHT", 0, 0)
     internalSection:SetHeight(200)
     
     -- Create a grid layout for BLU sound packs

@@ -6,10 +6,10 @@
 local addonName, BLU = ...
 
 function BLU.CreateAboutPanel(panel)
-    -- Create scrollable content with proper sizing aligned to parent content frame
+    -- Create scrollable content with proper sizing
     local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
-    scrollFrame:SetPoint("TOPLEFT", BLU.Design.Layout.Spacing, -BLU.Design.Layout.Spacing)
-    scrollFrame:SetPoint("BOTTOMRIGHT", -30, BLU.Design.Layout.Spacing)
+    scrollFrame:SetPoint("TOPLEFT", 5, -5)
+    scrollFrame:SetPoint("BOTTOMRIGHT", -30, 5)
     
     -- Add scroll frame background
     local scrollBg = scrollFrame:CreateTexture(nil, "BACKGROUND")
@@ -17,20 +17,13 @@ function BLU.CreateAboutPanel(panel)
     scrollBg:SetColorTexture(0.05, 0.05, 0.05, 0.3)
     
     local content = CreateFrame("Frame", nil, scrollFrame)
-    -- Calculate proper content width based on scroll frame
-    C_Timer.After(0.01, function()
-        if scrollFrame:GetWidth() then
-            content:SetSize(scrollFrame:GetWidth() - 25, 900)
-        else
-            content:SetSize(600, 900)
-        end
-    end)
+    content:SetWidth(680)  -- Fixed width to fill available space
     scrollFrame:SetScrollChild(content)
     
     -- BLU Logo/Header
     local logoFrame = CreateFrame("Frame", nil, content)
-    logoFrame:SetPoint("TOPLEFT", BLU.Design.Layout.Spacing, -BLU.Design.Layout.Spacing)
-    logoFrame:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
+    logoFrame:SetPoint("TOPLEFT", 0, 0)
+    logoFrame:SetPoint("RIGHT", 0, 0)
     logoFrame:SetHeight(120)
     
     -- Logo background
@@ -184,5 +177,6 @@ function BLU.CreateAboutPanel(panel)
         "Thanks to the WoW addon development community for inspiration and guidance."
     )
     
-    content:SetHeight(850)
+    -- Set proper content height
+    content:SetHeight(700)
 end

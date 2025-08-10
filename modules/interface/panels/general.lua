@@ -6,10 +6,10 @@
 local addonName, BLU = ...
 
 function BLU.CreateGeneralPanel(panel)
-    -- Create scrollable content with proper sizing aligned to parent content frame
+    -- Create scrollable content with proper sizing
     local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
-    scrollFrame:SetPoint("TOPLEFT", BLU.Design.Layout.Spacing, -BLU.Design.Layout.Spacing)
-    scrollFrame:SetPoint("BOTTOMRIGHT", -30, BLU.Design.Layout.Spacing)
+    scrollFrame:SetPoint("TOPLEFT", 5, -5)
+    scrollFrame:SetPoint("BOTTOMRIGHT", -30, 5)
     
     -- Add scroll frame background
     local scrollBg = scrollFrame:CreateTexture(nil, "BACKGROUND")
@@ -17,27 +17,20 @@ function BLU.CreateGeneralPanel(panel)
     scrollBg:SetColorTexture(0.05, 0.05, 0.05, 0.3)
     
     local content = CreateFrame("Frame", nil, scrollFrame)
-    -- Calculate proper content width based on scroll frame
-    C_Timer.After(0.01, function()
-        if scrollFrame:GetWidth() then
-            content:SetSize(scrollFrame:GetWidth() - 25, 580)
-        else
-            content:SetSize(600, 580)
-        end
-    end)
+    content:SetWidth(680)  -- Fixed width to fill available space
     scrollFrame:SetScrollChild(content)
     
     -- No header needed - more compact
     
     -- Core Settings Section
     local coreSection = BLU.Design:CreateSection(content, "Core Settings", "Interface\\Icons\\Achievement_General")
-    coreSection:SetPoint("TOPLEFT", BLU.Design.Layout.Spacing, -BLU.Design.Layout.Spacing)
-    coreSection:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
+    coreSection:SetPoint("TOPLEFT", 0, 0)
+    coreSection:SetPoint("RIGHT", 0, 0)
     coreSection:SetHeight(140)
     
     -- Enable addon
     local enableCheck = BLU.Design:CreateCheckbox(coreSection.content, "Enable BLU", "Enable or disable all BLU functionality")
-    enableCheck:SetPoint("TOPLEFT", BLU.Design.Layout.Spacing/2, -BLU.Design.Layout.Spacing/2)
+    enableCheck:SetPoint("TOPLEFT", 5, -5)
     
     -- Set checkbox state with database check
     local enabled = true
@@ -46,6 +39,11 @@ function BLU.CreateGeneralPanel(panel)
     end
     enableCheck.check:SetChecked(enabled)
     enableCheck.check:SetScript("OnClick", function(self)
+        if not BLU.db or not BLU.db.profile then
+            BLU:Print("Database not ready. Please try again.")
+            self:SetChecked(not self:GetChecked())
+            return
+        end
         BLU.db.profile.enabled = self:GetChecked()
         if BLU.db.profile.enabled then
             BLU:Enable()
@@ -58,7 +56,7 @@ function BLU.CreateGeneralPanel(panel)
     
     -- Welcome message
     local welcomeCheck = BLU.Design:CreateCheckbox(coreSection.content, "Show welcome message", "Display addon loaded message on login")
-    welcomeCheck:SetPoint("TOPLEFT", enableCheck, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
+    welcomeCheck:SetPoint("TOPLEFT", enableCheck, "BOTTOMLEFT", 0, -8)
     
     -- Set checkbox state with database check
     local showWelcome = true
@@ -67,12 +65,16 @@ function BLU.CreateGeneralPanel(panel)
     end
     welcomeCheck.check:SetChecked(showWelcome)
     welcomeCheck.check:SetScript("OnClick", function(self)
+        if not BLU.db or not BLU.db.profile then
+            self:SetChecked(not self:GetChecked())
+            return
+        end
         BLU.db.profile.showWelcomeMessage = self:GetChecked()
     end)
     
     -- Debug mode
     local debugCheck = BLU.Design:CreateCheckbox(coreSection.content, "Debug mode", "Show debug messages in chat")
-    debugCheck:SetPoint("TOPLEFT", welcomeCheck, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
+    debugCheck:SetPoint("TOPLEFT", welcomeCheck, "BOTTOMLEFT", 0, -8)
     
     -- Set checkbox state with database check
     local debugMode = false
@@ -81,13 +83,17 @@ function BLU.CreateGeneralPanel(panel)
     end
     debugCheck.check:SetChecked(debugMode)
     debugCheck.check:SetScript("OnClick", function(self)
+        if not BLU.db or not BLU.db.profile then
+            self:SetChecked(not self:GetChecked())
+            return
+        end
         BLU.db.profile.debugMode = self:GetChecked()
         BLU.debugMode = self:GetChecked()
     end)
     
     -- Show sound names
     local showNamesCheck = BLU.Design:CreateCheckbox(coreSection.content, "Show sound names in chat", "Display the name of sounds when they play")
-    showNamesCheck:SetPoint("TOPLEFT", debugCheck, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
+    showNamesCheck:SetPoint("TOPLEFT", debugCheck, "BOTTOMLEFT", 0, -8)
     
     -- Set checkbox state with database check
     local showNames = false
@@ -96,18 +102,22 @@ function BLU.CreateGeneralPanel(panel)
     end
     showNamesCheck.check:SetChecked(showNames)
     showNamesCheck.check:SetScript("OnClick", function(self)
+        if not BLU.db or not BLU.db.profile then
+            self:SetChecked(not self:GetChecked())
+            return
+        end
         BLU.db.profile.showSoundNames = self:GetChecked()
     end)
     
     -- Audio Settings Section
     local audioSection = BLU.Design:CreateSection(content, "Audio Settings", "Interface\\Icons\\INV_Misc_Ear_Human_01")
-    audioSection:SetPoint("TOPLEFT", coreSection, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
-    audioSection:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
+    audioSection:SetPoint("TOPLEFT", coreSection, "BOTTOMLEFT", 0, -10)
+    audioSection:SetPoint("RIGHT", 0, 0)
     audioSection:SetHeight(180)
     
     -- Volume slider
     local volumeLabel = audioSection.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    volumeLabel:SetPoint("TOPLEFT", 0, -BLU.Design.Layout.Spacing/2)
+    volumeLabel:SetPoint("TOPLEFT", 5, -5)
     volumeLabel:SetText("BLU Sound Volume")
     
     local volumeSlider = CreateFrame("Slider", "BLUVolumeSlider", audioSection.content, "OptionsSliderTemplate")
@@ -132,7 +142,9 @@ function BLU.CreateGeneralPanel(panel)
     
     volumeSlider:SetScript("OnValueChanged", function(self, value)
         value = math.floor(value / 5) * 5  -- Round to nearest 5
-        BLU.db.profile.soundVolume = value
+        if BLU.db and BLU.db.profile then
+            BLU.db.profile.soundVolume = value
+        end
         volumeValue:SetText(value .. "%")
     end)
     
@@ -170,11 +182,13 @@ function BLU.CreateGeneralPanel(panel)
             info.text = channel.text
             info.value = channel.value
             info.func = function()
-                BLU.db.profile.soundChannel = channel.value
+                if BLU.db and BLU.db.profile then
+                    BLU.db.profile.soundChannel = channel.value
+                end
                 UIDropDownMenu_SetText(self, channel.text)
                 CloseDropDownMenus()
             end
-            info.checked = BLU.db.profile.soundChannel == channel.value
+            info.checked = (BLU.db and BLU.db.profile and BLU.db.profile.soundChannel == channel.value)
             UIDropDownMenu_AddButton(info)
         end
     end)
@@ -219,13 +233,13 @@ function BLU.CreateGeneralPanel(panel)
     
     -- Behavior Settings Section
     local behaviorSection = BLU.Design:CreateSection(content, "Behavior Settings", "Interface\\Icons\\INV_Misc_GroupLooking")
-    behaviorSection:SetPoint("TOPLEFT", audioSection, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
-    behaviorSection:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
+    behaviorSection:SetPoint("TOPLEFT", audioSection, "BOTTOMLEFT", 0, -10)
+    behaviorSection:SetPoint("RIGHT", 0, 0)
     behaviorSection:SetHeight(120)
     
     -- Random sounds
     local randomCheck = BLU.Design:CreateCheckbox(behaviorSection.content, "Random sounds", "Play random sounds from all available packs")
-    randomCheck:SetPoint("TOPLEFT", 0, -BLU.Design.Layout.Spacing/2)
+    randomCheck:SetPoint("TOPLEFT", 5, -5)
     
     -- Set checkbox state with database check
     local randomSounds = false
@@ -234,12 +248,16 @@ function BLU.CreateGeneralPanel(panel)
     end
     randomCheck.check:SetChecked(randomSounds)
     randomCheck.check:SetScript("OnClick", function(self)
+        if not BLU.db or not BLU.db.profile then
+            self:SetChecked(not self:GetChecked())
+            return
+        end
         BLU.db.profile.randomSounds = self:GetChecked()
     end)
     
     -- Mute in instances
     local muteCheck = BLU.Design:CreateCheckbox(behaviorSection.content, "Mute in instances", "Disable sounds while in dungeons, raids, or PvP")
-    muteCheck:SetPoint("TOPLEFT", randomCheck, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
+    muteCheck:SetPoint("TOPLEFT", randomCheck, "BOTTOMLEFT", 0, -8)
     
     -- Set checkbox state with database check
     local muteInInstances = false
@@ -248,12 +266,16 @@ function BLU.CreateGeneralPanel(panel)
     end
     muteCheck.check:SetChecked(muteInInstances)
     muteCheck.check:SetScript("OnClick", function(self)
+        if not BLU.db or not BLU.db.profile then
+            self:SetChecked(not self:GetChecked())
+            return
+        end
         BLU.db.profile.muteInInstances = self:GetChecked()
     end)
     
     -- Mute in combat
     local combatCheck = BLU.Design:CreateCheckbox(behaviorSection.content, "Mute in combat", "Disable sounds while in combat")
-    combatCheck:SetPoint("TOPLEFT", muteCheck, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
+    combatCheck:SetPoint("TOPLEFT", muteCheck, "BOTTOMLEFT", 0, -8)
     
     -- Set checkbox state with database check
     local muteInCombat = false
@@ -262,13 +284,17 @@ function BLU.CreateGeneralPanel(panel)
     end
     combatCheck.check:SetChecked(muteInCombat)
     combatCheck.check:SetScript("OnClick", function(self)
+        if not BLU.db or not BLU.db.profile then
+            self:SetChecked(not self:GetChecked())
+            return
+        end
         BLU.db.profile.muteInCombat = self:GetChecked()
     end)
     
     -- Actions Section
     local actionsSection = BLU.Design:CreateSection(content, "Actions", "Interface\\Icons\\ACHIEVEMENT_GUILDPERK_QUICK AND DEAD")
-    actionsSection:SetPoint("TOPLEFT", behaviorSection, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
-    actionsSection:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
+    actionsSection:SetPoint("TOPLEFT", behaviorSection, "BOTTOMLEFT", 0, -10)
+    actionsSection:SetPoint("RIGHT", 0, 0)
     actionsSection:SetHeight(60)
     
     -- Reset button
@@ -333,5 +359,7 @@ function BLU.CreateGeneralPanel(panel)
         preferredIndex = 3
     }
     
-    content:SetHeight(550)
+    -- Calculate total content height
+    local totalHeight = 140 + 180 + 120 + 60 + 50  -- Sum of all section heights + spacing
+    content:SetHeight(totalHeight)
 end

@@ -50,16 +50,16 @@ BLU.Design = {
     
     -- Layout constants
     Layout = {
-        PanelWidth = 700,
-        PanelHeight = 600,
-        HeaderHeight = 100,
-        TabWidth = 85,
-        TabHeight = 24,
-        TabSpacing = 3,
-        TabRowHeight = 27, -- 24 height + 3 spacing
-        Padding = 20,
-        Spacing = 10,
-        ColumnGap = 20,
+        PanelWidth = 750,   -- Standard panel width
+        PanelHeight = 600,  -- Standard panel height
+        HeaderHeight = 60,  -- Compact header
+        TabWidth = 95,      -- Optimized tab width
+        TabHeight = 22,     -- Standard tab height
+        TabSpacing = 2,     -- Minimal spacing
+        TabRowHeight = 26,  -- 22 height + 4 spacing
+        Padding = 10,       -- Standard padding
+        Spacing = 10,       -- Standard spacing
+        ColumnGap = 15,     -- Standard column gap
     },
     
     -- Font styles

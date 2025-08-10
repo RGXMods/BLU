@@ -30,7 +30,8 @@ function BLU:Initialize()
     self:InitializePhase("sound", {
         "registry",       -- Sound registry
         "internal_sounds", -- Internal BLU sounds
-        "sharedmedia"     -- SharedMedia integration
+        "sharedmedia",    -- SharedMedia integration
+        "soundpacks"      -- BLU sound packs
     })
     
     -- Phase 3: Interface

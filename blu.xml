@@ -12,6 +12,7 @@
     <Script file="core/loader.lua"/>
     <Script file="core/sharedmedia.lua"/>
     <Script file="core/internal_sounds.lua"/>
+    <Script file="core/soundpacks.lua"/>
     <Script file="core/commands.lua"/>
     <Script file="core/initialization.lua"/>
     

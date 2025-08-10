@@ -289,22 +289,31 @@ function SharedMedia:AddTestSounds()
     
     -- Clear and rebuild categories
     self.soundCategories = {}
+    self.externalSounds = {}
     
-    -- Add test external sounds categories
-    self.soundCategories["SharedMedia Packs"] = {
-        "Final Fantasy Victory",
-        "Zelda Treasure",
-        "Mario Coin",
-        "Pokemon Level Up",
-        "Sonic Ring Collect"
+    -- Add WoW built-in sounds as examples
+    local wowSounds = {
+        {name = "WoW Level Up", path = "Sound\\Interface\\levelup2.ogg", category = "WoW Sounds"},
+        {name = "WoW Quest Complete", path = "Sound\\Interface\\iQuestComplete.ogg", category = "WoW Sounds"},
+        {name = "WoW Achievement", path = "Sound\\Interface\\UI_Achievement_Alert.ogg", category = "WoW Sounds"},
+        {name = "WoW Epic Loot", path = "Sound\\Interface\\UI_EpicLoot_Toast.ogg", category = "WoW Sounds"},
+        {name = "WoW Legendary", path = "Sound\\Interface\\UI_Legendary_Item_Toast.ogg", category = "WoW Sounds"}
     }
     
-    self.soundCategories["Achievement Sounds"] = {
-        "Epic Achievement",
-        "Legendary Alert",
-        "Guild Achievement",
-        "Rare Achievement"
-    }
+    for _, sound in ipairs(wowSounds) do
+        self.externalSounds[sound.name] = {
+            name = sound.name,
+            path = sound.path,
+            category = sound.category,
+            source = "WoW Built-in"
+        }
+        
+        -- Add to categories
+        if not self.soundCategories[sound.category] then
+            self.soundCategories[sound.category] = {}
+        end
+        table.insert(self.soundCategories[sound.category], sound.name)
+    end
     
     self.soundCategories["Level Up Sounds"] = {
         "Classic Ding",

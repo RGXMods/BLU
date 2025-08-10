@@ -8,8 +8,8 @@ local addonName, BLU = ...
 function BLU.CreateModulesPanel(panel)
     -- Create scrollable content with proper sizing
     local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
-    scrollFrame:SetPoint("TOPLEFT", 20, -15)
-    scrollFrame:SetPoint("BOTTOMRIGHT", -40, 15)
+    scrollFrame:SetPoint("TOPLEFT", 5, -5)
+    scrollFrame:SetPoint("BOTTOMRIGHT", -30, 5)
     
     -- Add scroll frame background
     local scrollBg = scrollFrame:CreateTexture(nil, "BACKGROUND")
@@ -17,25 +17,18 @@ function BLU.CreateModulesPanel(panel)
     scrollBg:SetColorTexture(0.05, 0.05, 0.05, 0.3)
     
     local content = CreateFrame("Frame", nil, scrollFrame)
-    -- Calculate proper content width based on scroll frame
-    C_Timer.After(0.01, function()
-        if scrollFrame:GetWidth() then
-            content:SetSize(scrollFrame:GetWidth() - 25, 800)
-        else
-            content:SetSize(600, 800)
-        end
-    end)
+    content:SetWidth(680)  -- Fixed width to fill available space
     scrollFrame:SetScrollChild(content)
     
     -- Header
     local header = BLU.Design:CreateHeader(content, "Module Management", "Interface\\Icons\\INV_Misc_Gear_08")
     header:SetPoint("TOPLEFT", 0, 0)
-    header:SetPoint("RIGHT", -20, 0)
+    header:SetPoint("RIGHT", 0, 0)
     
     -- Info text
     local infoText = content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     infoText:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -10)
-    infoText:SetPoint("RIGHT", -20, 0)
+    infoText:SetPoint("RIGHT", 0, 0)
     infoText:SetText("Enable or disable specific BLU features. Disabled modules won't use any resources and won't respond to game events.")
     infoText:SetJustifyH("LEFT")
     
@@ -138,7 +131,16 @@ function BLU.CreateModulesPanel(panel)
         }
     }
     
-    -- Initialize modules table
+    -- Initialize modules table (check if db exists first)
+    if not BLU.db or not BLU.db.profile then
+        -- Database not ready, defer panel creation
+        C_Timer.After(0.5, function()
+            if panel and panel:IsVisible() then
+                BLU.CreateModulesPanel(panel)
+            end
+        end)
+        return
+    end
     BLU.db.profile.modules = BLU.db.profile.modules or {}
     
     local yOffset = -80
@@ -148,7 +150,7 @@ function BLU.CreateModulesPanel(panel)
         -- Category section
         local section = BLU.Design:CreateSection(content, category.name, category.icon)
         section:SetPoint("TOPLEFT", 0, yOffset)
-        section:SetPoint("RIGHT", -20, 0)
+        section:SetPoint("RIGHT", 0, 0)
         section:SetHeight(40 + #category.modules * 55)
         
         local moduleY = -10
@@ -246,12 +248,22 @@ function BLU.CreateModulesPanel(panel)
                 end
             end
             
-            -- Set initial state
-            local isEnabled = BLU.db.profile.modules[module.id] ~= false
+            -- Set initial state (with safety check)
+            local isEnabled = true
+            if BLU.db and BLU.db.profile and BLU.db.profile.modules then
+                isEnabled = BLU.db.profile.modules[module.id] ~= false
+            else
+                isEnabled = module.default ~= false
+            end
             UpdateToggleState(toggle, isEnabled)
             
             -- Click handler
             toggle:SetScript("OnClick", function(self)
+                if not BLU.db or not BLU.db.profile then
+                    BLU:Print("Database not ready. Please try again.")
+                    return
+                end
+                BLU.db.profile.modules = BLU.db.profile.modules or {}
                 local enabled = BLU.db.profile.modules[self.moduleId] ~= false
                 enabled = not enabled
                 BLU.db.profile.modules[self.moduleId] = enabled
@@ -295,6 +307,11 @@ function BLU.CreateModulesPanel(panel)
     
     -- Quick action handlers
     enableAllBtn:SetScript("OnClick", function()
+        if not BLU.db or not BLU.db.profile then
+            BLU:Print("Database not ready. Please try again.")
+            return
+        end
+        BLU.db.profile.modules = BLU.db.profile.modules or {}
         for _, category in ipairs(categories) do
             for _, module in ipairs(category.modules) do
                 BLU.db.profile.modules[module.id] = true
@@ -312,6 +329,11 @@ function BLU.CreateModulesPanel(panel)
     end)
     
     disableAllBtn:SetScript("OnClick", function()
+        if not BLU.db or not BLU.db.profile then
+            BLU:Print("Database not ready. Please try again.")
+            return
+        end
+        BLU.db.profile.modules = BLU.db.profile.modules or {}
         for _, category in ipairs(categories) do
             for _, module in ipairs(category.modules) do
                 BLU.db.profile.modules[module.id] = false
@@ -329,6 +351,11 @@ function BLU.CreateModulesPanel(panel)
     end)
     
     defaultBtn:SetScript("OnClick", function()
+        if not BLU.db or not BLU.db.profile then
+            BLU:Print("Database not ready. Please try again.")
+            return
+        end
+        BLU.db.profile.modules = BLU.db.profile.modules or {}
         for _, category in ipairs(categories) do
             for _, module in ipairs(category.modules) do
                 BLU.db.profile.modules[module.id] = module.default
@@ -351,5 +378,6 @@ function BLU.CreateModulesPanel(panel)
         end
     end)
     
-    content:SetHeight(math.abs(yOffset) + 100)
+    -- Set proper content height
+    content:SetHeight(math.abs(yOffset) + 50)
 end

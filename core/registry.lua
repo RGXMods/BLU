@@ -36,6 +36,14 @@ function SoundRegistry:Init()
         return self:PlayCategorySound(category, forceSound)
     end
     
+    BLU.RegisterSoundPack = function(_, packId, packName, sounds)
+        return self:RegisterSoundPack(packId, packName, sounds)
+    end
+    
+    BLU.GetRegisteredPacks = function()
+        return self:GetRegisteredPacks()
+    end
+    
     BLU:PrintDebug(BLU:Loc("MODULE_LOADED", "SoundRegistry"))
 end
 
@@ -89,6 +97,55 @@ function SoundRegistry:GetSoundsByCategory(category)
     end
     
     return sounds
+end
+
+-- Get all sounds
+function SoundRegistry:GetAllSounds()
+    return self.sounds
+end
+
+-- Register a sound pack
+function SoundRegistry:RegisterSoundPack(packId, packName, sounds)
+    if not packId or not sounds then
+        BLU:PrintError("Invalid sound pack registration")
+        return false
+    end
+    
+    BLU:PrintDebug("Registering sound pack: " .. packName)
+    
+    local registered = 0
+    for soundId, soundData in pairs(sounds) do
+        -- Add pack info to sound data
+        soundData.packId = packId
+        soundData.packName = packName
+        
+        -- Register the sound
+        if self:RegisterSound(soundId, soundData) then
+            registered = registered + 1
+        end
+    end
+    
+    BLU:PrintDebug(string.format("Registered %d sounds from pack: %s", registered, packName))
+    return true
+end
+
+-- Get registered sound packs
+function SoundRegistry:GetRegisteredPacks()
+    local packs = {}
+    local packMap = {}
+    
+    -- Collect unique packs from registered sounds
+    for soundId, soundData in pairs(self.sounds) do
+        if soundData.packId and not packMap[soundData.packId] then
+            packMap[soundData.packId] = true
+            table.insert(packs, {
+                id = soundData.packId,
+                name = soundData.packName or soundData.packId
+            })
+        end
+    end
+    
+    return packs
 end
 
 -- Play a sound

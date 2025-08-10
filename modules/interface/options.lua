@@ -105,11 +105,14 @@ end
 -- Create tab button with SimpleQuestPlates style
 local function CreateTabButton(parent, text, index, row, col, panel)
     local button = CreateFrame("Button", "BLUTab" .. text:gsub(" ", ""), parent)
-    button:SetSize(BLU.Design.Layout.TabWidth, BLU.Design.Layout.TabHeight)
+    -- Smaller tabs for better fit
+    button:SetSize(80, 22)
     
-    -- Position based on row and column with proper spacing from design constants
-    local xOffset = 8 + (col - 1) * (BLU.Design.Layout.TabWidth + BLU.Design.Layout.TabSpacing)
-    local yOffset = -5 - (row - 1) * BLU.Design.Layout.TabRowHeight
+    -- Calculate position based on row and column with tighter spacing
+    local tabWidth = 80
+    local tabSpacing = 3
+    local xOffset = 10 + (col - 1) * (tabWidth + tabSpacing)
+    local yOffset = -8 - (row - 1) * 26  -- 22 height + 4 spacing
     button:SetPoint("TOPLEFT", parent, "TOPLEFT", xOffset, yOffset)
     parent[index] = button
     
@@ -129,10 +132,11 @@ local function CreateTabButton(parent, text, index, row, col, panel)
     border:SetBackdropBorderColor(0.3, 0.3, 0.3, 1)
     button.border = border
     
-    -- Text (no icons)
+    -- Text with smaller font
     local buttonText = button:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     buttonText:SetPoint("CENTER", 0, 0)
     buttonText:SetText(text)
+    buttonText:SetTextColor(0.8, 0.8, 0.8, 1)
     button.text = buttonText
     
     -- Scripts
@@ -209,31 +213,31 @@ function Options:CreateOptionsPanel()
     
     -- Main container with custom background (SQP style)
     local container = CreateFrame("Frame", nil, panel, "BackdropTemplate")
-    container:SetPoint("TOPLEFT", 10, -10)
-    container:SetPoint("BOTTOMRIGHT", -10, 10)
+    container:SetPoint("TOPLEFT", 0, 0)
+    container:SetPoint("BOTTOMRIGHT", 0, 0)
     container:SetBackdrop(BLU.Design.Backdrops.Dark)
     container:SetBackdropColor(0.05, 0.05, 0.05, 0.95)
     container:SetBackdropBorderColor(unpack(BLU.Design.Colors.Primary))
     
     -- Create header
     local header = CreateFrame("Frame", nil, container, "BackdropTemplate")
-    header:SetHeight(70)  -- Reduced header height
-    header:SetPoint("TOPLEFT", 10, -10)
-    header:SetPoint("TOPRIGHT", -10, -10)
+    header:SetHeight(60)  -- Compact header
+    header:SetPoint("TOPLEFT", 5, -5)
+    header:SetPoint("TOPRIGHT", -5, -5)
     header:SetBackdrop(BLU.Design.Backdrops.Dark)
     header:SetBackdropColor(0.08, 0.08, 0.08, 0.8)
     header:SetBackdropBorderColor(unpack(BLU.Design.Colors.Primary))
     
     -- Logo/Icon
     local logo = header:CreateTexture(nil, "ARTWORK")
-    logo:SetSize(48, 48)
-    logo:SetPoint("LEFT", 15, 0)
+    logo:SetSize(40, 40)
+    logo:SetPoint("LEFT", 10, 0)
     logo:SetTexture("Interface\\AddOns\\BLU\\media\\images\\icon")
     
     -- Title (with colored letters like SQP)
-    local title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalHuge")
-    title:SetPoint("LEFT", logo, "RIGHT", 15, 10)
-    title:SetText("|cff05dffaB|r|cffffffffLU|r - |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel-|r|cff05dffaU|r|cffffffffp!|r")
+    local title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    title:SetPoint("LEFT", logo, "RIGHT", 10, 5)
+    title:SetText("|cff05dffaBLU|r - Better Level-Up!")
     
     -- Subtitle
     local subtitle = header:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
@@ -259,30 +263,32 @@ function Options:CreateOptionsPanel()
     
     -- Tab container (SQP style tabs) - multiple rows
     local tabContainer = CreateFrame("Frame", nil, container)
-    tabContainer:SetHeight(60)  -- 2 rows * 27 height + spacing
-    tabContainer:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -10)
-    tabContainer:SetPoint("TOPRIGHT", header, "BOTTOMRIGHT", 0, -10)
+    tabContainer:SetHeight(60)  -- Height for 2 rows
+    tabContainer:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -2)
+    tabContainer:SetPoint("TOPRIGHT", header, "BOTTOMRIGHT", 0, -2)
     
     -- Add background for tab container
     local tabBg = tabContainer:CreateTexture(nil, "BACKGROUND")
     tabBg:SetAllPoints()
     tabBg:SetColorTexture(0.03, 0.03, 0.03, 0.6)
     
-    -- Create tabs for each sound event type (no icons)
+    -- Create tabs for each sound event type (reorganized for better fit)
     local tabs = {
-        -- Row 1
+        -- Row 1 - Core tabs and primary events
         {text = "General", create = BLU.CreateGeneralPanel, row = 1, col = 1},
-        {text = "Level Up", eventType = "levelup", row = 1, col = 2},
-        {text = "Achievement", eventType = "achievement", row = 1, col = 3},
-        {text = "Quest", eventType = "quest", row = 1, col = 4},
-        {text = "Reputation", eventType = "reputation", row = 1, col = 5},
-        {text = "Battle Pets", eventType = "battlepet", row = 1, col = 6},
-        -- Row 2
-        {text = "Honor", eventType = "honorrank", row = 2, col = 1},
-        {text = "Renown", eventType = "renownrank", row = 2, col = 2},
-        {text = "Trading Post", eventType = "tradingpost", row = 2, col = 3},
-        {text = "Delve", eventType = "delvecompanion", row = 2, col = 4},
-        {text = "About", create = BLU.CreateAboutPanel, row = 2, col = 5}
+        {text = "Sounds", create = BLU.CreateSoundsPanel, row = 1, col = 2},
+        {text = "Modules", create = BLU.CreateModulesPanel, row = 1, col = 3},
+        {text = "About", create = BLU.CreateAboutPanel, row = 1, col = 4},
+        {text = "Level Up", eventType = "levelup", row = 1, col = 5},
+        {text = "Achievement", eventType = "achievement", row = 1, col = 6},
+        {text = "Quest", eventType = "quest", row = 1, col = 7},
+        -- Row 2 - Secondary events
+        {text = "Reputation", eventType = "reputation", row = 2, col = 1},
+        {text = "Battle Pets", eventType = "battlepet", row = 2, col = 2},
+        {text = "Honor", eventType = "honorrank", row = 2, col = 3},
+        {text = "Renown", eventType = "renownrank", row = 2, col = 4},
+        {text = "Trading Post", eventType = "tradingpost", row = 2, col = 5},
+        {text = "Delve", eventType = "delvecompanion", row = 2, col = 6}
     }
     
     panel.tabs = {}
@@ -292,13 +298,13 @@ function Options:CreateOptionsPanel()
         local tab = CreateTabButton(tabContainer, tabInfo.text, i, tabInfo.row, tabInfo.col, panel)
         panel.tabs[i] = tab
         
-        -- Create content frame with proper positioning using design constants
+        -- Create content frame with proper padding
         local content = CreateFrame("Frame", nil, container, "BackdropTemplate")
-        content:SetPoint("TOPLEFT", tabContainer, "BOTTOMLEFT", BLU.Design.Layout.Padding, -BLU.Design.Layout.Spacing)
-        content:SetPoint("BOTTOMRIGHT", container, "BOTTOMRIGHT", -BLU.Design.Layout.Padding, BLU.Design.Layout.Spacing)
+        content:SetPoint("TOPLEFT", tabContainer, "BOTTOMLEFT", 0, -10)
+        content:SetPoint("BOTTOMRIGHT", container, "BOTTOMRIGHT", 0, 10)
         content:SetBackdrop(BLU.Design.Backdrops.Dark)
-        content:SetBackdropColor(0.08, 0.08, 0.08, 0.9)
-        content:SetBackdropBorderColor(0.15, 0.15, 0.15, 1)
+        content:SetBackdropColor(0.06, 0.06, 0.06, 0.95)
+        content:SetBackdropBorderColor(0.2, 0.2, 0.2, 1)
         content:Hide()
         
         -- Create tab content
@@ -376,23 +382,67 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
     -- soundType is used for events that have multiple sounds (like quest_complete and quest_progress)
     local actualEventType = soundType or eventType
     
-    -- Container frame
+    -- Container frame with better positioning
     local container = CreateFrame("Frame", nil, parent)
-    container:SetPoint("TOPLEFT", BLU.Design.Layout.Spacing, yOffset)
-    container:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
-    container:SetHeight(120)
+    container:SetPoint("TOPLEFT", parent, "TOPLEFT", 0, yOffset)
+    container:SetPoint("RIGHT", parent, "RIGHT", -10, 0)
+    container:SetHeight(90)
+    
+    -- Label for the dropdown
+    local dropdownLabel = container:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    dropdownLabel:SetPoint("TOPLEFT", 10, -5)
+    dropdownLabel:SetText(BLU.Design.Colors.PrimaryHex .. label .. "|r")
     
     -- Current sound display
-    local currentLabel = container:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    currentLabel:SetPoint("TOPLEFT", 0, 0)
-    currentLabel:SetText(label .. " - Current:")
+    local currentLabel = container:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    currentLabel:SetPoint("TOPLEFT", dropdownLabel, "BOTTOMLEFT", 0, -5)
+    currentLabel:SetText("Currently selected: ")
+    currentLabel:SetTextColor(0.7, 0.7, 0.7)
     
-    local currentSound = container:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    currentSound:SetPoint("LEFT", currentLabel, "RIGHT", BLU.Design.Layout.Spacing, 0)
+    local currentSound = container:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    currentSound:SetPoint("LEFT", currentLabel, "RIGHT", 5, 0)
+    currentSound:SetTextColor(0.02, 0.87, 0.98)
+    
+    -- Test button and volume slider container
+    local controlsFrame = CreateFrame("Frame", nil, container)
+    controlsFrame:SetPoint("TOPRIGHT", container, "TOPRIGHT", -10, -20)
+    controlsFrame:SetSize(180, 60)
+    
+    -- Volume slider
+    local volumeSlider = CreateFrame("Slider", nil, controlsFrame, "OptionsSliderTemplate")
+    volumeSlider:SetSize(100, 20)
+    volumeSlider:SetPoint("LEFT", 0, 0)
+    volumeSlider:SetMinMaxValues(0, 100)
+    volumeSlider:SetValueStep(5)
+    volumeSlider:SetObeyStepOnDrag(true)
+    
+    volumeSlider.Text:SetText("Volume")
+    volumeSlider.Low:SetText("0")
+    volumeSlider.High:SetText("100")
+    
+    -- Set initial volume
+    local volume = 100
+    if BLU.db and BLU.db.profile and BLU.db.profile.soundVolumes then
+        volume = BLU.db.profile.soundVolumes[actualEventType] or 100
+    end
+    volumeSlider:SetValue(volume)
+    
+    -- Volume value display
+    local volumeValue = controlsFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    volumeValue:SetPoint("TOP", volumeSlider, "BOTTOM", 0, -2)
+    volumeValue:SetText(volume .. "%")
+    
+    volumeSlider:SetScript("OnValueChanged", function(self, value)
+        volumeValue:SetText(math.floor(value) .. "%")
+        if BLU.db and BLU.db.profile then
+            BLU.db.profile.soundVolumes = BLU.db.profile.soundVolumes or {}
+            BLU.db.profile.soundVolumes[actualEventType] = value
+        end
+    end)
     
     -- Test button
-    local testBtn = BLU.Design:CreateButton(container, "Test", 80, 25)
-    testBtn:SetPoint("LEFT", currentSound, "RIGHT", BLU.Design.Layout.Padding, 0)
+    local testBtn = BLU.Design:CreateButton(controlsFrame, "Test", 60, 22)
+    testBtn:SetPoint("RIGHT", 0, 0)
     testBtn:SetScript("OnClick", function(self)
         self:SetText("Playing...")
         self:Disable()
@@ -409,10 +459,10 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
         end)
     end)
     
-    -- Sound dropdown
-    local dropdownContainer = BLU.Design:CreateDropdown(container, "Select " .. label .. ":", 280)
-    dropdownContainer:SetPoint("TOPLEFT", currentLabel, "BOTTOMLEFT", 0, -(BLU.Design.Layout.Spacing + 10))
-    local dropdown = dropdownContainer.dropdown
+    -- Sound dropdown with better positioning
+    local dropdown = CreateFrame("Frame", "BLUDropdown_" .. actualEventType, container, "UIDropDownMenuTemplate")
+    dropdown:SetPoint("TOPLEFT", currentLabel, "BOTTOMLEFT", -16, -5)
+    UIDropDownMenu_SetWidth(dropdown, 260)
     
     -- Store references
     dropdown.currentSound = currentSound
@@ -463,10 +513,12 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
             if BLU.Modules.sharedmedia and BLU.Modules.sharedmedia.GetSoundCategories then
                 local success, categories = pcall(function() return BLU.Modules.sharedmedia:GetSoundCategories() end)
                 if success and categories and type(categories) == "table" then
+                    local categoryCount = 0
                     for category, sounds in pairs(categories) do
                         if sounds and type(sounds) == "table" and #sounds > 0 then
+                            categoryCount = categoryCount + 1
                             info = UIDropDownMenu_CreateInfo()
-                            info.text = category .. " (" .. #sounds .. ")"
+                            info.text = "|cffffff00" .. category .. "|r (" .. #sounds .. ")"
                             info.value = category
                             info.hasArrow = true
                             info.menuList = category
@@ -474,26 +526,76 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
                             UIDropDownMenu_AddButton(info, level)
                         end
                     end
+                    
+                    -- Add separator if we have external sounds
+                    if categoryCount > 0 then
+                        info = UIDropDownMenu_CreateInfo()
+                        info.text = ""
+                        info.notClickable = true
+                        info.notCheckable = true
+                        UIDropDownMenu_AddButton(info, level)
+                    end
                 end
             end
+            
+            -- Add option to browse for more sounds
+            info = UIDropDownMenu_CreateInfo()
+            info.text = "|cff888888Browse Sound Files...|r"
+            info.value = "browse"
+            info.func = function()
+                BLU:Print("Sound browser not yet implemented")
+                CloseDropDownMenus()
+            end
+            info.notCheckable = true
+            UIDropDownMenu_AddButton(info, level)
         elseif level == 2 then
             if menuList == "blu_builtin" then
-                -- BLU's built-in sounds
-                local builtinSounds = {
-                    {value = "finalfantasy_" .. dropdown.eventId, text = "Final Fantasy"},
-                    {value = "zelda_" .. dropdown.eventId, text = "Legend of Zelda"},
-                    {value = "pokemon_" .. dropdown.eventId, text = "Pokemon"},
-                    {value = "mario_" .. dropdown.eventId, text = "Super Mario"},
-                    {value = "sonic_" .. dropdown.eventId, text = "Sonic the Hedgehog"},
-                    {value = "metalgear_" .. dropdown.eventId, text = "Metal Gear Solid"},
-                    {value = "elderscrolls_" .. dropdown.eventId, text = "Elder Scrolls"},
-                    {value = "warcraft_" .. dropdown.eventId, text = "Warcraft"},
-                    {value = "eldenring_" .. dropdown.eventId, text = "Elden Ring"},
-                    {value = "castlevania_" .. dropdown.eventId, text = "Castlevania"},
-                    {value = "diablo_" .. dropdown.eventId, text = "Diablo"},
-                    {value = "fallout_" .. dropdown.eventId, text = "Fallout"},
-                    {value = "blu_default_" .. dropdown.eventId, text = "BLU Defaults"}
-                }
+                -- BLU's built-in sounds - get actual registered sounds
+                local builtinSounds = {}
+                
+                -- Get sounds from registry for this event type
+                if BLU.Modules and BLU.Modules.registry and BLU.Modules.registry.GetSoundsByCategory then
+                    local categorySounds = BLU.Modules.registry:GetSoundsByCategory(dropdown.eventId)
+                    local packNames = {}
+                    
+                    -- Collect unique pack names
+                    for soundId, soundData in pairs(categorySounds) do
+                        local packName = soundId:match("^(.+)_" .. dropdown.eventId)
+                        if packName and not packNames[packName] then
+                            packNames[packName] = true
+                            local displayName = packName:gsub("^%l", string.upper):gsub("_", " ")
+                            -- Special cases for better display names
+                            local nameMap = {
+                                finalfantasy = "Final Fantasy",
+                                zelda = "Legend of Zelda", 
+                                pokemon = "Pokemon",
+                                mario = "Super Mario",
+                                sonic = "Sonic the Hedgehog",
+                                elderscrolls = "Elder Scrolls",
+                                witcher = "The Witcher",
+                                diablo = "Diablo",
+                                warcraft = "Warcraft",
+                                allgames = "All Games Mix"
+                            }
+                            displayName = nameMap[packName] or displayName
+                            table.insert(builtinSounds, {value = soundId, text = displayName})
+                        end
+                    end
+                else
+                    -- Fallback to predefined list if registry not available
+                    builtinSounds = {
+                        {value = "finalfantasy_" .. dropdown.eventId, text = "Final Fantasy"},
+                        {value = "zelda_" .. dropdown.eventId, text = "Legend of Zelda"},
+                        {value = "pokemon_" .. dropdown.eventId, text = "Pokemon"},
+                        {value = "mario_" .. dropdown.eventId, text = "Super Mario"},
+                        {value = "sonic_" .. dropdown.eventId, text = "Sonic the Hedgehog"},
+                        {value = "elderscrolls_" .. dropdown.eventId, text = "Elder Scrolls"},
+                        {value = "witcher_" .. dropdown.eventId, text = "The Witcher"},
+                        {value = "diablo_" .. dropdown.eventId, text = "Diablo"},
+                        {value = "warcraft_" .. dropdown.eventId, text = "Warcraft"},
+                        {value = "allgames_" .. dropdown.eventId, text = "All Games Mix"}
+                    }
+                end
                 
                 for _, sound in ipairs(builtinSounds) do
                     local info = UIDropDownMenu_CreateInfo()
@@ -652,8 +754,8 @@ end
 function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     -- Create scrollable content with proper sizing aligned to content frame
     local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
-    scrollFrame:SetPoint("TOPLEFT", BLU.Design.Layout.Padding/2, -BLU.Design.Layout.Padding/2)
-    scrollFrame:SetPoint("BOTTOMRIGHT", -30, BLU.Design.Layout.Padding/2)
+    scrollFrame:SetPoint("TOPLEFT", 10, -5)
+    scrollFrame:SetPoint("BOTTOMRIGHT", -30, 5)
     
     -- Add scroll frame background for better visibility
     local scrollBg = scrollFrame:CreateTexture(nil, "BACKGROUND")
@@ -661,21 +763,14 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     scrollBg:SetColorTexture(0.05, 0.05, 0.05, 0.3)
     
     local content = CreateFrame("Frame", nil, scrollFrame)
-    -- Set size dynamically after frame is ready
-    C_Timer.After(0.01, function()
-        if scrollFrame:GetWidth() and scrollFrame:GetWidth() > 0 then
-            content:SetSize(scrollFrame:GetWidth() - 25, 800) -- Increased height for all sections
-        else
-            content:SetSize(650, 800) -- Increased fallback size
-        end
-    end)
+    content:SetWidth(680)  -- Fixed width to fill available space
     scrollFrame:SetScrollChild(content)
     
     -- Event header
     local header = CreateFrame("Frame", nil, content)
-    header:SetHeight(50)
-    header:SetPoint("TOPLEFT", BLU.Design.Layout.Padding, -BLU.Design.Layout.Padding)
-    header:SetPoint("RIGHT", -BLU.Design.Layout.Padding, 0)
+    header:SetHeight(45)
+    header:SetPoint("TOPLEFT", 0, 0)
+    header:SetPoint("RIGHT", 0, 0)
     
     local icon = header:CreateTexture(nil, "ARTWORK")
     icon:SetSize(32, 32)
@@ -700,9 +795,9 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     
     -- Module enable/disable section with better styling
     local moduleSection = BLU.Design:CreateSection(content, "Module Control", "Interface\\Icons\\INV_Misc_Gear_08")
-    moduleSection:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
-    moduleSection:SetPoint("RIGHT", -BLU.Design.Layout.Padding, 0)
-    moduleSection:SetHeight(120) -- Increased height for better spacing
+    moduleSection:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -10)
+    moduleSection:SetPoint("RIGHT", 0, 0)
+    moduleSection:SetHeight(110)
     
     -- Enable toggle with description
     local toggleFrame = CreateFrame("Frame", nil, moduleSection.content)
@@ -786,25 +881,26 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     
     -- Sound selection section
     local soundSection = BLU.Design:CreateSection(content, "Sound Selection", "Interface\\Icons\\INV_Misc_Bell_01")
-    soundSection:SetPoint("TOPLEFT", moduleSection, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
-    soundSection:SetPoint("RIGHT", -BLU.Design.Layout.Padding, 0)
+    soundSection:SetPoint("TOPLEFT", moduleSection, "BOTTOMLEFT", 0, -10)
+    soundSection:SetPoint("RIGHT", 0, 0)
     
     -- Adjust height based on event type (Quest needs more space for 2 dropdowns)
-    local sectionHeight = (eventType == "quest") and 250 or 150
+    local sectionHeight = (eventType == "quest") and 260 or 150
     soundSection:SetHeight(sectionHeight)
     
     -- Create sound dropdowns based on event type
     if eventType == "quest" then
         -- Quest has two separate sounds: complete and progress
-        CreateSoundDropdown(soundSection.content, "quest", "Quest Complete Sound", -BLU.Design.Layout.Spacing, "quest_complete")
-        CreateSoundDropdown(soundSection.content, "quest", "Quest Progress Sound", -130, "quest_progress")
+        CreateSoundDropdown(soundSection.content, "quest", "Quest Complete Sound", -5, "quest_complete")
+        CreateSoundDropdown(soundSection.content, "quest", "Quest Progress Sound", -95, "quest_progress")
     else
         -- All other events have a single sound
-        CreateSoundDropdown(soundSection.content, eventType, eventName .. " Sound", -BLU.Design.Layout.Spacing)
+        CreateSoundDropdown(soundSection.content, eventType, eventName .. " Sound", -5)
     end
     
-    -- Set content height
-    content:SetHeight(600)
+    -- Set content height based on event type
+    local contentHeight = (eventType == "quest") and 450 or 400
+    content:SetHeight(contentHeight)
 end
 
 -- Old function removed and replaced with helper above
@@ -900,22 +996,55 @@ end
             end
         elseif level == 2 then
             if menuList == "blu_builtin" then
-                -- BLU's built-in sounds
-                local builtinSounds = {
-                    {value = "finalfantasy_" .. dropdown.eventId, text = "Final Fantasy"},
-                    {value = "zelda_" .. dropdown.eventId, text = "Legend of Zelda"},
-                    {value = "pokemon_" .. dropdown.eventId, text = "Pokemon"},
-                    {value = "mario_" .. dropdown.eventId, text = "Super Mario"},
-                    {value = "sonic_" .. dropdown.eventId, text = "Sonic the Hedgehog"},
-                    {value = "metalgear_" .. dropdown.eventId, text = "Metal Gear Solid"},
-                    {value = "elderscrolls_" .. dropdown.eventId, text = "Elder Scrolls"},
-                    {value = "warcraft_" .. dropdown.eventId, text = "Warcraft"},
-                    {value = "eldenring_" .. dropdown.eventId, text = "Elden Ring"},
-                    {value = "castlevania_" .. dropdown.eventId, text = "Castlevania"},
-                    {value = "diablo_" .. dropdown.eventId, text = "Diablo"},
-                    {value = "fallout_" .. dropdown.eventId, text = "Fallout"},
-                    {value = "blu_default_" .. dropdown.eventId, text = "BLU Defaults"}
-                }
+                -- BLU's built-in sounds - get actual registered sounds
+                local builtinSounds = {}
+                
+                -- Get sounds from registry for this event type
+                if BLU.Modules and BLU.Modules.registry and BLU.Modules.registry.GetSoundsByCategory then
+                    local categorySounds = BLU.Modules.registry:GetSoundsByCategory(dropdown.eventId)
+                    local packNames = {}
+                    
+                    -- Collect unique pack names
+                    for soundId, soundData in pairs(categorySounds) do
+                        local packName = soundId:match("^(.+)_" .. dropdown.eventId)
+                        if packName and not packNames[packName] then
+                            packNames[packName] = true
+                            local displayName = packName:gsub("^%l", string.upper):gsub("_", " ")
+                            -- Special cases for better display names
+                            local nameMap = {
+                                finalfantasy = "Final Fantasy",
+                                zelda = "Legend of Zelda", 
+                                pokemon = "Pokemon",
+                                mario = "Super Mario",
+                                sonic = "Sonic the Hedgehog",
+                                elderscrolls = "Elder Scrolls",
+                                witcher = "The Witcher",
+                                diablo = "Diablo",
+                                warcraft = "Warcraft",
+                                allgames = "All Games Mix"
+                            }
+                            displayName = nameMap[packName] or displayName
+                            table.insert(builtinSounds, {value = soundId, text = displayName})
+                        end
+                    end
+                else
+                    -- Fallback to predefined list if registry not available
+                    builtinSounds = {
+                        {value = "finalfantasy_" .. dropdown.eventId, text = "Final Fantasy"},
+                        {value = "zelda_" .. dropdown.eventId, text = "Legend of Zelda"},
+                        {value = "pokemon_" .. dropdown.eventId, text = "Pokemon"},
+                        {value = "mario_" .. dropdown.eventId, text = "Super Mario"},
+                        {value = "sonic_" .. dropdown.eventId, text = "Sonic the Hedgehog"},
+                        {value = "elderscrolls_" .. dropdown.eventId, text = "Elder Scrolls"},
+                        {value = "witcher_" .. dropdown.eventId, text = "The Witcher"},
+                        {value = "diablo_" .. dropdown.eventId, text = "Diablo"},
+                        {value = "warcraft_" .. dropdown.eventId, text = "Warcraft"},
+                        {value = "allgames_" .. dropdown.eventId, text = "All Games Mix"}
+                    }
+                end
+                
+                -- Sort sounds alphabetically
+                table.sort(builtinSounds, function(a, b) return a.text < b.text end)
                 
                 for _, sound in ipairs(builtinSounds) do
                     local info = UIDropDownMenu_CreateInfo()
@@ -933,6 +1062,28 @@ end
                     info.checked = BLU.db.profile.selectedSounds[dropdown.eventId] == sound.value
                     UIDropDownMenu_AddButton(info, level)
                 end
+                
+                -- Add separator
+                if #builtinSounds > 0 then
+                    info = UIDropDownMenu_CreateInfo()
+                    info.text = ""
+                    info.notClickable = true
+                    info.notCheckable = true
+                    UIDropDownMenu_AddButton(info, level)
+                end
+                
+                -- Add random option
+                info = UIDropDownMenu_CreateInfo()
+                info.text = "|cffff00ffRandom BLU Sound|r"
+                info.value = "blu_random_" .. dropdown.eventId
+                info.func = function()
+                    BLU.db.profile.selectedSounds[dropdown.eventId] = "blu_random_" .. dropdown.eventId
+                    UIDropDownMenu_SetText(dropdown, "Random BLU Sound")
+                    dropdown.currentSound:SetText("Random BLU Sound")
+                    CloseDropDownMenus()
+                end
+                info.checked = BLU.db.profile.selectedSounds[dropdown.eventId] == "blu_random_" .. dropdown.eventId
+                UIDropDownMenu_AddButton(info, level)
             elseif menuList == "wow_sounds" then
                 -- WoW's built-in sounds for this event type
                 local wowSounds = {

@@ -207,7 +207,9 @@ function BLU.Design:CreateDropdown(parent, label, width)
     labelText:SetTextColor(unpack(self.Colors.Text))
     
     -- Dropdown with better styling
-    local dropdown = CreateFrame("Frame", nil, container, "UIDropDownMenuTemplate")
+    -- Create dropdown with a unique name to avoid nil errors
+    local dropdownName = "BLUDropdown" .. tostring(container):gsub("table: ", "")
+    local dropdown = CreateFrame("Frame", dropdownName, container, "UIDropDownMenuTemplate")
     dropdown:SetPoint("TOPLEFT", labelText, "BOTTOMLEFT", -16, -5)
     UIDropDownMenu_SetWidth(dropdown, width or 200)
     
@@ -216,32 +218,37 @@ function BLU.Design:CreateDropdown(parent, label, width)
     
     -- Style the dropdown after it's created (needs to be delayed)
     C_Timer.After(0.01, function()
-        local button = _G[dropdown:GetName() .. "Button"]
-        if button then
-            -- Update button texture for better visibility
-            button:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Up")
-            button:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Down")
-            button:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+        local dropdownName = dropdown:GetName()
+        if dropdownName then
+            local button = _G[dropdownName .. "Button"]
+            if button then
+                -- Update button texture for better visibility
+                button:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Up")
+                button:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Down")
+                button:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+                
+                -- Resize and position
+                button:SetSize(16, 16)
+                button:ClearAllPoints()
+                button:SetPoint("RIGHT", dropdown, "RIGHT", -10, 0)
+            end
             
-            -- Resize and position
-            button:SetSize(16, 16)
-            button:ClearAllPoints()
-            button:SetPoint("RIGHT", dropdown, "RIGHT", -10, 0)
+            -- Style the dropdown background parts
+            local middle = _G[dropdownName .. "Middle"]
+            local left = _G[dropdownName .. "Left"]  
+            local right = _G[dropdownName .. "Right"]
+            
+            if middle then middle:SetVertexColor(0.15, 0.15, 0.15, 1) end
+            if left then left:SetVertexColor(0.15, 0.15, 0.15, 1) end
+            if right then right:SetVertexColor(0.15, 0.15, 0.15, 1) end
         end
         
-        -- Style the dropdown background parts
-        local middle = _G[dropdown:GetName() .. "Middle"]
-        local left = _G[dropdown:GetName() .. "Left"]  
-        local right = _G[dropdown:GetName() .. "Right"]
-        
-        if middle then middle:SetVertexColor(0.15, 0.15, 0.15, 1) end
-        if left then left:SetVertexColor(0.15, 0.15, 0.15, 1) end
-        if right then right:SetVertexColor(0.15, 0.15, 0.15, 1) end
-        
-        -- Style the dropdown text
-        local text = _G[dropdown:GetName() .. "Text"]
-        if text then
-            text:SetTextColor(unpack(design.Colors.Text))
+        -- Style the dropdown text (only if we have a name)
+        if dropdownName then
+            local text = _G[dropdownName .. "Text"]
+            if text then
+                text:SetTextColor(unpack(design.Colors.Text))
+            end
         end
     end)
     

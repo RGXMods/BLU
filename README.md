@@ -3,7 +3,7 @@
 
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/donniedice/BLU/main/images/icon.tga" alt="BLU Logo" width="128" height="128">
+<img src="https://raw.githubusercontent.com/DonnieDice/BLU_Classic/main/BLU_logo.png" alt="BLU Logo" width="128" height="128">
 
 [![BLU Icon](https://img.shields.io/badge/BLU-Better%20Level%20Up!-05dffa?style=for-the-badge&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==&logoColor=white)](https://github.com/donniedice/BLU)
 
@@ -331,11 +331,10 @@ Thanks to all the amazing people who have contributed to BLU! 🎉
 ## 🌟 **Thank you for choosing RGX Mods!** 🌟
 
 **Made with ❤️ by the RealmGX Community**
+
 **Lead Developer: [DonnieDice](https://github.com/donniedice)**
 
 *"Make every level count with sounds that matter!"*
-
-<div align="center">
 
 [![Join Discord](https://img.shields.io/badge/🎮%20Join%20RealmGX%20Discord-Realm%20Gamers%20eXtreme-7289da?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/N7kdKAHVVF)
 
@@ -343,9 +342,5 @@ Thanks to all the amazing people who have contributed to BLU! 🎉
 [![GitHub Stars](https://img.shields.io/github/stars/donniedice/BLU?style=for-the-badge&logo=github)](https://github.com/donniedice/BLU)
 
 **🎮 RGX Mods - Powered by RealmGX Community**
-
-</div>
-
-</div>
 
 </div>

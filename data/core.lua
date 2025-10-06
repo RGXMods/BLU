@@ -44,9 +44,7 @@ function BLU:TestBattlePetLevelSound()
     self:TestSound("BattlePetLevelSoundSelect", "BattlePetLevelVolume", defaultSounds[2], "TEST_BATTLE_PET_LEVEL_SOUND")
 end
 
-function BLU:TestDelveLevelUpSound()
-    self:TestSound("DelveLevelUpSoundSelect", "DelveLevelUpVolume", defaultSounds[3], "TEST_DELVE_LEVEL_UP_SOUND")
-end
+
 
 function BLU:TestHonorSound()
     self:TestSound("HonorSoundSelect", "HonorVolume", defaultSounds[5], "TEST_HONOR_SOUND")
@@ -172,34 +170,3 @@ function BLU:ReputationRankIncrease(rank, msg)
     self:HandleEvent("REPUTATION_RANK_INCREASE", "RepSoundSelect", "RepVolume", defaultSounds[6], "REPUTATION_RANK_INCREASE_TRIGGERED")
 end
 
---=====================================================================================
--- Delve Level-Up Event Handler
---=====================================================================================
-function BLU:OnDelveCompanionLevelUp(event, ...)
-    -- Print debug message for the triggering event
-    self:PrintDebugMessage(event .. " event fired, awaiting CHAT_MSG_SYSTEM for confirmation.")
-
-    -- Only proceed with the CHAT_MSG_SYSTEM event to finalize the check
-    if event == "CHAT_MSG_SYSTEM" then
-        local msg = ...
-        self:PrintDebugMessage("INCOMING_CHAT_MESSAGE: " .. msg)
-
-        -- Check if Brann's level-up message is found in the chat
-        local levelUpMatch = string.match(msg, "Brann Bronzebeard has reached Level (%d+)")
-        if levelUpMatch then
-            local level = tonumber(levelUpMatch)
-            self:PrintDebugMessage("|cff00ff00Brann Level-Up detected: Level " .. level .. "|r")
-            self:TriggerDelveLevelUpSound(level)
-        else
-            self:PrintDebugMessage("NO_LEVEL_FOUND")
-        end
-    end
-end
-
---=====================================================================================
--- Trigger Sound on Delve Level-Up
---=====================================================================================
-function BLU:TriggerDelveLevelUpSound(level)
-    -- Use HandleEvent for consistency
-    self:HandleEvent("DELVE_LEVEL_UP", "DelveLevelUpSoundSelect", "DelveLevelUpVolume", defaultSounds[3], "DELVE_LEVEL_UP_TRIGGERED")
-end

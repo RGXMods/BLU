@@ -61,10 +61,7 @@ function BLU:RegisterSharedEvents()
         events.ACHIEVEMENT_EARNED = "HandleAchievementEarned"
         events.HONOR_LEVEL_UPDATE = "HandleHonorLevelUpdate"
 
-        -- Delve Compantion events for retail
-        events.TRAIT_CONFIG_UPDATED = "OnDelveCompanionLevelUp"
-        events.UPDATE_FACTION = "OnDelveCompanionLevelUp"
-        events.CHAT_MSG_SYSTEM = "OnDelveCompanionLevelUp"
+
 
         -- Battle pet events for retail
         events.UNIT_SPELLCAST_SUCCEEDED = "HandleBattlePetLevelUp"  -- Used for pet battle items
@@ -172,7 +169,6 @@ function BLU:IsGroupCompatibleWithVersion(group, version)
     elseif version == "cata" then
         if group.name and (group.name:match("Honor Rank%-Up!") or
                            group.name:match("Battle Pet Level%-Up!") or
-                           group.name:match("Delve Companion Level%-Up!") or
                            group.name:match("Renown Rank%-Up!") or
                            group.name:match("Post%-Sound Select")) then
             return false
@@ -181,7 +177,6 @@ function BLU:IsGroupCompatibleWithVersion(group, version)
         if group.name and (group.name:match("Achievement") or
                            group.name:match("Honor Rank%-Up!") or
                            group.name:match("Battle Pet Level%-Up!") or
-                           group.name:match("Delve Companion Level%-Up!") or
                            group.name:match("Renown Rank%-Up!") or
                            group.name:match("Post%-Sound Select")) then
             return false
@@ -202,7 +197,6 @@ function BLU:RemoveOptionsForVersion(version)
         args.group11 = nil
         self.db.profile.AchievementSoundSelect = nil
         self.db.profile.BattlePetLevelSoundSelect = nil
-        self.db.profile.DelveLevelUpSoundSelect = nil
         self.db.profile.HonorSoundSelect = nil
         self.db.profile.RenownSoundSelect = nil
         self.db.profile.PostSoundSelect = nil
@@ -213,7 +207,6 @@ function BLU:RemoveOptionsForVersion(version)
         args.group9 = nil
         args.group11 = nil
         self.db.profile.BattlePetLevelSoundSelect = nil
-        self.db.profile.DelveLevelUpSoundSelect = nil
         self.db.profile.HonorSoundSelect = nil
         self.db.profile.RenownSoundSelect = nil
         self.db.profile.PostSoundSelect = nil

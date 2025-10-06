@@ -9,8 +9,7 @@ BLU.defaults = {
         AchievementVolume = 2.0,
         BattlePetLevelSoundSelect = 37,
         BattlePetLevelVolume = 2.0,
-        DelveLevelUpSoundSelect = 50,
-        DelveLevelUpVolume = 2.0,
+
         HonorSoundSelect = 27,
         HonorVolume = 2.0,
         LevelSoundSelect = 24,
@@ -113,42 +112,7 @@ BLU.options = {
                 },
             },
         },
-        group4 = {
-            type = "group",
-            order = 4,
-            name = BLU_L["DELVE_COMPANION_LEVEL_UP"],-- COLOR SHOULD BE BLU
-            inline = true,
-            get = "GetValue",
-            set = "SetValue",
-            args = {
-                DelveLevelUpSoundSelect = {
-                    type = "select",
-                    order = 1,
-                    name = "",  -- Can leave blank if desired
-                    desc = "",  -- Blank sound description
-                    values = soundOptions,
-                },
-                TestDelveLevelUpSound = {
-                    type = "execute",
-                    order = 2,
-                    image = "Interface\\Addons\\BLU\\images\\play.blp",
-                    imageWidth = 20,
-                    imageHeight = 20,
-                    name = "",
-                    desc = "",  -- Description not needed for button
-                    func = function() BLU:TestDelveLevelUpSound() end,
-                },
-                DelveLevelUpVolume = {
-                    type = "range",
-                    order = 3,
-                    name = BLU_L["DELVE_VOLUME_LABEL"],-- COLOR SHOULD BE BLU
-                    desc = BLU_L["DELVE_VOLUME_DESC"],-- color should be white
-                    min = 0,
-                    max = 3,
-                    step = 1,
-                },
-            },
-        },
+
         group5 = {
             type = "group",
             order = 5,

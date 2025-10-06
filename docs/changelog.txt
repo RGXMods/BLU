@@ -1,3 +1,8 @@
+v5.2.6-------------------------------------------------------------------
+- Removed - Delve companion level up feature.
+- Updated - .toc files to reflect new version number.
+
+
 v5.2.5-------------------------------------------------------------------
 - Added - RGX Mods branding and community integration [README.md]
 - Updated - Professional README with GitHub statistics and badges [README.md]

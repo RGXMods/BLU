@@ -18,6 +18,7 @@ function BLU:OnInitialize()
     -- Register modules
     self:RegisterModule("Core", BLULib.CoreModule)
     self:RegisterModule("Options", BLULib.OptionsModule)
+    self:RegisterModule("BattlePets", BLULib.BattlePetsModule)
 
     -- Create the options panel
     BLULib.Options.Create(self)

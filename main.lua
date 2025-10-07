@@ -11,6 +11,10 @@ function BLU:OnInitialize()
 
     -- Register modules
     self:RegisterModule("Core", BLULib.CoreModule)
+    self:RegisterModule("Options", BLULib.OptionsModule)
+
+    -- Create the options panel
+    BLULib.Options.Create(self)
 
     -- Register slash commands
     self:RegisterChatCommand("debug", function(self, args)
@@ -21,5 +25,12 @@ function BLU:OnInitialize()
     end)
     self:RegisterChatCommand("help", function(self, args)
         BLULib.Utils.DisplayBLUHelp(self)
+    end)
+    self:RegisterChatCommand("panel", function(self, args)
+        if self.optionsFrame:IsShown() then
+            self.optionsFrame:Hide()
+        else
+            self.optionsFrame:Show()
+        end
     end)
 end

@@ -21,22 +21,22 @@ local REPUTATION_RANKS = {
 -- Module initialization
 function Reputation:Init()
     -- Hook into chat messages for reputation gains
-    ChatFrame_AddMessageEventFilter("CHAT_MSG_COMBAT_FACTION_CHANGE", function(...) return self:OnReputationMessage(...) end)
+    -- ChatFrame_AddMessageEventFilter("CHAT_MSG_COMBAT_FACTION_CHANGE", function(...) return self:OnReputationMessage(...) end)
     
     -- Track reputation changes
-    BLU:RegisterEvent("UPDATE_FACTION", function(...) self:OnUpdateFaction(...) end)
+    -- BLU:RegisterEvent("UPDATE_FACTION", function(...) self:OnUpdateFaction(...) end)
     
     -- Initialize reputation tracking
-    self.reputationData = {}
-    self:ScanReputation()
+    -- self.reputationData = {}
+    -- self:ScanReputation()
     
     BLU:PrintDebug("Reputation module initialized")
 end
 
 -- Cleanup function
 function Reputation:Cleanup()
-    ChatFrame_RemoveMessageEventFilter("CHAT_MSG_COMBAT_FACTION_CHANGE", self.OnReputationMessage)
-    BLU:UnregisterEvent("UPDATE_FACTION")
+    -- ChatFrame_RemoveMessageEventFilter("CHAT_MSG_COMBAT_FACTION_CHANGE", self.OnReputationMessage)
+    -- BLU:UnregisterEvent("UPDATE_FACTION")
     BLU:PrintDebug("Reputation module cleaned up")
 end
 

@@ -9,23 +9,23 @@ local DelveCompanion = {}
 -- Module initialization
 function DelveCompanion:Init()
     -- Hook into system messages for Delve Companion
-    ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", function(...) return self:OnSystemMessage(...) end)
+    -- ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", function(...) return self:OnSystemMessage(...) end)
     
     -- Register for Delve-specific events if they exist
-    if C_DelvesUI then
-        BLU:RegisterEvent("DELVES_COMPANION_LEVEL_UP", function(...) self:OnCompanionLevelUp(...) end)
-    end
+    -- if C_DelvesUI then
+    --     BLU:RegisterEvent("DELVES_COMPANION_LEVEL_UP", function(...) self:OnCompanionLevelUp(...) end)
+    -- end
     
     BLU:PrintDebug("DelveCompanion module initialized")
 end
 
 -- Cleanup function
 function DelveCompanion:Cleanup()
-    ChatFrame_RemoveMessageEventFilter("CHAT_MSG_SYSTEM", self.OnSystemMessage)
+    -- ChatFrame_RemoveMessageEventFilter("CHAT_MSG_SYSTEM", self.OnSystemMessage)
     
-    if C_DelvesUI then
-        BLU:UnregisterEvent("DELVES_COMPANION_LEVEL_UP")
-    end
+    -- if C_DelvesUI then
+    --     BLU:UnregisterEvent("DELVES_COMPANION_LEVEL_UP")
+    -- end
     
     BLU:PrintDebug("DelveCompanion module cleaned up")
 end

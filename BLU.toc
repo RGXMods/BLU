@@ -7,23 +7,4 @@
 ## SavedVariables: BLUDB
 ## IconTexture: Interface\AddOns\BLU\media\textures\icon.tga
 
-## X-Category: UI Media, Questing & Leveling, Audio & Video, Miscellaneous
-## X-Website: https://github.com/donniedice/BLU
-## X-Curse-Project-ID: 697841
-## X-Wago-ID: vEGPgWK1
-## X-WoWI-ID: 26465
-
-libs\core.lua
-libs\events.lua
-libs\utils.lua
-libs\options.lua
-libs\database.lua
-libs\localization.lua
-
-modules\sounds.lua
-modules\core.lua
-modules\options.lua
-modules\localization.lua
-modules\battlepets.lua
-
-main.lua
+blu.xml

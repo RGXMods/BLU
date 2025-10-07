@@ -23,5 +23,53 @@ function options:Create(addon)
     create_options_panel(addon)
 end
 
+function options:CreateDropdown(parent, name, values, get, set)
+    local dropdown = CreateFrame("Frame", parent:GetName() .. name, parent, "UIDropDownMenuTemplate")
+    dropdown.name = name
+
+    local function on_select(self, value)
+        set(value)
+    end
+
+    UIDropDownMenu_Initialize(dropdown, function(self, level)
+        for _, value in ipairs(values) do
+            local info = UIDropDownMenu_CreateInfo()
+            info.text = value
+            info.value = value
+            info.func = function(self)
+                on_select(self, self.value)
+            end
+            UIDropDownMenu_AddButton(info, level)
+        end
+    end)
+
+    UIDropDownMenu_SetSelectedValue(dropdown, get())
+
+    return dropdown
+end
+
+function options:CreateButton(parent, name, func)
+    local button = CreateFrame("Button", parent:GetName() .. name, parent, "UIPanelButtonTemplate")
+    button:SetText(name)
+    button:SetScript("OnClick", func)
+    return button
+end
+
+function options:CreateSlider(parent, name, min, max, step, get, set)
+    local slider = CreateFrame("Slider", parent:GetName() .. name, parent, "OptionsSliderTemplate")
+    slider:SetMinMaxValues(min, max)
+    slider:SetValueStep(step)
+    slider:SetValue(get())
+
+    slider:SetScript("OnValueChanged", function(self, value)
+        set(value)
+        _G[self:GetName() .. "Text"]:SetText(string.format("%.2f", value))
+    end)
+
+    _G[slider:GetName() .. "Text"]:SetText(string.format("%.2f", get()))
+
+    return slider
+end
+
 BLULib = BLULib or {}
 BLULib.Options = options

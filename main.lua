@@ -9,6 +9,9 @@ local BLU = BLULib.Core.NewAddon(addonName)
 function BLU:OnInitialize()
     self:Print("v" .. GetAddOnMetadata(addonName, "Version") .. " - Initialized!")
 
+    -- Initialize the database
+    BLULib.Database.Create(self, BLULib.OptionsModule.defaults)
+
     -- Register modules
     self:RegisterModule("Core", BLULib.CoreModule)
     self:RegisterModule("Options", BLULib.OptionsModule)

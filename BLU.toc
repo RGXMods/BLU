@@ -14,6 +14,7 @@
 ## X-WoWI-ID: 26465
 
 libs\core.lua
+libs\events.lua
 main.lua
 modules\core.lua
 

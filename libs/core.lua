@@ -5,7 +5,9 @@ end
 
 local addon_methods = {
     modules = {},
-    enabled_modules = {}
+    enabled_modules = {},
+    eventQueue = {},
+    isProcessingQueue = false
 }
 
 function addon_methods:Print(message)
@@ -39,18 +41,16 @@ local function NewAddon(name)
     addon.name = name
 
     -- Create the main frame to handle events
-    local frame = CreateFrame("Frame", name .. "CoreFrame")
-    frame:RegisterEvent("ADDON_LOADED")
+    BLULib.Events.Create(addon)
 
-    frame:SetScript("OnEvent", function(self, event, arg1)
-        if event == "ADDON_LOADED" and arg1 == name then
+    addon:RegisterEvent("ADDON_LOADED", function(self, event, arg1)
+        if arg1 == name then
             self:UnregisterEvent("ADDON_LOADED")
             addon:OnInitialize()
             addon:OnEnable()
         end
     end)
 
-    addon.frame = frame
     return addon
 end
 

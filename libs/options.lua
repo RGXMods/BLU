@@ -3,7 +3,7 @@ local options = {}
 
 local function create_options_panel(addon)
     local frame = CreateFrame("Frame", addon.name .. "OptionsFrame", UIParent)
-    frame:SetSize(600, 400)
+    frame:SetSize(600, 800) -- Increased height to accommodate all options
     frame:SetPoint("CENTER")
     frame:SetBackdrop({ bgFile = "Interface/DialogFrame/UI-DialogBox-Background",
         edgeFile = "Interface/DialogFrame/UI-DialogBox-Border",
@@ -23,6 +23,18 @@ function options:Create(addon)
     create_options_panel(addon)
 end
 
+function options:CreateGroup(parent, name, yOffset, color)
+    local group = CreateFrame("Frame", parent:GetName() .. name .. "Group", parent)
+    group:SetSize(560, 100)
+    group:SetPoint("TOPLEFT", 20, yOffset)
+
+    local label = group:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+    label:SetPoint("TOPLEFT", 0, 0)
+    label:SetText(color .. name .. "|r")
+
+    return group
+end
+
 function options:CreateDropdown(parent, name, values, get, set)
     local dropdown = CreateFrame("Frame", parent:GetName() .. name, parent, "UIDropDownMenuTemplate")
     dropdown.name = name
@@ -32,10 +44,10 @@ function options:CreateDropdown(parent, name, values, get, set)
     end
 
     UIDropDownMenu_Initialize(dropdown, function(self, level)
-        for _, value in ipairs(values) do
+        for key, value in pairs(values) do
             local info = UIDropDownMenu_CreateInfo()
             info.text = value
-            info.value = value
+            info.value = key
             info.func = function(self)
                 on_select(self, self.value)
             end
@@ -50,7 +62,10 @@ end
 
 function options:CreateButton(parent, name, func)
     local button = CreateFrame("Button", parent:GetName() .. name, parent, "UIPanelButtonTemplate")
-    button:SetText(name)
+    button:SetSize(32, 32)
+    button:SetNormalTexture("Interface/Buttons/UI-PlayButton-Up")
+    button:SetPushedTexture("Interface/Buttons/UI-PlayButton-Down")
+    button:SetHighlightTexture("Interface/Buttons/UI-Common-MouseHilight")
     button:SetScript("OnClick", func)
     return button
 end
@@ -61,12 +76,15 @@ function options:CreateSlider(parent, name, min, max, step, get, set)
     slider:SetValueStep(step)
     slider:SetValue(get())
 
+    _G[slider:GetName() .. "Text"]:SetText(string.format("%.2f", get()))
+    _G[slider:GetName() .. "Low"]:SetText(min)
+    _G[slider:GetName() .. "High"]:SetText(max)
+    _G[slider:GetName() .. "Label"]:SetText(name)
+
     slider:SetScript("OnValueChanged", function(self, value)
         set(value)
         _G[self:GetName() .. "Text"]:SetText(string.format("%.2f", value))
     end)
-
-    _G[slider:GetName() .. "Text"]:SetText(string.format("%.2f", get()))
 
     return slider
 end

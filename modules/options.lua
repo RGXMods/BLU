@@ -35,76 +35,41 @@ function options:CreateOptions()
     local addon = self.addon
     local optionsFrame = addon.optionsFrame
 
+    local optionGroups = {
+        { name = "ACHIEVEMENT_EARNED", key = "Achievement", defaultSound = defaultSounds[1] },
+        { name = "BATTLE_PET_LEVEL_UP", key = "BattlePetLevel", defaultSound = defaultSounds[2] },
+        { name = "HONOR_RANK_UP", key = "Honor", defaultSound = defaultSounds[5] },
+        { name = "LEVEL_UP", key = "Level", defaultSound = defaultSounds[4] },
+        { name = "QUEST_ACCEPTED", key = "QuestAccept", defaultSound = defaultSounds[7] },
+        { name = "QUEST_COMPLETE", key = "Quest", defaultSound = defaultSounds[8] },
+        { name = "RENOWN_RANK_UP", key = "Renown", defaultSound = defaultSounds[6] },
+        { name = "REPUTATION_RANK_UP", key = "Rep", defaultSound = defaultSounds[6] },
+        { name = "TRADE_POST_ACTIVITY_COMPLETE", key = "Post", defaultSound = defaultSounds[9] },
+    }
+
+    local colors = { "|cff05dffa", "|cffffffff" }
+    local colorIndex = 1
     local yOffset = -60
 
-    -- Achievement Group
-    local achievementGroup = self:CreateOptionGroup(optionsFrame, "Achievement", yOffset)
-    self:CreateOptionWidgets(achievementGroup, "Achievement", defaultSounds[1])
-    yOffset = yOffset - 120
-
-    -- Battle Pet Level Up Group
-    local battlePetGroup = self:CreateOptionGroup(optionsFrame, "BattlePetLevel", yOffset)
-    self:CreateOptionWidgets(battlePetGroup, "BattlePetLevel", defaultSounds[2])
-    yOffset = yOffset - 120
-
-    -- Honor Rank Up Group
-    local honorGroup = self:CreateOptionGroup(optionsFrame, "Honor", yOffset)
-    self:CreateOptionWidgets(honorGroup, "Honor", defaultSounds[5])
-    yOffset = yOffset - 120
-
-    -- Level Up Group
-    local levelUpGroup = self:CreateOptionGroup(optionsFrame, "Level", yOffset)
-    self:CreateOptionWidgets(levelUpGroup, "Level", defaultSounds[4])
-    yOffset = yOffset - 120
-
-    -- Quest Accepted Group
-    local questAcceptedGroup = self:CreateOptionGroup(optionsFrame, "QuestAccept", yOffset)
-    self:CreateOptionWidgets(questAcceptedGroup, "QuestAccept", defaultSounds[7])
-    yOffset = yOffset - 120
-
-    -- Quest Complete Group
-    local questCompleteGroup = self:CreateOptionGroup(optionsFrame, "Quest", yOffset)
-    self:CreateOptionWidgets(questCompleteGroup, "Quest", defaultSounds[8])
-    yOffset = yOffset - 120
-
-    -- Renown Rank Up Group
-    local renownGroup = self:CreateOptionGroup(optionsFrame, "Renown", yOffset)
-    self:CreateOptionWidgets(renownGroup, "Renown", defaultSounds[6])
-    yOffset = yOffset - 120
-
-    -- Reputation Rank Up Group
-    local reputationGroup = self:CreateOptionGroup(optionsFrame, "Rep", yOffset)
-    self:CreateOptionWidgets(reputationGroup, "Rep", defaultSounds[6])
-    yOffset = yOffset - 120
-
-    -- Trading Post Group
-    local tradingPostGroup = self:CreateOptionGroup(optionsFrame, "Post", yOffset)
-    self:CreateOptionWidgets(tradingPostGroup, "Post", defaultSounds[9])
+    for _, groupInfo in ipairs(optionGroups) do
+        local group = BLULib.Options.CreateGroup(optionsFrame, addon.L[groupInfo.name], yOffset, colors[colorIndex])
+        self:CreateOptionWidgets(group, groupInfo.key, groupInfo.defaultSound)
+        yOffset = yOffset - 120
+        colorIndex = colorIndex % 2 + 1
+    end
 end
 
-function options:CreateOptionGroup(parent, name, yOffset)
-    local group = CreateFrame("Frame", parent:GetName() .. name .. "Group", parent)
-    group:SetSize(500, 100)
-    group:SetPoint("TOPLEFT", 20, yOffset)
-
-    local label = group:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
-    label:SetPoint("TOPLEFT", 0, 0)
-    label:SetText(BLU_L[name .. "_LABEL"] or name)
-
-    return group
-end
-
-function options:CreateOptionWidgets(parent, name, defaultSound)
+function options:CreateOptionWidgets(parent, key, defaultSound)
     local addon = self.addon
 
-    local dropdown = BLULib.Options.CreateDropdown(parent, name .. "SoundSelect", soundOptions, function() return addon.db.profile[name .. "SoundSelect"] end, function(value) addon.db.profile[name .. "SoundSelect"] = value end)
-    dropdown:SetPoint("TOPLEFT", 20, -30)
+    local dropdown = BLULib.Options.CreateDropdown(parent, key .. "SoundSelect", soundOptions, function() return addon.db.profile[key .. "SoundSelect"] end, function(value) addon.db.profile[key .. "SoundSelect"] = value end)
+    dropdown:SetPoint("TOPLEFT", 20, -40)
 
-    local testButton = BLULib.Options.CreateButton(parent, "Test" .. name .. "Sound", function() BLULib.Utils.TestSound(addon, name .. "SoundSelect", name .. "Volume", defaultSound, "TEST_" .. name:upper() .. "_SOUND") end)
-    testButton:SetPoint("LEFT", dropdown, "RIGHT", 10, 0)
+    local testButton = BLULib.Options.CreateButton(parent, "Test" .. key .. "Sound", function() BLULib.Utils.TestSound(addon, key .. "SoundSelect", key .. "Volume", defaultSound, "TEST_" .. key:upper() .. "_SOUND") end)
+    testButton:SetPoint("LEFT", dropdown, "RIGHT", 150, 0)
 
-    local slider = BLULib.Options.CreateSlider(parent, name .. "Volume", 0, 3, 1, function() return addon.db.profile[name .. "Volume"] end, function(value) addon.db.profile[name .. "Volume"] = value end)
-    slider:SetPoint("LEFT", testButton, "RIGHT", 10, 0)
+    local slider = BLULib.Options.CreateSlider(parent, key .. "Volume", 0, 3, 1, function() return addon.db.profile[key .. "Volume"] end, function(value) addon.db.profile[key .. "Volume"] = value end)
+    slider:SetPoint("LEFT", testButton, "RIGHT", 50, 0)
 end
 
 BLULib = BLULib or {}

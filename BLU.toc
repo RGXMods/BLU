@@ -23,5 +23,4 @@ data\initialization.lua
 data\sounds.lua
 data\utils.lua
 data\battlepets.lua
-data\core.lua
 data\options.lua

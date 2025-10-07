@@ -23,6 +23,13 @@ function options:Create(addon)
     create_options_panel(addon)
 end
 
+function options:CreateHeader(parent, text, yOffset)
+    local header = parent:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+    header:SetPoint("TOP", 0, yOffset)
+    header:SetText(text)
+    return header
+end
+
 function options:CreateGroup(parent, name, yOffset, color)
     local group = CreateFrame("Frame", parent:GetName() .. name .. "Group", parent)
     group:SetSize(560, 100)
@@ -60,12 +67,14 @@ function options:CreateDropdown(parent, name, values, get, set)
     return dropdown
 end
 
-function options:CreateButton(parent, name, func)
-    local button = CreateFrame("Button", parent:GetName() .. name, parent, "UIPanelButtonTemplate")
-    button:SetSize(32, 32)
-    button:SetNormalTexture("Interface/Buttons/UI-PlayButton-Up")
-    button:SetPushedTexture("Interface/Buttons/UI-PlayButton-Down")
+function options:CreateImageButton(parent, name, image, func)
+    local button = CreateFrame("Button", parent:GetName() .. name, parent)
+    button:SetSize(20, 20)
+    button:SetNormalTexture(image)
+    button:SetPushedTexture(image)
     button:SetHighlightTexture("Interface/Buttons/UI-Common-MouseHilight")
+    button:GetNormalTexture():SetTexCoord(0, 1, 0, 1)
+    button:GetPushedTexture():SetTexCoord(0, 1, 0, 1)
     button:SetScript("OnClick", func)
     return button
 end

@@ -36,7 +36,7 @@ function options:CreateOptions()
     local optionsFrame = addon.optionsFrame
     local soundsModule = addon:GetModule("Sounds")
 
-    local optionGroups = {
+    local optionsLayout = {
         { name = "ACHIEVEMENT_EARNED", key = "Achievement", defaultSound = soundsModule.defaultSounds[1] },
         { name = "BATTLE_PET_LEVEL_UP", key = "BattlePetLevel", defaultSound = soundsModule.defaultSounds[2] },
         { name = "HONOR_RANK_UP", key = "Honor", defaultSound = soundsModule.defaultSounds[4] },
@@ -52,12 +52,18 @@ function options:CreateOptions()
     local colorIndex = 1
     local yOffset = -60
 
-    for _, groupInfo in ipairs(optionGroups) do
+    -- Title Header
+    BLULib.Options.CreateHeader(optionsFrame, addon.L["OPTIONS_PANEL_TITLE"], -20)
+
+    for _, groupInfo in ipairs(optionsLayout) do
         local group = BLULib.Options.CreateGroup(optionsFrame, addon.L[groupInfo.name], yOffset, colors[colorIndex])
         self:CreateOptionWidgets(group, groupInfo.key, groupInfo.defaultSound, soundsModule.soundOptions)
         yOffset = yOffset - 120
         colorIndex = colorIndex % 2 + 1
     end
+
+    -- Version Header
+    BLULib.Options.CreateHeader(optionsFrame, "|cff8080ff" .. GetAddOnMetadata(addon.name, "Version") .. "|r", yOffset)
 end
 
 function options:CreateOptionWidgets(parent, key, defaultSound, soundOptions)
@@ -66,11 +72,11 @@ function options:CreateOptionWidgets(parent, key, defaultSound, soundOptions)
     local dropdown = BLULib.Options.CreateDropdown(parent, key .. "SoundSelect", soundOptions, function() return addon.db.profile[key .. "SoundSelect"] end, function(value) addon.db.profile[key .. "SoundSelect"] = value end)
     dropdown:SetPoint("TOPLEFT", 20, -40)
 
-    local testButton = BLULib.Options.CreateButton(parent, "Test" .. key .. "Sound", function() BLULib.Utils.TestSound(addon, key .. "SoundSelect", key .. "Volume", defaultSound, "TEST_" .. key:upper() .. "_SOUND") end)
+    local testButton = BLULib.Options.CreateImageButton(parent, "Test" .. key .. "Sound", "Interface\\Addons\\BLU\\images\\play.blp", function() BLULib.Utils.TestSound(addon, key .. "SoundSelect", key .. "Volume", defaultSound, "TEST_" .. key:upper() .. "_SOUND") end)
     testButton:SetPoint("LEFT", dropdown, "RIGHT", 150, 0)
 
-    local slider = BLULib.Options.CreateSlider(parent, key .. "Volume", 0, 3, 1, function() return addon.db.profile[key .. "Volume"] end, function(value) addon.db.profile[key .. "Volume"] = value end)
-    slider:SetPoint("LEFT", testButton, "RIGHT", 50, 0)
+    local slider = BLULib.Options.CreateSlider(parent, addon.L[key:upper() .. "_VOLUME_LABEL"], 0, 3, 1, function() return addon.db.profile[key .. "Volume"] end, function(value) addon.db.profile[key .. "Volume"] = value end)
+    slider:SetPoint("LEFT", testButton, "RIGHT", 20, 0)
 end
 
 BLULib = BLULib or {}

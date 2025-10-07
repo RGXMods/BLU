@@ -35,6 +35,10 @@ function addon_methods:RegisterModule(name, module)
     module.addon = self -- give module access to the parent addon object
 end
 
+function addon_methods:GetModule(name)
+    return self.modules[name]
+end
+
 function addon_methods:RegisterChatCommand(command, handler)
     self.slashCommands[command] = handler
 end
@@ -83,7 +87,7 @@ local function NewAddon(name)
 
     addon:RegisterEvent("ADDON_LOADED", function(self, event, arg1)
         if arg1 == name then
-            self:UnregisterEvent("ADDON_LOADED")
+            self:UnregisterEvent("ADDODN_LOADED")
             addon:OnInitialize()
             addon:OnEnable()
         end

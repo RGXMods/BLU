@@ -13,8 +13,6 @@
 ## X-Wago-ID: vEGPgWK1
 ## X-WoWI-ID: 26465
 
-data\sounds.lua
-
 libs\core.lua
 libs\events.lua
 libs\utils.lua
@@ -22,10 +20,10 @@ libs\options.lua
 libs\database.lua
 libs\localization.lua
 
+modules\sounds.lua
 modules\core.lua
 modules\options.lua
 modules\localization.lua
-modules\sounds.lua
 modules\battlepets.lua
 
 main.lua

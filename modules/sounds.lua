@@ -1,5 +1,7 @@
 -- modules/sounds.lua
-soundOptions = {
+local sounds = {}
+
+sounds.soundOptions = {
     [2] = "Random",
     [1] = "Default",
     [3] = "Diablo 2",
@@ -27,70 +29,36 @@ soundOptions = {
     [25] = "Warcraft 3: Reforged",
 }
 
-defaultSounds = {
-    [1] = { -- Achievement
-        [1] = 880,
-        [2] = 880,
-        [3] = 880,
-    },
-    [2] = { -- Battle Pet Level Up
-        [1] = 880,
-        [2] = 880,
-        [3] = 880,
-    },
-    [3] = { -- Delve Companion Level Up
-        [1] = 880,
-        [2] = 880,
-        [3] = 880,
-    },
-    [4] = { -- Honor Level Up
-        [1] = 880,
-        [2] = 880,
-        [3] = 880,
-    },
-    [5] = { -- Level Up
-        [1] = 880,
-        [2] = 880,
-        [3] = 880,
-    },
-    [6] = { -- Renown Level Up
-        [1] = 880,
-        [2] = 880,
-        [3] = 880,
-    },
-    [7] = { -- Quest Accepted
-        [1] = 880,
-        [2] = 880,
-        [3] = 880,
-    },
-    [8] = { -- Quest Complete
-        [1] = 880,
-        [2] = 880,
-        [3] = 880,
-    },
-    [9] = { -- Trading Post Complete
-        [1] = 880,
-        [2] = 880,
-        [3] = 880,
-    },
+sounds.defaultSounds = {
+    [1] = { [1] = 880, [2] = 880, [3] = 880 }, -- Achievement
+    [2] = { [1] = 880, [2] = 880, [3] = 880 }, -- Battle Pet Level Up
+    [4] = { [1] = 880, [2] = 880, [3] = 880 }, -- Honor Level Up
+    [5] = { [1] = 880, [2] = 880, [3] = 880 }, -- Level Up
+    [6] = { [1] = 880, [2] = 880, [3] = 880 }, -- Renown Level Up
+    [7] = { [1] = 880, [2] = 880, [3] = 880 }, -- Quest Accepted
+    [8] = { [1] = 880, [2] = 880, [3] = 880 }, -- Quest Complete
+    [9] = { [1] = 880, [2] = 880, [3] = 880 }, -- Trading Post Complete
 }
 
-muteSoundIDs = {
-    ["retail"] = {
-        880, -- Level Up
-        873, -- Quest Complete
-        861, -- Achievement
-        1335, -- Renown
-        119, -- Honor
-        870, -- Trading Post
-    },
-    ["cata"] = {
-        880, -- Level Up
-        873, -- Quest Complete
-        861, -- Achievement
-    },
-    ["vanilla"] = {
-        880, -- Level Up
-        873, -- Quest Complete
-    },
+local muteSoundIDs = {
+    880, -- Level Up
+    873, -- Quest Complete
+    861, -- Achievement
+    1335, -- Renown
+    119, -- Honor
+    870, -- Trading Post
 }
+
+function sounds:OnEnable()
+    self.addon:Print("Sounds module enabled!")
+    self:MuteSounds()
+end
+
+function sounds:MuteSounds()
+    for _, soundID in ipairs(muteSoundIDs) do
+        MuteSoundFile(soundID)
+    end
+end
+
+BLULib = BLULib or {}
+BLULib.SoundsModule = sounds

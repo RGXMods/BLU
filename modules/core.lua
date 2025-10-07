@@ -11,42 +11,34 @@ function core:OnEnable()
     self.addon:RegisterEvent("MAJOR_FACTION_RENOWN_LEVEL_CHANGED", "HandleRenownLevelChanged")
     self.addon:RegisterEvent("PERKS_ACTIVITY_COMPLETED", "HandlePerksActivityCompleted")
     self:ReputationChatFrameHook()
-
-    -- Mute sounds
-    local soundsToMute = muteSoundIDs["retail"]
-    if soundsToMute and #soundsToMute > 0 then
-        for _, soundID in ipairs(soundsToMute) do
-            MuteSoundFile(soundID)
-        end
-    end
 end
 
 function core:HandlePlayerLevelUp()
-    self.addon:HandleEvent("PLAYER_LEVEL_UP", "LevelSoundSelect", "LevelVolume", defaultSounds[4], "PLAYER_LEVEL_UP_TRIGGERED")
+    self.addon:HandleEvent("PLAYER_LEVEL_UP", "LevelSoundSelect", "LevelVolume", self.addon:GetModule("Sounds").defaultSounds[5], "PLAYER_LEVEL_UP_TRIGGERED")
 end
 
 function core:HandleQuestAccepted()
-    self.addon:HandleEvent("QUEST_ACCEPTED", "QuestAcceptSoundSelect", "QuestAcceptVolume", defaultSounds[7], "QUEST_ACCEPTED_TRIGGERED")
+    self.addon:HandleEvent("QUEST_ACCEPTED", "QuestAcceptSoundSelect", "QuestAcceptVolume", self.addon:GetModule("Sounds").defaultSounds[7], "QUEST_ACCEPTED_TRIGGERED")
 end
 
 function core:HandleQuestTurnedIn()
-    self.addon:HandleEvent("QUEST_TURNED_IN", "QuestSoundSelect", "QuestVolume", defaultSounds[8], "QUEST_TURNED_IN_TRIGGERED")
+    self.addon:HandleEvent("QUEST_TURNED_IN", "QuestSoundSelect", "QuestVolume", self.addon:GetModule("Sounds").defaultSounds[8], "QUEST_TURNED_IN_TRIGGERED")
 end
 
 function core:HandleAchievementEarned()
-    self.addon:HandleEvent("ACHIEVEMENT_EARNED", "AchievementSoundSelect", "AchievementVolume", defaultSounds[1], "ACHIEVEMENT_EARNED_TRIGGERED")
+    self.addon:HandleEvent("ACHIEVEMENT_EARNED", "AchievementSoundSelect", "AchievementVolume", self.addon:GetModule("Sounds").defaultSounds[1], "ACHIEVEMENT_EARNED_TRIGGERED")
 end
 
 function core:HandleHonorLevelUpdate()
-    self.addon:HandleEvent("HONOR_LEVEL_UPDATE", "HonorSoundSelect", "HonorVolume", defaultSounds[5], "HONOR_LEVEL_UPDATE_TRIGGERED")
+    self.addon:HandleEvent("HONOR_LEVEL_UPDATE", "HonorSoundSelect", "HonorVolume", self.addon:GetModule("Sounds").defaultSounds[4], "HONOR_LEVEL_UPDATE_TRIGGERED")
 end
 
 function core:HandleRenownLevelChanged()
-    self.addon:HandleEvent("MAJOR_FACTION_RENOWN_LEVEL_CHANGED", "RenownSoundSelect", "RenownVolume", defaultSounds[6], "MAJOR_FACTION_RENOWN_LEVEL_CHANGED_TRIGGERED")
+    self.addon:HandleEvent("MAJOR_FACTION_RENOWN_LEVEL_CHANGED", "RenownSoundSelect", "RenownVolume", self.addon:GetModule("Sounds").defaultSounds[6], "MAJOR_FACTION_RENOWN_LEVEL_CHANGED_TRIGGERED")
 end
 
 function core:HandlePerksActivityCompleted()
-    self.addon:HandleEvent("PERKS_ACTIVITY_COMPLETED", "PostSoundSelect", "PostVolume", defaultSounds[9], "PERKS_ACTIVITY_COMPLETED_TRIGGERED")
+    self.addon:HandleEvent("PERKS_ACTIVITY_COMPLETED", "PostSoundSelect", "PostVolume", self.addon:GetModule("Sounds").defaultSounds[9], "PERKS_ACTIVITY_COMPLETED_TRIGGERED")
 end
 
 function core:HandleEvent(eventName, soundSelectKey, volumeKey, defaultSound, debugMessage)
@@ -154,7 +146,7 @@ end
 
 function core:ReputationRankIncrease(rank, msg)
     local factionName = string.match(msg, "with (.+)")
-    self.addon:HandleEvent("REPUTATION_RANK_INCREASE", "RepSoundSelect", "RepVolume", defaultSounds[6], "REPUTATION_RANK_INCREASE_TRIGGERED")
+    self.addon:HandleEvent("REPUTATION_RANK_INCREASE", "RepSoundSelect", "RepVolume", self.addon:GetModule("Sounds").defaultSounds[6], "REPUTATION_RANK_INCREASE_TRIGGERED")
 end
 
 BLULib = BLULib or {}

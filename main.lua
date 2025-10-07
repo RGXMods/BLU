@@ -18,6 +18,7 @@ function BLU:OnInitialize()
     BLULib.Database.Create(self, BLULib.OptionsModule.defaults)
 
     -- Register modules
+    self:RegisterModule("Sounds", BLULib.SoundsModule)
     self:RegisterModule("Core", BLULib.CoreModule)
     self:RegisterModule("Options", BLULib.OptionsModule)
     self:RegisterModule("BattlePets", BLULib.BattlePetsModule)

@@ -1,3 +1,8 @@
+v5.2.7-------------------------------------------------------------------
+- TOC version bump to v5.2.7 for Retail, Vanilla, and Cata
+- Fixed an issue where the `changes.md` file was not being properly included in the release.
+
+
 ## Alpha 5
 - Fixed - Issue where default sounds for "Quest Accepted" and "Quest Complete" were both playing the achievement sound - [core.lua]
 - Updated - Sound selection logic to ensure correct sounds are played based on the provided sound ID - [utils.lua]
@@ -397,5 +402,4 @@ v0.0.2-------------------------------------------------------------------
 - Initial Push
 v0.0.1-------------------------------------------------------------------
 - Repo Creation
-
 

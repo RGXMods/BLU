@@ -1,3 +1,7 @@
+v5.2.7-------------------------------------------------------------------
+- TOC version bump to v5.2.7 for Retail, Vanilla, and Cata
+- Fixed an issue where the `changes.md` file was not being properly included in the release.
+
 v5.2.6-------------------------------------------------------------------
 - Removed - Delve companion level up feature.
 - Updated - .toc files to reflect new version number.

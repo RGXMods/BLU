@@ -10,6 +10,7 @@ env:
   WOWI_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
   WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
   GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
+  DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
 
 jobs:
   release:
@@ -44,6 +45,6 @@ jobs:
           echo "::set-output name=version::$version"
 
       - name: Package and Release
-        uses: BigWigsMods/packager@master
+        uses: BigWigsMods/packager@v2
         with:
           release-type: ${{ steps.set_release_type.outputs.release_type }}

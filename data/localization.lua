@@ -151,9 +151,6 @@ BLU_L = {
     
     -- BLU:TestBattlePetLevelSound()
     TEST_BATTLE_PET_LEVEL_SOUND = string.format("%sTestBattlePetLevelSound|r %striggered.|r", colors.info, colors.test),
-    
-    -- BLU:TestDelveLevelUpSound()
-    TEST_DELVE_LEVEL_UP_SOUND = string.format("%sTestDelveLevelUpSound|r %striggered.|r", colors.info, colors.test),
    
     -- BLU:TestHonorSound()
     TEST_HONOR_SOUND = string.format("%sTestHonorSound|r %striggered.|r", colors.info, colors.test),
@@ -186,13 +183,6 @@ BLU_L = {
     -- BLU:ReputationRankIncrease()
     REPUTATION_RANK_TRIGGERED = string.format("Reputation rank increase triggered for rank: ",colors.info),
 
-    -- BLU:OnDelveCompantionLevelUp(event, ...)
-    DELVE_LEVEL_UP = string.format("%sBrann Bronzebeard has reached Level %%s|r", colors.info),
-    NO_BRANN_LEVEL_FOUND = string.format("%sNo Delve Level found in chat message.|r", colors.error),
-    
-    -- BLU:TriggerDelveLevelUpSound(level)
-    DELVE_LEVEL_UP_SOUND_TRIGGERED = string.format("Delve Level-Up sound triggered for Level ", colors.info),
-
     -- Option Labels and Descriptions for Volume Controls
     ACHIEVEMENT_EARNED = "Achievement Earned!",
     ACHIEVEMENT_VOLUME_LABEL = "Achievement Volume",
@@ -201,10 +191,6 @@ BLU_L = {
     BATTLE_PET_LEVEL_UP = "Battle Pet Level-Up!",
     BATTLE_PET_VOLUME_LABEL = "Battle Pet Volume",
     BATTLE_PET_VOLUME_DESC = "Adjust the volume for the Battle Pet Level-Up! sound.",
-
-    DELVE_COMPANION_LEVEL_UP = "Delve Companion Level-Up!",
-    DELVE_VOLUME_LABEL = "Delve Volume",
-    DELVE_VOLUME_DESC = "Adjust the volume for the Delve Level-Up! sound.",
 
     HONOR_RANK_UP = "Honor Rank-Up!",
     HONOR_VOLUME_LABEL = "Honor Volume",

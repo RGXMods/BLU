@@ -1,3 +1,5 @@
+print("BLU main.lua loaded")
+
 -- main.lua
 -- The main entry point for the addon
 

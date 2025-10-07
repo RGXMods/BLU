@@ -34,6 +34,39 @@ function addon_methods:RegisterModule(name, module)
     module.addon = self -- give module access to the parent addon object
 end
 
+function addon_methods:ProcessEventQueue()
+    if #self.eventQueue == 0 then
+        self.isProcessingQueue = false
+        return
+    end
+
+    local event = table.remove(self.eventQueue, 1)
+
+    if event.debugMessage then
+        self:PrintDebugMessage(event.debugMessage)
+    else
+        self:PrintDebugMessage("DEBUG_MESSAGE_MISSING")
+    end
+
+    local sound = self:SelectSound(self.db.profile[event.soundSelectKey])
+    if not sound then
+        self:PrintDebugMessage("ERROR_SOUND_NOT_FOUND", tostring(event.soundSelectKey))
+        C_Timer.After(1, function() self:ProcessEventQueue() end)
+        return
+    end
+
+    local volumeLevel = self.db.profile[event.volumeKey]
+    if volumeLevel < 0 or volumeLevel > 3 then
+        self:PrintDebugMessage("INVALID_VOLUME_LEVEL", tostring(volumeLevel))
+        C_Timer.After(1, function() self:ProcessEventQueue() end)
+        return
+    end
+
+    self:PlaySelectedSound(sound, volumeLevel, event.defaultSound)
+
+    C_Timer.After(1, function() self:ProcessEventQueue() end)
+end
+
 -- The factory function to create a new addon object
 local function NewAddon(name)
     local addon = {}

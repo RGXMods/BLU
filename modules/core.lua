@@ -11,6 +11,14 @@ function core:OnEnable()
     self.addon:RegisterEvent("MAJOR_FACTION_RENOWN_LEVEL_CHANGED", "HandleRenownLevelChanged")
     self.addon:RegisterEvent("PERKS_ACTIVITY_COMPLETED", "HandlePerksActivityCompleted")
     self:ReputationChatFrameHook()
+
+    -- Mute sounds
+    local soundsToMute = muteSoundIDs["retail"]
+    if soundsToMute and #soundsToMute > 0 then
+        for _, soundID in ipairs(soundsToMute) do
+            MuteSoundFile(soundID)
+        end
+    end
 end
 
 function core:HandlePlayerLevelUp()

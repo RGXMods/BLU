@@ -24,6 +24,5 @@ modules\core.lua
 modules\options.lua
 modules\localization.lua
 
-data\initialization.lua
 data\sounds.lua
 data\battlepets.lua

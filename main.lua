@@ -39,4 +39,10 @@ function BLU:OnInitialize()
             self.optionsFrame:Show()
         end
     end)
+
+    -- Display welcome message
+    if self.db.profile.showWelcomeMessage then
+        self:Print(self.L["WELCOME_MESSAGE"])
+        self:Print(self.L["VERSION"] .. ": |cff8080ff" .. GetAddOnMetadata(addonName, "Version") .. "|r")
+    end
 end

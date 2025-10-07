@@ -6,7 +6,9 @@ local addon_methods = {
     isProcessingQueue = false,
     slashCommands = {},
     prefix = "|cff05dffaBLU|r: ",
-    debugPrefix = "|cffff0000[DEBUG]|r "
+    debugPrefix = "|cffff0000[DEBUG]|r ",
+    functionsHalted = false,
+    haltTimer = nil
 }
 
 function addon_methods:Print(message)
@@ -63,6 +65,35 @@ function addon_methods:HandleSlashCommands(input)
         self.slashCommands[command](self, args)
     else
         self:Print(self.L["UNKNOWN_SLASH_COMMAND"])
+    end
+end
+
+function addon_methods:HaltOperations()
+    if not self.functionsHalted then
+        self.functionsHalted = true
+        self:PrintDebug("FUNCTIONS_HALTED")
+    end
+
+    if self.haltTimer then
+        self.haltTimer:Cancel()
+    end
+
+    local countdown = 5
+    self.haltTimer = C_Timer.NewTicker(1, function()
+        countdown = countdown - 1
+        self:PrintDebug("COUNTDOWN_TICK", countdown)
+        if countdown <= 0 then
+            self:ResumeOperations()
+        end
+    end, 5)
+end
+
+function addon_methods:ResumeOperations()
+    self.functionsHalted = false
+    self:PrintDebug("FUNCTIONS_RESUMED")
+    if self.haltTimer then
+        self.haltTimer:Cancel()
+        self.haltTimer = nil
     end
 end
 

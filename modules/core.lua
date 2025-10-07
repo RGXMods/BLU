@@ -3,6 +3,7 @@ local core = {}
 
 function core:OnEnable()
     self.addon:PrintDebug("Core module enabled!")
+    self.addon:RegisterEvent("PLAYER_ENTERING_WORLD", function(addon) addon:HaltOperations() end)
     self.addon:RegisterEvent("PLAYER_LEVEL_UP", function(addon) addon:GetModule("Core"):HandlePlayerLevelUp() end)
     self.addon:RegisterEvent("QUEST_ACCEPTED", function(addon) addon:GetModule("Core"):HandleQuestAccepted() end)
     self.addon:RegisterEvent("QUEST_TURNED_IN", function(addon) addon:GetModule("Core"):HandleQuestTurnedIn() end)
@@ -15,7 +16,7 @@ end
 
 function core:HandleEvent(eventName, soundSelectKey, volumeKey, defaultSound, debugMessage)
     if self.addon.functionsHalted then
-        self.addon:PrintDebug("FUNCTIONS_HALTED")
+        self.addon:PrintDebug("FUNCTIONS_HALTED_EVENT", eventName)
         return
     end
     table.insert(self.addon.eventQueue, { eventName = eventName, soundSelectKey = soundSelectKey, volumeKey = volumeKey, defaultSound = defaultSound, debugMessage = debugMessage })

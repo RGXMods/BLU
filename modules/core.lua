@@ -6,6 +6,9 @@ function core:OnEnable()
     self.addon:RegisterEvent("PLAYER_LEVEL_UP", "HandlePlayerLevelUp")
     self.addon:RegisterEvent("QUEST_ACCEPTED", "HandleQuestAccepted")
     self.addon:RegisterEvent("QUEST_TURNED_IN", "HandleQuestTurnedIn")
+    self.addon:RegisterEvent("ACHIEVEMENT_EARNED", "HandleAchievementEarned")
+    self.addon:RegisterEvent("HONOR_LEVEL_UPDATE", "HandleHonorLevelUpdate")
+    self.addon:RegisterEvent("MAJOR_FACTION_RENOWN_LEVEL_CHANGED", "HandleRenownLevelChanged")
 end
 
 function core:HandlePlayerLevelUp()
@@ -18,6 +21,18 @@ end
 
 function core:HandleQuestTurnedIn()
     self.addon:HandleEvent("QUEST_TURNED_IN", "QuestSoundSelect", "QuestVolume", defaultSounds[8], "QUEST_TURNED_IN_TRIGGERED")
+end
+
+function core:HandleAchievementEarned()
+    self.addon:HandleEvent("ACHIEVEMENT_EARNED", "AchievementSoundSelect", "AchievementVolume", defaultSounds[1], "ACHIEVEMENT_EARNED_TRIGGERED")
+end
+
+function core:HandleHonorLevelUpdate()
+    self.addon:HandleEvent("HONOR_LEVEL_UPDATE", "HonorSoundSelect", "HonorVolume", defaultSounds[5], "HONOR_LEVEL_UPDATE_TRIGGERED")
+end
+
+function core:HandleRenownLevelChanged()
+    self.addon:HandleEvent("MAJOR_FACTION_RENOWN_LEVEL_CHANGED", "RenownSoundSelect", "RenownVolume", defaultSounds[6], "MAJOR_FACTION_RENOWN_LEVEL_CHANGED_TRIGGERED")
 end
 
 function core:HandleEvent(eventName, soundSelectKey, volumeKey, defaultSound, debugMessage)

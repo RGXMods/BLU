@@ -1,3 +1,6 @@
+v5.2.10-------------------------------------------------------------------
+- Fixed release workflow to correctly extract version and send Discord notifications.
+
 v5.2.9-------------------------------------------------------------------
 - Updated release workflow for improved Discord notifications.
 

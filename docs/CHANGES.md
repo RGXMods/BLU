@@ -1,1 +1,1 @@
-- Updated release workflow for improved Discord notifications.
+- Fixed release workflow to correctly extract version and send Discord notifications.

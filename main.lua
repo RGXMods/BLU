@@ -9,6 +9,11 @@ local BLU = BLULib.Core.NewAddon(addonName)
 function BLU:OnInitialize()
     self:Print("v" .. GetAddOnMetadata(addonName, "Version") .. " - Initialized!")
 
-    -- Register the core module
+    -- Register modules
     self:RegisterModule("Core", BLULib.CoreModule)
+
+    -- Register slash commands
+    self:RegisterChatCommand("debug", function(self, args)
+        BLULib.Utils.ToggleDebugMode(self)
+    end)
 end

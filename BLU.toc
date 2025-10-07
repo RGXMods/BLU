@@ -15,6 +15,7 @@
 
 libs\core.lua
 libs\events.lua
+libs\utils.lua
 main.lua
 modules\core.lua
 

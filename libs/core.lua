@@ -7,7 +7,8 @@ local addon_methods = {
     modules = {},
     enabled_modules = {},
     eventQueue = {},
-    isProcessingQueue = false
+    isProcessingQueue = false,
+    slashCommands = {}
 }
 
 function addon_methods:Print(message)
@@ -32,6 +33,10 @@ end
 function addon_methods:RegisterModule(name, module)
     self.modules[name] = module
     module.addon = self -- give module access to the parent addon object
+end
+
+function addon_methods:RegisterChatCommand(command, handler)
+    self.slashCommands[command] = handler
 end
 
 function addon_methods:ProcessEventQueue()
@@ -84,7 +89,29 @@ local function NewAddon(name)
         end
     end)
 
+    -- Register the slash command handler
+    SLASH_BLU1 = "/blu"
+    SlashCmdList["BLU"] = function(input)
+        addon:HandleSlashCommands(input)
+    end
+
     return addon
+end
+
+function addon_methods:HandleSlashCommands(input)
+    input = input:trim():lower()
+    local command, args = input:match("^(%S*)%s*(.*)$")
+
+    if self.slashCommands[command] then
+        self.slashCommands[command](self, args)
+    else
+        -- Default behavior when no command is entered
+        if command == "" then
+            -- Open options panel
+        else
+            print(BLU_PREFIX .. BLU_L["UNKNOWN_SLASH_COMMAND"])
+        end
+    end
 end
 
 -- Expose the NewAddon function to the global scope for other files

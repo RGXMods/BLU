@@ -1,2 +1,1 @@
-- TOC version bump to v5.2.7 for Retail, Vanilla, and Cata
-- Fixed an issue where the `changes.md` file was not being properly included in the release.
+- Fixed a bug in the release workflow that prevented Discord announcements from being sent.

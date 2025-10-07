@@ -26,18 +26,6 @@ jobs:
           git config --global user.name "donniedice"
           git config --global user.email "60427166+donniedice@users.noreply.github.com"
 
-      - name: Set Release Type
-        id: set_release_type
-        run: |
-          TAG_NAME=${{ github.ref }}
-          if [[ "$TAG_NAME" == *"beta"* ]]; then
-            echo "::set-output name=release_type::beta"
-          elif [[ "$TAG_NAME" == *"alpha"* ]]; then
-            echo "::set-output name=release_type::alpha"
-          else
-            echo "::set-output name=release_type::release"
-          fi
-
       - name: Extract Version from TOC
         id: extract_version
         run: |
@@ -46,5 +34,4 @@ jobs:
 
       - name: Package and Release
         uses: BigWigsMods/packager@v2
-        with:
-          release-type: ${{ steps.set_release_type.outputs.release_type }}
+          changelog-file: "docs/CHANGES.md"

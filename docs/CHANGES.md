@@ -1,1 +1,2 @@
-- Updated to version v5.2.12 and interface version 110205.
+v6.0.0
+- Complete refactor to remove Ace3 dependency and implement a new, lightweight, modular library.

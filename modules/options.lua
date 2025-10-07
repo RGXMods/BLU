@@ -27,48 +27,48 @@ options.defaults = {
 }
 
 function options:OnEnable()
-    self.addon:Print("Options module enabled!")
-    self:CreateOptions()
+    self.addon:PrintDebug("Options module enabled!")
+    BLULib.Options.Create(self.addon) -- Create the panel
+    self:CreateOptions() -- Populate with widgets
 end
 
 function options:CreateOptions()
     local addon = self.addon
-    local optionsFrame = addon.optionsFrame
     local soundsModule = addon:GetModule("Sounds")
 
     local optionsLayout = {
-        { name = "ACHIEVEMENT_EARNED", key = "Achievement", defaultSound = soundsModule.defaultSounds[1] },
-        { name = "BATTLE_PET_LEVEL_UP", key = "BattlePetLevel", defaultSound = soundsModule.defaultSounds[2] },
-        { name = "HONOR_RANK_UP", key = "Honor", defaultSound = soundsModule.defaultSounds[4] },
-        { name = "LEVEL_UP", key = "Level", defaultSound = soundsModule.defaultSounds[5] },
-        { name = "QUEST_ACCEPTED", key = "QuestAccept", defaultSound = soundsModule.defaultSounds[7] },
-        { name = "QUEST_COMPLETE", key = "Quest", defaultSound = soundsModule.defaultSounds[8] },
-        { name = "RENOWN_RANK_UP", key = "Renown", defaultSound = soundsModule.defaultSounds[6] },
-        { name = "REPUTATION_RANK_UP", key = "Rep", defaultSound = soundsModule.defaultSounds[6] },
-        { name = "TRADE_POST_ACTIVITY_COMPLETE", key = "Post", defaultSound = soundsModule.defaultSounds[9] },
+        { type = "header", text = addon.L["OPTIONS_PANEL_TITLE"] },
+        { type = "group", name = "ACHIEVEMENT_EARNED", key = "Achievement", defaultSound = soundsModule.defaultSounds[1] },
+        { type = "group", name = "BATTLE_PET_LEVEL_UP", key = "BattlePetLevel", defaultSound = soundsModule.defaultSounds[2] },
+        { type = "group", name = "HONOR_RANK_UP", key = "Honor", defaultSound = soundsModule.defaultSounds[4] },
+        { type = "group", name = "LEVEL_UP", key = "Level", defaultSound = soundsModule.defaultSounds[5] },
+        { type = "group", name = "QUEST_ACCEPTED", key = "QuestAccept", defaultSound = soundsModule.defaultSounds[7] },
+        { type = "group", name = "QUEST_COMPLETE", key = "Quest", defaultSound = soundsModule.defaultSounds[8] },
+        { type = "group", name = "RENOWN_RANK_UP", key = "Renown", defaultSound = soundsModule.defaultSounds[6] },
+        { type = "group", name = "REPUTATION_RANK_UP", key = "Rep", defaultSound = soundsModule.defaultSounds[6] },
+        { type = "group", name = "TRADE_POST_ACTIVITY_COMPLETE", key = "Post", defaultSound = soundsModule.defaultSounds[9] },
+        { type = "header", text = "|cff8080ff" .. GetAddOnMetadata(addon.name, "Version") .. "|r" },
     }
 
     local colors = { "|cff05dffa", "|cffffffff" }
     local colorIndex = 1
     local yOffset = -60
 
-    -- Title Header
-    BLULib.Options.CreateHeader(optionsFrame, addon.L["OPTIONS_PANEL_TITLE"], -20)
-
-    for _, groupInfo in ipairs(optionsLayout) do
-        local group = BLULib.Options.CreateGroup(optionsFrame, addon.L[groupInfo.name], yOffset, colors[colorIndex])
-        self:CreateOptionWidgets(group, groupInfo.key, groupInfo.defaultSound, soundsModule.soundOptions)
-        yOffset = yOffset - 120
-        colorIndex = colorIndex % 2 + 1
+    for _, item in ipairs(optionsLayout) do
+        if item.type == "header" then
+            BLULib.Options.CreateHeader(addon.optionsFrame, item.text, yOffset)
+            yOffset = yOffset - 40
+        elseif item.type == "group" then
+            local group = BLULib.Options.CreateGroup(addon.optionsFrame, addon.L[item.name], yOffset, colors[colorIndex])
+            self:CreateOptionWidgets(group, item.key, item.defaultSound, soundsModule.soundOptions)
+            yOffset = yOffset - 120
+            colorIndex = (colorIndex % 2) + 1
+        end
     end
-
-    -- Version Header
-    BLULib.Options.CreateHeader(optionsFrame, "|cff8080ff" .. GetAddOnMetadata(addon.name, "Version") .. "|r", yOffset)
 end
 
 function options:CreateOptionWidgets(parent, key, defaultSound, soundOptions)
     local addon = self.addon
-
     local dropdown = BLULib.Options.CreateDropdown(parent, key .. "SoundSelect", soundOptions, function() return addon.db.profile[key .. "SoundSelect"] end, function(value) addon.db.profile[key .. "SoundSelect"] = value end)
     dropdown:SetPoint("TOPLEFT", 20, -40)
 

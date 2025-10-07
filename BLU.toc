@@ -18,11 +18,12 @@ libs\events.lua
 libs\utils.lua
 libs\options.lua
 libs\database.lua
+libs\localization.lua
 main.lua
 modules\core.lua
 modules\options.lua
+modules\localization.lua
 
-data\localization.lua
 data\initialization.lua
 data\sounds.lua
 data\battlepets.lua

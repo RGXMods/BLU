@@ -1,0 +1,16 @@
+wiki/
+nul
+.claude/
+*.bat
+*.ps1
+
+# Environment files - NEVER commit these!
+.env
+.env.local
+.env.production
+*.key
+*.pem
+
+# API keys and secrets
+config/secrets.json
+config/api_keys.json

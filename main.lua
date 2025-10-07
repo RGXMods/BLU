@@ -8,4 +8,7 @@ local BLU = BLULib.Core.NewAddon(addonName)
 
 function BLU:OnInitialize()
     self:Print("v" .. GetAddOnMetadata(addonName, "Version") .. " - Initialized!")
+
+    -- Register the core module
+    self:RegisterModule("Core", BLULib.CoreModule)
 end

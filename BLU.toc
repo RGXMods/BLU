@@ -15,6 +15,7 @@
 
 libs\core.lua
 main.lua
+modules\core.lua
 
 data\localization.lua
 data\initialization.lua

@@ -1,3 +1,6 @@
+v5.2.9-------------------------------------------------------------------
+- Updated release workflow for improved Discord notifications.
+
 v5.2.8-------------------------------------------------------------------
 - Fixed a bug in the release workflow that prevented Discord announcements from being sent.
 

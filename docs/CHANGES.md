@@ -1,1 +1,1 @@
-- Fixed a bug in the release workflow that prevented Discord announcements from being sent.
+- Updated release workflow for improved Discord notifications.

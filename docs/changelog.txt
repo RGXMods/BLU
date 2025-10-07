@@ -1,3 +1,7 @@
+v5.2.11-------------------------------------------------------------------
+- Updated to version v5.2.11 and interface version 120050.
+
+
 v5.2.10-------------------------------------------------------------------
 - Fixed release workflow to correctly extract version and send Discord notifications.
 

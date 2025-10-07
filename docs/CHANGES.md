@@ -1,1 +1,1 @@
-- Fixed release workflow to correctly extract version and send Discord notifications.
+- Updated to version v5.2.11 and interface version 120050.

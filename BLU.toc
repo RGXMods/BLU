@@ -23,6 +23,6 @@ main.lua
 modules\core.lua
 modules\options.lua
 modules\localization.lua
+modules\sounds.lua
 
-data\sounds.lua
 data\battlepets.lua

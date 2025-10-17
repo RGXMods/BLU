@@ -10,9 +10,11 @@
     <Script file="core/utils.lua"/>
     <Script file="core/registry.lua"/>
     <Script file="core/loader.lua"/>
+    <Script file="libs/LibStub.lua"/>
+    <Script file="libs/LibSharedMedia-3.0.lua"/>
     <Script file="core/sharedmedia.lua"/>
     <Script file="core/internal_sounds.lua"/>
-    <Script file="core/soundpacks.lua"/>
+
     <Script file="core/commands.lua"/>
     <Script file="core/initialization.lua"/>
     
@@ -22,7 +24,7 @@
     <!-- Interface System from modules -->
     <Script file="modules/interface/design.lua"/>
     <Script file="modules/interface/widgets.lua"/>
-    <Script file="modules/interface/tabs.lua"/>
+
     <Script file="modules/interface/panels/general.lua"/>
     <Script file="modules/interface/panels/about.lua"/>
     <Script file="modules/interface/panels/sounds.lua"/>
@@ -41,6 +43,5 @@
     <Script file="modules/tradingpost/tradingpost.lua"/>
     <Script file="modules/delve/delve.lua"/>
     
-    <!-- Sound Packs (Loaded Dynamically) -->
-    <Include file="sound/packs/packs.xml"/>
+
 </Ui>

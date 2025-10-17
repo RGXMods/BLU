@@ -334,7 +334,7 @@ function SharedMedia:AddTestSounds()
         for _, soundName in ipairs(sounds) do
             self.externalSounds[soundName] = {
                 name = soundName,
-                path = "Interface\\AddOns\\BLU\\media\\sounds\\test\\placeholder.ogg",
+                path = "Interface\\AddOns\\BLU\\sounds\\level_default.ogg",
                 category = category,
                 source = "Test"
             }

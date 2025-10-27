@@ -3,7 +3,8 @@
 -- Handles reputation gain sounds
 --=====================================================================================
 
-local addonName, BLU = ...
+local addonName = ...
+local BLU = _G["BLU"]
 local Reputation = {}
 
 -- Reputation rank names

@@ -3,8 +3,8 @@
 -- Handles dynamic loading and unloading of modules based on user settings
 --=====================================================================================
 
-local addonName, BLU = ...
-BLU = BLU or {}
+local addonName = ...
+local BLU = _G["BLU"]
 BLU.Modules = BLU.Modules or {}
 BLU.LoadedModules = {}
 
@@ -27,7 +27,8 @@ local moduleRegistry = {
         "utils",
         "localization",
         "registry",
-        "events"
+        "events",
+        "sounds"
     },
     
     -- Feature modules (loaded on demand)

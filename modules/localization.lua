@@ -1,5 +1,6 @@
 -- modules/localization.lua
-BLULib.locale = {
+local addonName = ...
+local BLU = _G["BLU"]
     enUS = {
         ACHIEVEMENT_EARNED = "Achievement Earned",
         ACHIEVEMENT_VOLUME_LABEL = "Achievement Volume",

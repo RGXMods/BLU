@@ -3,7 +3,8 @@
 -- Module management panel with new design
 --=====================================================================================
 
-local addonName, BLU = ...
+local addonName = ...
+local BLU = _G["BLU"]
 
 function BLU.CreateModulesPanel(panel)
     -- Create scrollable content with proper sizing
@@ -21,7 +22,7 @@ function BLU.CreateModulesPanel(panel)
     scrollFrame:SetScrollChild(content)
     
     -- Header
-    local header = BLU.Design:CreateHeader(content, "Module Management", "Interface\\Icons\\INV_Misc_Gear_08")
+    local header = BLU.Design:CreateHeader(content, "Module Management", "Interface\Icons\INV_Misc_Gear_08")
     header:SetPoint("TOPLEFT", 0, 0)
     header:SetPoint("RIGHT", 0, 0)
     
@@ -50,81 +51,81 @@ function BLU.CreateModulesPanel(panel)
     local categories = {
         {
             name = "Core Features",
-            icon = "Interface\\Icons\\Achievement_General",
+            icon = "Interface\Icons\Achievement_General",
             modules = {
                 {
                     id = "levelup",
                     name = "Level Up",
-                    desc = "Play sounds when you gain a level",
-                    icon = "Interface\\Icons\\Achievement_Level_100",
+                    desc = "Plays sounds when you gain a level",
+                    icon = "Interface\Icons\Achievement_Level_100",
                     default = true
                 },
                 {
                     id = "achievement",
                     name = "Achievements",
                     desc = "Play sounds when you earn achievements",
-                    icon = "Interface\\Icons\\Achievement_GuildPerk_MobileMailbox",
+                    icon = "Interface\Icons\Achievement_GuildPerk_MobileMailbox",
                     default = true
                 },
                 {
                     id = "quest",
                     name = "Quest Complete",
                     desc = "Play sounds when you complete quests",
-                    icon = "Interface\\Icons\\INV_Misc_Note_01",
+                    icon = "Interface\Icons\INV_Misc_Note_01",
                     default = true
                 },
                 {
                     id = "reputation",
                     name = "Reputation",
                     desc = "Play sounds when you gain reputation",
-                    icon = "Interface\\Icons\\Achievement_Reputation_01",
+                    icon = "Interface\Icons\Achievement_Reputation_01",
                     default = true
                 }
             }
         },
         {
             name = "PvP Features",
-            icon = "Interface\\Icons\\Achievement_PVP_A_A",
+            icon = "Interface\Icons\Achievement_PVP_A_A",
             modules = {
                 {
                     id = "honorrank",
                     name = "Honor Rank",
                     desc = "Play sounds when you gain honor ranks",
-                    icon = "Interface\\Icons\\PVPCurrency-Honor-Horde",
+                    icon = "Interface\Icons\PVPCurrency-Honor-Horde",
                     default = false
                 },
                 {
                     id = "renownrank",
                     name = "Renown Rank",
                     desc = "Play sounds when you gain renown with factions",
-                    icon = "Interface\\Icons\\UI_MajorFaction_Centaur",
+                    icon = "Interface\Icons\UI_MajorFaction_Centaur",
                     default = true
                 }
             }
         },
         {
             name = "Special Features",
-            icon = "Interface\\Icons\\INV_Misc_Coin_01",
+            icon = "Interface\Icons\INV_Misc_Coin_01",
             modules = {
                 {
                     id = "tradingpost",
                     name = "Trading Post",
                     desc = "Play sounds for trading post rewards",
-                    icon = "Interface\\Icons\\INV_Tradingpost_Currency",
+                    icon = "Interface\Icons\INV_Tradingpost_Currency",
                     default = false
                 },
                 {
                     id = "battlepet",
                     name = "Battle Pets",
                     desc = "Play sounds for pet battle victories and level ups",
-                    icon = "Interface\\Icons\\INV_Pet_BattlePetTraining",
+                    icon = "Interface\Icons\INV_Pet_BattlePetTraining",
                     default = false
                 },
                 {
                     id = "delvecompanion",
                     name = "Delve Companion",
                     desc = "Play sounds for delve companion events",
-                    icon = "Interface\\Icons\\UI_MajorFaction_Delve",
+                    icon = "Interface\Icons\UI_MajorFaction_Delve",
                     default = false
                 }
             }
@@ -207,7 +208,7 @@ function BLU.CreateModulesPanel(panel)
             -- Switch background
             local switchBg = switchFrame:CreateTexture(nil, "BACKGROUND")
             switchBg:SetAllPoints()
-            switchBg:SetTexture("Interface\\Buttons\\WHITE8x8")
+            switchBg:SetTexture("Interface\Buttons\WHITE8x8")
             
             -- Switch toggle
             local toggle = CreateFrame("Button", nil, switchFrame)
@@ -216,14 +217,14 @@ function BLU.CreateModulesPanel(panel)
             
             local toggleBg = toggle:CreateTexture(nil, "ARTWORK")
             toggleBg:SetAllPoints()
-            toggleBg:SetTexture("Interface\\Buttons\\WHITE8x8")
+            toggleBg:SetTexture("Interface\Buttons\WHITE8x8")
             toggleBg:SetVertexColor(1, 1, 1, 1)
             
             -- Add glow effect
             local glow = toggle:CreateTexture(nil, "OVERLAY")
             glow:SetSize(32, 32)
             glow:SetPoint("CENTER")
-            glow:SetTexture("Interface\\Buttons\\UI-CheckBox-Highlight")
+            glow:SetTexture("Interface\Buttons\UI-CheckBox-Highlight")
             glow:SetBlendMode("ADD")
             glow:SetAlpha(0)
             

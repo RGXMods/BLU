@@ -7,8 +7,10 @@
 
 local addonName, addonTable = ...
 
--- Create the main addon object
-local BLU = {
+print("BLU: Core loading started.")
+
+-- Create the main addon object (global)
+BLU = {
     name = addonName,
     version = "6.0.0-alpha",
     author = C_AddOns.GetAddOnMetadata(addonName, "Author"),
@@ -25,23 +27,14 @@ local BLU = {
     isInitialized = false
 }
 
--- Make globally accessible
-_G["BLU"] = BLU
-
--- Framework loaded - functions will be copied to addonTable at the end of this file
-
---=====================================================================================
--- Event System
---=====================================================================================
-
--- Create event frame
+-- Create event frame (early definition)
 BLU.eventFrame = CreateFrame("Frame")
-BLU.eventFrame:SetScript("OnEvent", function(self, event, ...)
+BLU.eventFrame:SetScript("OnEvent", function(self, event, ...) 
     BLU:FireEvent(event, ...)
 end)
 
--- Register event
-function BLU:RegisterEvent(event, callback, id)
+-- Register event (early definition)
+local function RegisterEvent(self, event, callback, id)
     id = id or "core"
     
     if not self.events[event] then
@@ -51,9 +44,19 @@ function BLU:RegisterEvent(event, callback, id)
     
     self.events[event][id] = callback
 end
+BLU.RegisterEvent = RegisterEvent
+
+-- Print debug message (early definition)
+
+
+
+
+-- Framework loaded - BLU is now globally accessible
+
+
 
 -- Unregister event
-function BLU:UnregisterEvent(event, id)
+local function UnregisterEvent(self, event, id)
     id = id or "core"
     
     if self.events[event] then
@@ -66,9 +69,10 @@ function BLU:UnregisterEvent(event, id)
         end
     end
 end
+BLU.UnregisterEvent = UnregisterEvent
 
 -- Fire event with performance optimization
-function BLU:FireEvent(event, ...)
+local function FireEvent(self, event, ...)
     local eventTable = self.events[event]
     if not eventTable then return end
     
@@ -82,10 +86,11 @@ function BLU:FireEvent(event, ...)
         local entry = callbacks[i]
         local success, err = pcall(entry.callback, event, ...)
         if not success then
-            self:PrintError("Error in event " .. event .. " for " .. entry.id .. ": " .. err)
+            self:PrintError("Error in event " .. tostring(event) .. " for " .. tostring(entry.id) .. ": " .. tostring(err))
         end
     end
 end
+BLU.FireEvent = FireEvent
 
 --=====================================================================================
 -- Timer System
@@ -106,7 +111,7 @@ function BLU:CreateTimer(duration, callback, repeating)
     -- Start timer frame if needed
     if not self.timerFrame then
         self.timerFrame = CreateFrame("Frame")
-        self.timerFrame:SetScript("OnUpdate", function(_, elapsed)
+        self.timerFrame:SetScript("OnUpdate", function(_, elapsed) 
             BLU:UpdateTimers(elapsed)
         end)
     end
@@ -207,7 +212,7 @@ end
 
 -- Print message
 function BLU:Print(message)
-    local prefix = "|TInterface\\AddOns\\BLU\\media\\images\\icon:16:16|t |cff05dffa[BLU]|r"
+    local prefix = "|TInterface\AddOns\BLU\media\images\icon:16:16|t |cff05dffa[BLU]|r"
     print(prefix .. " " .. message)
 end
 
@@ -274,6 +279,7 @@ function BLU:RegisterModule(module, name, description)
     end
     
     self.Modules[name] = module
+    self.LoadedModules[name] = module
     
     -- Don't auto-init modules here, they're initialized in init.lua
     
@@ -462,9 +468,9 @@ end
 function BLU:PlayTestSound(category, volume)
     if self.Modules.registry then
         local testSounds = {
-            levelup = "Interface\\AddOns\\BLU\\media\\sounds\\level_default.ogg",
-            achievement = "Interface\\AddOns\\BLU\\media\\sounds\\achievement_default.ogg",
-            quest = "Interface\\AddOns\\BLU\\media\\sounds\\quest_default.ogg"
+            levelup = "Interface\AddOns\BLU\media\sounds\level_default.ogg",
+            achievement = "Interface\AddOns\BLU\media\sounds\achievement_default.ogg",
+            quest = "Interface\AddOns\BLU\media\sounds\quest_default.ogg"
         }
         
         local soundFile = testSounds[category] or testSounds.levelup
@@ -596,10 +602,25 @@ function BLU:ShowCharacterCopyDialog()
     self:Print("Character copy functionality not yet implemented")
 end
 
--- Copy all BLU functions to addon table so other files can access them via local addonName, addonTable = ...
-for k, v in pairs(BLU) do
-    addonTable[k] = v
+function BLU:Enable()
+    -- Already enabled
 end
 
--- Export
-return BLU
+function BLU:Disable()
+    self:OnDisable()
+end
+
+function BLU:OnDisable()
+    for name, module in pairs(self.LoadedModules) do
+        if module and module.OnDisable then
+            module:OnDisable()
+        end
+    end
+end
+
+BLU:RegisterEvent("PLAYER_LOGOUT", function(event)
+    BLU:OnDisable()
+end)
+
+-- Copy all BLU functions to addon table so other files can access them via local addonName, addonTable = ...
+

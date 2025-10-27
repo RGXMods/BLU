@@ -3,9 +3,16 @@
 -- Manages all sound registrations and playback
 --=====================================================================================
 
-local addonName, BLU = ...
+local addonName = ...
+local BLU = _G["BLU"]
+
 local SoundRegistry = {}
+
 BLU.Modules["registry"] = SoundRegistry
+
+BLU.SoundRegistry = SoundRegistry
+
+
 
 -- Sound storage with caching
 SoundRegistry.sounds = {}

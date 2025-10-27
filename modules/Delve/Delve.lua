@@ -3,7 +3,8 @@
 -- Handles Delve Companion level up sounds (TWW feature)
 --=====================================================================================
 
-local addonName, BLU = ...
+local addonName = ...
+local BLU = _G["BLU"]
 local DelveCompanion = {}
 
 -- Module initialization

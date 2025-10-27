@@ -16,12 +16,6 @@ This release represents a complete architectural overhaul of the BLU addon, focu
 
 ### 🔧 Technical Changes
 
-#### Directory Structure
-- ✅ All directories and files now use lowercase naming convention
-- ✅ Clear separation: `core/`, `modules/`, `interface/`, `media/`, `localization/`
-- ✅ Removed all test files, build artifacts, and duplicate code
-- ✅ Consolidated 200+ sound files (removed high/low variants)
-
 #### Core Framework
 - Custom event system without external dependencies
 - Dynamic module loader with on-demand activation
@@ -30,7 +24,7 @@ This release represents a complete architectural overhaul of the BLU addon, focu
 - Comprehensive configuration system
 
 #### UI Improvements
-- Narcissus-inspired design system
+- Modern-inspired design system
 - Tabbed interface for settings
 - Per-event sound customization
 - Volume control (0-100%) with channel selection
@@ -93,18 +87,16 @@ This release establishes a clean foundation for future development:
 
 - [ ] Complete sound pack library (50+ games)
 - [ ] Profile system with import/export
-- [ ] WeakAuras integration
 - [ ] Custom trigger conditions
 - [ ] Visual effects system
 
 ### 📋 Full Changelog
 
 #### Added
-- ARCHITECTURE.md documentation
 - Professional directory structure
 - Module loader system
 - Sound registry pattern
-- Narcissus design system
+- Modern design system
 
 #### Changed
 - Complete codebase reorganization

@@ -3,7 +3,8 @@
 -- Handles Renown reputation rank up sounds
 --=====================================================================================
 
-local addonName, BLU = ...
+local addonName = ...
+local BLU = _G["BLU"]
 local RenownRank = {}
 
 -- Module variables

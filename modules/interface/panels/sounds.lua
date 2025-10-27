@@ -3,7 +3,8 @@
 -- Sound pack display panel showing installed packs
 --=====================================================================================
 
-local addonName, BLU = ...
+local addonName = ...
+local BLU = _G["BLU"]
 
 function BLU.CreateSoundsPanel(panel)
     -- Create scrollable content with proper spacing
@@ -21,31 +22,31 @@ function BLU.CreateSoundsPanel(panel)
     scrollFrame:SetScrollChild(content)
     
     -- Header
-    local header = BLU.Design:CreateHeader(content, "Installed Sound Packs", "Interface\\Icons\\INV_Misc_Bag_33")
+    local header = BLU.Design:CreateHeader(content, "Installed Sound Packs", "Interface\Icons\INV_Misc_Bag_33")
     header:SetPoint("TOPLEFT", 0, 0)
     header:SetPoint("RIGHT", 0, 0)
     
     -- BLU Internal Sounds section
-    local internalSection = BLU.Design:CreateSection(content, "BLU Built-in Sound Packs", "Interface\\Icons\\INV_Misc_Bell_01")
+    local internalSection = BLU.Design:CreateSection(content, "BLU Built-in Sound Packs", "Interface\Icons\INV_Misc_Bell_01")
     internalSection:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -15)
     internalSection:SetPoint("RIGHT", 0, 0)
     internalSection:SetHeight(200)
     
     -- Create a grid layout for BLU sound packs
     local bluPacks = {
-        {id = "finalfantasy", name = "Final Fantasy", icon = "Interface\\Icons\\INV_Sword_39"},
-        {id = "zelda", name = "Legend of Zelda", icon = "Interface\\Icons\\INV_Sword_48"},
-        {id = "pokemon", name = "Pokemon", icon = "Interface\\Icons\\INV_Misc_Ball_04"},
-        {id = "mario", name = "Super Mario", icon = "Interface\\Icons\\INV_Mushroom_11"},
-        {id = "sonic", name = "Sonic the Hedgehog", icon = "Interface\\Icons\\INV_Boots_01"},
-        {id = "metalgear", name = "Metal Gear Solid", icon = "Interface\\Icons\\INV_Misc_Bomb_04"},
-        {id = "elderscrolls", name = "Elder Scrolls", icon = "Interface\\Icons\\INV_Misc_Book_11"},
-        {id = "warcraft", name = "Warcraft", icon = "Interface\\Icons\\INV_Misc_Head_Orc_01"},
-        {id = "eldenring", name = "Elden Ring", icon = "Interface\\Icons\\INV_Sword_94"},
-        {id = "castlevania", name = "Castlevania", icon = "Interface\\Icons\\INV_Misc_Bone_Skull_02"},
-        {id = "diablo", name = "Diablo", icon = "Interface\\Icons\\INV_Misc_Gem_Bloodstone_02"},
-        {id = "fallout", name = "Fallout", icon = "Interface\\Icons\\INV_Gizmo_FelIronBomb"},
-        {id = "blu_default", name = "BLU Defaults", icon = "Interface\\Icons\\INV_Misc_QuestionMark"}
+        {id = "finalfantasy", name = "Final Fantasy", icon = "Interface\Icons\INV_Sword_39"},
+        {id = "zelda", name = "Legend of Zelda", icon = "Interface\Icons\INV_Sword_48"},
+        {id = "pokemon", name = "Pokemon", icon = "Interface\Icons\INV_Misc_Ball_04"},
+        {id = "mario", name = "Super Mario", icon = "Interface\Icons\INV_Mushroom_11"},
+        {id = "sonic", name = "Sonic the Hedgehog", icon = "Interface\Icons\INV_Boots_01"},
+        {id = "metalgear", name = "Metal Gear Solid", icon = "Interface\Icons\INV_Misc_Bomb_04"},
+        {id = "elderscrolls", name = "Elder Scrolls", icon = "Interface\Icons\INV_Misc_Book_11"},
+        {id = "warcraft", name = "Warcraft", icon = "Interface\Icons\INV_Misc_Head_Orc_01"},
+        {id = "eldenring", name = "Elden Ring", icon = "Interface\Icons\INV_Sword_94"},
+        {id = "castlevania", name = "Castlevania", icon = "Interface\Icons\INV_Misc_Bone_Skull_02"},
+        {id = "diablo", name = "Diablo", icon = "Interface\Icons\INV_Misc_Gem_Bloodstone_02"},
+        {id = "fallout", name = "Fallout", icon = "Interface\Icons\INV_Gizmo_FelIronBomb"},
+        {id = "blu_default", name = "BLU Defaults", icon = "Interface\Icons\INV_Misc_QuestionMark"}
     }
     
     local xOffset = 10
@@ -86,7 +87,7 @@ function BLU.CreateSoundsPanel(panel)
     end
     
     -- External Sound Packs section
-    local externalSection = BLU.Design:CreateSection(content, "External Sound Packs", "Interface\\Icons\\INV_Misc_Book_09")
+    local externalSection = BLU.Design:CreateSection(content, "External Sound Packs", "Interface\Icons\INV_Misc_Book_09")
     externalSection:SetPoint("TOPLEFT", internalSection, "BOTTOMLEFT", 0, -20)
     externalSection:SetPoint("RIGHT", -20, 0)
     externalSection:SetHeight(250)
@@ -128,7 +129,7 @@ function BLU.CreateSoundsPanel(panel)
     end
     
     -- How to Use section
-    local usageSection = BLU.Design:CreateSection(content, "How to Configure Sounds", "Interface\\Icons\\INV_Misc_Note_02")
+    local usageSection = BLU.Design:CreateSection(content, "How to Configure Sounds", "Interface\Icons\INV_Misc_Note_02")
     usageSection:SetPoint("TOPLEFT", externalSection, "BOTTOMLEFT", 0, -20)
     usageSection:SetPoint("RIGHT", -20, 0)
     usageSection:SetHeight(140)

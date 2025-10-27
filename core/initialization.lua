@@ -4,13 +4,15 @@
 -- Description: Centralized initialization to prevent duplicates and ensure proper order
 --=====================================================================================
 
-local addonName, BLU = ...
+local addonName = ...
+local BLU = _G["BLU"]
 
 -- Track what's been initialized
 BLU.initialized = {}
 
 -- Main initialization function
 function BLU:Initialize()
+    BLU:PrintDebug("[Init] BLU:Initialize() called.")
     if self.isInitialized then
         return
     end
@@ -23,15 +25,20 @@ function BLU:Initialize()
         "database_safety", -- Safety wrapper for database
         "config",         -- Configuration system
         "utils",          -- Utility functions
-        "combat_protection" -- Combat lockdown protection
+        "combat_protection", -- Combat lockdown protection
+        "sounds"          -- Sound muting/unmuting
     })
+
+    -- Apply defaults now that database and config are loaded
+    if BLU.db and BLU.Modules.config then
+        BLU:MergeDefaults(BLU.db, BLU.Modules.config.defaults)
+    end
     
     -- Phase 2: Sound Systems
     self:InitializePhase("sound", {
         "registry",       -- Sound registry
         "internal_sounds", -- Internal BLU sounds
-        "sharedmedia",    -- SharedMedia integration
-        "soundpacks"      -- BLU sound packs
+        "sharedmedia"    -- SharedMedia integration
     })
     
     -- Phase 3: Interface
@@ -39,7 +46,6 @@ function BLU:Initialize()
         "localization",   -- Localization strings
         "design",         -- Design system (from modules/interface)
         "widgets",        -- Widget library
-        "tabs",           -- Tab system
         "options"         -- Options panel (from modules/interface)
     })
     
@@ -61,6 +67,7 @@ function BLU:Initialize()
     self:LoadSavedSettings()
     
     self.isInitialized = true
+    BLU:PrintDebug("[Init] BLU:Initialize() finished. BLU.db is " .. tostring(self.db))
     self:Print("|cff00ccffBLU|r initialized successfully - Type |cffffff00/blu|r for options")
 end
 
@@ -88,9 +95,11 @@ function BLU:InitializeModule(moduleName)
     
     -- Check in BLU.Modules
     if self.Modules and self.Modules[moduleName] then
+        self:PrintDebug("[Init] Found module in BLU.Modules: " .. moduleName)
         module = self.Modules[moduleName]
     -- Check special cases
     elseif moduleName == "database_safety" and self.InitializeDatabase then
+        self:PrintDebug("[Init] Initializing special case: database_safety")
         self:InitializeDatabase()
         self.initialized[moduleName] = true
         self:PrintDebug("[Init] Initialized: database_safety")
@@ -130,6 +139,7 @@ function BLU:InitializeModule(moduleName)
     
     -- Initialize if found
     if module then
+        self:PrintDebug("[Init] Attempting to call Init for module: " .. moduleName)
         if module.Init then
             module:Init()
             self.initialized[moduleName] = true
@@ -209,26 +219,11 @@ function BLU:PlayTestSound(eventType)
     end
 end
 
--- Hook into ADDON_LOADED
-BLU:RegisterEvent("ADDON_LOADED", function(event, addon)
-    if addon ~= addonName then return end
-    
+-- Hook into PLAYER_LOGIN
+BLU:RegisterEvent("PLAYER_LOGIN", function(event)
     -- Initialize everything
     BLU:Initialize()
     
     -- Unregister this event
-    BLU:UnregisterEvent("ADDON_LOADED")
-end)
-
--- Hook into PLAYER_LOGIN for final setup
-BLU:RegisterEvent("PLAYER_LOGIN", function()
-    -- Final initialization tasks that require player to be fully loaded
-    if BLU.Modules and BLU.Modules.options then
-        -- Ensure options panel is created
-        if not BLU.OptionsPanel and BLU.Modules.options.CreateOptionsPanel then
-            BLU.Modules.options:CreateOptionsPanel()
-        end
-    end
-    
-    BLU:PrintDebug("[Init] PLAYER_LOGIN complete")
+    BLU:UnregisterEvent("PLAYER_LOGIN")
 end)

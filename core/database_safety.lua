@@ -4,7 +4,8 @@
 -- Description: Safe database access patterns to prevent nil errors
 --=====================================================================================
 
-local addonName, BLU = ...
+local addonName = ...
+local BLU = _G["BLU"]
 
 -- Initialize database with defaults
 function BLU:InitializeDatabase()
@@ -131,12 +132,12 @@ function BLU:ApplyDefaults()
             levelup = true,
             achievement = true,
             quest = true,
-            reputation = true,
+            reputation = false,
             honor = true,
             battlepet = true,
             renown = true,
             tradingpost = true,
-            delve = true
+            delve = false
         },
         
         -- Performance defaults
@@ -420,7 +421,9 @@ function BLU:ShowImportDialog()
     StaticPopup_Show("BLU_IMPORT_PROFILE")
 end
 
-function BLU:ShowCharacterCopyDialog()
-    -- Would show list of characters to copy from
-    print("|cff00ccffBLU:|r Character copy feature coming soon")
+local DatabaseSafety = {}
+function DatabaseSafety:Init()
+    -- The safety functions are already on the BLU object.
+    BLU:PrintDebug("Database safety layer initialized")
 end
+BLU.Modules["database_safety"] = DatabaseSafety

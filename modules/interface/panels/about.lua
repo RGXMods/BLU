@@ -3,7 +3,8 @@
 -- About panel with new design
 --=====================================================================================
 
-local addonName, BLU = ...
+local addonName = ...
+local BLU = _G["BLU"]
 
 function BLU.CreateAboutPanel(panel)
     -- Create scrollable content with proper sizing
@@ -35,7 +36,7 @@ function BLU.CreateAboutPanel(panel)
     local logoIcon = logoFrame:CreateTexture(nil, "ARTWORK")
     logoIcon:SetSize(80, 80)
     logoIcon:SetPoint("LEFT", 20, 0)
-    logoIcon:SetTexture("Interface\\Icons\\Achievement_Level_100")
+    logoIcon:SetTexture("Interface\AddOns\BLU\media\images\icon")
     
     -- Title
     local title = logoFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalHuge")
@@ -54,7 +55,7 @@ function BLU.CreateAboutPanel(panel)
     tagline:SetText("Replace default sounds with iconic audio from 50+ games")
     
     -- Info Section
-    local infoSection = BLU.Design:CreateSection(content, "Information", "Interface\\Icons\\INV_Misc_Book_09")
+    local infoSection = BLU.Design:CreateSection(content, "Information", "Interface\Icons\INV_Misc_Book_09")
     infoSection:SetPoint("TOPLEFT", logoFrame, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
     infoSection:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
     infoSection:SetHeight(180)
@@ -88,20 +89,20 @@ function BLU.CreateAboutPanel(panel)
         return row
     end
     
-    CreateInfoRow(infoGrid, "Interface\\Icons\\INV_Misc_Note_05", "Author", "|cffffd700donniedice|r", 0)
-    CreateInfoRow(infoGrid, "Interface\\Icons\\ACHIEVEMENT_GUILDPERK_EVERYONES A HERO_RANK2", "Discord", "|cffffd700discord.gg/rgxmods|r", -30)
-    CreateInfoRow(infoGrid, "Interface\\Icons\\INV_Misc_Web_01", "Website", "|cffffd700rgxmods.com|r", -60)
-    CreateInfoRow(infoGrid, "Interface\\Icons\\Trade_Engineering", "GitHub", "|cffffd700github.com/donniedice/BLU|r", -90)
-    CreateInfoRow(infoGrid, "Interface\\Icons\\INV_Misc_GroupLooking", "Support", "|cff00ff00/help|r for assistance", -120)
+    CreateInfoRow(infoGrid, "Interface\Icons\INV_Misc_Note_05", "Author", "|cffffd700donniedice|r", 0)
+    CreateInfoRow(infoGrid, "Interface\Icons\ACHIEVEMENT_GUILDPERK_EVERYONES A HERO_RANK2", "Discord", "|cffffd700discord.gg/rgxmods|r", -30)
+    CreateInfoRow(infoGrid, "Interface\Icons\INV_Misc_Web_01", "Website", "|cffffd700rgxmods.com|r", -60)
+    CreateInfoRow(infoGrid, "Interface\Icons\Trade_Engineering", "GitHub", "|cffffd700github.com/donniedice/BLU|r", -90)
+    CreateInfoRow(infoGrid, "Interface\Icons\INV_Misc_GroupLooking", "Support", "|cff00ff00/help|r for assistance", -120)
     
     -- Features Section
-    local featuresSection = BLU.Design:CreateSection(content, "Features", "Interface\\Icons\\Achievement_General")
+    local featuresSection = BLU.Design:CreateSection(content, "Features", "Interface\Icons\Achievement_General")
     featuresSection:SetPoint("TOPLEFT", infoSection, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
     featuresSection:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
     featuresSection:SetHeight(200)
     
     local features = {
-        "|cff05dffa50+ Game Sound Packs|r - Iconic sounds from your favorite games",
+        "|cff05dffa50+ Game Sounds|r - Iconic sounds from your favorite games",
         "|cff05dffaSharedMedia Support|r - Use sounds from other addons",
         "|cff05dffaVolume Control|r - Adjust sound levels to your preference",
         "|cff05dffaPer-Event Customization|r - Different sounds for each event type",
@@ -121,7 +122,7 @@ function BLU.CreateAboutPanel(panel)
     end
     
     -- Statistics Section
-    local statsSection = BLU.Design:CreateSection(content, "Statistics", "Interface\\Icons\\Achievement_GuildPerk_CashFlow_Rank2")
+    local statsSection = BLU.Design:CreateSection(content, "Statistics", "Interface\Icons\Achievement_GuildPerk_CashFlow_Rank2")
     statsSection:SetPoint("TOPLEFT", featuresSection, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
     statsSection:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
     statsSection:SetHeight(120)
@@ -162,7 +163,7 @@ function BLU.CreateAboutPanel(panel)
     CreateStatDisplay(statsSection.content, 340, -10, "Version", BLU.version or "?", {r=0.02, g=0.87, b=0.98})
     
     -- Credits Section
-    local creditsSection = BLU.Design:CreateSection(content, "Credits & Thanks", "Interface\\Icons\\Achievement_GuildPerk_Honorable Mention")
+    local creditsSection = BLU.Design:CreateSection(content, "Credits & Thanks", "Interface\Icons\Achievement_GuildPerk_Honorable Mention")
     creditsSection:SetPoint("TOPLEFT", statsSection, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
     creditsSection:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
     creditsSection:SetHeight(100)
@@ -177,6 +178,6 @@ function BLU.CreateAboutPanel(panel)
         "Thanks to the WoW addon development community for inspiration and guidance."
     )
     
-    -- Set proper content height
+    -- Set content height
     content:SetHeight(700)
 end

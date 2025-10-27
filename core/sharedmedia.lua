@@ -3,7 +3,8 @@
 -- Integration with LibSharedMedia and external sound pack addons
 --=====================================================================================
 
-local addonName, BLU = ...
+local addonName = ...
+local BLU = _G["BLU"]
 
 -- Create SharedMedia module
 local SharedMedia = {}
@@ -83,6 +84,7 @@ end
 
 -- Categorize sounds by name patterns
 function SharedMedia:CategorizeSound(name, path)
+    if type(path) ~= "string" then return "Other Sounds" end
     local nameLower = name:lower()
     
     -- Check for known sound pack patterns

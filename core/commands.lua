@@ -3,7 +3,8 @@
 -- Slash command handling
 --=====================================================================================
 
-local addonName, BLU = ...
+local addonName = ...
+local BLU = _G["BLU"]
 
 -- Register slash commands
 SLASH_BLU1 = "/blu"

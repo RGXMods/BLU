@@ -1,10 +1,10 @@
-
 --=====================================================================================
 -- BLU Battle Pet Module
 -- Handles battle pet level up sounds
 --=====================================================================================
 
-local addonName, BLU = ...
+local addonName = ...
+local BLU = _G["BLU"]
 local BattlePet = {}
 
 -- Module variables

@@ -4,15 +4,16 @@
 -- Description: Prevents UI taint by deferring operations during combat
 --=====================================================================================
 
-local addonName, BLU = ...
+local addonName, _ = ...
+local BLU = _G["BLU"]
 
 -- Queue for operations blocked by combat
 BLU.CombatQueue = {}
 
 -- Register combat events
 function BLU:InitializeCombatProtection()
-    self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnEnterCombat")
-    self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnLeaveCombat")
+    _G.BLU:RegisterEvent("PLAYER_REGEN_DISABLED", function(...) BLU:OnEnterCombat(...) end)
+    _G.BLU:RegisterEvent("PLAYER_REGEN_ENABLED", function(...) BLU:OnLeaveCombat(...) end)
     
     -- Flag for combat state
     self.inCombat = InCombatLockdown()
@@ -304,14 +305,9 @@ function BLU:CleanCombatQueue()
     end
 end
 
--- Initialize on addon load
-function BLU:ADDON_LOADED(addon)
-    if addon == addonName then
-        self:InitializeCombatProtection()
-        
-        -- Periodic cleanup of expired queue items
-        C_Timer.NewTicker(60, function()
-            self:CleanCombatQueue()
-        end)
-    end
+local CombatProtection = {}
+function CombatProtection:Init()
+    BLU:InitializeCombatProtection()
+    BLU:PrintDebug("Combat protection module initialized")
 end
+BLU.Modules["combat_protection"] = CombatProtection

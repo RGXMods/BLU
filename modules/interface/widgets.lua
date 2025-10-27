@@ -3,7 +3,8 @@
 -- UI Widget creation helpers
 --=====================================================================================
 
-local addonName, BLU = ...
+local addonName = ...
+local BLU = _G["BLU"]
 
 BLU.Widgets = {}
 

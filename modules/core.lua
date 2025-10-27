@@ -1,5 +1,6 @@
 -- modules/core.lua
-local core = {}
+local addonName = ...
+local BLU = _G["BLU"]
 
 function core:OnEnable()
     self.addon:PrintDebug("Core module enabled!")

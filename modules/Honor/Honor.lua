@@ -3,7 +3,8 @@
 -- Handles Honor rank up sounds
 --=====================================================================================
 
-local addonName, BLU = ...
+local addonName = ...
+local BLU = _G["BLU"]
 local HonorRank = {}
 
 -- Module variables
@@ -66,11 +67,8 @@ function HonorRank:OnPvPRankChanged(event)
         if BLU.debugMode then
             BLU:Print(string.format("PvP Honor rank increased: %d -> %d", self.currentHonorLevel, newLevel))
         end
-    end
-    
-    self.currentHonorLevel = newLevel
-end
-
+            end
+        end
 -- System message handler
 function HonorRank:OnSystemMessage(chatFrame, event, msg)
     if not BLU.db.profile.enableHonorRank then return false end

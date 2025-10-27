@@ -3,7 +3,14 @@
 -- Simplified Quest panel with two dropdowns for Accept and Turn In
 --=====================================================================================
 
-local addonName, BLU = ...
+local addonName = ...
+local BLU = _G["BLU"]
+local QuestPanel = {}
+BLU.Modules["questpanel"] = QuestPanel
+
+function QuestPanel:Init()
+    BLU:PrintDebug("QuestPanel:Init() called")
+end
 
 function BLU.CreateQuestPanel(panel)
     -- Create scrollable content
@@ -18,7 +25,7 @@ function BLU.CreateQuestPanel(panel)
     local icon = header:CreateTexture(nil, "ARTWORK")
     icon:SetSize(32, 32)
     icon:SetPoint("LEFT", 0, 0)
-    icon:SetTexture("Interface\\Icons\\INV_Misc_Note_01")
+    icon:SetTexture("Interface\Icons\INV_Misc_Note_01")
     
     local title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     title:SetPoint("LEFT", icon, "RIGHT", 10, 0)
@@ -26,7 +33,7 @@ function BLU.CreateQuestPanel(panel)
     
     -- Helper function to create a quest sound dropdown
     local function CreateQuestDropdown(parent, questEventType, questEventName, yOffset)
-        local section = BLU.Design:CreateSection(parent, questEventName, "Interface\\Icons\\INV_Misc_Bell_01")
+        local section = BLU.Design:CreateSection(parent, questEventName, "Interface\Icons\INV_Misc_Bell_01")
         section:SetPoint("TOPLEFT", 0, yOffset)
         section:SetPoint("RIGHT", -BLU.Design.Layout.ContentMargin, 0)
         section:SetHeight(200)
@@ -174,10 +181,10 @@ function BLU.CreateQuestPanel(panel)
                 elseif menuList == "blu_sounds" then
                     -- Quest-specific BLU sounds
                     local questSounds = {
-                        {name = "FF Quest Complete", file = "Interface\\AddOns\\BLU\\media\\sounds\\finalfantasy\\quest.ogg"},
-                        {name = "Zelda Item Get", file = "Interface\\AddOns\\BLU\\media\\sounds\\zelda\\item.ogg"},
-                        {name = "Mario Coin", file = "Interface\\AddOns\\BLU\\media\\sounds\\mario\\coin.ogg"},
-                        {name = "Pokemon Item Get", file = "Interface\\AddOns\\BLU\\media\\sounds\\pokemon\\item.ogg"}
+                        {name = "FF Quest Complete", file = "Interface\AddOns\BLU\media\sounds\finalfantasy\quest.ogg"},
+                        {name = "Zelda Item Get", file = "Interface\AddOns\BLU\media\sounds\zelda\item.ogg"},
+                        {name = "Mario Coin", file = "Interface\AddOns\BLU\media\sounds\mario\coin.ogg"},
+                        {name = "Pokemon Item Get", file = "Interface\AddOns\BLU\media\sounds\pokemon\item.ogg"}
                     }
                     
                     for _, sound in ipairs(questSounds) do

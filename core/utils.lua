@@ -3,7 +3,8 @@
 -- Shared utility functions
 --=====================================================================================
 
-local addonName, BLU = ...
+local addonName = ...
+local BLU = _G["BLU"]
 local Utils = {}
 BLU.Modules["utils"] = Utils
 

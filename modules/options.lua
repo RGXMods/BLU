@@ -1,5 +1,6 @@
 -- modules/options.lua
-local options = {}
+local addonName = ...
+local BLU = _G["BLU"]
 
 options.defaults = {
     profile = {
@@ -32,7 +33,7 @@ function options:OnEnable()
     self:CreateOptions() -- Populate with widgets
 end
 
-function options:CreateOptions()
+function options:CreateOptions() 
     local addon = self.addon
     local soundsModule = addon:GetModule("Sounds")
 
@@ -72,7 +73,7 @@ function options:CreateOptionWidgets(parent, key, defaultSound, soundOptions)
     local dropdown = BLULib.Options.CreateDropdown(parent, key .. "SoundSelect", soundOptions, function() return addon.db.profile[key .. "SoundSelect"] end, function(value) addon.db.profile[key .. "SoundSelect"] = value end)
     dropdown:SetPoint("TOPLEFT", 20, -40)
 
-    local testButton = BLULib.Options.CreateImageButton(parent, "Test" .. key .. "Sound", "Interface\\Addons\\BLU\\images\\play.blp", function() BLULib.Utils.TestSound(addon, key .. "SoundSelect", key .. "Volume", defaultSound, "TEST_" .. key:upper() .. "_SOUND") end)
+    local testButton = BLULib.Options.CreateImageButton(parent, "Test" .. key .. "Sound", "Interface\Addons\BLU\images\play.blp", function() BLULib.Utils.TestSound(addon, key .. "SoundSelect", key .. "Volume", defaultSound, "TEST_" .. key:upper() .. "_SOUND") end)
     testButton:SetPoint("LEFT", dropdown, "RIGHT", 150, 0)
 
     local slider = BLULib.Options.CreateSlider(parent, addon.L[key:upper() .. "_VOLUME_LABEL"], 0, 3, 1, function() return addon.db.profile[key .. "Volume"] end, function(value) addon.db.profile[key .. "Volume"] = value end)
@@ -80,4 +81,4 @@ function options:CreateOptionWidgets(parent, key, defaultSound, soundOptions)
 end
 
 BLULib = BLULib or {}
-BLULib.OptionsModule = options
+BLULib.CoreModule = core

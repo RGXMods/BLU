@@ -6,6 +6,7 @@ on:
       - '**'
     branches:
       - alpha
+      - dev
 
 env:
   CF_API_KEY: ${{ secrets.CF_API_KEY }}

@@ -3,7 +3,8 @@
 -- General settings panel with new design
 --=====================================================================================
 
-local addonName, BLU = ...
+local addonName = ...
+local BLU = _G["BLU"]
 
 function BLU.CreateGeneralPanel(panel)
     -- Create scrollable content with proper sizing
@@ -23,7 +24,7 @@ function BLU.CreateGeneralPanel(panel)
     -- No header needed - more compact
     
     -- Core Settings Section
-    local coreSection = BLU.Design:CreateSection(content, "Core Settings", "Interface\\Icons\\Achievement_General")
+    local coreSection = BLU.Design:CreateSection(content, "Core Settings", "Interface\Icons\Achievement_General")
     coreSection:SetPoint("TOPLEFT", 0, 0)
     coreSection:SetPoint("RIGHT", 0, 0)
     coreSection:SetHeight(140)
@@ -110,7 +111,7 @@ function BLU.CreateGeneralPanel(panel)
     end)
     
     -- Audio Settings Section
-    local audioSection = BLU.Design:CreateSection(content, "Audio Settings", "Interface\\Icons\\INV_Misc_Ear_Human_01")
+    local audioSection = BLU.Design:CreateSection(content, "Audio Settings", "Interface\Icons\INV_Misc_Ear_Human_01")
     audioSection:SetPoint("TOPLEFT", coreSection, "BOTTOMLEFT", 0, -10)
     audioSection:SetPoint("RIGHT", 0, 0)
     audioSection:SetHeight(180)
@@ -138,25 +139,20 @@ function BLU.CreateGeneralPanel(panel)
         currentVolume = BLU.db.profile.soundVolume or 100
     end
     volumeSlider:SetValue(currentVolume)
-    volumeValue:SetText(currentVolume .. "%")
+    volumeValue:SetText(currentVolume .. "% ")
     
     volumeSlider:SetScript("OnValueChanged", function(self, value)
         value = math.floor(value / 5) * 5  -- Round to nearest 5
         if BLU.db and BLU.db.profile then
             BLU.db.profile.soundVolume = value
         end
-        volumeValue:SetText(value .. "%")
+        volumeValue:SetText(value .. "% ")
     end)
     
     -- Sound channel
     local channelLabel = audioSection.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     channelLabel:SetPoint("TOPLEFT", volumeSlider, "BOTTOMLEFT", 0, -20)
     channelLabel:SetText("Sound Channel")
-    
-    -- Volume note
-    local volumeNote = audioSection.content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    volumeNote:SetPoint("TOPLEFT", volumeLabel, "TOPRIGHT", 10, 0)
-    volumeNote:SetText("|cff888888(BLU sounds only)|r")
     
     local channelDropdown = CreateFrame("Frame", "BLUChannelDropdown", audioSection.content, "UIDropDownMenuTemplate")
     channelDropdown:SetPoint("TOPLEFT", channelLabel, "BOTTOMLEFT", -20, -5)
@@ -232,7 +228,7 @@ function BLU.CreateGeneralPanel(panel)
     end)
     
     -- Behavior Settings Section
-    local behaviorSection = BLU.Design:CreateSection(content, "Behavior Settings", "Interface\\Icons\\INV_Misc_GroupLooking")
+    local behaviorSection = BLU.Design:CreateSection(content, "Behavior Settings", "Interface\Icons\INV_Misc_GroupLooking")
     behaviorSection:SetPoint("TOPLEFT", audioSection, "BOTTOMLEFT", 0, -10)
     behaviorSection:SetPoint("RIGHT", 0, 0)
     behaviorSection:SetHeight(120)
@@ -292,7 +288,7 @@ function BLU.CreateGeneralPanel(panel)
     end)
     
     -- Actions Section
-    local actionsSection = BLU.Design:CreateSection(content, "Actions", "Interface\\Icons\\ACHIEVEMENT_GUILDPERK_QUICK AND DEAD")
+    local actionsSection = BLU.Design:CreateSection(content, "Actions", "Interface\Icons\ACHIEVEMENT_GUILDPERK_QUICK AND DEAD")
     actionsSection:SetPoint("TOPLEFT", behaviorSection, "BOTTOMLEFT", 0, -10)
     actionsSection:SetPoint("RIGHT", 0, 0)
     actionsSection:SetHeight(60)
@@ -315,33 +311,24 @@ function BLU.CreateGeneralPanel(panel)
     local testAllBtn = BLU.Design:CreateButton(actionsSection.content, "Test All", 80, 24)
     testAllBtn:SetPoint("LEFT", reloadBtn, "RIGHT", 10, 0)
     testAllBtn:SetScript("OnClick", function(self)
-        self:SetText("Testing...")
+        -- Visual feedback
+        self:SetText("Playing...")
         self:Disable()
-        BLU:Print("Testing all event sounds...")
         
-        local events = {"levelup", "achievement", "quest", "reputation"}
-        local index = 1
-        
-        local function playNext()
-            if index <= #events then
-                BLU:Print("Playing: " .. events[index])
-                if BLU.PlaySound then
-                    BLU:PlaySound(events[index])
-                elseif BLU.Modules.registry and BLU.Modules.registry.PlaySound then
-                    BLU.Modules.registry:PlaySound(events[index])
-                else
-                    BLU:Print("Sound system not available")
-                end
-                index = index + 1
-                C_Timer.After(2, playNext)
-            else
-                BLU:Print("Test complete!")
-                self:SetText("Test All")
-                self:Enable()
-            end
+        -- Play sound
+        if BLU.PlaySound then
+            BLU:PlaySound("levelup")
+        elseif BLU.Modules.registry and BLU.Modules.registry.PlaySound then
+            BLU.Modules.registry:PlaySound("levelup")
+        else
+            BLU:Print("Sound system not available")
         end
         
-        playNext()
+        -- Reset button after delay
+        C_Timer.After(2, function()
+            self:SetText("Test")
+            self:Enable()
+        end)
     end)
     
     -- Reset confirmation dialog

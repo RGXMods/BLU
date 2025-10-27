@@ -4,7 +4,8 @@
 -- Description: English localization strings
 --=====================================================================================
 
-local addonName, BLU = ...
+local addonName = ...
+local BLU = _G["BLU"]
 
 -- Initialize localization table
 BLU.L = BLU.L or {}

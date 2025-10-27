@@ -1,5 +1,6 @@
 -- modules/battlepets.lua
-local battlepets = {}
+local addonName = ...
+local BLU = _G["BLU"]
 
 function battlepets:OnEnable()
     self.addon:Print("Battle Pets module enabled!")

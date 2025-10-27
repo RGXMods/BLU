@@ -4,7 +4,8 @@
 -- Description: Enable/disable/reload module functionality
 --=====================================================================================
 
-local addonName, BLU = ...
+local addonName = ...
+local BLU = _G["BLU"]
 
 -- Enable a specific module
 function BLU:EnableModule(moduleName)
@@ -123,7 +124,7 @@ end
 -- Get list of all available modules
 function BLU:GetAvailableModules()
     return {
-        {id = "levelup", name = "Level Up", desc = "Plays sounds when you level up"},
+        {id = "levelup", name = "Level Up", desc = "Plays sounds when you gain a level"},
         {id = "achievement", name = "Achievement", desc = "Plays sounds for achievements"},
         {id = "quest", name = "Quest Complete", desc = "Plays sounds for quest completion"},
         {id = "reputation", name = "Reputation", desc = "Plays sounds for reputation changes"},

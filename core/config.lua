@@ -3,7 +3,8 @@
 -- Handles configuration and settings management
 --=====================================================================================
 
-local addonName, BLU = ...
+local addonName = ...
+local BLU = _G["BLU"]
 local Config = {}
 BLU.Modules["config"] = Config
 
@@ -56,32 +57,6 @@ Config.defaults = {
         maxQueueSize = 3
     }
 }
-
--- Initialize config module
-function Config:Init()
-    -- Set up saved variables
-    self:InitializeDatabase()
-    
-    -- Apply settings
-    self:ApplySettings()
-    
-    BLU:PrintDebug("Config module initialized")
-end
-
--- Initialize database
-function Config:InitializeDatabase()
-    -- Use the custom database system instead of AceDB
-    if BLU.Database then
-        BLU.db = BLU.Database:New("BLUDB", self.defaults)
-    else
-        -- Fallback to simple saved variables
-        BLUDB = BLUDB or {}
-        BLU.db = {
-            profile = BLUDB.profile or CopyTable(self.defaults.profile)
-        }
-        BLUDB.profile = BLU.db.profile
-    end
-end
 
 -- Profile changed handler
 function Config:OnProfileChanged()

@@ -3,7 +3,8 @@
 -- Design constants and styling following SimpleQuestPlates pattern
 --=====================================================================================
 
-local addonName, BLU = ...
+local addonName = ...
+local BLU = _G["BLU"]
 
 BLU.Design = {
     -- Brand colors (matching SimpleQuestPlates style)
@@ -23,24 +24,24 @@ BLU.Design = {
     -- Backdrop templates (SimpleQuestPlates style)
     Backdrops = {
         Dark = {
-            bgFile = "Interface\\Buttons\\WHITE8x8",
-            edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+            bgFile = "Interface\Buttons\WHITE8x8",
+            edgeFile = "Interface\Tooltips\UI-Tooltip-Border",
             tile = false,
             tileSize = 0,
             edgeSize = 1,
             insets = {left = 1, right = 1, top = 1, bottom = 1}
         },
         Panel = {
-            bgFile = "Interface\\Buttons\\WHITE8x8",
-            edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+            bgFile = "Interface\Buttons\WHITE8x8",
+            edgeFile = "Interface\Tooltips\UI-Tooltip-Border",
             tile = false,
             tileSize = 0,
             edgeSize = 1,
             insets = {left = 1, right = 1, top = 1, bottom = 1}
         },
         Tooltip = {
-            bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
-            edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+            bgFile = "Interface\Tooltips\UI-Tooltip-Background",
+            edgeFile = "Interface\Tooltips\UI-Tooltip-Border",
             tile = true,
             tileSize = 16,
             edgeSize = 16,
@@ -131,9 +132,9 @@ function BLU.Design:CreateButton(parent, text, width, height)
     button:SetSize(width or 100, height or 22)
     
     -- Button texture
-    button:SetNormalTexture("Interface\\Buttons\\UI-DialogBox-Button-Up")
-    button:SetPushedTexture("Interface\\Buttons\\UI-DialogBox-Button-Down")
-    button:SetHighlightTexture("Interface\\Buttons\\UI-DialogBox-Button-Highlight")
+    button:SetNormalTexture("Interface\Buttons\UI-DialogBox-Button-Up")
+    button:SetPushedTexture("Interface\Buttons\UI-DialogBox-Button-Down")
+    button:SetHighlightTexture("Interface\Buttons\UI-DialogBox-Button-Highlight")
     
     local normal = button:GetNormalTexture()
     normal:SetTexCoord(0, 1, 0, 0.71875)
@@ -223,9 +224,9 @@ function BLU.Design:CreateDropdown(parent, label, width)
             local button = _G[dropdownName .. "Button"]
             if button then
                 -- Update button texture for better visibility
-                button:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Up")
-                button:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Down")
-                button:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+                button:SetNormalTexture("Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up")
+                button:SetPushedTexture("Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down")
+                button:SetHighlightTexture("Interface\Buttons\UI-Common-MouseHilight", "ADD")
                 
                 -- Resize and position
                 button:SetSize(16, 16)
@@ -271,7 +272,7 @@ function BLU.Design:CreateSection(parent, title, icon)
     local border = CreateFrame("Frame", nil, section, "BackdropTemplate")
     border:SetAllPoints()
     border:SetBackdrop({
-        edgeFile = "Interface\\Buttons\\WHITE8x8",
+        edgeFile = "Interface\Buttons\WHITE8x8",
         edgeSize = 1,
     })
     border:SetBackdropBorderColor(0.1, 0.1, 0.1, 1)

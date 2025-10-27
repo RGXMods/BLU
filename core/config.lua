@@ -59,18 +59,13 @@ Config.defaults = {
 }
 
 -- Profile changed handler
-function Config:OnProfileChanged()
-    BLU:ReloadAllModules()
-    self:ApplySettings()
-end
-
--- Apply current settings
 function Config:ApplySettings()
-    -- Update debug mode
+    if not BLU.db or not BLU.db.profile then return end
+
     BLU.debugMode = BLU.db.profile.debugMode
-    
-    -- Update welcome message setting
     BLU.showWelcomeMessage = BLU.db.profile.showWelcomeMessage
+
+    BLU:PrintDebug("Settings applied. Debug mode is: " .. tostring(BLU.debugMode))
 end
 
 -- Get setting value

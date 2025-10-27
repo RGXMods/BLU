@@ -32,6 +32,7 @@ function BLU:Initialize()
     -- Apply defaults now that database and config are loaded
     if BLU.db and BLU.Modules.config then
         BLU:MergeDefaults(BLU.db, BLU.Modules.config.defaults)
+        BLU.Modules.config:ApplySettings()
     end
     
     -- Phase 2: Sound Systems
@@ -68,7 +69,7 @@ function BLU:Initialize()
     
     self.isInitialized = true
     BLU:PrintDebug("[Init] BLU:Initialize() finished. BLU.db is " .. tostring(self.db))
-    self:Print("|cff00ccffBLU|r initialized successfully - Type |cffffff00/blu|r for options")
+    self:ShowWelcomeMessage()
 end
 
 -- Initialize a phase of modules

@@ -33,8 +33,18 @@ SlashCmdList["BLU"] = function(msg)
         else
             BLU:Print("|cff00ccffBLU:|r Database not loaded yet")
         end
-    elseif msg == "reload" then
-        ReloadUI()
+    elseif msg == "enable" then
+        if BLU.db and BLU.db.profile then
+            BLU.db.profile.enabled = true
+            BLU:Enable()
+            BLU:Print("|cff00ff00BLU Enabled|r")
+        end
+    elseif msg == "disable" then
+        if BLU.db and BLU.db.profile then
+            BLU.db.profile.enabled = false
+            BLU:Disable()
+            BLU:Print("|cffff0000BLU Disabled|r")
+        end
     elseif msg == "help" then
         BLU:Print("|cff00ccffBLU Commands:|r")
         BLU:Print("  |cffffff00/blu|r - Open options")

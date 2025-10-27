@@ -183,9 +183,6 @@ function SoundRegistry:PlaySound(soundId, volume)
     
     -- Get sound channel from profile
     local channel = "Master"
-    if BLU.db and BLU.db.profile and BLU.db.profile.soundChannel then
-        channel = BLU.db.profile.soundChannel
-    end
     
     -- Play the sound based on type
     local willPlay, handle
@@ -241,7 +238,7 @@ function SoundRegistry:PlaySound(soundId, volume)
         BLU:PrintDebug(string.format("Playing sound: %s (volume: %.2f, channel: %s)", soundId, volume, channel))
         
         -- Show in chat if enabled
-        if BLU.db and BLU.db.profile and BLU.db.profile.showSoundNames then
+        if BLU.db and BLU.db.profile and BLU.db.profile.debugMode then
             BLU:Print(string.format("|cff00ff00Playing:|r %s", sound.name or soundId))
         end
         
@@ -294,6 +291,22 @@ function SoundRegistry:PlayCategorySound(category, forceSound)
     -- Default to "default" if nothing selected
     if not selectedSound then
         selectedSound = "default"
+    end
+
+    if selectedSound == "random" then
+        local sounds = self:GetSoundsByCategory(category)
+        local soundIds = {}
+        for id, _ in pairs(sounds) do
+            table.insert(soundIds, id)
+        end
+        if #soundIds > 0 then
+            local randomIndex = math.random(1, #soundIds)
+            local randomSoundId = soundIds[randomIndex]
+            return self:PlaySound(randomSoundId)
+        else
+            -- fallback to default if no sounds in category
+            selectedSound = "default"
+        end
     end
     
     -- Handle different sound types

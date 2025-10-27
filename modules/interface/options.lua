@@ -415,6 +415,10 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
     local testBtn = BLU.Design:CreateButton(controlsFrame, "Test", 60, 22)
     testBtn:SetPoint("RIGHT", 0, 0)
     testBtn:SetScript("OnClick", function(self)
+        BLU:PrintDebug("Test button clicked for event: " .. actualEventType)
+        local selectedSound = BLU.db and BLU.db.profile and BLU.db.profile.selectedSounds and BLU.db.profile.selectedSounds[actualEventType]
+        BLU:PrintDebug("Selected sound is: " .. tostring(selectedSound))
+
         self:SetText("Playing...")
         self:Disable()
         
@@ -449,6 +453,19 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
         BLU.db.profile.selectedSounds = BLU.db.profile.selectedSounds or {}
         
         if level == 1 then
+            -- Random option
+            local info = UIDropDownMenu_CreateInfo()
+            info.text = "|cff00ff00Random|r"
+            info.value = "random"
+            info.func = function()
+                BLU.db.profile.selectedSounds[self.eventId] = "random"
+                UIDropDownMenu_SetText(self, "Random")
+                self.currentSound:SetText("Random")
+                CloseDropDownMenus()
+            end
+            info.checked = BLU.db.profile.selectedSounds[self.eventId] == "random"
+            UIDropDownMenu_AddButton(info, level)
+
             -- Default option
             local info = UIDropDownMenu_CreateInfo()
             info.text = "Default WoW Sound"

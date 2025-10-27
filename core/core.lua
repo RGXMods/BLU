@@ -212,14 +212,14 @@ end
 
 -- Print message
 function BLU:Print(message)
-    local prefix = "|TInterface\AddOns\BLU\media\images\icon:16:16|t |cff05dffa[BLU]|r"
+    local prefix = "|TInterface\\AddOns\\BLU\\media\\Textures\\icon:16:16|t |cff05dffa[BLU]|r"
     print(prefix .. " " .. message)
 end
 
 -- Print debug message
 function BLU:PrintDebug(message)
     if self.debugMode then
-        local prefix = "|cff05dffa[BLU]|r |cff808080[DEBUG]|r"
+        local prefix = "|TInterface\\Icons\\INV_Misc_Gear_06:16:16|t|cff05dffa[BLU]|r |cff808080[DEBUG]|r"
         print(prefix .. " " .. message)
     end
 end

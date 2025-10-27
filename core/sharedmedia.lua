@@ -59,15 +59,21 @@ function SharedMedia:ScanExternalSounds()
     for _, soundName in ipairs(soundList) do
         local soundPath = self.LSM:Fetch("sound", soundName)
         if soundPath then
-            -- Categorize by addon/type
             local category = self:CategorizeSound(soundName, soundPath)
-            
+            local packName = "SharedMedia"
+            local _, _, addonName = string.find(soundPath, "Interface\\AddOns\\([^\]+)\\")
+            if addonName then
+                packName = addonName
+            end
+
             -- Store sound info
             self.externalSounds[soundName] = {
                 name = soundName,
                 path = soundPath,
                 category = category,
-                source = "SharedMedia"
+                source = "SharedMedia",
+                packId = packName,
+                packName = packName
             }
             
             -- Add to category list
@@ -75,6 +81,16 @@ function SharedMedia:ScanExternalSounds()
                 self.soundCategories[category] = {}
             end
             table.insert(self.soundCategories[category], soundName)
+
+            -- Register with BLU SoundRegistry
+            BLU.SoundRegistry:RegisterSound(soundName, {
+                name = soundName,
+                file = soundPath,
+                category = category,
+                source = "SharedMedia",
+                packId = packName,
+                packName = packName
+            })
         end
     end
     

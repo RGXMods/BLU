@@ -106,7 +106,7 @@ end
 
 -- Register module
 BLU.Modules = BLU.Modules or {}
-BLU.Modules["HonorRank"] = HonorRank
+BLU.Modules["honor"] = HonorRank
 
 -- Export module
 return HonorRank

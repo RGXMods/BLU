@@ -35,7 +35,7 @@ end
 
 -- Register module
 BLU.Modules = BLU.Modules or {}
-BLU.Modules["Achievement"] = Achievement
+BLU.Modules["achievement"] = Achievement
 
 -- Export module
 return Achievement

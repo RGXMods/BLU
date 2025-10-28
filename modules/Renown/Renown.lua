@@ -123,7 +123,7 @@ end
 
 -- Register module
 BLU.Modules = BLU.Modules or {}
-BLU.Modules["RenownRank"] = RenownRank
+BLU.Modules["renown"] = RenownRank
 
 -- Export module
 return RenownRank

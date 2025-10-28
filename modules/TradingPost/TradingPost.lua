@@ -75,7 +75,7 @@ end
 
 -- Register module
 BLU.Modules = BLU.Modules or {}
-BLU.Modules["TradingPost"] = TradingPost
+BLU.Modules["tradingpost"] = TradingPost
 
 -- Export module
 return TradingPost

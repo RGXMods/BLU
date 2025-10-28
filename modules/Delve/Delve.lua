@@ -80,7 +80,7 @@ end
 
 -- Register module
 BLU.Modules = BLU.Modules or {}
-BLU.Modules["DelveCompanion"] = DelveCompanion
+BLU.Modules["delve"] = DelveCompanion
 
 -- Export module
 return DelveCompanion

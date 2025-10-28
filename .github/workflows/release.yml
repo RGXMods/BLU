@@ -3,7 +3,9 @@ name: Package and Release
 on:
   push:
     tags:
-      - '**'
+      - 'v[0-9]+.[0-9]+.[0-9]+'           # v1.2.3
+      - 'v[0-9]+.[0-9]+.[0-9]+-beta*'      # v1.2.3-beta.1
+      - 'v[0-9]+.[0-9]+.[0-9]+-alpha*'     # v1.2.3-alpha.1
     branches:
       - alpha
       - dev
@@ -13,73 +15,79 @@ env:
   WOWI_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
   WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
   GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
-  DISCORD_WEBHOOK: https://discord.com/api/webhooks/1424937755229683752/f0bNBmvI2cAFR0Q9d4YeKBuakF-0tjE_wAKAbtIlK5X2n5rv-SxJXvsekaLE9p5OpYqe
+  DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}  # 🔐 Store securely!
 
 jobs:
   release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
     steps:
-      - name: Clone Project
+      - name: 🛠️ Clone Project
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Configure Git user
+      - name: 🧑‍🔧 Configure Git User
         run: |
           git config --global user.name "donniedice"
           git config --global user.email "60427166+donniedice@users.noreply.github.com"
-          
-      - name: Set Release Type
-        id: set_release_type
-        run: |
-          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
-            TAG_NAME=${{ github.ref }}
-            if [[ "$TAG_NAME" == *"beta"* ]]; then
-              echo "release_type=beta" >> $GITHUB_OUTPUT
-            elif [[ "$TAG_NAME" == *"alpha"* ]]; then
-              echo "release_type=alpha" >> $GITHUB_OUTPUT
-            else
-              echo "release_type=release" >> $GITHUB_OUTPUT
-            fi
-          else
-            echo "release_type=alpha" >> $GITHUB_OUTPUT
-          fi
 
-      - name: Extract Version from TOC
-        id: extract_version
+      - name: 🧭 Determine Release Type
+        id: release_type
+        run: |
+          case "${{ github.ref }}" in
+            refs/tags/*)
+              if [[ "${{ github.ref }}" == *"beta"* ]]; then
+                echo "type=beta" >> $GITHUB_OUTPUT
+              elif [[ "${{ github.ref }}" == *"alpha"* ]]; then
+                echo "type=alpha" >> $GITHUB_OUTPUT
+              else
+                echo "type=release" >> $GITHUB_OUTPUT
+              fi
+              ;;
+            refs/heads/dev)
+              echo "type=dev" >> $GITHUB_OUTPUT
+              ;;
+            refs/heads/alpha)
+              echo "type=alpha-branch" >> $GITHUB_OUTPUT
+              ;;
+            *)
+              echo "type=unknown" >> $GITHUB_OUTPUT
+              ;;
+          esac
+
+      - name: 📦 Extract Version from TOC
+        id: version
         run: |
           version=$(grep -oP '^## Version: \K(.*)' BLU.toc)
           echo "version=$version" >> $GITHUB_OUTPUT
           echo "timestamp=$(date -u +%Y-%m-%dT%H:%M:%S.000Z)" >> $GITHUB_OUTPUT
 
-      - name: Extract Changelog
-        id: extract_changelog
+      - name: 📝 Extract Changelog
+        id: changelog
         run: |
-          if [ -f "docs/CHANGES.md" ]; then
-            CHANGELOG=$(cat docs/CHANGES.md | sed 's/\\/\\\\/g' | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')
-            echo "changelog=$CHANGELOG" >> $GITHUB_OUTPUT
+          if [[ -f "docs/CHANGES.md" ]]; then
+            jq -Rs '.' < docs/CHANGES.md >> $GITHUB_OUTPUT
+            echo "changelog=$(jq -Rs '.' < docs/CHANGES.md)" >> $GITHUB_OUTPUT
           else
-            echo "changelog=No changelog available" >> $GITHUB_OUTPUT
+            echo "changelog=\"No changelog available\"" >> $GITHUB_OUTPUT
           fi
 
-      - name: Package and Release
+      - name: 📦 Package and Release
         uses: BigWigsMods/packager@master
 
-      - name: Send Discord Success Notification
-        if: success() && steps.set_release_type.outputs.release_type == 'release'
+      - name: 📢 Send Discord Notification
+        if: success()
         run: |
-          echo '{
-            "username": "BLU Update",
-            "avatar_url": "https://raw.githubusercontent.com/DonnieDice/BLU/main/images/logo.png",
-            "embeds": [{
-              "title": "🎉 BLU | Better Level-Up! - ${{ steps.extract_version.outputs.version }}",
-              "description": "**Play sounds from other games!** A new version of BLU has been released!\n\n🎵 **What'\''s New:**\n${{ steps.extract_changelog.outputs.changelog }}",
-              "url": "https://github.com/DonnieDice/BLU/releases/tag/${{ github.ref_name }}",
-              "color": 9830721,
-              "thumbnail": {
-                "url": "https://raw.githubusercontent.com/DonnieDice/BLU/main/images/logo.png"
-              },
-              "fields": [
+          case "${{ steps.release_type.outputs.type }}" in
+            "release")
+              title="🎉 BLU | Better Level-Up! - ${{ steps.version.outputs.version }}"
+              desc="**Play sounds from other games!** A new version of BLU has been released!\n\n🎵 **What's New:**\n$(echo '${{ steps.changelog.outputs.changelog }}' | jq -r .)"
+              color=9830721
+              footer="RGX Mods - RealmGX Community"
+              fields=$(jq -n '[
                 {
                   "name": "📥 Downloads",
                   "value": "[CurseForge](https://www.curseforge.com/wow/addons/blu)\n[Wago.io](https://addons.wago.io/addons/vEGPgWK1)\n[GitHub](https://github.com/DonnieDice/BLU)",
@@ -87,7 +95,7 @@ jobs:
                 },
                 {
                   "name": "🎮 Compatibility",
-                  "value": "✅ The War Within\n✅ Dragonflight\n✅ Classic Era\n✅ Cataclysm",
+                  "value": "✅ The War Within",
                   "inline": true
                 },
                 {
@@ -95,88 +103,86 @@ jobs:
                   "value": "[Report Issues](https://github.com/DonnieDice/BLU/issues)\n[Buy Me Coffee](https://www.buymeacoffee.com/donniedice)",
                   "inline": true
                 }
-              ],
-              "footer": {
-                "text": "RGX Mods - RealmGX Community",
-                "icon_url": "https://raw.githubusercontent.com/donniedice/SimpleQuestPlates/main/images/kiwi.gif"
-              },
-              "timestamp": "${{ steps.extract_version.outputs.timestamp }}"
-            }]
-          }' > payload.json
+              ]')
+              ;;
+            "beta")
+              title="🧪 BLU Beta - ${{ steps.version.outputs.version }}"
+              desc="A beta version of Better Level-Up! is available for testing!\n\n**What's New:**\n$(echo '${{ steps.changelog.outputs.changelog }}' | jq -r .)"
+              color=16744448
+              footer="RGX Mods - Beta Build"
+              fields=$(jq -n '[{"name":"📥 Download Beta","value":"[CurseForge](https://www.curseforge.com/wow/addons/blu)\n[GitHub](https://github.com/DonnieDice/BLU/releases)"}]')
+              ;;
+            "dev")
+              title="🛠️ BLU Dev Build - ${{ steps.version.outputs.version }}"
+              desc="A new development build has been pushed to the \`dev\` branch.\n\n**What's New:**\n$(echo '${{ steps.changelog.outputs.changelog }}' | jq -r .)"
+              color=3447003
+              footer="RGX Mods - Development Build"
+              fields=$(jq -n '[{"name":"⚠️ Important","value":"This is not a stable release. Use only for testing purposes."}]')
+              ;;
+            "alpha-branch")
+              title="🔬 BLU Alpha - ${{ steps.version.outputs.version }}"
+              desc="Development build for testing\n\n**What's New:**\n$(echo '${{ steps.changelog.outputs.changelog }}' | jq -r .)"
+              color=16711680
+              footer="RGX Mods - Alpha Build"
+              fields="null"
+              ;;
+            *)
+              title="⚠️ Unknown Build"
+              desc="An unknown workflow run occurred."
+              color=10000000
+              footer="RGX Mods - Unknown"
+              fields="null"
+              ;;
+          esac
+
+          jq -n \
+            --arg username "BLU Notification" \
+            --arg avatar "https://raw.githubusercontent.com/DonnieDice/BLU/main/images/logo.png" \
+            --arg title "$title" \
+            --arg desc "$desc" \
+            --argjson color "$color" \
+            --arg footer "$footer" \
+            --arg icon "https://raw.githubusercontent.com/donniedice/SimpleQuestPlates/main/images/kiwi.gif" \
+            --arg timestamp "${{ steps.version.outputs.timestamp }}" \
+            --argjson fields "$fields" \
+            '{
+              username: $username,
+              avatar_url: $avatar,
+              embeds: [{
+                title: $title,
+                description: $desc,
+                color: $color,
+                footer: { text: $footer, icon_url: $icon },
+                timestamp: $timestamp
+              } | if $fields != null then .fields = $fields else . end]
+            }' > payload.json
+
           curl -H "Content-Type: application/json" -X POST -d @payload.json $DISCORD_WEBHOOK
 
-      - name: Send Discord Beta Notification
-        if: success() && steps.set_release_type.outputs.release_type == 'beta'
-        run: |
-          echo '{
-            "username": "BLU Beta",
-            "avatar_url": "https://raw.githubusercontent.com/DonnieDice/BLU/main/images/logo.png",
-            "embeds": [{
-              "title": "🧪 BLU Beta - ${{ steps.extract_version.outputs.version }}",
-              "description": "A beta version of Better Level-Up! is available for testing!\n\n**What'\''s New:**\n${{ steps.extract_changelog.outputs.changelog }}",
-              "color": 16744448,
-              "fields": [
-                {
-                  "name": "📥 Download Beta",
-                  "value": "[CurseForge](https://www.curseforge.com/wow/addons/blu)\n[GitHub](https://github.com/DonnieDice/BLU/releases)"
-                }
-              ],
-              "footer": {
-                "text": "RGX Mods - Beta Build",
-                "icon_url": "https://raw.githubusercontent.com/donniedice/SimpleQuestPlates/main/images/kiwi.gif"
-              },
-              "timestamp": "${{ steps.extract_version.outputs.timestamp }}"
-            }]
-          }' > payload.json
-          curl -H "Content-Type: application/json" -X POST -d @payload.json $DISCORD_WEBHOOK
-
-      - name: Send Discord Alpha Notification
-        if: success() && steps.set_release_type.outputs.release_type == 'alpha'
-        run: |
-          echo '{
-            "username": "BLU Alpha",
-            "avatar_url": "https://raw.githubusercontent.com/DonnieDice/BLU/main/images/logo.png",
-            "embeds": [{
-              "title": "🔬 BLU Alpha - ${{ steps.extract_version.outputs.version }}",
-              "description": "Development build for testing\n\n**What'\''s New:**\n${{ steps.extract_changelog.outputs.changelog }}",
-              "color": 16711680,
-              "footer": {
-                "text": "RGX Mods - Alpha Build",
-                "icon_url": "https://raw.githubusercontent.com/donniedice/SimpleQuestPlates/main/images/kiwi.gif"
-              },
-              "timestamp": "${{ steps.extract_version.outputs.timestamp }}"
-            }]
-          }' > payload.json
-          curl -H "Content-Type: application/json" -X POST -d @payload.json $DISCORD_WEBHOOK
-
-      - name: Send Discord Failure Notification
+      - name: ❌ Send Failure Notification
         if: failure()
         run: |
-          echo '{
-            "username": "BLU Build Failed",
-            "avatar_url": "https://raw.githubusercontent.com/DonnieDice/BLU/main/images/logo.png",
-            "embeds": [{
-              "title": "❌ BLU Build Failed",
-              "description": "The release workflow encountered an error",
-              "url": "https://github.com/DonnieDice/BLU/actions/runs/${{ github.run_id }}",
-              "color": 15158332,
-              "fields": [
-                {
-                  "name": "Version",
-                  "value": "${{ steps.extract_version.outputs.version || 'Unknown' }}",
-                  "inline": true
+          jq -n \
+            --arg version "${{ steps.version.outputs.version || 'Unknown' }}"
+            --arg run_id "${{ github.run_id }}"
+            --arg timestamp "${{ steps.version.outputs.timestamp }}"
+            '{
+              username: "BLU Build Failed",
+              avatar_url: "https://raw.githubusercontent.com/DonnieDice/BLU/main/images/logo.png",
+              embeds: [{
+                title: "❌ BLU Build Failed",
+                description: "The release workflow encountered an error",
+                url: "https://github.com/DonnieDice/BLU/actions/runs/\($run_id)",
+                color: 15158332,
+                fields: [
+                  { "name": "Version", "value": $version, "inline": true },
+                  { "name": "Workflow", "value": "[View Logs](https://github.com/DonnieDice/BLU/actions/runs/\($run_id))", "inline": true }
+                ],
+                footer: {
+                  "text": "RGX Mods - Build System",
+                  "icon_url": "https://raw.githubusercontent.com/donniedice/SimpleQuestPlates/main/images/kiwi.gif"
                 },
-                {
-                  "name": "Workflow",
-                  "value": "[View Logs](https://github.com/DonnieDice/BLU/actions/runs/${{ github.run_id }})",
-                  "inline": true
-                }
-              ],
-              "footer": {
-                "text": "RGX Mods - Build System",
-                "icon_url": "https://raw.githubusercontent.com/donniedice/SimpleQuestPlates/main/images/kiwi.gif"
-              },
-              "timestamp": "${{ steps.extract_version.outputs.timestamp }}"
-            }]
-          }' > payload.json
+                timestamp: $timestamp
+              }]
+            }' > payload.json
           curl -H "Content-Type: application/json" -X POST -d @payload.json $DISCORD_WEBHOOK

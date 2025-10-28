@@ -7,6 +7,12 @@ local addonName = ...
 local BLU = _G["BLU"]
 
 function BLU.CreateSoundsPanel(panel)
+    -- Wipe existing content
+    for i, child in ipairs({panel:GetChildren()}) do
+        child:Hide()
+        child:SetParent(nil)
+    end
+
     local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
     scrollFrame:SetPoint("TOPLEFT", 5, -5)
     scrollFrame:SetPoint("BOTTOMRIGHT", -30, 5)

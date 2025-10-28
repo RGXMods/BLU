@@ -18,7 +18,7 @@ function BLU.CreateGeneralPanel(panel)
     local coreSection = BLU.Design:CreateSection(content, "Core Settings", "Interface\Icons\Achievement_General")
     coreSection:SetPoint("TOPLEFT", 0, 0)
     coreSection:SetPoint("RIGHT", 0, 0)
-    coreSection:SetHeight(120)
+    coreSection:SetHeight(150)
 
     local enableCheck = BLU.Design:CreateCheckbox(coreSection.content, "Enable BLU", "Enable or disable all BLU functionality")
     enableCheck:SetPoint("TOPLEFT", 10, -10)
@@ -48,43 +48,8 @@ function BLU.CreateGeneralPanel(panel)
         BLU.Modules.config:ApplySettings()
     end)
 
-    local audioSection = BLU.Design:CreateSection(content, "Audio Settings", "Interface\Icons\INV_Misc_Headphones_01")
-    audioSection:SetPoint("TOPLEFT", coreSection, "BOTTOMLEFT", 0, -10)
-    audioSection:SetPoint("RIGHT", 0, 0)
-    audioSection:SetHeight(150)
-
-    local volumeSlider = BLU.Widgets:CreateSlider(audioSection.content, "Master Volume", 0, 100, 5, "Sets the master volume for all BLU sounds.")
-    volumeSlider:SetPoint("TOPLEFT", 10, -10)
-    volumeSlider:SetValue(BLU.db.profile.masterVolume * 100)
-    volumeSlider.value:SetText(string.format("%d%%", BLU.db.profile.masterVolume * 100))
-    volumeSlider:SetScript("OnValueChanged", function(self, value)
-        if not BLU.db or not BLU.db.profile then return end
-        BLU.db.profile.masterVolume = value / 100
-        self.value:SetText(string.format("%d%%", value))
-    end)
-
-    local channelDropdown = BLU.Widgets:CreateDropdown(audioSection.content, "Sound Channel", 200, {}, "Select the audio channel for sounds.")
-    channelDropdown:SetPoint("TOPLEFT", volumeSlider, "BOTTOMLEFT", 0, -30)
-    
-    UIDropDownMenu_Initialize(channelDropdown, function(self)
-        local channels = {"Master", "SFX", "Music", "Ambience"}
-        for _, channel in ipairs(channels) do
-            local info = UIDropDownMenu_CreateInfo()
-            info.text = channel
-            info.value = channel
-            info.func = function()
-                if not BLU.db or not BLU.db.profile then return end
-                BLU.db.profile.soundChannel = channel
-                UIDropDownMenu_SetText(self, channel)
-            end
-            info.checked = (BLU.db.profile.soundChannel == channel)
-            UIDropDownMenu_AddButton(info)
-        end
-    end)
-    UIDropDownMenu_SetText(channelDropdown, BLU.db.profile.soundChannel or "Master")
-
     local behaviorSection = BLU.Design:CreateSection(content, "Behavior Settings", "Interface\Icons\INV_Misc_GroupLooking")
-    behaviorSection:SetPoint("TOPLEFT", audioSection, "BOTTOMLEFT", 0, -10)
+    behaviorSection:SetPoint("TOPLEFT", coreSection, "BOTTOMLEFT", 0, -10)
     behaviorSection:SetPoint("RIGHT", 0, 0)
     behaviorSection:SetHeight(120)
 

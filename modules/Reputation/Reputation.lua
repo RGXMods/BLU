@@ -119,7 +119,7 @@ end
 
 -- Register module
 BLU.Modules = BLU.Modules or {}
-BLU.Modules["Reputation"] = Reputation
+BLU.Modules["reputation"] = Reputation
 
 -- Export module
 return Reputation

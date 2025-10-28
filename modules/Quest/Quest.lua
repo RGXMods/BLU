@@ -67,7 +67,7 @@ end
 
 -- Register module
 BLU.Modules = BLU.Modules or {}
-BLU.Modules["Quest"] = Quest
+BLU.Modules["quest"] = Quest
 
 -- Export module
 return Quest

@@ -124,7 +124,7 @@ end
 
 -- Register module
 BLU.Modules = BLU.Modules or {}
-BLU.Modules["BattlePet"] = BattlePet
+BLU.Modules["battlepet"] = BattlePet
 
 -- Export module
 return BattlePet

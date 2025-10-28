@@ -99,44 +99,6 @@ function BLU:InitializeModule(moduleName)
     if self.Modules and self.Modules[moduleName] then
         self:PrintDebug("[Init] Found module in BLU.Modules: " .. moduleName)
         module = self.Modules[moduleName]
-    -- Check special cases
-    elseif moduleName == "database_safety" and self.InitializeDatabase then
-        self:PrintDebug("[Init] Initializing special case: database_safety")
-        self:InitializeDatabase()
-        self.initialized[moduleName] = true
-        self:PrintDebug("[Init] Initialized: database_safety")
-        return true
-    elseif moduleName == "combat_protection" and self.InitializeCombatProtection then
-        self:InitializeCombatProtection()
-        self.initialized[moduleName] = true
-        self:PrintDebug("[Init] Initialized: combat_protection")
-        return true
-    elseif moduleName == "localization" then
-        if Localization and Localization.Init then
-            Localization:Init()
-            self.initialized[moduleName] = true
-            self:PrintDebug("[Init] Initialized: localization")
-            return true
-        end
-    -- Check in feature modules (they register themselves differently)
-    elseif moduleName == "levelup" and LevelUp then
-        module = LevelUp
-    elseif moduleName == "achievement" and Achievement then
-        module = Achievement
-    elseif moduleName == "quest" and Quest then
-        module = Quest
-    elseif moduleName == "reputation" and Reputation then
-        module = Reputation
-    elseif moduleName == "battlepet" and BattlePet then
-        module = BattlePet
-    elseif moduleName == "honor" and HonorRank then
-        module = HonorRank
-    elseif moduleName == "renown" and RenownRank then
-        module = RenownRank
-    elseif moduleName == "tradingpost" and TradingPost then
-        module = TradingPost
-    elseif moduleName == "delve" and DelveCompanion then
-        module = DelveCompanion
     end
     
     -- Initialize if found

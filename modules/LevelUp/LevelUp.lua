@@ -33,7 +33,7 @@ end
 
 -- Register module
 BLU.Modules = BLU.Modules or {}
-BLU.Modules["LevelUp"] = LevelUp
+BLU.Modules["levelup"] = LevelUp
 
 -- Export module
 return LevelUp

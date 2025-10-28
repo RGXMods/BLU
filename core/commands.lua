@@ -1,3 +1,4 @@
+BLU:PrintDebug("core/commands.lua loaded.")
 --=====================================================================================
 -- BLU - core/commands.lua
 -- Slash command handling
@@ -11,12 +12,13 @@ SLASH_BLU1 = "/blu"
 SLASH_BLU2 = "/bluesound"
 
 SlashCmdList["BLU"] = function(msg)
+    BLU:PrintDebug("/blu command executed with message: " .. tostring(msg))
     msg = (msg or ""):trim():lower()
     
     if msg == "" or msg == "options" or msg == "config" then
         -- Try to open options
-        if BLU.Modules and BLU.Modules.options and BLU.Modules.options.OpenOptions then
-            BLU.Modules.options:OpenOptions()
+        if BLU.OpenOptions then
+            BLU:OpenOptions()
         else
             BLU:Print("|cff00ccffBLU:|r Options panel not available yet. Please wait a moment and try again.")
         end

@@ -143,6 +143,7 @@ function SoundRegistry:GetRegisteredPacks()
     
     -- Collect unique packs from registered sounds
     for soundId, soundData in pairs(self.sounds) do
+        BLU:PrintDebug(string.format("GetRegisteredPacks: Processing soundId=%s, packId=%s", soundId, soundData.packId))
         if soundData.packId and not packMap[soundData.packId] then
             packMap[soundData.packId] = true
             table.insert(packs, {
@@ -294,6 +295,11 @@ function SoundRegistry:PlayCategorySound(category, forceSound)
     -- Default to "default" if nothing selected
     if not selectedSound then
         selectedSound = "default"
+    end
+
+    if selectedSound == "None" then
+        BLU:PrintDebug("Selected sound is None, skipping playback.")
+        return false
     end
 
     if selectedSound == "random" then

@@ -30,7 +30,7 @@ function Options:TestSharedMedia()
         
         if hasLSM then
             local soundList = LSM:List("sound")
-            BLU:Print(string.format("LSM sound count: %d", soundList and #soundList or 0))
+            BLU:Print(string.Format("LSM sound count: %d", soundList and #soundList or 0))
             
             if soundList and #soundList > 0 then
                 BLU:Print("First 5 LSM sounds:")
@@ -272,6 +272,10 @@ function Options:CreateOptionsPanel()
         content:SetBackdropBorderColor(0.2, 0.2, 0.2, 1)
         content:Hide()
         
+        if tabInfo.text == "Sounds" then
+            panel.soundsContent = content
+        end
+
         -- Create tab content
         if tabInfo.create then
             tabInfo.create(content)
@@ -376,8 +380,8 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
     
     -- Test button and volume slider container
     local controlsFrame = CreateFrame("Frame", nil, container)
-    controlsFrame:SetPoint("TOPRIGHT", container, "TOPRIGHT", -10, -20)
-    controlsFrame:SetSize(180, 60)
+    controlsFrame:SetPoint("TOPRIGHT", container, "TOPRIGHT", -150, -20)
+    controlsFrame:SetSize(190, 60)
     
     -- Volume dropdown
     local volumeDropdown = CreateFrame("Frame", nil, controlsFrame, "UIDropDownMenuTemplate")
@@ -391,7 +395,7 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
         UIDropDownMenu_SetText(volumeDropdown, volume)
     end
 
-    UIDropDownMenu_Initialize(volumeDropdown, function(self)
+    UIDropDownMenu_Initialize(volumeDropdown, function(self) 
         local volumes = {"None", "Low", "Medium", "High"}
         for _, volume in ipairs(volumes) do
             local info = UIDropDownMenu_CreateInfo()
@@ -406,7 +410,7 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
     
     -- Test button
     local testBtn = BLU.Design:CreateButton(controlsFrame, "Test", 60, 22)
-    testBtn:SetPoint("RIGHT", 0, 0)
+    testBtn:SetPoint("LEFT", volumeDropdown, "RIGHT", 10, 0)
     testBtn:SetScript("OnClick", function(self)
         BLU:PrintDebug("Test button clicked for event: " .. actualEventType)
         local selectedSound = BLU.db and BLU.db.profile and BLU.db.profile.selectedSounds and BLU.db.profile.selectedSounds[actualEventType]
@@ -456,6 +460,17 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
             end
             CloseDropDownMenus()
         end
+
+        local allSounds = BLU.SoundRegistry:GetAllSounds()
+        local groupedSounds = {}
+
+        for soundId, soundData in pairs(allSounds) do
+            local packName = soundData.packName or "Other Sounds"
+            if not groupedSounds[packName] then
+                groupedSounds[packName] = {}
+            end
+            table.insert(groupedSounds[packName], {id = soundId, name = soundData.name, category = soundData.category})
+        end
         
         if level == 1 then
             -- Random option
@@ -466,208 +481,70 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
             info.checked = BLU.db.profile.selectedSounds[self.eventId] == "random"
             UIDropDownMenu_AddButton(info, level)
 
-            -- Default option
-            local info = UIDropDownMenu_CreateInfo()
+            -- None option
+            info = UIDropDownMenu_CreateInfo()
+            info.text = "None"
+            info.value = "None"
+            info.func = function() onSoundSelected("None", "None") end
+            info.checked = BLU.db.profile.selectedSounds[self.eventId] == "None"
+            UIDropDownMenu_AddButton(info, level)
+
+            -- Default WoW Sound option
+            info = UIDropDownMenu_CreateInfo()
             info.text = "Default WoW Sound"
             info.value = "default"
             info.func = function() onSoundSelected("default", "Default WoW Sound") end
             info.checked = BLU.db.profile.selectedSounds[self.eventId] == "default"
             UIDropDownMenu_AddButton(info, level)
-            
-            -- WoW's built-in sounds
+
+            -- Separator
             info = UIDropDownMenu_CreateInfo()
-            info.text = "|cffffff00WoW Game Sounds|r"
-            info.value = "wow_sounds"
-            info.hasArrow = true
-            info.menuList = "wow_sounds"
+            info.text = ""
+            info.notClickable = true
             info.notCheckable = true
             UIDropDownMenu_AddButton(info, level)
-            
-            -- BLU built-in sounds
-            info = UIDropDownMenu_CreateInfo()
-            info.text = "|cff05dffaBLU Sound Packs|r"
-            info.value = "blu_builtin"
-            info.hasArrow = true
-            info.menuList = "blu_builtin"
-            info.notCheckable = true
-            UIDropDownMenu_AddButton(info, level)
-            
-            -- External sounds by category
-            if BLU.Modules.sharedmedia and BLU.Modules.sharedmedia.GetSoundCategories then
-                local success, categories = pcall(function() return BLU.Modules.sharedmedia:GetSoundCategories() end)
-                if success and categories and type(categories) == "table" then
-                    local categoryCount = 0
-                    for category, sounds in pairs(categories) do
-                        if sounds and type(sounds) == "table" and #sounds > 0 then
-                            categoryCount = categoryCount + 1
-                            info = UIDropDownMenu_CreateInfo()
-                            info.text = "|cffffff00" .. category .. "|r (" .. #sounds .. ")"
-                            info.value = category
-                            info.hasArrow = true
-                            info.menuList = category
-                            info.notCheckable = true
-                            UIDropDownMenu_AddButton(info, level)
-                        end
-                    end
-                    
-                    -- Add separator if we have external sounds
-                    if categoryCount > 0 then
-                        info = UIDropDownMenu_CreateInfo()
-                        info.text = ""
-                        info.notClickable = true
-                        info.notCheckable = true
-                        UIDropDownMenu_AddButton(info, level)
-                    end
+
+            -- Sort pack names alphabetically
+            local sortedPackNames = {}
+            for packName in pairs(groupedSounds) do
+                table.insert(sortedPackNames, packName)
+            end
+            table.sort(sortedPackNames)
+
+            -- Add categories for each pack
+            for _, packName in ipairs(sortedPackNames) do
+                local soundsInPack = groupedSounds[packName]
+                if #soundsInPack > 0 then
+                    info = UIDropDownMenu_CreateInfo()
+                    info.text = "|cffffff00" .. packName .. "|r (" .. #soundsInPack .. ")"
+                    info.value = packName
+                    info.hasArrow = true
+                    info.menuList = packName
+                    info.notCheckable = true
+                    UIDropDownMenu_AddButton(info, level)
                 end
             end
-            
-            -- Add option to browse for more sounds
-            info = UIDropDownMenu_CreateInfo()
-            info.text = "|cff888888Browse Sound Files...|r"
-            info.value = "browse"
-            info.func = function()
-                BLU:Print("Sound browser not yet implemented")
-                CloseDropDownMenus()
-            end
-            info.notCheckable = true
-            UIDropDownMenu_AddButton(info, level)
+
         elseif level == 2 then
-            if menuList == "blu_builtin" then
-                -- BLU's built-in sounds - get actual registered sounds
-                local builtinSounds = {}
-                
-                -- Get sounds from registry for this event type
-                if BLU.Modules and BLU.Modules.registry and BLU.Modules.registry.GetSoundsByCategory then
-                    local categorySounds = BLU.Modules.registry:GetSoundsByCategory(dropdown.eventId)
-                    local packNames = {}
-                    
-                    -- Collect unique pack names
-                    for soundId, soundData in pairs(categorySounds) do
-                        local packName = soundId:match("^(.+)_" .. dropdown.eventId)
-                        if packName and not packNames[packName] then
-                            packNames[packName] = true
-                            local displayName = packName:gsub("^%l", string.upper):gsub("_", " ")
-                            -- Special cases for better display names
-                            local nameMap = {
-                                finalfantasy = "Final Fantasy",
-                                zelda = "Legend of Zelda", 
-                                pokemon = "Pokemon",
-                                mario = "Super Mario",
-                                sonic = "Sonic the Hedgehog",
-                                elderscrolls = "Elder Scrolls",
-                                witcher = "The Witcher",
-                                diablo = "Diablo",
-                                warcraft = "Warcraft",
-                                allgames = "All Games Mix"
-                            }
-                            displayName = nameMap[packName] or displayName
-                            table.insert(builtinSounds, {value = soundId, text = displayName})
-                        end
-                    end
-                else
-                    -- Fallback to predefined list if registry not available
-                    builtinSounds = {
-                        {value = "finalfantasy_" .. dropdown.eventId, text = "Final Fantasy"},
-                        {value = "zelda_" .. dropdown.eventId, text = "Legend of Zelda"},
-                        {value = "pokemon_" .. dropdown.eventId, text = "Pokemon"},
-                        {value = "mario_" .. dropdown.eventId, text = "Super Mario"},
-                        {value = "sonic_" .. dropdown.eventId, text = "Sonic the Hedgehog"},
-                        {value = "elderscrolls_" .. dropdown.eventId, text = "Elder Scrolls"},
-                        {value = "witcher_" .. dropdown.eventId, text = "The Witcher"},
-                        {value = "diablo_" .. dropdown.eventId, text = "Diablo"},
-                        {value = "warcraft_" .. dropdown.eventId, text = "Warcraft"},
-                        {value = "allgames_" .. dropdown.eventId, text = "All Games Mix"}
-                    }
-                end
-                
-                for _, sound in ipairs(builtinSounds) do
-                    local info = UIDropDownMenu_CreateInfo()
-                    info.text = sound.text
-                    info.value = sound.value
-                    info.func = function() onSoundSelected(sound.value, sound.text) end
-                    info.checked = BLU.db.profile.selectedSounds[dropdown.eventId] == sound.value
-                    UIDropDownMenu_AddButton(info, level)
-                end
-            elseif menuList == "wow_sounds" then
-                -- WoW's built-in sounds for this event type
-                local wowSounds = {
-                    levelup = {
-                        {value = "wow_levelup_fanfare", text = "Level Up Fanfare"},
-                        {value = "wow_levelup_ding", text = "Level Ding"},
-                        {value = "wow_levelup_gong", text = "Gong"},
-                        {value = "wow_levelup_epic", text = "Epic Victory"}
-                    },
-                    achievement = {
-                        {value = "wow_achievement_default", text = "Achievement Earned"},
-                        {value = "wow_achievement_guild", text = "Guild Achievement"},
-                        {value = "wow_achievement_legendary", text = "Legendary Alert"}
-                    },
-                    quest = {
-                        {value = "wow_quest_complete", text = "Quest Complete"},
-                        {value = "wow_quest_objective", text = "Quest Objective"},
-                        {value = "wow_quest_accepted", text = "Quest Accepted"}
-                    },
-                    quest_complete = {
-                        {value = "wow_quest_complete", text = "Quest Complete"},
-                        {value = "wow_quest_objective", text = "Quest Objective Complete"},
-                        {value = "wow_bonus_objective", text = "Bonus Objective"}
-                    },
-                    quest_progress = {
-                        {value = "wow_quest_progress", text = "Quest Progress"},
-                        {value = "wow_quest_accepted", text = "Quest Accepted"},
-                        {value = "wow_quest_objective", text = "Objective Update"}
-                    },
-                    reputation = {
-                        {value = "wow_rep_increase", text = "Reputation Increase"},
-                        {value = "wow_rep_rank", text = "Reputation Rank Up"},
-                        {value = "wow_rep_exalted", text = "Exalted!"}
-                    },
-                    battlepet = {
-                        {value = "wow_pet_victory", text = "Pet Battle Victory"},
-                        {value = "wow_pet_capture", text = "Pet Captured"},
-                        {value = "wow_pet_levelup", text = "Pet Level Up"}
-                    },
-                    honor = {
-                        {value = "wow_honor_rank", text = "Honor Rank Up"},
-                        {value = "wow_pvp_victory", text = "PvP Victory"}
-                    },
-                    renown = {
-                        {value = "wow_renown_rank", text = "Renown Rank Up"},
-                        {value = "wow_covenant_renown", text = "Covenant Renown"}
-                    },
-                    tradingpost = {
-                        {value = "wow_trading_complete", text = "Trading Post Complete"},
-                        {value = "wow_trading_reward", text = "Trading Post Reward"}
-                    },
-                    delve = {
-                        {value = "wow_delve_complete", text = "Delve Complete"},
-                        {value = "wow_delve_companion", text = "Companion Level"}
-                    }
-                }
-                local eventSounds = wowSounds[dropdown.eventId] or wowSounds[eventType] or {}
-                for _, sound in ipairs(eventSounds) do
-                    local info = UIDropDownMenu_CreateInfo()
-                    info.text = sound.text
-                    info.value = sound.value
-                    info.func = function() onSoundSelected(sound.value, sound.text) end
-                    info.checked = BLU.db.profile.selectedSounds[dropdown.eventId] == sound.value
-                    UIDropDownMenu_AddButton(info, level)
-                end
-            else
-                -- External sounds from SharedMedia categories
-                if BLU.Modules.sharedmedia and BLU.Modules.sharedmedia.GetSoundCategories then
-                    local categories = BLU.Modules.sharedmedia:GetSoundCategories()
-                    if categories and categories[menuList] then
-                        for _, soundName in ipairs(categories[menuList]) do
-                            local info = UIDropDownMenu_CreateInfo()
-                            info.text = soundName
-                            info.value = "external:" .. soundName
-                            info.func = function() onSoundSelected("external:" .. soundName, soundName) end
-                            info.checked = BLU.db.profile.selectedSounds[dropdown.eventId] == "external:" .. soundName
-                            UIDropDownMenu_AddButton(info, level)
-                        end
+            -- List individual sounds within the selected pack
+            local soundsInPack = {}
+            if groupedSounds[menuList] then
+                for _, sound in ipairs(groupedSounds[menuList]) do
+                    if sound.category == dropdown.eventId or sound.category == "all" then
+                        table.insert(soundsInPack, sound)
                     end
                 end
+            end
+
+            table.sort(soundsInPack, function(a, b) return a.name < b.name end)
+
+            for _, sound in ipairs(soundsInPack) do
+                local info = UIDropDownMenu_CreateInfo()
+                info.text = sound.name
+                info.value = sound.id
+                info.func = function() onSoundSelected(sound.id, sound.name) end
+                info.checked = BLU.db.profile.selectedSounds[dropdown.eventId] == sound.id
+                UIDropDownMenu_AddButton(info, level)
             end
         end
     end)
@@ -805,16 +682,6 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     -- Status text
     local status = toggleFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     status:SetPoint("RIGHT", toggleFrame, "RIGHT", -10, 0)
-
-    -- Mute checkbox
-    local muteCheck = BLU.Design:CreateCheckbox(moduleSection.content, "Mute This Event", "Temporarily disable sounds for this event without disabling the module.")
-    muteCheck:SetPoint("TOPLEFT", toggleFrame, "BOTTOMLEFT", 0, -10)
-    muteCheck.check:SetChecked(BLU.db.profile.mutedEvents and BLU.db.profile.mutedEvents[eventType] or false)
-    muteCheck.check:SetScript("OnClick", function(self)
-        if not BLU.db or not BLU.db.profile then return end
-        BLU.db.profile.mutedEvents = BLU.db.profile.mutedEvents or {}
-        BLU.db.profile.mutedEvents[eventType] = self:GetChecked()
-    end)
     
     -- Initialize state and update function
     local function UpdateToggleState(enabled)
@@ -864,7 +731,7 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     -- Sound selection section
     local soundSection = BLU.Design:CreateSection(content, "Sound Selection", "Interface\Icons\INV_Misc_Bell_01")
     soundSection:SetPoint("TOPLEFT", moduleSection, "BOTTOMLEFT", 0, -10)
-    soundSection:SetPoint("RIGHT", 0, 0)
+    soundSection:SetPoint("RIGHT", -20, 0)
     
     -- Adjust height based on event type (Quest needs more space for 2 dropdowns)
     local sectionHeight = (eventType == "quest") and 260 or 150
@@ -887,7 +754,7 @@ end
 
 -- Cleanup module
 function Options:Init()
-    BLU:PrintDebug("Options:Init() called")
+    BLU:PrintDebug("Options:Init() called, registering OpenOptions.")
     BLU:PrintDebug("[Options] Initializing new options module")
 
     -- Create panel directly on init
@@ -908,12 +775,22 @@ function Options:Init()
     BLU.TestSharedMedia = function()
         return self:TestSharedMedia()
     end
+
+    BLU.RefreshSoundLists = function()
+        return self:RefreshSoundLists()
+    end
     
     BLU:PrintDebug("[Options] Functions registered")
 end
 
 function Options:Cleanup()
     -- Nothing to cleanup
+end
+
+function Options:RefreshSoundLists()
+    if BLU.OptionsPanel and BLU.OptionsPanel.soundsContent and BLU.OptionsPanel:IsVisible() then
+        BLU.CreateSoundsPanel(BLU.OptionsPanel.soundsContent)
+    end
 end
 
 -- Register module

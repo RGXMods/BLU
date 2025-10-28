@@ -54,10 +54,11 @@ function SharedMedia:ScanExternalSounds()
     
     for _, soundName in ipairs(soundList) do
         local soundPath = self.LSM:Fetch("sound", soundName)
+        BLU:PrintDebug(string.format("SharedMedia: Processing sound '%s' with path '%s'", soundName, soundPath or "nil"))
         if soundPath then
             local category = self:CategorizeSound(soundName, soundPath)
             local packName = "SharedMedia"
-            local _, addonName = string.match(soundPath, "AddOns\([^\\]+")
+            local _, addonName = string.match(soundPath, "[iI]nterface[\/][aA]dd[oO]ns[\/]([^\/]+)")
             if addonName then
                 packName = addonName
             end

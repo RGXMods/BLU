@@ -21,9 +21,8 @@ function SharedMedia:Init()
     self.LSM = LibStub and LibStub("LibSharedMedia-3.0", true) or nil
     
     if not self.LSM then
-        BLU:PrintDebug("LibSharedMedia not found - checking for direct sound addons")
-        -- Try alternative detection method
-        self:DetectSoundAddons()
+        BLU:PrintDebug("LibSharedMedia not found - adding test sounds as fallback")
+        self:AddTestSounds()
     else
         BLU:PrintDebug("LibSharedMedia found - scanning for sounds")
         -- Register callbacks
@@ -33,9 +32,6 @@ function SharedMedia:Init()
         -- Scan existing sounds
         self:ScanExternalSounds()
     end
-    
-    -- Always add some test sounds for development/testing
-    self:AddTestSounds()
     
     -- Make functions available
     BLU.GetExternalSounds = function() return self:GetExternalSounds() end
@@ -61,7 +57,7 @@ function SharedMedia:ScanExternalSounds()
         if soundPath then
             local category = self:CategorizeSound(soundName, soundPath)
             local packName = "SharedMedia"
-            local _, _, addonName = string.find(soundPath, "Interface\\AddOns\\([^\]+)\\")
+            local _, addonName = string.match(soundPath, "AddOns\([^\\]+")
             if addonName then
                 packName = addonName
             end

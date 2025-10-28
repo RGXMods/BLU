@@ -219,7 +219,7 @@ end
 -- Print debug message
 function BLU:PrintDebug(message)
     if self.debugMode then
-        local prefix = "|TInterface\\Icons\\INV_Misc_Gear_06:16:16|t|cff05dffa[BLU]|r |cff808080[DEBUG]|r"
+        local prefix = "|TInterface\\AddOns\\BLU\\media\\textures\\icon.tga:16:16|t|cff05dffa[BLU]|r |cff808080[DEBUG]|r"
         print(prefix .. " " .. message)
     end
 end

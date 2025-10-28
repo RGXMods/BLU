@@ -68,91 +68,91 @@ jobs:
       - name: Send Discord Success Notification
         if: success() && steps.set_release_type.outputs.release_type == 'release'
         run: |
-          echo "{
-            \"username\": \"BLU Update\",
-            \"avatar_url\": \"https://raw.githubusercontent.com/DonnieDice/BLU/main/images/logo.png\",
-            \"embeds\": [{
-              \"title\": \"🎉 BLU | Better Level-Up! - ${{ steps.extract_version.outputs.version }}\",
-              \"description\": \"**Play sounds from other games!** A new version of BLU has been released!\\n\\n🎵 **What's New:**\\n${{ steps.extract_changelog.outputs.changelog }}\",
-              \"url\": \"https://github.com/DonnieDice/BLU/releases/tag/${{ github.ref_name }}\",
-              \"color\": 9830721,
-              \"thumbnail\": {
-                \"url\": \"https://raw.githubusercontent.com/DonnieDice/BLU/main/images/logo.png\"
+          echo '{
+            "username": "BLU Update",
+            "avatar_url": "https://raw.githubusercontent.com/DonnieDice/BLU/main/images/logo.png",
+            "embeds": [{
+              "title": "🎉 BLU | Better Level-Up! - ${{ steps.extract_version.outputs.version }}",
+              "description": "**Play sounds from other games!** A new version of BLU has been released!\n\n🎵 **What'\''s New:**\n${{ steps.extract_changelog.outputs.changelog }}",
+              "url": "https://github.com/DonnieDice/BLU/releases/tag/${{ github.ref_name }}",
+              "color": 9830721,
+              "thumbnail": {
+                "url": "https://raw.githubusercontent.com/DonnieDice/BLU/main/images/logo.png"
               },
-              \"fields\": [
+              "fields": [
                 {
-                  \"name\": \"📥 Downloads\",
-                  \"value\": \"[CurseForge](https://www.curseforge.com/wow/addons/blu)\\n[Wago.io](https://addons.wago.io/addons/vEGPgWK1)\\n[GitHub](https://github.com/DonnieDice/BLU)\",
-                  \"inline\": true
+                  "name": "📥 Downloads",
+                  "value": "[CurseForge](https://www.curseforge.com/wow/addons/blu)\n[Wago.io](https://addons.wago.io/addons/vEGPgWK1)\n[GitHub](https://github.com/DonnieDice/BLU)",
+                  "inline": true
                 },
                 {
-                  \"name\": \"🎮 Compatibility\",
-                  \"value\": \"✅ The War Within\\n✅ Dragonflight\\n✅ Classic Era\\n✅ Cataclysm\",
-                  \"inline\": true
+                  "name": "🎮 Compatibility",
+                  "value": "✅ The War Within\n✅ Dragonflight\n✅ Classic Era\n✅ Cataclysm",
+                  "inline": true
                 },
                 {
-                  \"name\": \"💬 Support\",
-                  \"value\": \"[Report Issues](https://github.com/DonnieDice/BLU/issues)\\n[Buy Me Coffee](https://www.buymeacoffee.com/donniedice)\",
-                  \"inline\": true
+                  "name": "💬 Support",
+                  "value": "[Report Issues](https://github.com/DonnieDice/BLU/issues)\n[Buy Me Coffee](https://www.buymeacoffee.com/donniedice)",
+                  "inline": true
                 }
               ],
-              \"footer\": {
-                \"text\": \"RGX Mods - RealmGX Community\",
-                \"icon_url\": \"https://raw.githubusercontent.com/donniedice/SimpleQuestPlates/main/images/kiwi.gif\"
+              "footer": {
+                "text": "RGX Mods - RealmGX Community",
+                "icon_url": "https://raw.githubusercontent.com/donniedice/SimpleQuestPlates/main/images/kiwi.gif"
               },
-              \"timestamp\": \"${{ steps.extract_version.outputs.timestamp }}\" 
-            }] 
-          }" > payload.json
-          curl -H "Content-Type: application/json" -X POST -d @payload.json https://discord.com/api/webhooks/1424937755229683752/f0bNBmvI2cAFR0Q9d4YeKBuakF-0tjE_wAKAbtIlK5X2n5rv-SxJXvsekaLE9p5OpYqe
+              "timestamp": "${{ steps.extract_version.outputs.timestamp }}"
+            }]
+          }' > payload.json
+          curl -H "Content-Type: application/json" -X POST -d @payload.json $DISCORD_WEBHOOK
 
       - name: Send Discord Beta Notification
         if: success() && steps.set_release_type.outputs.release_type == 'beta'
         run: |
-          echo "{
-            \"username\": \"BLU Beta\",
-            \"avatar_url\": \"https://raw.githubusercontent.com/DonnieDice/BLU/main/images/logo.png\",
-            \"embeds\": [{
-              \"title\": \"🧪 BLU Beta - ${{ steps.extract_version.outputs.version }}\",
-              \"description\": \"A beta version of Better Level-Up! is available for testing!\\n\\n**What's New:**\\n${{ steps.extract_changelog.outputs.changelog }}\",
-              \"color\": 16744448,
-              \"fields\": [
+          echo '{
+            "username": "BLU Beta",
+            "avatar_url": "https://raw.githubusercontent.com/DonnieDice/BLU/main/images/logo.png",
+            "embeds": [{
+              "title": "🧪 BLU Beta - ${{ steps.extract_version.outputs.version }}",
+              "description": "A beta version of Better Level-Up! is available for testing!\n\n**What'\''s New:**\n${{ steps.extract_changelog.outputs.changelog }}",
+              "color": 16744448,
+              "fields": [
                 {
-                  \"name\": \"📥 Download Beta\",
-                  \"value\": \"[CurseForge](https://www.curseforge.com/wow/addons/blu)\\n[GitHub](https://github.com/DonnieDice/BLU/releases)"
+                  "name": "📥 Download Beta",
+                  "value": "[CurseForge](https://www.curseforge.com/wow/addons/blu)\n[GitHub](https://github.com/DonnieDice/BLU/releases)"
                 }
               ],
-              \"footer\": {
-                \"text\": \"RGX Mods - Beta Build\",
-                \"icon_url\": \"https://raw.githubusercontent.com/donniedice/SimpleQuestPlates/main/images/kiwi.gif\"
+              "footer": {
+                "text": "RGX Mods - Beta Build",
+                "icon_url": "https://raw.githubusercontent.com/donniedice/SimpleQuestPlates/main/images/kiwi.gif"
               },
-              \"timestamp\": \"${{ steps.extract_version.outputs.timestamp }}"
-            }] 
-          }" > payload.json
-          curl -H "Content-Type: application/json" -X POST -d @payload.json https://discord.com/api/webhooks/1424937755229683752/f0bNBmvI2cAFR0Q9d4YeKBuakF-0tjE_wAKAbtIlK5X2n5rv-SxJXvsekaLE9p5OpYqe
+              "timestamp": "${{ steps.extract_version.outputs.timestamp }}"
+            }]
+          }' > payload.json
+          curl -H "Content-Type: application/json" -X POST -d @payload.json $DISCORD_WEBHOOK
 
       - name: Send Discord Alpha Notification
         if: success() && steps.set_release_type.outputs.release_type == 'alpha'
         run: |
-          echo "{
-            \"username\": \"BLU Alpha\",
-            \"avatar_url\": \"https://raw.githubusercontent.com/DonnieDice/BLU/main/images/logo.png\",
-            \"embeds\": [{
-              \"title\": \"🔬 BLU Alpha - ${{ steps.extract_version.outputs.version }}\",
-              \"description\": \"Development build for testing\\n\\n**What's New:**\\n${{ steps.extract_changelog.outputs.changelog }}\",
-              \"color\": 16711680,
-              \"footer\": {
-                \"text\": \"RGX Mods - Alpha Build\",
-                \"icon_url\": \"https://raw.githubusercontent.com/donniedice/SimpleQuestPlates/main/images/kiwi.gif\"
+          echo '{
+            "username": "BLU Alpha",
+            "avatar_url": "https://raw.githubusercontent.com/DonnieDice/BLU/main/images/logo.png",
+            "embeds": [{
+              "title": "🔬 BLU Alpha - ${{ steps.extract_version.outputs.version }}",
+              "description": "Development build for testing\n\n**What'\''s New:**\n${{ steps.extract_changelog.outputs.changelog }}",
+              "color": 16711680,
+              "footer": {
+                "text": "RGX Mods - Alpha Build",
+                "icon_url": "https://raw.githubusercontent.com/donniedice/SimpleQuestPlates/main/images/kiwi.gif"
               },
-              \"timestamp\": \"${{ steps.extract_version.outputs.timestamp }}"
-            }] 
-          }" > payload.json
-          curl -H "Content-Type: application/json" -X POST -d @payload.json https://discord.com/api/webhooks/1424937755229683752/f0bNBmvI2cAFR0Q9d4YeKBuakF-0tjE_wAKAbtIlK5X2n5rv-SxJXvsekaLE9p5OpYqe
+              "timestamp": "${{ steps.extract_version.outputs.timestamp }}"
+            }]
+          }' > payload.json
+          curl -H "Content-Type: application/json" -X POST -d @payload.json $DISCORD_WEBHOOK
 
       - name: Send Discord Failure Notification
         if: failure()
         run: |
-          echo '{ 
+          echo '{
             "username": "BLU Build Failed",
             "avatar_url": "https://raw.githubusercontent.com/DonnieDice/BLU/main/images/logo.png",
             "embeds": [{
@@ -179,4 +179,4 @@ jobs:
               "timestamp": "${{ steps.extract_version.outputs.timestamp }}"
             }]
           }' > payload.json
-          curl -H "Content-Type: application/json" -X POST -d @payload.json https://discord.com/api/webhooks/1424937755229683752/f0bNBmvI2cAFR0Q9d4YeKBuakF-0tjE_wAKAbtIlK5X2n5rv-SxJXvsekaLE9p5OpYqe
+          curl -H "Content-Type: application/json" -X POST -d @payload.json $DISCORD_WEBHOOK

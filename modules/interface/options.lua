@@ -379,37 +379,30 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
     controlsFrame:SetPoint("TOPRIGHT", container, "TOPRIGHT", -10, -20)
     controlsFrame:SetSize(180, 60)
     
-    -- Volume slider
-    local volumeSlider = CreateFrame("Slider", nil, controlsFrame, "OptionsSliderTemplate")
-    volumeSlider:SetSize(100, 20)
-    volumeSlider:SetPoint("LEFT", 0, 0)
-    volumeSlider:SetMinMaxValues(0, 100)
-    volumeSlider:SetValueStep(5)
-    volumeSlider:SetObeyStepOnDrag(true)
-    
-    volumeSlider.Text:SetText("Volume")
-    volumeSlider.Low:SetText("0")
-    volumeSlider.High:SetText("100")
-    
-    -- Set initial volume
-    local volume = 100
-    if BLU.db and BLU.db.profile and BLU.db.profile.soundVolumes then
-        volume = BLU.db.profile.soundVolumes[actualEventType] or 100
+    -- Volume dropdown
+    local volumeDropdown = CreateFrame("Frame", nil, controlsFrame, "UIDropDownMenuTemplate")
+    volumeDropdown:SetPoint("LEFT", 0, 0)
+    UIDropDownMenu_SetWidth(volumeDropdown, 120)
+
+    local function setVolume(self, volume)
+        if not BLU.db or not BLU.db.profile then return end
+        BLU.db.profile.soundVolumes = BLU.db.profile.soundVolumes or {}
+        BLU.db.profile.soundVolumes[actualEventType] = volume
+        UIDropDownMenu_SetText(volumeDropdown, volume)
     end
-    volumeSlider:SetValue(volume)
-    
-    -- Volume value display
-    local volumeValue = controlsFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    volumeValue:SetPoint("TOP", volumeSlider, "BOTTOM", 0, -2)
-    volumeValue:SetText(volume .. "%")
-    
-    volumeSlider:SetScript("OnValueChanged", function(self, value)
-        volumeValue:SetText(math.floor(value) .. "%")
-        if BLU.db and BLU.db.profile then
-            BLU.db.profile.soundVolumes = BLU.db.profile.soundVolumes or {}
-            BLU.db.profile.soundVolumes[actualEventType] = value
+
+    UIDropDownMenu_Initialize(volumeDropdown, function(self)
+        local volumes = {"None", "Low", "Medium", "High"}
+        for _, volume in ipairs(volumes) do
+            local info = UIDropDownMenu_CreateInfo()
+            info.text = volume
+            info.value = volume:lower()
+            info.func = function() setVolume(self, volume:lower()) end
+            info.checked = (BLU.db.profile.soundVolumes and BLU.db.profile.soundVolumes[actualEventType] or "medium") == volume:lower()
+            UIDropDownMenu_AddButton(info)
         end
     end)
+    UIDropDownMenu_SetText(volumeDropdown, (BLU.db.profile.soundVolumes and BLU.db.profile.soundVolumes[actualEventType] or "medium"):gsub("^%l", string.upper))
     
     -- Test button
     local testBtn = BLU.Design:CreateButton(controlsFrame, "Test", 60, 22)
@@ -451,18 +444,25 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
             return
         end
         BLU.db.profile.selectedSounds = BLU.db.profile.selectedSounds or {}
+
+        local function onSoundSelected(value, text)
+            BLU.db.profile.selectedSounds[self.eventId] = value
+            UIDropDownMenu_SetText(self, text)
+            self.currentSound:SetText(text)
+            if string.find(value, "^blu_") or string.find(value, "^default") then
+                volumeDropdown:Show()
+            else
+                volumeDropdown:Hide()
+            end
+            CloseDropDownMenus()
+        end
         
         if level == 1 then
             -- Random option
             local info = UIDropDownMenu_CreateInfo()
             info.text = "|cff00ff00Random|r"
             info.value = "random"
-            info.func = function()
-                BLU.db.profile.selectedSounds[self.eventId] = "random"
-                UIDropDownMenu_SetText(self, "Random")
-                self.currentSound:SetText("Random")
-                CloseDropDownMenus()
-            end
+            info.func = function() onSoundSelected("random", "Random") end
             info.checked = BLU.db.profile.selectedSounds[self.eventId] == "random"
             UIDropDownMenu_AddButton(info, level)
 
@@ -470,12 +470,7 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
             local info = UIDropDownMenu_CreateInfo()
             info.text = "Default WoW Sound"
             info.value = "default"
-            info.func = function()
-                BLU.db.profile.selectedSounds[self.eventId] = "default"
-                UIDropDownMenu_SetText(self, "Default WoW Sound")
-                self.currentSound:SetText("Default WoW Sound")
-                CloseDropDownMenus()
-            end
+            info.func = function() onSoundSelected("default", "Default WoW Sound") end
             info.checked = BLU.db.profile.selectedSounds[self.eventId] == "default"
             UIDropDownMenu_AddButton(info, level)
             
@@ -589,12 +584,7 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
                     local info = UIDropDownMenu_CreateInfo()
                     info.text = sound.text
                     info.value = sound.value
-                    info.func = function()
-                        BLU.db.profile.selectedSounds[dropdown.eventId] = sound.value
-                        UIDropDownMenu_SetText(dropdown, sound.text)
-                        dropdown.currentSound:SetText(sound.text)
-                        CloseDropDownMenus()
-                    end
+                    info.func = function() onSoundSelected(sound.value, sound.text) end
                     info.checked = BLU.db.profile.selectedSounds[dropdown.eventId] == sound.value
                     UIDropDownMenu_AddButton(info, level)
                 end
@@ -659,12 +649,7 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
                     local info = UIDropDownMenu_CreateInfo()
                     info.text = sound.text
                     info.value = sound.value
-                    info.func = function()
-                        BLU.db.profile.selectedSounds[dropdown.eventId] = sound.value
-                        UIDropDownMenu_SetText(dropdown, sound.text)
-                        dropdown.currentSound:SetText(sound.text)
-                        CloseDropDownMenus()
-                    end
+                    info.func = function() onSoundSelected(sound.value, sound.text) end
                     info.checked = BLU.db.profile.selectedSounds[dropdown.eventId] == sound.value
                     UIDropDownMenu_AddButton(info, level)
                 end
@@ -677,12 +662,7 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
                             local info = UIDropDownMenu_CreateInfo()
                             info.text = soundName
                             info.value = "external:" .. soundName
-                            info.func = function()
-                                BLU.db.profile.selectedSounds[dropdown.eventId] = "external:" .. soundName
-                                UIDropDownMenu_SetText(dropdown, soundName)
-                                dropdown.currentSound:SetText(soundName)
-                                CloseDropDownMenus()
-                            end
+                            info.func = function() onSoundSelected("external:" .. soundName, soundName) end
                             info.checked = BLU.db.profile.selectedSounds[dropdown.eventId] == "external:" .. soundName
                             UIDropDownMenu_AddButton(info, level)
                         end
@@ -784,8 +764,8 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     -- Module enable/disable section with better styling
     local moduleSection = BLU.Design:CreateSection(content, "Module Control", "Interface\Icons\INV_Misc_Gear_08")
     moduleSection:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -10)
-    moduleSection:SetPoint("RIGHT", 0, 0)
-    moduleSection:SetHeight(110)
+    moduleSection:SetPoint("RIGHT", -10, 0)
+    moduleSection:SetHeight(140)
     
     -- Enable toggle with description
     local toggleFrame = CreateFrame("Frame", nil, moduleSection.content)
@@ -825,6 +805,16 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     -- Status text
     local status = toggleFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     status:SetPoint("RIGHT", toggleFrame, "RIGHT", -10, 0)
+
+    -- Mute checkbox
+    local muteCheck = BLU.Design:CreateCheckbox(moduleSection.content, "Mute This Event", "Temporarily disable sounds for this event without disabling the module.")
+    muteCheck:SetPoint("TOPLEFT", toggleFrame, "BOTTOMLEFT", 0, -10)
+    muteCheck.check:SetChecked(BLU.db.profile.mutedEvents and BLU.db.profile.mutedEvents[eventType] or false)
+    muteCheck.check:SetScript("OnClick", function(self)
+        if not BLU.db or not BLU.db.profile then return end
+        BLU.db.profile.mutedEvents = BLU.db.profile.mutedEvents or {}
+        BLU.db.profile.mutedEvents[eventType] = self:GetChecked()
+    end)
     
     -- Initialize state and update function
     local function UpdateToggleState(enabled)

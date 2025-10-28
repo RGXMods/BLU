@@ -39,16 +39,18 @@ Config.defaults = {
         renownRankSound = "None",
         tradingPostSound = "None",
         
-        -- Volume settings
-        levelUpVolume = 1.0,
-        achievementVolume = 1.0,
-        reputationVolume = 1.0,
-        questVolume = 1.0,
-        battlePetVolume = 1.0,
-        delveCompanionVolume = 1.0,
-        honorRankVolume = 1.0,
-        renownRankVolume = 1.0,
-        tradingPostVolume = 1.0,
+        soundVolumes = {
+            levelup = "medium",
+            achievement = "medium",
+            reputation = "medium",
+            quest_complete = "medium",
+            quest_progress = "medium",
+            battlepet = "medium",
+            delve = "medium",
+            honorrank = "medium",
+            renownrank = "medium",
+            tradingpost = "medium",
+        },
         
         -- Advanced settings
         soundChannel = "Master",
@@ -164,6 +166,24 @@ function Config:ImportSettings(importString)
     end
     
     return true
+end
+
+function Config:MigrateVolumeSettings()
+    if not BLU.db or not BLU.db.profile or not BLU.db.profile.soundVolumes then return end
+
+    local volumes = BLU.db.profile.soundVolumes
+    for event, value in pairs(volumes) do
+        if type(value) == "number" then
+            if value <= 0.33 then
+                volumes[event] = "low"
+            elseif value <= 0.66 then
+                volumes[event] = "medium"
+            else
+                volumes[event] = "high"
+            end
+            BLU:PrintDebug("Migrated volume setting for " .. event .. " from " .. value .. " to " .. volumes[event])
+        end
+    end
 end
 
 -- Export module

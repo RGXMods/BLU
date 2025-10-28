@@ -48,7 +48,40 @@ function BLU.CreateGeneralPanel(panel)
         BLU.Modules.config:ApplySettings()
     end)
 
+    local audioSection = BLU.Design:CreateSection(content, "Audio Settings", "Interface\Icons\INV_Misc_Headphones_01")
+    audioSection:SetPoint("TOPLEFT", coreSection, "BOTTOMLEFT", 0, -10)
+    audioSection:SetPoint("RIGHT", 0, 0)
+    audioSection:SetHeight(150)
 
+    local volumeSlider = BLU.Widgets:CreateSlider(audioSection.content, "Master Volume", 0, 100, 5, "Sets the master volume for all BLU sounds.")
+    volumeSlider:SetPoint("TOPLEFT", 10, -10)
+    volumeSlider:SetValue(BLU.db.profile.masterVolume * 100)
+    volumeSlider.value:SetText(string.format("%d%%", BLU.db.profile.masterVolume * 100))
+    volumeSlider:SetScript("OnValueChanged", function(self, value)
+        if not BLU.db or not BLU.db.profile then return end
+        BLU.db.profile.masterVolume = value / 100
+        self.value:SetText(string.format("%d%%", value))
+    end)
+
+    local channelDropdown = BLU.Widgets:CreateDropdown(audioSection.content, "Sound Channel", 200, {}, "Select the audio channel for sounds.")
+    channelDropdown:SetPoint("TOPLEFT", volumeSlider, "BOTTOMLEFT", 0, -30)
+    
+    UIDropDownMenu_Initialize(channelDropdown, function(self)
+        local channels = {"Master", "SFX", "Music", "Ambience"}
+        for _, channel in ipairs(channels) do
+            local info = UIDropDownMenu_CreateInfo()
+            info.text = channel
+            info.value = channel
+            info.func = function()
+                if not BLU.db or not BLU.db.profile then return end
+                BLU.db.profile.soundChannel = channel
+                UIDropDownMenu_SetText(self, channel)
+            end
+            info.checked = (BLU.db.profile.soundChannel == channel)
+            UIDropDownMenu_AddButton(info)
+        end
+    end)
+    UIDropDownMenu_SetText(channelDropdown, BLU.db.profile.soundChannel or "Master")
 
     local behaviorSection = BLU.Design:CreateSection(content, "Behavior Settings", "Interface\Icons\INV_Misc_GroupLooking")
     behaviorSection:SetPoint("TOPLEFT", audioSection, "BOTTOMLEFT", 0, -10)
@@ -57,7 +90,7 @@ function BLU.CreateGeneralPanel(panel)
 
     local muteCheck = BLU.Design:CreateCheckbox(behaviorSection.content, "Mute in instances", "Disable sounds while in dungeons, raids, or PvP")
     muteCheck:SetPoint("TOPLEFT", 10, -10)
-    muteCheck.check:SetChecked(BLU.db.profile.muteInInstances)
+    muteCheck.check:SetChecked(BLU.db.profile.muteInInstances or false)
     muteCheck.check:SetScript("OnClick", function(self)
         if not BLU.db or not BLU.db.profile then return end
         BLU.db.profile.muteInInstances = self:GetChecked()
@@ -65,7 +98,7 @@ function BLU.CreateGeneralPanel(panel)
 
     local combatCheck = BLU.Design:CreateCheckbox(behaviorSection.content, "Mute in combat", "Disable sounds while in combat")
     combatCheck:SetPoint("TOPLEFT", muteCheck, "BOTTOMLEFT", 0, -15)
-    combatCheck.check:SetChecked(BLU.db.profile.muteInCombat)
+    combatCheck.check:SetChecked(BLU.db.profile.muteInCombat or false)
     combatCheck.check:SetScript("OnClick", function(self)
         if not BLU.db or not BLU.db.profile then return end
         BLU.db.profile.muteInCombat = self:GetChecked()
@@ -93,7 +126,9 @@ function BLU.CreateGeneralPanel(panel)
         button1 = YES,
         button2 = NO,
         OnAccept = function()
-            BLU:ResetSettings()
+            if BLU.ResetToDefaults then
+                BLU:ResetToDefaults()
+            end
             ReloadUI()
         end,
         timeout = 0,
@@ -102,5 +137,5 @@ function BLU.CreateGeneralPanel(panel)
         preferredIndex = 3
     }
 
-    content:SetHeight(500)
+    content:SetHeight(600)
 end

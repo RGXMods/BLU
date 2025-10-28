@@ -32,6 +32,7 @@ function BLU:Initialize()
     -- Apply defaults now that database and config are loaded
     if BLU.db and BLU.Modules.config then
         BLU:MergeDefaults(BLU.db, BLU.Modules.config.defaults)
+        BLU.Modules.config:MigrateVolumeSettings()
         BLU.Modules.config:ApplySettings()
     end
     

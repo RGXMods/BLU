@@ -451,7 +451,8 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
                 UIDropDownMenu_SetText(self, text)
                 self.currentSound:SetText(text)
                 -- Logic to show/hide volume dropdown based on sound type
-                if string.find(value, "^blu_") and not string.find(value, "external:") then
+                local soundInfo = BLU.SoundRegistry:GetSound(value)
+                if soundInfo and (soundInfo.source == "BLU" or soundInfo.source == "BLU Built-in") then
                     volumeDropdown:Show()
                 else
                     volumeDropdown:Hide()

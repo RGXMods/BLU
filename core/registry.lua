@@ -388,11 +388,6 @@ function SoundRegistry:PlayCategorySound(category, forceSound)
             return BLU:PlayExternalSound(externalName)
         end
         
-    elseif selectedSound:match("^blu_") or selectedSound:match("^%w+_") then
-        -- BLU internal sound pack
-        local soundId = selectedSound .. "_" .. category
-        return self:PlaySound(soundId)
-        
     else
         -- Direct sound ID
         return self:PlaySound(selectedSound)

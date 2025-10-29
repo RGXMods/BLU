@@ -468,7 +468,8 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
                 local specialOptions = {
                     {text = "|cff00ff00Random|r", value = "random"},
                     {text = "None", value = "None"},
-                    {text = "Default WoW Sound", value = "default"},
+                    {text = "|cff05dffaDefault BLU Sound|r", value = "default"},
+                    {text = "|cff808080Default WoW Sound|r", value = "wow_default"},
                 }
                 for _, info in ipairs(specialOptions) do
                     local dInfo = UIDropDownMenu_CreateInfo()

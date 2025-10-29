@@ -8,6 +8,19 @@ local BLU = _G["BLU"]
 
 local SoundRegistry = {}
 
+local defaultBluSounds = {
+    levelup = "level_default",
+    achievement = "achievement_default",
+    quest = "quest_default",
+    questaccept = "quest_accept_default",
+    reputation = "rep_default",
+    battlepet = "battle_pet_level_default",
+    honorrank = "honor_default",
+    renownrank = "renown_default",
+    tradingpost = "post_default",
+    delvecompanion = "delve_default",
+}
+
 BLU.Modules["registry"] = SoundRegistry
 BLU.SoundRegistry = SoundRegistry
 
@@ -178,7 +191,11 @@ function SoundRegistry:GetSoundsGroupedForUI(targetEvent)
     }
 
     for soundId, soundData in pairs(self:GetAllSounds()) do
-        if soundData.category == targetEvent or soundData.category == "all" then
+        if soundData.source == "SharedMedia" then
+            local packId = soundData.packId or "Unidentified Pack"
+            hierarchy["Shared Media"][packId] = hierarchy["Shared Media"][packId] or {}
+            table.insert(hierarchy["Shared Media"][packId], {id = soundId, name = soundData.name})
+        elseif soundData.category == targetEvent or soundData.category == "all" then
             if soundData.source == "BLU" or soundData.source == "BLU Built-in" then
                 local packName = soundData.packName or "BLU Defaults"
                 if packName == "BLU Defaults" then
@@ -189,10 +206,6 @@ function SoundRegistry:GetSoundsGroupedForUI(targetEvent)
                     hierarchy["BLU Other Game Sounds"][packName] = hierarchy["BLU Other Game Sounds"][packName] or {}
                     table.insert(hierarchy["BLU Other Game Sounds"][packName], {id = soundId, name = soundData.name})
                 end
-            elseif soundData.source == "SharedMedia" then
-                local packId = soundData.packId or "Unidentified Pack"
-                hierarchy["Shared Media"][packId] = hierarchy["Shared Media"][packId] or {}
-                table.insert(hierarchy["Shared Media"][packId], {id = soundId, name = soundData.name})
             end
         end
     end
@@ -365,8 +378,12 @@ function SoundRegistry:PlayCategorySound(category, forceSound)
     
     -- Handle different sound types
     if selectedSound == "default" then
-        -- Play the default WoW sound for this category
-        local defaultSounds = {
+        local soundId = defaultBluSounds[category]
+        if soundId then
+            return self:PlaySound(soundId)
+        end
+    elseif selectedSound == "wow_default" then
+        local wowDefaultSounds = {
             levelup = 888,  -- LEVELUPSOUND
             achievement = 12891,  -- Achievement sound
             quest = 618,  -- QuestComplete
@@ -377,8 +394,7 @@ function SoundRegistry:PlayCategorySound(category, forceSound)
             battlepet = 65978,  -- Pet battle victory
             delvecompanion = 182235  -- Delve companion sound
         }
-        
-        local soundKit = defaultSounds[category]
+        local soundKit = wowDefaultSounds[category]
         if soundKit then
             local channel = BLU.db.profile.soundChannel or "Master"
             return PlaySound(soundKit, channel)

@@ -395,7 +395,7 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
     end
 
     UIDropDownMenu_Initialize(volumeDropdown, function(self) 
-        local volumes = {"None", "Low", "Medium", "High"}
+        local volumes = {"Low", "Medium", "High"}
         for _, volume in ipairs(volumes) do
             local info = UIDropDownMenu_CreateInfo()
             info.text = volume

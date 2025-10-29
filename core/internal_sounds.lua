@@ -119,7 +119,7 @@ function InternalSounds:RegisterSoundPacks()
         local sounds = {
             [packData.id] = {
                 name = packData.name,
-                file = "Interface\\AddOns\\BLU\\sounds\" .. packData.file_id .. ".ogg",
+                file = string.format("Interface\\AddOns\\BLU\\sounds\\%s.ogg", packData.file_id),
                 duration = 2.0,
                 category = packData.category or "levelup",
                 source = "BLU",

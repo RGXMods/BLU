@@ -1,6 +1,18 @@
 # BLU Release Notes
 
-## Version 6.0.0-alpha.1 (2025-10-28)
+## Version 6.0.0-alpha.3 (2025-10-28)
+
+### 🚀 Features & Improvements
+
+-   **Sound System:**
+    -   Implemented muting/unmuting of default WoW sounds when the addon is enabled/disabled.
+-   **UI:**
+    -   Added information about the BLU Classic addon to the "About" panel.
+    -   Removed the "None" option from the volume selection dropdown for BLU internal sounds.
+
+---
+
+## Version 6.0.0-alpha.2 (2025-10-28)
 
 ### 🐞 Bug Fixes & Improvements
 

@@ -46,11 +46,20 @@ I can be invoked directly with the `gemini` command or automatically when keywor
 BLU/
 ├── core/               # Framework and core systems
 ├── modules/            # Feature modules (quest, levelup, etc)
-│   ├── interface/      # UI panels and widgets
-│   └── ...
+│   ├── achievement/
+│   ├── battlepet/
+│   ├── delve/
+│   ├── honor/
+│   ├── interface/
+│   │   └── panels/     # UI panels for different settings sections
+│   ├── levelup/
+│   ├── quest/
+│   ├── renown/
+│   ├── reputation/
+│   └── tradingpost/
 ├── media/              # Sounds and textures
-│   ├── sounds/         # Game sound files
-│   └── textures/       # Icons and images
+│   ├── sounds/         # Game sound files (.ogg)
+│   └── Textures/       # Icons and images (.tga, .blp, .png)
 ├── localization/       # Language files
 ├── libs/               # External libraries (LibSharedMedia-3.0)
 ├── .github/            # GitHub Actions workflows
@@ -71,8 +80,11 @@ BLU/
 ## 📝 Common Development Tasks
 
 ### Testing the Addon
-A directory junction is in place, syncing changes to the WoW AddOns folder automatically. Any file change is available in-game after a `/reload`.
-`C:\Users\Joey\BLU` -> `C:\Program Files (x86)\World of Warcraft\_retail_\Interface\AddOns\BLU`
+To test changes in-game, you need to manually copy the addon files to your World of Warcraft directory.
+
+1.  Run the `copy_to_wow.bat` script in the root of the repository.
+2.  This will copy all the necessary files to `C:\Program Files (x86)\World of Warcraft\_retail_\Interface\AddOns\BLU`.
+3.  After the script finishes, use `/reload` in-game to see the changes.
 
 ### Adding a New Feature Module
 1.  Create `modules/NewFeature/NewFeature.lua`.
@@ -103,8 +115,9 @@ A directory junction is in place, syncing changes to the WoW AddOns folder autom
 *Reasoning: Windows is case-insensitive, but WoW's Lua environment is case-sensitive. All paths in XML and Lua must match the exact case on the file system to prevent issues.*
 
 ### Sound File Structure
-- Sound files are consolidated. No more `_high`, `_med`, `_low` variants in filenames. Volume is handled by the addon's settings.
-- Format: `gamename_soundtype.ogg`.
+- The project is transitioning its sound file structure. While the goal is to have consolidated sound files with volume handled by addon settings, the current implementation still uses volume variants in filenames (e.g., `gamename_soundtype_high.ogg`).
+- The sound registry (`core/registry.lua`) contains logic to handle both consolidated and variant filenames.
+- When working with sounds, refer to `core/registry.lua` and the existing files in `media/sounds/` to understand the current conventions.
 
 ### Localization
 - Use `BLU:Loc(key, ...)` for all user-facing strings.

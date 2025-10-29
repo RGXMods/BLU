@@ -31,7 +31,7 @@
     <Script file="modules/interface/panels/sounds.lua"/>
     <Script file="modules/interface/panels/modules.lua"/>
     <Script file="modules/interface/options.lua"/>
-    <Script file="modules/sounds.lua"/>
+
     
     <!-- Feature Modules -->
     <Script file="modules/quest/quest.lua"/>

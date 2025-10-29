@@ -9,16 +9,14 @@ local BLU = _G["BLU"]
 local SoundRegistry = {}
 
 BLU.Modules["registry"] = SoundRegistry
-
 BLU.SoundRegistry = SoundRegistry
-
-
 
 -- Sound storage with caching
 SoundRegistry.sounds = {}
 SoundRegistry.categories = {}
 SoundRegistry.soundCache = {} -- Performance cache
 SoundRegistry.lastCacheUpdate = 0
+SoundRegistry.uiSoundCache = {} -- Cache for UI dropdowns
 
 -- Initialize
 function SoundRegistry:Init()
@@ -50,6 +48,10 @@ function SoundRegistry:Init()
     BLU.GetRegisteredPacks = function()
         return self:GetRegisteredPacks()
     end
+
+    BLU.GetSoundsGroupedForUI = function(_, targetEvent)
+        return self:GetSoundsGroupedForUI(targetEvent)
+    end
     
     BLU:PrintDebug(BLU:Loc("MODULE_LOADED", "SoundRegistry"))
 end
@@ -60,6 +62,7 @@ function SoundRegistry:RegisterSound(soundId, soundData)
         BLU:PrintError("Invalid sound registration")
         return false
     end
+    BLU:PrintDebug(string.format("SoundRegistry:RegisterSound: id='%s', name='%s', pack='%s'", soundId, soundData.name or "nil", soundData.packName or "nil"))
     
     -- Store sound
     self.sounds[soundId] = soundData
@@ -70,6 +73,9 @@ function SoundRegistry:RegisterSound(soundId, soundData)
         self.categories[soundData.category][soundId] = true
     end
     
+    -- Invalidate UI cache
+    self.uiSoundCache = {}
+
     BLU:PrintDebug("Registered sound: " .. soundId)
     return true
 end
@@ -86,6 +92,9 @@ function SoundRegistry:UnregisterSound(soundId)
     
     -- Remove sound
     self.sounds[soundId] = nil
+
+    -- Invalidate UI cache
+    self.uiSoundCache = {}
 end
 
 -- Get sound data
@@ -154,6 +163,42 @@ function SoundRegistry:GetRegisteredPacks()
     end
     
     return packs
+end
+
+-- Get sounds grouped for UI with caching
+function SoundRegistry:GetSoundsGroupedForUI(targetEvent)
+    if self.uiSoundCache[targetEvent] then
+        return self.uiSoundCache[targetEvent]
+    end
+
+    local hierarchy = {
+        ["BLU WoW Defaults"] = {},
+        ["BLU Other Game Sounds"] = {},
+        ["Shared Media"] = {},
+    }
+
+    for soundId, soundData in pairs(self:GetAllSounds()) do
+        if soundData.category == targetEvent or soundData.category == "all" then
+            if soundData.source == "BLU Built-in" then
+                local packName = soundData.packName or "BLU Defaults"
+                if packName == "BLU Defaults" then
+                    local category = soundData.category
+                    hierarchy["BLU WoW Defaults"][category] = hierarchy["BLU WoW Defaults"][category] or {}
+                    table.insert(hierarchy["BLU WoW Defaults"][category], {id = soundId, name = soundData.name})
+                else
+                    hierarchy["BLU Other Game Sounds"][packName] = hierarchy["BLU Other Game Sounds"][packName] or {}
+                    table.insert(hierarchy["BLU Other Game Sounds"][packName], {id = soundId, name = soundData.name})
+                end
+            elseif soundData.source == "SharedMedia" then
+                local packId = soundData.packId or "Unidentified Pack"
+                hierarchy["Shared Media"][packId] = hierarchy["Shared Media"][packId] or {}
+                table.insert(hierarchy["Shared Media"][packId], {id = soundId, name = soundData.name})
+            end
+        end
+    end
+
+    self.uiSoundCache[targetEvent] = hierarchy
+    return hierarchy
 end
 
 -- Play a sound

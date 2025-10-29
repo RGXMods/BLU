@@ -30,7 +30,7 @@ function Options:TestSharedMedia()
         
         if hasLSM then
             local soundList = LSM:List("sound")
-            BLU:Print(string.Format("LSM sound count: %d", soundList and #soundList or 0))
+            BLU:Print(string.format("LSM sound count: %d", soundList and #soundList or 0))
             
             if soundList and #soundList > 0 then
                 BLU:Print("First 5 LSM sounds:")
@@ -354,9 +354,8 @@ end
 
 -- Helper function to create a sound selection dropdown
 local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
-    -- soundType is used for events that have multiple sounds (like quest_complete and quest_progress)
     local actualEventType = soundType or eventType
-    
+
     -- Container frame with better positioning
     local container = CreateFrame("Frame", nil, parent)
     container:SetPoint("TOPLEFT", parent, "TOPLEFT", 0, yOffset)
@@ -430,168 +429,151 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
             self:Enable()
         end)
     end)
-    
+
     -- Sound dropdown with better positioning
     local dropdown = CreateFrame("Frame", "BLUDropdown_" .. actualEventType, container, "UIDropDownMenuTemplate")
     dropdown:SetPoint("TOPLEFT", currentLabel, "BOTTOMLEFT", -16, -5)
     UIDropDownMenu_SetWidth(dropdown, 260)
-    
+
     -- Store references
     dropdown.currentSound = currentSound
     dropdown.eventId = actualEventType
+
+        -- Initialize dropdown
+        UIDropDownMenu_Initialize(dropdown, function(self, level, menuList)
+            level = level or 1
     
-    -- Initialize dropdown
-    UIDropDownMenu_Initialize(dropdown, function(self, level, menuList)
-        level = level or 1
-        
-        if not BLU.db or not BLU.db.profile then
-            return
-        end
-        BLU.db.profile.selectedSounds = BLU.db.profile.selectedSounds or {}
-
-        local function onSoundSelected(value, text)
-            BLU.db.profile.selectedSounds[self.eventId] = value
-            UIDropDownMenu_SetText(self, text)
-            self.currentSound:SetText(text)
-            if string.find(value, "^blu_") or string.find(value, "^default") then
-                volumeDropdown:Show()
-            else
-                volumeDropdown:Hide()
+            if not BLU.db or not BLU.db.profile then return end
+            BLU.db.profile.selectedSounds = BLU.db.profile.selectedSounds or {}
+    
+            local function onSoundSelected(value, text)
+                BLU.db.profile.selectedSounds[self.eventId] = value
+                UIDropDownMenu_SetText(self, text)
+                self.currentSound:SetText(text)
+                -- Logic to show/hide volume dropdown based on sound type
+                if string.find(value, "^blu_") and not string.find(value, "external:") then
+                    volumeDropdown:Show()
+                else
+                    volumeDropdown:Hide()
+                end
+                CloseDropDownMenus()
             end
-            CloseDropDownMenus()
-        end
-
-        local allSounds = BLU.SoundRegistry:GetAllSounds()
-        local groupedSounds = {}
-
-        for soundId, soundData in pairs(allSounds) do
-            local packName = soundData.packName or "Other Sounds"
-            if not groupedSounds[packName] then
-                groupedSounds[packName] = {}
-            end
-            table.insert(groupedSounds[packName], {id = soundId, name = soundData.name, category = soundData.category})
-        end
-        
-        if level == 1 then
-            -- Random option
-            local info = UIDropDownMenu_CreateInfo()
-            info.text = "|cff00ff00Random|r"
-            info.value = "random"
-            info.func = function() onSoundSelected("random", "Random") end
-            info.checked = BLU.db.profile.selectedSounds[self.eventId] == "random"
-            UIDropDownMenu_AddButton(info, level)
-
-            -- None option
-            info = UIDropDownMenu_CreateInfo()
-            info.text = "None"
-            info.value = "None"
-            info.func = function() onSoundSelected("None", "None") end
-            info.checked = BLU.db.profile.selectedSounds[self.eventId] == "None"
-            UIDropDownMenu_AddButton(info, level)
-
-            -- Default WoW Sound option
-            info = UIDropDownMenu_CreateInfo()
-            info.text = "Default WoW Sound"
-            info.value = "default"
-            info.func = function() onSoundSelected("default", "Default WoW Sound") end
-            info.checked = BLU.db.profile.selectedSounds[self.eventId] == "default"
-            UIDropDownMenu_AddButton(info, level)
-
-            -- Separator
-            info = UIDropDownMenu_CreateInfo()
-            info.text = ""
-            info.notClickable = true
-            info.notCheckable = true
-            UIDropDownMenu_AddButton(info, level)
-
-            -- Sort pack names alphabetically
-            local sortedPackNames = {}
-            for packName in pairs(groupedSounds) do
-                table.insert(sortedPackNames, packName)
-            end
-            table.sort(sortedPackNames)
-
-            -- Add categories for each pack
-            for _, packName in ipairs(sortedPackNames) do
-                local soundsInPack = groupedSounds[packName]
-                if #soundsInPack > 0 then
-                    info = UIDropDownMenu_CreateInfo()
-                    info.text = "|cffffff00" .. packName .. "|r (" .. #soundsInPack .. ")"
-                    info.value = packName
-                    info.hasArrow = true
-                    info.menuList = packName
+    
+            local customHierarchy = BLU.SoundRegistry:GetSoundsGroupedForUI(self.eventId)
+    
+            -- === LEVEL 1: Special Options and Custom Top-Level Groups ===
+            if level == 1 then
+                -- Special Options (Random, None, Default WoW)
+                local specialOptions = {
+                    {text = "|cff00ff00Random|r", value = "random"},
+                    {text = "None", value = "None"},
+                    {text = "Default WoW Sound", value = "default"},
+                }
+                for _, info in ipairs(specialOptions) do
+                    local dInfo = UIDropDownMenu_CreateInfo()
+                    dInfo.text = info.text
+                    dInfo.value = info.value
+                    dInfo.func = function() onSoundSelected(info.value, info.text) end
+                    dInfo.checked = BLU.db.profile.selectedSounds[self.eventId] == info.value
+                    UIDropDownMenu_AddButton(dInfo, level)
+                end
+    
+                -- Separator
+                local sep = UIDropDownMenu_CreateInfo()
+                sep.notClickable = true; sep.notCheckable = true
+                UIDropDownMenu_AddButton(sep, level)
+    
+                -- Custom Top-Level Groups (BLU WoW Defaults, BLU Other Game Sounds, Shared Media)
+                local sortedTopLevelKeys = {"BLU WoW Defaults", "BLU Other Game Sounds", "Shared Media"}
+    
+                for _, groupKey in ipairs(sortedTopLevelKeys) do
+                    if next(customHierarchy[groupKey]) then -- Only show if it has contents
+                        local count = 0
+                        if groupKey == "BLU WoW Defaults" then
+                            for _, categorySounds in pairs(customHierarchy[groupKey]) do count = count + #categorySounds end
+                        else
+                            for _, packSounds in pairs(customHierarchy[groupKey]) do count = count + #packSounds end
+                        end
+    
+                        local info = UIDropDownMenu_CreateInfo()
+                        info.text = "|cffffff00" .. groupKey .. "|r (" .. count .. ")"
+                        info.value = groupKey
+                        info.hasArrow = true
+                        info.menuList = groupKey -- Pass the group key to the next level
+                        info.notCheckable = true
+                        UIDropDownMenu_AddButton(info, level)
+                    end
+                end
+    
+            -- === LEVEL 2: Custom Grouping Logic ===
+            elseif level == 2 then
+                local groupKey = menuList
+                local subgroups = customHierarchy[groupKey]
+                local sortedSubKeys = {}
+    
+                for subKey in pairs(subgroups) do table.insert(sortedSubKeys, subKey) end
+                table.sort(sortedSubKeys)
+    
+                for _, subKey in ipairs(sortedSubKeys) do
+                    local sounds = subgroups[subKey]
+    
+                    local info = UIDropDownMenu_CreateInfo()
+                    info.value = subKey
                     info.notCheckable = true
+    
+                    if groupKey == "BLU WoW Defaults" then
+                        -- Tier 2: Category (e.g. 'Level Up') -> Tier 3: Sound
+                        info.text = "|cff99ff99" .. subKey .. "|r (" .. #sounds .. ")"
+                        info.hasArrow = true
+                        info.menuList = {group = groupKey, sub = subKey, type = "category"}
+                    elseif groupKey == "BLU Other Game Sounds" or groupKey == "Shared Media" then
+                        -- Tier 2: Pack Name (e.g. 'Zelda' or 'SharedMedia_MyMedia') -> Tier 3: Sound
+                        info.text = subKey .. " (" .. #sounds .. ")"
+                        info.hasArrow = true
+                        info.menuList = {group = groupKey, sub = subKey, type = "pack"}
+                    end
+    
+                    UIDropDownMenu_AddButton(info, level)
+                end
+    
+            -- === LEVEL 3: Individual Sounds ===
+            elseif level == 3 then
+                local groupKey = menuList.group
+                local subKey = menuList.sub
+                local listType = menuList.type
+                local soundsToDisplay
+    
+                if groupKey == "BLU WoW Defaults" then
+                    soundsToDisplay = customHierarchy[groupKey][subKey]
+                elseif groupKey == "BLU Other Game Sounds" or groupKey == "Shared Media" then
+                    soundsToDisplay = customHierarchy[groupKey][subKey]
+                end
+    
+                -- Sort final sounds by name
+                table.sort(soundsToDisplay, function(a, b) return a.name < b.name end)
+    
+                for _, sound in ipairs(soundsToDisplay) do
+                    local info = UIDropDownMenu_CreateInfo()
+                    info.text = sound.name
+                    info.value = sound.id
+                    info.func = function() onSoundSelected(sound.id, sound.name) end
+                    info.checked = BLU.db.profile.selectedSounds[dropdown.eventId] == sound.id
                     UIDropDownMenu_AddButton(info, level)
                 end
             end
-
-        elseif level == 2 then
-            -- List individual sounds within the selected pack
-            local soundsInPack = {}
-            if groupedSounds[menuList] then
-                for _, sound in ipairs(groupedSounds[menuList]) do
-                    if sound.category == dropdown.eventId or sound.category == "all" then
-                        table.insert(soundsInPack, sound)
-                    end
-                end
-            end
-
-            table.sort(soundsInPack, function(a, b) return a.name < b.name end)
-
-            for _, sound in ipairs(soundsInPack) do
-                local info = UIDropDownMenu_CreateInfo()
-                info.text = sound.name
-                info.value = sound.id
-                info.func = function() onSoundSelected(sound.id, sound.name) end
-                info.checked = BLU.db.profile.selectedSounds[dropdown.eventId] == sound.id
-                UIDropDownMenu_AddButton(info, level)
-            end
-        end
-    end)
-    
+        end)
     -- Set initial text
-    C_Timer.After(0.1, function()
-        local currentValue = "default"
-        if BLU.db and BLU.db.profile and BLU.db.profile.selectedSounds then
-            currentValue = BLU.db.profile.selectedSounds[actualEventType] or "default"
+    local selectedValue = BLU.db and BLU.db.profile and BLU.db.profile.selectedSounds and BLU.db.profile.selectedSounds[actualEventType] or "None"
+    local selectedText = selectedValue
+    if selectedValue ~= "None" and selectedValue ~= "default" and selectedValue ~= "random" then
+        local soundInfo = BLU.SoundRegistry:GetSound(selectedValue)
+        if soundInfo then
+            selectedText = soundInfo.name
         end
-        
-        if currentValue == "default" then
-            UIDropDownMenu_SetText(dropdown, "Default WoW Sound")
-            currentSound:SetText("Default WoW Sound")
-        elseif currentValue:match("^external:") then
-            local soundName = currentValue:gsub("^external:", "")
-            UIDropDownMenu_SetText(dropdown, soundName)
-            currentSound:SetText(soundName)
-        elseif currentValue:match("^wow_") then
-            UIDropDownMenu_SetText(dropdown, "WoW Sound")
-            currentSound:SetText("WoW Sound")
-        else
-            -- BLU internal sound
-            local packName = currentValue:match("^(.+)_" .. actualEventType .. "$")
-            if packName then
-                local packNames = {
-                    finalfantasy = "Final Fantasy",
-                    zelda = "Legend of Zelda",
-                    pokemon = "Pokemon",
-                    mario = "Super Mario",
-                    sonic = "Sonic the Hedgehog",
-                    metalgear = "Metal Gear Solid",
-                    elderscrolls = "Elder Scrolls",
-                    warcraft = "Warcraft",
-                    eldenring = "Elden Ring",
-                    castlevania = "Castlevania",
-                    diablo = "Diablo",
-                    fallout = "Fallout",
-                    blu_default = "BLU Defaults"
-                }
-                local displayName = packNames[packName] or packName
-                UIDropDownMenu_SetText(dropdown, displayName)
-                currentSound:SetText(displayName)
-            end
-        end
-    end)
-    
+    end
+    UIDropDownMenu_SetText(dropdown, selectedText)
+    dropdown.currentSound:SetText(selectedText)
+
     return container
 end
 

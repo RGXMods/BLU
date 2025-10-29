@@ -12,7 +12,7 @@ BLU (Better Level-Up!) is a World of Warcraft addon that replaces default sounds
 - Professional folder structure with proper capitalization
 - Modular architecture for performance
 - RGX Mods branding (RealmGX Community Project)
-- Directory junction in place for auto-testing
+- Manual copy script (`copy_to_wow.bat`) for testing
 
 ## Current Directory Structure
 
@@ -75,11 +75,11 @@ This project uses Claude Code Router with multiple AI models:
 ## Common Development Tasks
 
 ### Testing the Addon
-A directory junction is already in place that automatically syncs files:
-```
-C:\Users\donniedice\BLU → C:\Program Files (x86)\World of Warcraft\_retail_\Interface\AddOns\BLU
-```
-All changes are instantly available in-game after /reload.
+To test changes in-game, you need to manually copy the addon files to your World of Warcraft directory.
+
+1.  Run the `copy_to_wow.bat` script in the root of the repository.
+2.  This will copy all the necessary files to `C:\Program Files (x86)\World of Warcraft\_retail_\Interface\AddOns\BLU`.
+3.  After the script finishes, use `/reload` in-game to see the changes.
 
 ### Adding a New Sound Pack
 1. Create `sound/packs/gamename.lua`

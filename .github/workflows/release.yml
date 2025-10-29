@@ -84,13 +84,20 @@ jobs:
       - name: 📢 Send Discord Notification
         if: success()
         run: |
+          # Read changelog content
+          if [[ -f "docs/CHANGES.md" ]]; then
+            changelog_content=$(cat docs/CHANGES.md)
+          else
+            changelog_content="No changelog available"
+          fi
+          
+          # Determine release type and set variables
           case "${{ steps.release_type.outputs.type }}" in
             "release")
               title="🎉 BLU | Better Level-Up! - ${{ steps.version.outputs.version }}"
-              desc="**Play sounds from other games!** A new version of BLU has been released!\n\n🎵 **What's New:**\n$(echo '${{ steps.changelog.outputs.changelog }}' | jq -r .)"
               color=9830721
               footer="RGX Mods - RealmGX Community"
-              fields=$(jq -n '[
+              fields='[
                 {
                   "name": "📥 Downloads",
                   "value": "[CurseForge](https://www.curseforge.com/wow/addons/blu)\n[Wago.io](https://addons.wago.io/addons/vEGPgWK1)\n[GitHub](https://github.com/DonnieDice/BLU)",
@@ -106,60 +113,80 @@ jobs:
                   "value": "[Report Issues](https://github.com/DonnieDice/BLU/issues)\n[Buy Me Coffee](https://www.buymeacoffee.com/donniedice)",
                   "inline": true
                 }
-              ]')
+              ]'
               ;;
             "beta")
               title="🧪 BLU Beta - ${{ steps.version.outputs.version }}"
-              desc="A beta version of Better Level-Up! is available for testing!\n\n**What's New:**\n$(echo '${{ steps.changelog.outputs.changelog }}' | jq -r .)"
               color=16744448
               footer="RGX Mods - Beta Build"
-              fields=$(jq -n '[{"name":"📥 Download Beta","value":"[CurseForge](https://www.curseforge.com/wow/addons/blu)\n[GitHub](https://github.com/DonnieDice/BLU/releases)"}]')
+              fields='[{"name":"📥 Download Beta","value":"[CurseForge](https://www.curseforge.com/wow/addons/blu)\n[GitHub](https://github.com/DonnieDice/BLU/releases)"}]'
               ;;
             "dev")
               title="🛠️ BLU Dev Build - ${{ steps.version.outputs.version }}"
-              desc="A new development build has been pushed to the \`dev\` branch.\n\n**What's New:**\n$(echo '${{ steps.changelog.outputs.changelog }}' | jq -r .)"
               color=3447003
               footer="RGX Mods - Development Build"
-              fields=$(jq -n '[{"name":"⚠️ Important","value":"This is not a stable release. Use only for testing purposes."}]')
+              fields='[{"name":"⚠️ Important","value":"This is not a stable release. Use only for testing purposes."}]'
               ;;
             "alpha-branch")
               title="🔬 BLU Alpha - ${{ steps.version.outputs.version }}"
-              desc="Development build for testing\n\n**What's New:**\n$(echo '${{ steps.changelog.outputs.changelog }}' | jq -r .)"
               color=16711680
               footer="RGX Mods - Alpha Build"
-              fields="null"
+              fields='null'
               ;;
             *)
               title="⚠️ Unknown Build"
-              desc="An unknown workflow run occurred."
               color=10000000
               footer="RGX Mods - Unknown"
-              fields="null"
+              fields='null'
               ;;
           esac
-
+          
+          # Create description with changelog
+          desc="**Play sounds from other games!** A new version of BLU has been released!\n\n🎵 **What's New:**\n${changelog_content}"
+          
+          # Adjust description based on release type
+          case "${{ steps.release_type.outputs.type }}" in
+            "beta")
+              desc="A beta version of Better Level-Up! is available for testing!\n\n**What's New:**\n${changelog_content}"
+              ;;
+            "dev")
+              desc="A new development build has been pushed to the \`dev\` branch.\n\n**What's New:**\n${changelog_content}"
+              ;;
+            "alpha-branch")
+              desc="Development build for testing\n\n**What's New:**\n${changelog_content}"
+              ;;
+            *)
+              # Release description is already set
+              ;;
+          esac
+          
+          # Create JSON payload
           jq -n \
             --arg username "BLU Notification" \
-            --arg avatar "https://raw.githubusercontent.com/DonnieDice/BLU/main/images/logo.png" \
+            --arg avatar_url "https://raw.githubusercontent.com/DonnieDice/BLU/main/images/logo.png" \
             --arg title "$title" \
             --arg desc "$desc" \
             --argjson color "$color" \
             --arg footer "$footer" \
-            --arg icon "https://raw.githubusercontent.com/donniedice/SimpleQuestPlates/main/images/kiwi.gif" \
+            --arg icon_url "https://raw.githubusercontent.com/donniedice/SimpleQuestPlates/main/images/kiwi.gif" \
             --arg timestamp "${{ steps.version.outputs.timestamp }}" \
             --argjson fields "$fields" \
             '{
               username: $username,
-              avatar_url: $avatar,
+              avatar_url: $avatar_url,
               embeds: [{
                 title: $title,
                 description: $desc,
                 color: $color,
-                footer: { text: $footer, icon_url: $icon },
+                footer: {
+                  text: $footer,
+                  icon_url: $icon_url
+                },
                 timestamp: $timestamp
-              } | if $fields != null then .fields = $fields else . end]
+              } | if $fields != null and $fields != "null" then .fields = $fields else . end]
             }' > payload.json
-
+          
+          # Send to Discord
           curl -H "Content-Type: application/json" -X POST -d @payload.json $DISCORD_WEBHOOK
 
       - name: ❌ Send Failure Notification

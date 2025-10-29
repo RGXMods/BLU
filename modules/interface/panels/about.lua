@@ -54,9 +54,23 @@ function BLU.CreateAboutPanel(panel)
     tagline:SetPoint("TOPLEFT", version, "BOTTOMLEFT", 0, -5)
     tagline:SetText("Replace default sounds with iconic audio from 50+ games")
     
+    -- Classic Addon Section
+    local classicSection = BLU.Design:CreateSection(content, "Original Version", "Interface\Icons\INV_Misc_Book_08")
+    classicSection:SetPoint("TOPLEFT", logoFrame, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
+    classicSection:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
+    classicSection:SetHeight(80)
+    classicSection:SetBackdropColor(0.1, 0.05, 0.05, 0.9)
+    classicSection:SetBackdropBorderColor(1, 0.2, 0.2, 1)
+
+    local classicText = classicSection.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    classicText:SetPoint("TOPLEFT", 20, -10)
+    classicText:SetPoint("RIGHT", -20, 0)
+    classicText:SetJustifyH("LEFT")
+    classicText:SetText("The original Ace3 version with the original UI is still maintained as |cff05dffaRGX | Better Level Up! (Classic)|r.")
+
     -- Info Section
     local infoSection = BLU.Design:CreateSection(content, "Information", "Interface\Icons\INV_Misc_Book_09")
-    infoSection:SetPoint("TOPLEFT", logoFrame, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
+    infoSection:SetPoint("TOPLEFT", classicSection, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
     infoSection:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
     infoSection:SetHeight(180)
     

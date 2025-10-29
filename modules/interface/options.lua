@@ -214,7 +214,7 @@ function Options:CreateOptionsPanel()
     -- Version & Author
     local version = header:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     version:SetPoint("TOPRIGHT", -15, -15)
-    version:SetText("v" .. (BLU.version or "6.0.0-alpha"))
+    version:SetText(BLU.version or "v6.0.0-alpha")
     version:SetTextColor(unpack(BLU.Design.Colors.Primary))
     
     local author = header:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")

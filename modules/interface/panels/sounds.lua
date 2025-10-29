@@ -65,44 +65,46 @@ function BLU.CreateSoundsPanel(panel)
     local uniquePacks = {}
 
     for _, soundData in pairs(allSounds) do
-        -- Use packId for SharedMedia for reliability, or packName for BLU
-        local id = soundData.packId or soundData.packName or soundData.source
-        
-        if id and not uniquePacks[id] then
-            -- Create a new entry for the pack
-            local packName = soundData.packName or id
-            if soundData.source == "WoW Built-in" then
-                packName = "WoW Default Sounds"
-                id = "WoW Default Sounds"
-            elseif soundData.source == "Test" then
-                packName = "Test Sounds (LSM Missing)"
-                id = "Test Sounds"
-            end
+        if soundData.source == "SharedMedia" then
+            -- Use packId for SharedMedia for reliability, or packName for BLU
+            local id = soundData.packId or soundData.packName or soundData.source
+            
+            if id and not uniquePacks[id] then
+                -- Create a new entry for the pack
+                local packName = soundData.packName or id
+                if soundData.source == "WoW Built-in" then
+                    packName = "WoW Default Sounds"
+                    id = "WoW Default Sounds"
+                elseif soundData.source == "Test" then
+                    packName = "Test Sounds (LSM Missing)"
+                    id = "Test Sounds"
+                end
 
-            uniquePacks[id] = {
-                id = id,
-                name = packName,
-                source = soundData.source,
-                icon = "Interface\Icons\INV_Misc_Bag_33", -- Placeholder icon
-                soundCount = 0,
-            }
-            
-            -- Set a better icon for BLU's own packs if possible
-            if soundData.source == "BLU Built-in" and soundData.packId then
-                uniquePacks[id].icon = "Interface\Icons\ACHIEVEMENT_GUILDPERK_HONORABLEMENTION"
-            end
-            
-            -- Use the addon icon for SharedMedia if it can be found
-            if soundData.source == "SharedMedia" and soundData.packId then
-                -- FIX: Proper error handling and validation
-                local success, _, _, addonIcon = pcall(C_AddOns.GetAddOnInfo, soundData.packId)
-                if success and addonIcon and addonIcon ~= "" then
-                    uniquePacks[id].icon = addonIcon
+                uniquePacks[id] = {
+                    id = id,
+                    name = packName,
+                    source = soundData.source,
+                    icon = "Interface\Icons\INV_Misc_Bag_33", -- Placeholder icon
+                    soundCount = 0,
+                }
+                
+                -- Set a better icon for BLU's own packs if possible
+                if soundData.source == "BLU Built-in" and soundData.packId then
+                    uniquePacks[id].icon = "Interface\Icons\ACHIEVEMENT_GUILDPERK_HONORABLEMENTION"
+                end
+                
+                -- Use the addon icon for SharedMedia if it can be found
+                if soundData.source == "SharedMedia" and soundData.packId then
+                    -- FIX: Proper error handling and validation
+                    local success, _, _, addonIcon = pcall(C_AddOns.GetAddOnInfo, soundData.packId)
+                    if success and addonIcon and addonIcon ~= "" then
+                        uniquePacks[id].icon = addonIcon
+                    end
                 end
             end
-        end
-        if id then
-            uniquePacks[id].soundCount = uniquePacks[id].soundCount + 1
+            if id then
+                uniquePacks[id].soundCount = uniquePacks[id].soundCount + 1
+            end
         end
     end
     

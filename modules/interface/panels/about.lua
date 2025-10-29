@@ -120,10 +120,22 @@ function BLU.CreateAboutPanel(panel)
         featureText:SetJustifyH("LEFT")
         yOffset = yOffset - 25
     end
+
+    -- Classic Addon Section
+    local classicSection = BLU.Design:CreateSection(content, "Classic Version", "Interface\Icons\INV_Misc_Book_08")
+    classicSection:SetPoint("TOPLEFT", featuresSection, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
+    classicSection:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
+    classicSection:SetHeight(80)
+
+    local classicText = classicSection.content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    classicText:SetPoint("TOPLEFT", 20, -10)
+    classicText:SetPoint("RIGHT", -20, 0)
+    classicText:SetJustifyH("LEFT")
+    classicText:SetText("The original Ace3 version with the original UI is still maintained as |cff05dffaBLU Classic RGX | Better Level-Up! (Classic)|r.")
     
     -- Statistics Section
     local statsSection = BLU.Design:CreateSection(content, "Statistics", "Interface\Icons\Achievement_GuildPerk_CashFlow_Rank2")
-    statsSection:SetPoint("TOPLEFT", featuresSection, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
+    statsSection:SetPoint("TOPLEFT", classicSection, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
     statsSection:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
     statsSection:SetHeight(120)
     

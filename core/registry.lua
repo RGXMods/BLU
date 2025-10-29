@@ -179,7 +179,7 @@ function SoundRegistry:GetSoundsGroupedForUI(targetEvent)
 
     for soundId, soundData in pairs(self:GetAllSounds()) do
         if soundData.category == targetEvent or soundData.category == "all" then
-            if soundData.source == "BLU Built-in" then
+            if soundData.source == "BLU" or soundData.source == "BLU Built-in" then
                 local packName = soundData.packName or "BLU Defaults"
                 if packName == "BLU Defaults" then
                     local category = soundData.category

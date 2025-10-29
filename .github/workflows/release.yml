@@ -49,16 +49,16 @@ jobs:
               else
                 echo "type=release" >> $GITHUB_OUTPUT
               fi
-              ;;;
+              ;;
             refs/heads/dev)
               echo "type=dev" >> $GITHUB_OUTPUT
-              ;;;
+              ;;
             refs/heads/alpha)
               echo "type=alpha-branch" >> $GITHUB_OUTPUT
-              ;;;
+              ;;
             *)
               echo "type=unknown" >> $GITHUB_OUTPUT
-              ;;;
+              ;;
           esac
 
       - name: 📦 Extract Version from TOC
@@ -90,44 +90,52 @@ jobs:
               desc="**Play sounds from other games!** A new version of BLU has been released!\n\n🎵 **What's New:**\n$(echo '${{ steps.changelog.outputs.changelog }}' | jq -r .)"
               color=9830721
               footer="RGX Mods - RealmGX Community"
-              fields=$(jq -n \
-                '[ \
-                  {\"name\": \"📥 Downloads\", \"value\": \"[CurseForge](https://www.curseforge.com/wow/addons/blu)\\n[Wago.io](https://addons.wago.io/addons/vEGPgWK1)\\n[GitHub](https://github.com/DonnieDice/BLU)\", \"inline\": true \
-                }, \
-                {\"name\": \"🎮 Compatibility\", \"value\": \"✅ The War Within\", \"inline\": true \
-                }, \
-                {\"name\": \"💬 Support\", \"value\": \"[Report Issues](https://github.com/DonnieDice/BLU/issues)\\n[Buy Me Coffee](https://www.buymeacoffee.com/donniedice)\", \"inline\": true \
+              fields=$(jq -n '[
+                {
+                  "name": "📥 Downloads",
+                  "value": "[CurseForge](https://www.curseforge.com/wow/addons/blu)\n[Wago.io](https://addons.wago.io/addons/vEGPgWK1)\n[GitHub](https://github.com/DonnieDice/BLU)",
+                  "inline": true
+                },
+                {
+                  "name": "🎮 Compatibility",
+                  "value": "✅ The War Within",
+                  "inline": true
+                },
+                {
+                  "name": "💬 Support",
+                  "value": "[Report Issues](https://github.com/DonnieDice/BLU/issues)\n[Buy Me Coffee](https://www.buymeacoffee.com/donniedice)",
+                  "inline": true
                 }
               ]')
-              ;;;
+              ;;
             "beta")
               title="🧪 BLU Beta - ${{ steps.version.outputs.version }}"
               desc="A beta version of Better Level-Up! is available for testing!\n\n**What's New:**\n$(echo '${{ steps.changelog.outputs.changelog }}' | jq -r .)"
               color=16744448
               footer="RGX Mods - Beta Build"
-              fields=$(jq -n '[{"name":"📥 Download Beta","value":"[CurseForge](https://www.curseforge.com/wow/addons/blu)\\n[GitHub](https://github.com/DonnieDice/BLU/releases)"}]')
-              ;;;
+              fields=$(jq -n '[{"name":"📥 Download Beta","value":"[CurseForge](https://www.curseforge.com/wow/addons/blu)\n[GitHub](https://github.com/DonnieDice/BLU/releases)"}]')
+              ;;
             "dev")
               title="🛠️ BLU Dev Build - ${{ steps.version.outputs.version }}"
               desc="A new development build has been pushed to the \`dev\` branch.\n\n**What's New:**\n$(echo '${{ steps.changelog.outputs.changelog }}' | jq -r .)"
               color=3447003
               footer="RGX Mods - Development Build"
               fields=$(jq -n '[{"name":"⚠️ Important","value":"This is not a stable release. Use only for testing purposes."}]')
-              ;;;
+              ;;
             "alpha-branch")
               title="🔬 BLU Alpha - ${{ steps.version.outputs.version }}"
               desc="Development build for testing\n\n**What's New:**\n$(echo '${{ steps.changelog.outputs.changelog }}' | jq -r .)"
               color=16711680
               footer="RGX Mods - Alpha Build"
               fields="null"
-              ;;;
+              ;;
             *)
               title="⚠️ Unknown Build"
               desc="An unknown workflow run occurred."
               color=10000000
               footer="RGX Mods - Unknown"
               fields="null"
-              ;;;
+              ;;
           esac
 
           jq -n \
@@ -140,18 +148,16 @@ jobs:
             --arg icon "https://raw.githubusercontent.com/donniedice/SimpleQuestPlates/main/images/kiwi.gif" \
             --arg timestamp "${{ steps.version.outputs.timestamp }}" \
             --argjson fields "$fields" \
-            '{ \
-              username: $username, \
-              avatar_url: $avatar, \
-              embeds: [\
-                {\
-                  title: $title, \
-                  description: $desc, \
-                  color: $color, \
-                  footer: { text: $footer, icon_url: $icon }, \
-                  timestamp: $timestamp \
-                } | if $fields != null then .fields = $fields else . end \
-              ] \
+            '{
+              username: $username,
+              avatar_url: $avatar,
+              embeds: [{
+                title: $title,
+                description: $desc,
+                color: $color,
+                footer: { text: $footer, icon_url: $icon },
+                timestamp: $timestamp
+              } | if $fields != null then .fields = $fields else . end]
             }' > payload.json
 
           curl -H "Content-Type: application/json" -X POST -d @payload.json $DISCORD_WEBHOOK
@@ -163,25 +169,23 @@ jobs:
             --arg version "${{ steps.version.outputs.version || 'Unknown' }}" \
             --arg run_id "${{ github.run_id }}" \
             --arg timestamp "${{ steps.version.outputs.timestamp }}" \
-            '{ \
-              username: "BLU Build Failed", \
-              avatar_url: "https://raw.githubusercontent.com/DonnieDice/BLU/main/images/logo.png", \
-              embeds: [\
-                {\
-                  title: "❌ BLU Build Failed", \
-                  description: "The release workflow encountered an error", \
-                  url: "https://github.com/DonnieDice/BLU/actions/runs/${{run_id}}", \
-                  color: 15158332, \
-                  fields: [ \
-                    { "name": "Version", "value": $version, "inline": true }, \
-                    { "name": "Workflow", "value": "[View Logs](https://github.com/DonnieDice/BLU/actions/runs/${{run_id}})", "inline": true } \
-                  ], \
-                  footer: { \
-                    "text": "RGX Mods - Build System", \
-                    "icon_url": "https://raw.githubusercontent.com/donniedice/SimpleQuestPlates/main/images/kiwi.gif" \
-                  }, \
-                  timestamp: $timestamp \
-                } \
-              ] \
+            '{
+              username: "BLU Build Failed",
+              avatar_url: "https://raw.githubusercontent.com/DonnieDice/BLU/main/images/logo.png",
+              embeds: [{
+                title: "❌ BLU Build Failed",
+                description: "The release workflow encountered an error",
+                url: "https://github.com/DonnieDice/BLU/actions/runs/\($run_id)",
+                color: 15158332,
+                fields: [
+                  { "name": "Version", "value": $version, "inline": true },
+                  { "name": "Workflow", "value": "[View Logs](https://github.com/DonnieDice/BLU/actions/runs/\($run_id))", "inline": true }
+                ],
+                footer: {
+                  "text": "RGX Mods - Build System",
+                  "icon_url": "https://raw.githubusercontent.com/donniedice/SimpleQuestPlates/main/images/kiwi.gif"
+                },
+                timestamp: $timestamp
+              }]
             }' > payload.json
           curl -H "Content-Type: application/json" -X POST -d @payload.json $DISCORD_WEBHOOK

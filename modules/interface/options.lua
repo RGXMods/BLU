@@ -464,12 +464,11 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
     
             -- === LEVEL 1: Special Options and Custom Top-Level Groups ===
             if level == 1 then
-                -- Special Options (Random, None, Default WoW)
+                -- Special Options (Random, None, Default)
                 local specialOptions = {
                     {text = "|cff00ff00Random|r", value = "random"},
                     {text = "None", value = "None"},
-                    {text = "|cff05dffaDefault BLU Sound|r", value = "default"},
-                    {text = "|cff808080Default WoW Sound|r", value = "wow_default"},
+                    {text = "Default Sound", value = "default"},
                 }
                 for _, info in ipairs(specialOptions) do
                     local dInfo = UIDropDownMenu_CreateInfo()
@@ -492,7 +491,7 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
                     if next(customHierarchy[groupKey]) then -- Only show if it has contents
                         local count = 0
                         if groupKey == "BLU WoW Defaults" then
-                            for _, categorySounds in pairs(customHierarchy[groupKey]) do count = count + #categorySounds end
+                            count = #customHierarchy[groupKey]
                         else
                             for _, packSounds in pairs(customHierarchy[groupKey]) do count = count + #packSounds end
                         end
@@ -511,56 +510,54 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
             elseif level == 2 then
                 local groupKey = menuList
                 local subgroups = customHierarchy[groupKey]
-                local sortedSubKeys = {}
-    
-                for subKey in pairs(subgroups) do table.insert(sortedSubKeys, subKey) end
-                table.sort(sortedSubKeys)
-    
-                for _, subKey in ipairs(sortedSubKeys) do
-                    local sounds = subgroups[subKey]
-    
-                    local info = UIDropDownMenu_CreateInfo()
-                    info.value = subKey
-                    info.notCheckable = true
-    
-                    if groupKey == "BLU WoW Defaults" then
-                        -- Tier 2: Category (e.g. 'Level Up') -> Tier 3: Sound
-                        info.text = "|cff99ff99" .. subKey .. "|r (" .. #sounds .. ")"
-                        info.hasArrow = true
-                        info.menuList = {group = groupKey, sub = subKey, type = "category"}
-                    elseif groupKey == "BLU Other Game Sounds" or groupKey == "Shared Media" then
-                        -- Tier 2: Pack Name (e.g. 'Zelda' or 'SharedMedia_MyMedia') -> Tier 3: Sound
-                        info.text = subKey .. " (" .. #sounds .. ")"
+
+                if groupKey == "BLU WoW Defaults" then
+                    -- The sounds are directly in subgroups
+                    table.sort(subgroups, function(a, b) return a.name < b.name end)
+                    for _, sound in ipairs(subgroups) do
+                        local info = UIDropDownMenu_CreateInfo()
+                        info.text = sound.name
+                        info.value = sound.id
+                        info.func = function() onSoundSelected(sound.id, sound.name) end
+                        info.checked = BLU.db.profile.selectedSounds[dropdown.eventId] == sound.id
+                        UIDropDownMenu_AddButton(info, level)
+                    end
+                else
+                    -- The existing logic for other groups
+                    local sortedSubKeys = {}
+                    for subKey in pairs(subgroups) do table.insert(sortedSubKeys, subKey) end
+                    table.sort(sortedSubKeys)
+
+                    for _, subKey in ipairs(sortedSubKeys) do
+                        local sounds = subgroups[subKey]
+                        local info = UIDropDownMenu_CreateInfo()
+                        info.value = subKey
+                        info.notCheckable = true
                         info.hasArrow = true
                         info.menuList = {group = groupKey, sub = subKey, type = "pack"}
+                        info.text = subKey .. " (" .. #sounds .. ")"
+                        UIDropDownMenu_AddButton(info, level)
                     end
-    
-                    UIDropDownMenu_AddButton(info, level)
                 end
     
             -- === LEVEL 3: Individual Sounds ===
             elseif level == 3 then
                 local groupKey = menuList.group
                 local subKey = menuList.sub
-                local listType = menuList.type
-                local soundsToDisplay
-    
-                if groupKey == "BLU WoW Defaults" then
-                    soundsToDisplay = customHierarchy[groupKey][subKey]
-                elseif groupKey == "BLU Other Game Sounds" or groupKey == "Shared Media" then
-                    soundsToDisplay = customHierarchy[groupKey][subKey]
-                end
+                local soundsToDisplay = customHierarchy[groupKey][subKey]
     
                 -- Sort final sounds by name
-                table.sort(soundsToDisplay, function(a, b) return a.name < b.name end)
-    
-                for _, sound in ipairs(soundsToDisplay) do
-                    local info = UIDropDownMenu_CreateInfo()
-                    info.text = sound.name
-                    info.value = sound.id
-                    info.func = function() onSoundSelected(sound.id, sound.name) end
-                    info.checked = BLU.db.profile.selectedSounds[dropdown.eventId] == sound.id
-                    UIDropDownMenu_AddButton(info, level)
+                if soundsToDisplay then
+                    table.sort(soundsToDisplay, function(a, b) return a.name < b.name end)
+
+                    for _, sound in ipairs(soundsToDisplay) do
+                        local info = UIDropDownMenu_CreateInfo()
+                        info.text = sound.name
+                        info.value = sound.id
+                        info.func = function() onSoundSelected(sound.id, sound.name) end
+                        info.checked = BLU.db.profile.selectedSounds[dropdown.eventId] == sound.id
+                        UIDropDownMenu_AddButton(info, level)
+                    end
                 end
             end
         end)

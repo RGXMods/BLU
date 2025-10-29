@@ -199,9 +199,7 @@ function SoundRegistry:GetSoundsGroupedForUI(targetEvent)
             if soundData.source == "BLU" or soundData.source == "BLU Built-in" then
                 local packName = soundData.packName or "BLU Defaults"
                 if packName == "BLU Defaults" then
-                    local category = soundData.category
-                    hierarchy["BLU WoW Defaults"][category] = hierarchy["BLU WoW Defaults"][category] or {}
-                    table.insert(hierarchy["BLU WoW Defaults"][category], {id = soundId, name = soundData.name})
+                    table.insert(hierarchy["BLU WoW Defaults"], {id = soundId, name = soundData.name})
                 else
                     hierarchy["BLU Other Game Sounds"][packName] = hierarchy["BLU Other Game Sounds"][packName] or {}
                     table.insert(hierarchy["BLU Other Game Sounds"][packName], {id = soundId, name = soundData.name})
@@ -381,23 +379,6 @@ function SoundRegistry:PlayCategorySound(category, forceSound)
         local soundId = defaultBluSounds[category]
         if soundId then
             return self:PlaySound(soundId)
-        end
-    elseif selectedSound == "wow_default" then
-        local wowDefaultSounds = {
-            levelup = 888,  -- LEVELUPSOUND
-            achievement = 12891,  -- Achievement sound
-            quest = 618,  -- QuestComplete
-            reputation = 12197,  -- Reputation change
-            honorrank = 12173,  -- PVP Reward sound
-            renownrank = 167404,  -- Renown rank up
-            tradingpost = 179114,  -- Trading post sound
-            battlepet = 65978,  -- Pet battle victory
-            delvecompanion = 182235  -- Delve companion sound
-        }
-        local soundKit = wowDefaultSounds[category]
-        if soundKit then
-            local channel = BLU.db.profile.soundChannel or "Master"
-            return PlaySound(soundKit, channel)
         end
         
     elseif selectedSound:match("^external:") then

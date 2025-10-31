@@ -7,6 +7,8 @@ local addonName = ...
 local BLU = _G["BLU"]
 
 function BLU.CreateAboutPanel(panel)
+    BLU:PrintDebug("BLU.Design is: " .. tostring(BLU.Design))
+    BLU:PrintDebug("BLU.Design:CreateSection is: " .. tostring(BLU.Design.CreateSection))
     -- Create scrollable content with proper sizing
     local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
     scrollFrame:SetPoint("TOPLEFT", 5, -5)
@@ -53,9 +55,10 @@ function BLU.CreateAboutPanel(panel)
     local tagline = logoFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     tagline:SetPoint("TOPLEFT", version, "BOTTOMLEFT", 0, -5)
     tagline:SetText("Replace default sounds with iconic audio from 50+ games")
-    
+
     -- Classic Addon Section
     local classicSection = BLU.Design:CreateSection(content, "Original Version", "Interface\Icons\INV_Misc_Book_08")
+    BLU:PrintDebug("classicSection is: " .. tostring(classicSection))
     classicSection:SetPoint("TOPLEFT", logoFrame, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
     classicSection:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
     classicSection:SetHeight(80)
@@ -67,12 +70,15 @@ function BLU.CreateAboutPanel(panel)
     classicText:SetPoint("RIGHT", -20, 0)
     classicText:SetJustifyH("LEFT")
     classicText:SetText("The original Ace3 version with the original UI is still maintained as |cff05dffaRGX | Better Level Up! (Classic)|r.")
-
+    
     -- Info Section
     local infoSection = BLU.Design:CreateSection(content, "Information", "Interface\Icons\INV_Misc_Book_09")
     infoSection:SetPoint("TOPLEFT", classicSection, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
     infoSection:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
     infoSection:SetHeight(180)
+
+    BLU:PrintDebug("infoSection is: " .. tostring(infoSection))
+    BLU:PrintDebug("infoSection.content is: " .. tostring(infoSection.content))
     
     -- Create info grid
     local infoGrid = CreateFrame("Frame", nil, infoSection.content)
@@ -134,22 +140,10 @@ function BLU.CreateAboutPanel(panel)
         featureText:SetJustifyH("LEFT")
         yOffset = yOffset - 25
     end
-
-    -- Classic Addon Section
-    local classicSection = BLU.Design:CreateSection(content, "Classic Version", "Interface\Icons\INV_Misc_Book_08")
-    classicSection:SetPoint("TOPLEFT", featuresSection, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
-    classicSection:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
-    classicSection:SetHeight(80)
-
-    local classicText = classicSection.content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    classicText:SetPoint("TOPLEFT", 20, -10)
-    classicText:SetPoint("RIGHT", -20, 0)
-    classicText:SetJustifyH("LEFT")
-    classicText:SetText("The original Ace3 version with the original UI is still maintained as |cff05dffaBLU Classic RGX | Better Level-Up! (Classic)|r.")
     
     -- Statistics Section
     local statsSection = BLU.Design:CreateSection(content, "Statistics", "Interface\Icons\Achievement_GuildPerk_CashFlow_Rank2")
-    statsSection:SetPoint("TOPLEFT", classicSection, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
+    statsSection:SetPoint("TOPLEFT", featuresSection, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
     statsSection:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
     statsSection:SetHeight(120)
     
@@ -205,5 +199,5 @@ function BLU.CreateAboutPanel(panel)
     )
     
     -- Set content height
-    content:SetHeight(700)
+    content:SetHeight(800)
 end

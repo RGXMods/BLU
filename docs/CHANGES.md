@@ -1,3 +1,18 @@
+## Version 6.0.0-alpha.4 (2025-10-31)
+
+### 🐞 Bug Fixes & Improvements
+
+-   **Core:**
+    -   Fixed a syntax error in `core/internal_sounds.lua` that prevented the addon from loading correctly.
+    -   Added a safer check in `core/sounds.lua` to prevent errors if the database is not ready.
+-   **UI:**
+    -   Fixed an error in the "About" panel that occurred when opening the options panel.
+    -   Fixed the version number display in the options panel to remove the double 'v'.
+-   **Sounds:**
+    -   Fixed an issue where BLU game sounds were not correctly nested in the dropdown menus.
+
+---
+
 ## Version 6.0.0-alpha.3 (2025-10-28)
 
 ### 🚀 Features & Improvements

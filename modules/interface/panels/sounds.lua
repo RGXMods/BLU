@@ -21,7 +21,7 @@ function BLU.CreateSoundsPanel(panel)
     content:SetWidth(680)
     scrollFrame:SetScrollChild(content)
     
-    local header = BLU.Design:CreateHeader(content, "Installed Sound Packs", "Interface\Icons\INV_Misc_Bag_33")
+    local header = BLU.Design:CreateHeader(content, "Installed Sound Packs", "Interface\\Icons\\INV_Misc_Bag_33")
     header:SetPoint("TOPLEFT", 0, 0)
     header:SetPoint("RIGHT", 0, 0)
 
@@ -35,7 +35,7 @@ function BLU.CreateSoundsPanel(panel)
         local icon = frame:CreateTexture(nil, "ARTWORK")
         icon:SetSize(24, 24)
         icon:SetPoint("LEFT", 0, 0)
-        icon:SetTexture(pack.icon or "Interface\Icons\INV_Misc_QuestionMark")
+        icon:SetTexture(pack.icon or "Interface\\Icons\\INV_Misc_QuestionMark")
 
         local name = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         frame.name = name
@@ -46,12 +46,8 @@ function BLU.CreateSoundsPanel(panel)
         status:SetPoint("TOPLEFT", name, "BOTTOMLEFT", 0, -2)
         -- Set status color based on source
         local statusText = ""
-        if pack.source == "BLU Built-in" then
-            statusText = "|cff05dffaBLU Built-in|r"
-        elseif pack.source == "SharedMedia" then
+        if pack.source == "SharedMedia" then
             statusText = "|cff00ff00SharedMedia|r"
-        elseif pack.source == "WoW Built-in" then
-            statusText = "|cffb0b0b0WoW Sound|r"
         else
             statusText = "|cff00ff00Loaded|r"
         end
@@ -66,45 +62,26 @@ function BLU.CreateSoundsPanel(panel)
 
     for _, soundData in pairs(allSounds) do
         if soundData.source == "SharedMedia" then
-            -- Use packId for SharedMedia for reliability, or packName for BLU
-            local id = soundData.packId or soundData.packName or soundData.source
+            local id = soundData.packId or "Unidentified Pack"
             
-            if id and not uniquePacks[id] then
-                -- Create a new entry for the pack
+            if not uniquePacks[id] then
                 local packName = soundData.packName or id
-                if soundData.source == "WoW Built-in" then
-                    packName = "WoW Default Sounds"
-                    id = "WoW Default Sounds"
-                elseif soundData.source == "Test" then
-                    packName = "Test Sounds (LSM Missing)"
-                    id = "Test Sounds"
-                end
-
                 uniquePacks[id] = {
                     id = id,
                     name = packName,
                     source = soundData.source,
-                    icon = "Interface\Icons\INV_Misc_Bag_33", -- Placeholder icon
+                    icon = "Interface\\Icons\\INV_Misc_Bag_33", -- Placeholder icon
                     soundCount = 0,
                 }
                 
-                -- Set a better icon for BLU's own packs if possible
-                if soundData.source == "BLU Built-in" and soundData.packId then
-                    uniquePacks[id].icon = "Interface\Icons\ACHIEVEMENT_GUILDPERK_HONORABLEMENTION"
-                end
-                
-                -- Use the addon icon for SharedMedia if it can be found
-                if soundData.source == "SharedMedia" and soundData.packId then
-                    -- FIX: Proper error handling and validation
+                if soundData.packId then
                     local success, _, _, addonIcon = pcall(C_AddOns.GetAddOnInfo, soundData.packId)
                     if success and addonIcon and addonIcon ~= "" then
                         uniquePacks[id].icon = addonIcon
                     end
                 end
             end
-            if id then
-                uniquePacks[id].soundCount = uniquePacks[id].soundCount + 1
-            end
+            uniquePacks[id].soundCount = uniquePacks[id].soundCount + 1
         end
     end
     
@@ -126,7 +103,7 @@ function BLU.CreateSoundsPanel(panel)
     if #packsArray == 0 then
         local noPacks = content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         noPacks:SetPoint("TOPLEFT", xOffset, yOffset)
-        noPacks:SetText("|cffff0000No sound packs detected or loaded by BLU.|r")
+        noPacks:SetText("|cffff0000No SharedMedia sound packs detected.|r")
         yOffset = yOffset - 20
     else
         for _, pack in ipairs(packsArray) do

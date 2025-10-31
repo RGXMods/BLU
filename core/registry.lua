@@ -277,11 +277,13 @@ function SoundRegistry:PlaySound(soundId, volume)
             local variantFile = baseFile .. variant .. ".ogg"
             
             fileToPlay = variantFile
+            BLU:PrintDebug("Attempting to play sound: " .. fileToPlay)
             
             willPlay, handle = PlaySoundFile(variantFile, channel)
             
             if not willPlay then
                 -- Fallback to base file if variant not found
+                BLU:PrintDebug("Failed to play variant, falling back to base file: " .. sound.file)
                 willPlay, handle = PlaySoundFile(sound.file, channel)
             end
         else

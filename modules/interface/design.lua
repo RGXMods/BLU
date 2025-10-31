@@ -261,21 +261,8 @@ end
 
 -- Create section container
 function BLU.Design:CreateSection(parent, title, icon)
-    local section = CreateFrame("Frame", nil, parent)
-    
-    -- Compact background
-    local bg = section:CreateTexture(nil, "BACKGROUND")
-    bg:SetAllPoints()
-    bg:SetColorTexture(0.03, 0.03, 0.03, 0.6)
-    
-    -- Border
-    local border = CreateFrame("Frame", nil, section, "BackdropTemplate")
-    border:SetAllPoints()
-    border:SetBackdrop({
-        edgeFile = "Interface\Buttons\WHITE8x8",
-        edgeSize = 1,
-    })
-    border:SetBackdropBorderColor(0.1, 0.1, 0.1, 1)
+    local section = CreateFrame("Frame", nil, parent, "BackdropTemplate")
+    self:ApplyBackdrop(section, "Panel", {0.03, 0.03, 0.03, 0.6}, {0.1, 0.1, 0.1, 1})
     
     if title then
         local header = self:CreateHeader(section, title, icon)

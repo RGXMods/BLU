@@ -23,15 +23,14 @@
     <!-- Localization -->
     <Script file="localization/enUS.lua"/>
     
-    <!-- Interface System from modules -->
-    <Script file="modules/interface/design.lua"/>
-    <Script file="modules/interface/widgets.lua"/>
-
-    <Script file="modules/interface/panels/general.lua"/>
-    <Script file="modules/interface/panels/about.lua"/>
-    <Script file="modules/interface/panels/sounds.lua"/>
-    <Script file="modules/interface/panels/modules.lua"/>
-    <Script file="modules/interface/options.lua"/>
+    <Script file="core/interface/design.lua"/>
+    <Script file="core/interface/widgets.lua"/>
+    <Script file="core/interface/tabs.lua"/>
+    <Script file="core/interface/sound_panel.lua"/>
+    <Script file="core/interface/panels/general.lua"/>
+    <Script file="core/interface/panels/about.lua"/>
+    <Script file="core/interface/panels/sounds.lua"/>
+    <Script file="core/interface/options.lua"/>
 
     
     <!-- Feature Modules -->

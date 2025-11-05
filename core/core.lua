@@ -27,6 +27,26 @@ BLU = {
     isInitialized = false
 }
 
+-- Print message
+function BLU:Print(message)
+    local prefix = "|TInterface\\AddOns\\BLU\\media\\Textures\\icon:16:16|t |cff05dffa[BLU]|r"
+    print(prefix .. " " .. message)
+end
+
+-- Print debug message
+function BLU:PrintDebug(message)
+    if self.debugMode then
+        local prefix = "|TInterface\\AddOns\\BLU\\media\\textures\\icon.tga:16:16|t|cff05dffa[BLU]|r |cff808080[DEBUG]|r"
+        print(prefix .. " " .. message)
+    end
+end
+
+-- Print error message
+function BLU:PrintError(message)
+    local prefix = "|cff05dffa[BLU]|r |cffff0000[ERROR]|r"
+    print(prefix .. " " .. message)
+end
+
 -- Create event frame (early definition)
 BLU.eventFrame = CreateFrame("Frame")
 BLU.eventFrame:SetScript("OnEvent", function(self, event, ...) 

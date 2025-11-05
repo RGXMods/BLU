@@ -15,6 +15,15 @@ SlashCmdList["BLU"] = function(msg)
     BLU:PrintDebug("/blu command executed with message: " .. tostring(msg))
     msg = (msg or ""):trim():lower()
     
+    -- Check if database is ready
+    if not BLU.db then
+        BLU:Print("|cffff9900BLU is still loading...|r")
+        BLU:Print("Please wait a moment and try again.")
+        BLU:PrintDebug("Database not ready. BLU.db is " .. tostring(BLU.db))
+        BLU:PrintDebug("BLUDB global is " .. tostring(_G["BLUDB"]))
+        return
+    end
+    
     if msg == "" or msg == "options" or msg == "config" then
         -- Try to open options
         if BLU.OpenOptions then
@@ -29,30 +38,44 @@ SlashCmdList["BLU"] = function(msg)
             BLU:Print("|cff00ccffBLU:|r Playing test sound...")
         end
     elseif msg == "debug" then
-        if BLU.db then
-            BLU.db.debugMode = not BLU.db.debugMode
-            BLU:Print("|cff00ccffBLU:|r Debug mode " .. (BLU.db.debugMode and "enabled" or "disabled"))
+        if BLU.db and BLU.db.profile then
+            BLU.db.profile.debugMode = not BLU.db.profile.debugMode
+            BLU.debugMode = BLU.db.profile.debugMode
+            BLU:Print("|cff00ccffBLU:|r Debug mode " .. (BLU.db.profile.debugMode and "enabled" or "disabled"))
         else
             BLU:Print("|cff00ccffBLU:|r Database not loaded yet")
         end
     elseif msg == "enable" then
         if BLU.db and BLU.db.profile then
             BLU.db.profile.enabled = true
-            BLU:Enable()
+            if BLU.Enable then
+                BLU:Enable()
+            end
             BLU:Print("|cff00ff00BLU Enabled|r")
         end
     elseif msg == "disable" then
         if BLU.db and BLU.db.profile then
             BLU.db.profile.enabled = false
-            BLU:Disable()
+            if BLU.Disable then
+                BLU:Disable()
+            end
             BLU:Print("|cffff0000BLU Disabled|r")
         end
+    elseif msg == "status" then
+        BLU:Print("|cff00ccffBLU Status:|r")
+        BLU:Print("  Database: " .. (BLU.db and "|cff00ff00Loaded|r" or "|cffff0000Not Loaded|r"))
+        BLU:Print("  Options Panel: " .. (BLU.OptionsPanel and "|cff00ff00Created|r" or "|cffff9900Not Created|r"))
+        BLU:Print("  Enabled: " .. ((BLU.db and BLU.db.profile and BLU.db.profile.enabled) and "|cff00ff00Yes|r" or "|cffff0000No|r"))
+        BLU:Print("  Debug Mode: " .. (BLU.debugMode and "|cff00ff00On|r" or "|cff808080Off|r"))
     elseif msg == "help" then
         BLU:Print("|cff00ccffBLU Commands:|r")
         BLU:Print("  |cffffff00/blu|r - Open options")
         BLU:Print("  |cffffff00/blu test|r - Play test sound")
         BLU:Print("  |cffffff00/blu debug|r - Toggle debug mode")
-        BLU:Print("  |cffffff00/blu reload|r - Reload UI")
+        BLU:Print("  |cffffff00/blu status|r - Show addon status")
+        BLU:Print("  |cffffff00/blu enable|r - Enable addon")
+        BLU:Print("  |cffffff00/blu disable|r - Disable addon")
+        BLU:Print("  |cffffff00/blu help|r - Show this help")
     else
         -- Unknown command, show help
         BLU:Print("|cff00ccffBLU:|r Unknown command. Type |cffffff00/blu help|r for help.")
@@ -109,111 +132,3 @@ SlashCmdList["BLUTEST"] = function(event)
         BLU:Print("Available: levelup, achievement, quest, reputation")
     end
 end
-
--- Disabled - handled by options_direct.lua
---[[
-SlashCmdList["BLU"] = function(msg)
-    -- Test which panel exists
-    if msg == "test" then
-        BLU:Print("=== BLU Panel Test ===")
-        if _G["BLUOptionsPanel"] then
-            local panel = _G["BLUOptionsPanel"]
-            BLU:PrintDebug("BLUOptionsPanel exists")
-            BLU:PrintDebug("Panel name: " .. (panel.name or "no name"))
-            -- Check for children
-            local children = {panel:GetChildren()}
-            BLU:PrintDebug("Number of children: " .. #children)
-            for i, child in ipairs(children) do
-                if child.GetText and child:GetText() then
-                    BLU:PrintDebug("Child " .. i .. " text: " .. child:GetText())
-                end
-            end
-        else
-            BLU:PrintDebug("BLUOptionsPanel does NOT exist")
-        end
-        return
-    end
-    
-    -- Debug information
-    if msg == "debug" then
-        BLU:Print("=== BLU Debug Info ===")
-        BLU:PrintDebug("Database loaded: " .. (BLU.db and "Yes" or "No"))
-        BLU:PrintDebug("Options panel created: " .. (BLU.OptionsPanel and "Yes" or "No"))
-        BLU:PrintDebug("Options category registered: " .. (BLU.OptionsCategory and "Yes" or "No"))
-        BLU:PrintDebug("OpenSimpleOptions function: " .. (BLU.OpenSimpleOptions and "Yes" or "No"))
-        BLU:PrintDebug("CreateSimpleOptionsPanel function: " .. (BLU.CreateSimpleOptionsPanel and "Yes" or "No"))
-        if BLU.db and BLU.db.profile then
-            BLU:PrintDebug("Addon enabled: " .. (BLU.db.profile.enabled and "Yes" or "No"))
-        end
-        -- Try to create panel manually
-        if msg == "debug create" and BLU.CreateOptionsPanel then
-            BLU:PrintDebug("Attempting to create options panel...")
-            BLU:CreateOptionsPanel()
-        end
-        return
-    end
-    
-    if not BLU.db then
-        BLU:Print("Database not loaded yet - try again in a moment")
-        return
-    end
-    
-    -- Debug what's available
-    if msg == "status" then
-        BLU:Print("=== BLU Options Status ===")
-        BLU:PrintDebug("OpenOptions: " .. (BLU.OpenOptions and "Available" or "Not found"))
-        BLU:PrintDebug("OpenSimpleOptions: " .. (BLU.OpenSimpleOptions and "Available" or "Not found"))
-        BLU:PrintDebug("CreateOptionsPanel: " .. (BLU.CreateOptionsPanel and "Available" or "Not found"))
-        BLU:PrintDebug("OptionsPanel: " .. (BLU.OptionsPanel and "Exists" or "Not created"))
-        BLU:PrintDebug("Tabs system: " .. (BLU.Tabs and "Loaded" or "Not loaded"))
-        BLU:PrintDebug("Widgets system: " .. (BLU.Widgets and "Loaded" or "Not loaded"))
-        return
-    end
-    
-    -- Try to force create panel
-    if msg == "create" then
-        if BLU.CreateOptionsPanel then
-            BLU:Print("Force creating options panel...")
-            BLU:CreateOptionsPanel()
-        else
-            BLU:Print("CreateOptionsPanel function not found")
-        end
-        return
-    end
-    
-    -- Try multiple approaches to open options
-    local opened = false
-    
-    -- Method 1: Try BLU.OpenOptions
-    if BLU.OpenOptions then
-        BLU:OpenOptions()
-        opened = true
-    -- Method 2: Try through the module
-    elseif BLU.Modules and BLU.Modules.options_new and BLU.Modules.options_new.OpenOptions then
-        BLU.Modules.options_new:OpenOptions()
-        opened = true
-    -- Method 3: Create panel if needed and try again
-    elseif BLU.CreateOptionsPanel then
-        BLU:Print("Creating options panel...")
-        BLU:CreateOptionsPanel()
-        C_Timer.After(0.1, function()
-            if BLU.OpenOptions then
-                BLU:OpenOptions()
-            elseif BLU.Modules and BLU.Modules.options_new and BLU.Modules.options_new.OpenOptions then
-                BLU.Modules.options_new:OpenOptions()
-            else
-                BLU:Print("Options panel not properly registered. Try |cff05dffa/reload|r")
-            end
-        end)
-        opened = true
-    end
-    
-    -- If nothing worked, show error
-    if not opened then
-        BLU:Print("Options panel not properly registered. Try |cff05dffa/reload|r")
-        BLU:PrintDebug("BLU.OpenOptions: " .. tostring(BLU.OpenOptions))
-        BLU:PrintDebug("BLU.OptionsPanel: " .. tostring(BLU.OptionsPanel))
-        BLU:PrintDebug("BLU.CreateOptionsPanel: " .. tostring(BLU.CreateOptionsPanel))
-    end
-end
---]]

@@ -3,12 +3,9 @@
 -- About panel with new design
 --=====================================================================================
 
-local addonName = ...
-local BLU = _G["BLU"]
+local addonName, BLU = ...
 
 function BLU.CreateAboutPanel(panel)
-    BLU:PrintDebug("BLU.Design is: " .. tostring(BLU.Design))
-    BLU:PrintDebug("BLU.Design:CreateSection is: " .. tostring(BLU.Design.CreateSection))
     -- Create scrollable content with proper sizing
     local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
     scrollFrame:SetPoint("TOPLEFT", 5, -5)
@@ -38,7 +35,7 @@ function BLU.CreateAboutPanel(panel)
     local logoIcon = logoFrame:CreateTexture(nil, "ARTWORK")
     logoIcon:SetSize(80, 80)
     logoIcon:SetPoint("LEFT", 20, 0)
-    logoIcon:SetTexture("Interface\AddOns\BLU\media\images\icon")
+    logoIcon:SetTexture("Interface\Icons\Achievement_Level_100")
     
     -- Title
     local title = logoFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalHuge")
@@ -55,30 +52,12 @@ function BLU.CreateAboutPanel(panel)
     local tagline = logoFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     tagline:SetPoint("TOPLEFT", version, "BOTTOMLEFT", 0, -5)
     tagline:SetText("Replace default sounds with iconic audio from 50+ games")
-
-    -- Classic Addon Section
-    local classicSection = BLU.Design:CreateSection(content, "Original Version", "Interface\Icons\INV_Misc_Book_08")
-    BLU:PrintDebug("classicSection is: " .. tostring(classicSection))
-    classicSection:SetPoint("TOPLEFT", logoFrame, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
-    classicSection:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
-    classicSection:SetHeight(80)
-    classicSection:SetBackdropColor(0.1, 0.05, 0.05, 0.9)
-    classicSection:SetBackdropBorderColor(1, 0.2, 0.2, 1)
-
-    local classicText = classicSection.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    classicText:SetPoint("TOPLEFT", 20, -10)
-    classicText:SetPoint("RIGHT", -20, 0)
-    classicText:SetJustifyH("LEFT")
-    classicText:SetText("The original Ace3 version with the original UI is still maintained as |cff05dffaRGX | Better Level Up! (Classic)|r.")
     
     -- Info Section
     local infoSection = BLU.Design:CreateSection(content, "Information", "Interface\Icons\INV_Misc_Book_09")
-    infoSection:SetPoint("TOPLEFT", classicSection, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
+    infoSection:SetPoint("TOPLEFT", logoFrame, "BOTTOMLEFT", 0, -BLU.Design.Layout.Spacing)
     infoSection:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, 0)
     infoSection:SetHeight(180)
-
-    BLU:PrintDebug("infoSection is: " .. tostring(infoSection))
-    BLU:PrintDebug("infoSection.content is: " .. tostring(infoSection.content))
     
     -- Create info grid
     local infoGrid = CreateFrame("Frame", nil, infoSection.content)
@@ -122,7 +101,7 @@ function BLU.CreateAboutPanel(panel)
     featuresSection:SetHeight(200)
     
     local features = {
-        "|cff05dffa50+ Game Sounds|r - Iconic sounds from your favorite games",
+        "|cff05dffa50+ Game Sound Packs|r - Iconic sounds from your favorite games",
         "|cff05dffaSharedMedia Support|r - Use sounds from other addons",
         "|cff05dffaVolume Control|r - Adjust sound levels to your preference",
         "|cff05dffaPer-Event Customization|r - Different sounds for each event type",
@@ -198,6 +177,10 @@ function BLU.CreateAboutPanel(panel)
         "Thanks to the WoW addon development community for inspiration and guidance."
     )
     
-    -- Set content height
-    content:SetHeight(800)
+    -- Set proper content height
+    content:SetHeight(700)
+end
+
+if BLU.RegisterModule then
+    BLU:RegisterModule("about", BLU)
 end

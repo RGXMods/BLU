@@ -32,7 +32,7 @@
     <Script file="modules/reputation/reputation.lua"/>
     <Script file="modules/battlepet/battlepet.lua"/>
     <Script file="modules/honor/honor.lua"/>
-    <TOC>BLU.toc</TOC>
+
     <Script file="modules/renown/renown.lua"/>
     <Script file="modules/tradingpost/tradingpost.lua"/>
     <Script file="modules/delve/delve.lua"/>

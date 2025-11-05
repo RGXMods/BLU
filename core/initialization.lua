@@ -43,9 +43,15 @@ function BLU:Initialize()
     
     BLU:PrintDebug("[Init] BLU.db after Phase 2: " .. tostring(BLU.db))
     
-    -- Phase 3: Interface System
+    -- Phase 3: Interface System (design MUST come first!)
     self:InitializePhase("interface", {
-        "options"  -- Main options panel
+        "design",      -- Design system MUST be first
+        "tabs",        -- Tab system
+        "general",     -- General panel
+        "sound_panel", -- Sound panel components
+        "sounds",      -- Sounds panel
+        "about",       -- About panel
+        "options"      -- Main options panel (MUST be last)
     })
     
     BLU:PrintDebug("[Init] BLU.db after Phase 3: " .. tostring(BLU.db))

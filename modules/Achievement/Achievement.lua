@@ -5,22 +5,22 @@
 
 local addonName = ...
 local BLU = _G["BLU"]
-local achievement = {}
+local Achievement = {}
 
 -- Module initialization
-function achievement:Init()
+function Achievement:Init()
     BLU:RegisterEvent("ACHIEVEMENT_EARNED", function(...) self:OnAchievementEarned(...) end)
     BLU:PrintDebug(BLU:Loc("MODULE_LOADED", "Achievement"))
 end
 
 -- Cleanup function
-function achievement:Cleanup()
+function Achievement:Cleanup()
     BLU:UnregisterEvent("ACHIEVEMENT_EARNED")
     BLU:PrintDebug(BLU:Loc("MODULE_CLEANED_UP", "Achievement"))
 end
 
 -- Achievement earned event handler
-function achievement:OnAchievementEarned(event, achievementID, alreadyEarned)
+function Achievement:OnAchievementEarned(event, achievementID, alreadyEarned)
     if not BLU.db.profile.enabled then return end
     if alreadyEarned then return end
     
@@ -35,4 +35,7 @@ end
 
 -- Register module
 BLU.Modules = BLU.Modules or {}
-BLU.Modules["achievement"] = achievement
+BLU.Modules["achievement"] = Achievement
+
+-- Export module
+return Achievement

@@ -12,8 +12,8 @@ BLU.CombatQueue = {}
 
 -- Register combat events
 function BLU:InitializeCombatProtection()
-    BLU:RegisterEvent("PLAYER_REGEN_DISABLED", function(...) BLU:OnEnterCombat(...) end)
-    BLU:RegisterEvent("PLAYER_REGEN_ENABLED", function(...) BLU:OnLeaveCombat(...) end)
+    _G.BLU:RegisterEvent("PLAYER_REGEN_DISABLED", function(...) BLU:OnEnterCombat(...) end)
+    _G.BLU:RegisterEvent("PLAYER_REGEN_ENABLED", function(...) BLU:OnLeaveCombat(...) end)
     
     -- Flag for combat state
     self.inCombat = InCombatLockdown()
@@ -284,6 +284,11 @@ function BLU:SafePlayTestSound(soundType, volume)
     end)
 end
 
+-- Utility function to check if operation should be queued
+function BLU:ShouldQueueOperation()
+    return InCombatLockdown()
+end
+
 -- Clear expired operations from queue (cleanup)
 function BLU:CleanCombatQueue()
     local currentTime = GetTime()
@@ -300,4 +305,9 @@ function BLU:CleanCombatQueue()
     end
 end
 
-
+local CombatProtection = {}
+function CombatProtection:Init()
+    BLU:InitializeCombatProtection()
+    BLU:PrintDebug("Combat protection module initialized")
+end
+BLU.Modules["combat_protection"] = CombatProtection

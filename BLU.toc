@@ -1,5 +1,5 @@
 ## Interface: 110205
-## Version: v6.0.0-alpha.5
+## Version: v6.0.0-alpha.4
 ## Title: Better Level-Up|cff05dffa!|r |cffff0000[ALPHA]|r 
 ## Notes: Play sounds from other games!  |n|r  |cff05dffa/blu -|r Open options panel  |n|r   |cff05dffaBy DonnieDice|r
 ## Author: DonnieDice

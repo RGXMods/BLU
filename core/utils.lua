@@ -176,19 +176,5 @@ Utils.colors = {
     gray = "808080"
 }
 
-function Utils:DeepCopy(orig)
-    local orig_type = type(orig)
-    local copy
-    if orig_type == 'table' then
-        copy = {}
-        for orig_key, orig_value in pairs(orig) do
-            copy[self:DeepCopy(orig_key)] = self:DeepCopy(orig_value)
-        end
-    else -- number, string, boolean, etc
-        copy = orig
-    end
-    return copy
-end
-
 -- Export module
 return Utils

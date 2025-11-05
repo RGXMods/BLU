@@ -5,7 +5,7 @@
 
 local addonName = ...
 local BLU = _G["BLU"]
-local reputation = {}
+local Reputation = {}
 
 -- Reputation rank names
 local REPUTATION_RANKS = {
@@ -20,7 +20,7 @@ local REPUTATION_RANKS = {
 }
 
 -- Module initialization
-function reputation:Init()
+function Reputation:Init()
     -- Hook into chat messages for reputation gains
     -- ChatFrame_AddMessageEventFilter("CHAT_MSG_COMBAT_FACTION_CHANGE", function(...) return self:OnReputationMessage(...) end)
     
@@ -35,14 +35,14 @@ function reputation:Init()
 end
 
 -- Cleanup function
-function reputation:Cleanup()
+function Reputation:Cleanup()
     -- ChatFrame_RemoveMessageEventFilter("CHAT_MSG_COMBAT_FACTION_CHANGE", self.OnReputationMessage)
     -- BLU:UnregisterEvent("UPDATE_FACTION")
     BLU:PrintDebug("Reputation module cleaned up")
 end
 
 -- Scan current reputation standings
-function reputation:ScanReputation()
+function Reputation:ScanReputation()
     local numFactions = C_Reputation.GetNumFactions()
     for i = 1, numFactions do
         local factionData = C_Reputation.GetFactionDataByIndex(i)
@@ -56,7 +56,7 @@ function reputation:ScanReputation()
 end
 
 -- Handle reputation chat messages
-function reputation:OnReputationMessage(chatFrame, event, msg)
+function Reputation:OnReputationMessage(chatFrame, event, msg)
     if not BLU.db.profile.enabled then return false end
     
     -- Check for rank up messages
@@ -69,7 +69,7 @@ function reputation:OnReputationMessage(chatFrame, event, msg)
 end
 
 -- Handle faction updates
-function reputation:OnUpdateFaction(event)
+function Reputation:OnUpdateFaction(event)
     if not BLU.db.profile.enabled then return end
     
     C_Timer.After(0.1, function()
@@ -78,7 +78,7 @@ function reputation:OnUpdateFaction(event)
 end
 
 -- Check for reputation standing changes
-function reputation:CheckReputationChanges()
+function Reputation:CheckReputationChanges()
     local playSound = false
     local numFactions = C_Reputation.GetNumFactions()
     
@@ -113,10 +113,13 @@ function reputation:CheckReputationChanges()
 end
 
 -- Play reputation sound
-function reputation:PlayReputationSound()
+function Reputation:PlayReputationSound()
     BLU:PlayCategorySound("reputation")
 end
 
 -- Register module
 BLU.Modules = BLU.Modules or {}
-BLU.Modules["reputation"] = reputation
+BLU.Modules["reputation"] = Reputation
+
+-- Export module
+return Reputation

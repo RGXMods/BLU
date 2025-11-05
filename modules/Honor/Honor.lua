@@ -5,13 +5,13 @@
 
 local addonName = ...
 local BLU = _G["BLU"]
-local honor = {}
+local HonorRank = {}
 
 -- Module variables
-honor.currentHonorLevel = nil
+HonorRank.currentHonorLevel = nil
 
 -- Module initialization
-function honor:Init()
+function HonorRank:Init()
     -- Honor events
     BLU:RegisterEvent("HONOR_LEVEL_UPDATE", function(...) self:OnHonorLevelUpdate(...) end)
     BLU:RegisterEvent("PLAYER_PVP_RANK_CHANGED", function(...) self:OnPvPRankChanged(...) end)
@@ -26,7 +26,7 @@ function honor:Init()
 end
 
 -- Cleanup function
-function honor:Cleanup()
+function HonorRank:Cleanup()
     BLU:UnregisterEvent("HONOR_LEVEL_UPDATE")
     BLU:UnregisterEvent("PLAYER_PVP_RANK_CHANGED")
     ChatFrame_RemoveMessageEventFilter("CHAT_MSG_SYSTEM", self.OnSystemMessage)
@@ -35,14 +35,14 @@ function honor:Cleanup()
 end
 
 -- Update current honor level
-function honor:UpdateCurrentHonorLevel()
+function HonorRank:UpdateCurrentHonorLevel()
     if UnitLevel("player") >= 10 then
         self.currentHonorLevel = UnitHonorLevel and UnitHonorLevel("player") or 0
     end
 end
 
 -- Honor level update handler
-function honor:OnHonorLevelUpdate(event, isLevelUp)
+function HonorRank:OnHonorLevelUpdate(event, isLevelUp)
     if not BLU.db.profile.enableHonorRank then return end
     if not isLevelUp then return end
     
@@ -55,7 +55,7 @@ function honor:OnHonorLevelUpdate(event, isLevelUp)
 end
 
 -- PvP rank changed handler
-function honor:OnPvPRankChanged(event)
+function HonorRank:OnPvPRankChanged(event)
     if not BLU.db.profile.enableHonorRank then return end
     
     -- Check if honor level actually increased
@@ -67,11 +67,11 @@ function honor:OnPvPRankChanged(event)
         if BLU.debugMode then
             BLU:Print(string.format("PvP Honor rank increased: %d -> %d", self.currentHonorLevel, newLevel))
         end
-    end
-end
+            end
+        end
 -- System message handler
-function honor:OnSystemMessage(chatFrame, event, msg)
-    if not BLU.db or not BLU.db.profile or not BLU.db.profile.enableHonorRank then return false end
+function HonorRank:OnSystemMessage(chatFrame, event, msg)
+    if not BLU.db.profile.enableHonorRank then return false end
     
     -- Check for honor rank messages
     local patterns = {
@@ -97,10 +97,16 @@ function honor:OnSystemMessage(chatFrame, event, msg)
 end
 
 -- Play honor rank sound
-function honor:PlayHonorSound()
-    BLU:PlayCategorySound("honorrank")
+function HonorRank:PlayHonorSound()
+    local soundName = BLU.db.profile.honorRankSound
+    local volume = BLU.db.profile.honorRankVolume * BLU.db.profile.masterVolume
+    
+    BLU:PlaySound(soundName, volume)
 end
 
 -- Register module
 BLU.Modules = BLU.Modules or {}
-BLU.Modules["honor"] = honor
+BLU.Modules["honor"] = HonorRank
+
+-- Export module
+return HonorRank

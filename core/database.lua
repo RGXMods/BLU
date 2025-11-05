@@ -7,96 +7,34 @@
 local addonName = ...
 local BLU = _G["BLU"]
 
--- Create database module
-local Database = {}
-BLU.Modules = BLU.Modules or {}
-BLU.Modules["database"] = Database
-
 -- Initialize database with defaults
-function Database:InitializeDatabase()
-    BLU:PrintDebug("Database:InitializeDatabase called.")
+function BLU:InitializeDatabase()
+    BLU:PrintDebug("BLU:InitializeDatabase called.")
     BLUDB = BLUDB or {}
     BLUDB.profiles = BLUDB.profiles or {}
     BLUDB.global = BLUDB.global or {}
-    
-    BLU:PrintDebug("BLUDB after initialization: " .. tostring(BLUDB))
     
     -- Character-specific database
     local charKey = UnitName("player") .. "-" .. GetRealmName()
     BLUDB.profiles[charKey] = BLUDB.profiles[charKey] or {}
     
     -- Set active database reference
-    BLU.db = BLUDB.profiles[charKey]
+    self.db = BLUDB.profiles[charKey]
     
-    -- Initialize with defaults
-    self:ApplyDefaults()
-    
-    BLU:PrintDebug("BLU.db after setting: " .. tostring(BLU.db))
-    
-    return BLU.db
-end
-
--- Apply default settings
-function Database:ApplyDefaults()
-    local defaults = {
-        profile = {
-            enabled = true,
-            showWelcomeMessage = true,
-            debugMode = false,
-            soundChannel = "Master",
-            selectedSounds = {},
-            modules = {},
-            events = {}
-        }
-    }
-    
-    -- Merge defaults into BLU.db
-    if BLU.db then
-        BLU.db.profile = BLU.db.profile or {}
-        self:MergeDefaults(BLU.db.profile, defaults.profile)
-    end
-end
-
--- Local implementation of MergeDefaults (don't depend on BLU.MergeDefaults)
-function Database:MergeDefaults(target, defaults)
-    for key, value in pairs(defaults) do
-        if target[key] == nil then
-            if type(value) == "table" then
-                target[key] = {}
-                self:MergeDefaults(target[key], value)
-            else
-                target[key] = value
-            end
-        elseif type(value) == "table" and type(target[key]) == "table" then
-            self:MergeDefaults(target[key], value)
-        end
-    end
-end
-
--- Module Init function (called by initialization.lua)
-function Database:Init()
-    BLU:PrintDebug("Database:Init() called")
-    self:InitializeDatabase()
-    
-    -- Make InitializeDatabase available globally
-    BLU.InitializeDatabase = function()
-        return self:InitializeDatabase()
-    end
-    
-    BLU:PrintDebug("Database module initialized. BLU.db is " .. tostring(BLU.db))
+    return self.db
 end
 
 -- Safe getter for database values
-function Database:GetDB(path, default)
-    if not BLU.db then
+function BLU:GetDB(path, default)
+    if not self.db then
         self:InitializeDatabase()
     end
     
     if not path then
-        return BLU.db
+        return self.db
     end
     
-    local value = BLU.db
+    local value = self.db
     
     -- Handle table path (e.g., {"selectedSounds", "levelup"})
     if type(path) == "table" then
@@ -111,7 +49,7 @@ function Database:GetDB(path, default)
         end
     -- Handle string path (e.g., "events.levelup.sound")
     elseif type(path) == "string" then
-        for key in string.gmatch(path, "[^\\.]+") do
+        for key in string.gmatch(path, "[^%.]+") do
             if type(value) ~= "table" then
                 return default
             end
@@ -128,8 +66,8 @@ function Database:GetDB(path, default)
 end
 
 -- Safe setter for database values
-function Database:SetDB(path, value)
-    if not BLU.db then
+function BLU:SetDB(path, value)
+    if not self.db then
         self:InitializeDatabase()
     end
     
@@ -145,14 +83,14 @@ function Database:SetDB(path, value)
         keys = path
     -- Handle string path (e.g., "events.levelup.sound")
     elseif type(path) == "string" then
-        for key in string.gmatch(path, "[^\\.]+") do
+        for key in string.gmatch(path, "[^%.]+") do
             table.insert(keys, key)
         end
     else
         return false
     end
     
-    local current = BLU.db
+    local current = self.db
     for i = 1, #keys - 1 do
         local key = keys[i]
         if type(current[key]) ~= "table" then
@@ -166,30 +104,66 @@ function Database:SetDB(path, value)
     return true
 end
 
--- Make GetDB and SetDB available globally
-BLU.GetDB = function(path, default)
-    return Database:GetDB(path, default)
-end
 
-BLU.SetDB = function(path, value)
-    return Database:SetDB(path, value)
-end
 
--- Save settings
-function Database:SaveSettings()
-    -- Trigger SavedVariables write
-    if BLU.db then
-        BLU.db.lastSaved = time()
-        BLU.db.version = GetAddOnMetadata(addonName, "Version")
+-- Recursively merge defaults
+function BLU:MergeDefaults(target, defaults)
+    for key, value in pairs(defaults) do
+        if target[key] == nil then
+            if type(value) == "table" then
+                target[key] = {}
+                self:MergeDefaults(target[key], value)
+            else
+                target[key] = value
+            end
+        elseif type(value) == "table" and type(target[key]) == "table" then
+            self:MergeDefaults(target[key], value)
+        end
     end
 end
 
-BLU.SaveSettings = function()
-    return Database:SaveSettings()
+-- Save settings
+function BLU:SaveSettings()
+    -- Trigger SavedVariables write
+    if self.db then
+        self.db.lastSaved = time()
+        self.db.version = GetAddOnMetadata(addonName, "Version")
+    end
+end
+
+-- Reset to defaults
+function BLU:ResetToDefaults()
+    if self.db then
+        wipe(self.db)
+        self:ApplyDefaults()
+        self:SaveSettings()
+    end
+end
+
+-- Reset advanced settings only
+function BLU:ResetAdvancedSettings()
+    if self.db then
+        -- Reset only advanced settings
+        self.db.soundPooling = false
+        self.db.asyncLoading = false
+        self.db.soundQueueSize = 3
+        self.db.fadeTime = 200
+        self.db.moduleTimeout = 5
+        self.db.debugLevel = 0
+        self.db.debugToConsole = false
+        self.db.debugToFile = false
+        self.db.profiling = false
+        self.db.positionalAudio = false
+        self.db.dynamicCompression = false
+        self.db.aiSounds = false
+        self.db.weakAurasIntegration = false
+        self.db.discordIntegration = false
+        self:SaveSettings()
+    end
 end
 
 -- Profile management
-function Database:CreateProfile(name)
+function BLU:CreateProfile(name)
     if not name or name == "" then
         return false
     end
@@ -198,8 +172,17 @@ function Database:CreateProfile(name)
     BLUDB.profiles[name] = BLUDB.profiles[name] or {}
     
     -- Copy current settings to new profile
-    if BLU.db then
-        BLUDB.profiles[name] = BLU.Modules.utils:DeepCopy(BLU.db)
+    if self.db then
+        for key, value in pairs(self.db) do
+            if type(value) == "table" then
+                BLUDB.profiles[name][key] = {}
+                for k, v in pairs(value) do
+                    BLUDB.profiles[name][key][k] = v
+                end
+            else
+                BLUDB.profiles[name][key] = value
+            end
+        end
     end
     
     -- Switch to new profile
@@ -209,28 +192,39 @@ function Database:CreateProfile(name)
     return true
 end
 
-function Database:LoadProfile(name)
+function BLU:LoadProfile(name)
     if not name or not BLUDB.profiles[name] then
         return false
     end
     
     -- Save current profile first
-    self:SaveSettings()
+    self:SaveProfile(self:GetDB("currentProfile"))
     
     -- Load new profile
-    BLU.db = BLUDB.profiles[name]
+    self.db = BLUDB.profiles[name]
     self:SetDB("currentProfile", name)
     self:ApplyDefaults()
     
     -- Refresh UI if needed
-    if BLU.RefreshOptions then
-        BLU:RefreshOptions()
+    if self.RefreshOptions then
+        self:RefreshOptions()
     end
     
     return true
 end
 
-function Database:DeleteProfile(name)
+function BLU:SaveProfile(name)
+    if not name then
+        name = self:GetDB("currentProfile", "Default")
+    end
+    
+    BLUDB.profiles = BLUDB.profiles or {}
+    BLUDB.profiles[name] = self.db
+    
+    return true
+end
+
+function BLU:DeleteProfile(name)
     if not name or name == "Default" then
         return false
     end
@@ -249,7 +243,7 @@ function Database:DeleteProfile(name)
     return false
 end
 
-function Database:RenameProfile(oldName, newName)
+function BLU:RenameProfile(oldName, newName)
     if not oldName or not newName or oldName == "Default" then
         return false
     end
@@ -270,7 +264,7 @@ function Database:RenameProfile(oldName, newName)
 end
 
 -- Profile serialization for import/export
-function Database:SerializeProfile(name)
+function BLU:SerializeProfile(name)
     local profile = BLUDB.profiles[name or self:GetDB("currentProfile")]
     if not profile then
         return ""
@@ -287,7 +281,7 @@ function Database:SerializeProfile(name)
     return str
 end
 
-function Database:DeserializeProfile(str)
+function BLU:DeserializeProfile(str)
     if not str or not string.find(str, "^BLU_PROFILE_v1:") then
         return nil
     end
@@ -315,7 +309,7 @@ function Database:DeserializeProfile(str)
 end
 
 -- Export/Import dialogs
-function Database:ShowExportDialog(data)
+function BLU:ShowExportDialog(data)
     -- Create export dialog with copyable text
     StaticPopupDialogs["BLU_EXPORT_PROFILE"] = {
         text = "Copy this profile data:",
@@ -333,7 +327,7 @@ function Database:ShowExportDialog(data)
     StaticPopup_Show("BLU_EXPORT_PROFILE")
 end
 
-function Database:ShowImportDialog()
+function BLU:ShowImportDialog()
     StaticPopupDialogs["BLU_IMPORT_PROFILE"] = {
         text = "Paste profile data to import:",
         button1 = "Import",
@@ -342,12 +336,12 @@ function Database:ShowImportDialog()
         editBoxWidth = 350,
         OnAccept = function(self)
             local data = self.editBox:GetText()
-            local profile = Database:DeserializeProfile(data)
+            local profile = BLU:DeserializeProfile(data)
             if profile then
                 -- Create new profile with imported data
                 local name = "Imported_" .. date("%Y%m%d_%H%M%S")
                 BLUDB.profiles[name] = profile
-                Database:LoadProfile(name)
+                BLU:LoadProfile(name)
                 print("|cff00ccffBLU:|r Profile imported as: " .. name)
             else
                 print("|cff00ccffBLU:|r Invalid profile data")
@@ -360,12 +354,13 @@ function Database:ShowImportDialog()
     StaticPopup_Show("BLU_IMPORT_PROFILE")
 end
 
--- Make profile functions available globally
-BLU.CreateProfile = function(name) return Database:CreateProfile(name) end
-BLU.LoadProfile = function(name) return Database:LoadProfile(name) end
-BLU.DeleteProfile = function(name) return Database:DeleteProfile(name) end
-BLU.RenameProfile = function(old, new) return Database:RenameProfile(old, new) end
-BLU.SerializeProfile = function(name) return Database:SerializeProfile(name) end
-BLU.ImportProfile = function(data, name) return Database:DeserializeProfile(data) end
-BLU.ShowExportDialog = function(data) return Database:ShowExportDialog(data) end
-BLU.ShowImportDialog = function() return Database:ShowImportDialog() end
+function BLU:ShowCharacterCopyDialog()
+    print("|cff00ccffBLU:|r Character copy feature coming soon")
+end
+
+local Database = {}
+function Database:Init()
+    BLU:InitializeDatabase()
+    BLU:PrintDebug("Database module initialized")
+end
+BLU.Modules["database"] = Database

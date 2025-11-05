@@ -5,10 +5,10 @@
 
 local addonName = ...
 local BLU = _G["BLU"]
-local quest = {}
+local Quest = {}
 
 -- Module initialization
-function quest:Init()
+function Quest:Init()
     -- Quest events
     BLU:RegisterEvent("QUEST_ACCEPTED", function(...) self:OnQuestAccepted(...) end)
     BLU:RegisterEvent("QUEST_TURNED_IN", function(...) self:OnQuestTurnedIn(...) end)
@@ -21,7 +21,7 @@ function quest:Init()
 end
 
 -- Cleanup function
-function quest:Cleanup()
+function Quest:Cleanup()
     BLU:UnregisterEvent("QUEST_ACCEPTED")
     BLU:UnregisterEvent("QUEST_TURNED_IN")
     BLU:UnregisterEvent("QUEST_COMPLETE")
@@ -29,7 +29,7 @@ function quest:Cleanup()
 end
 
 -- Quest accepted handler
-function quest:OnQuestAccepted(event, questId)
+function Quest:OnQuestAccepted(event, questId)
     if not BLU.db.profile.enabled then return end
     
     -- Play quest accept sound
@@ -42,7 +42,7 @@ function quest:OnQuestAccepted(event, questId)
 end
 
 -- Quest turned in handler
-function quest:OnQuestTurnedIn(event, questId, xpReward, moneyReward)
+function Quest:OnQuestTurnedIn(event, questId, xpReward, moneyReward)
     if not BLU.db.profile.enabled then return end
     
     -- Play quest turn-in sound
@@ -55,7 +55,7 @@ function quest:OnQuestTurnedIn(event, questId, xpReward, moneyReward)
 end
 
 -- Quest complete handler (shows complete dialog)
-function quest:OnQuestComplete(event)
+function Quest:OnQuestComplete(event)
     -- This fires when you reach a quest giver with a completed quest
     self.atQuestGiver = true
     
@@ -67,4 +67,7 @@ end
 
 -- Register module
 BLU.Modules = BLU.Modules or {}
-BLU.Modules["quest"] = quest
+BLU.Modules["quest"] = Quest
+
+-- Export module
+return Quest

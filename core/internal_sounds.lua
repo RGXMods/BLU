@@ -38,15 +38,15 @@ function InternalSounds:RegisterSoundPacks()
         id = "blu_default",
         name = "BLU Defaults",
         sounds = {
-            achievement_default = { name = "Default Achievement", file = "Interface\\AddOns\\BLU\\sounds\\achievement_default.ogg", duration = 2.0, category = "achievement", source = "BLU", isInternal = true },
-            battle_pet_level_default = { name = "Default Battle Pet Level", file = "Interface\\AddOns\\BLU\\sounds\\battle_pet_level_default.ogg", duration = 2.0, category = "battlepet", source = "BLU", isInternal = true },
-            honor_default = { name = "Default Honor", file = "Interface\\AddOns\\BLU\\sounds\\honor_default.ogg", duration = 2.0, category = "honorrank", source = "BLU", isInternal = true },
-            level_default = { name = "Default Level Up", file = "Interface\\AddOns\\BLU\\sounds\\level_default.ogg", duration = 2.0, category = "levelup", source = "BLU", isInternal = true },
-            post_default = { name = "Default Trading Post", file = "Interface\\AddOns\\BLU\\sounds\\post_default.ogg", duration = 2.0, category = "tradingpost", source = "BLU", isInternal = true },
-            quest_accept_default = { name = "Default Quest Accept", file = "Interface\\AddOns\\BLU\\sounds\\quest_accept_default.ogg", duration = 2.0, category = "questaccept", source = "BLU", isInternal = true },
-            quest_default = { name = "Default Quest Complete", file = "Interface\\AddOns\\BLU\\sounds\\quest_default.ogg", duration = 2.0, category = "quest", source = "BLU", isInternal = true },
-            renown_default = { name = "Default Renown", file = "Interface\\AddOns\\BLU\\sounds\\renown_default.ogg", duration = 2.0, category = "renownrank", source = "BLU", isInternal = true },
-            rep_default = { name = "Default Reputation", file = "Interface\\AddOns\\BLU\\sounds\\rep_default.ogg", duration = 2.0, category = "reputation", source = "BLU", isInternal = true }
+            achievement_default = { name = "Default Achievement", file = "Interface/AddOns/BLU/media/sounds/achievement_default.ogg", duration = 2.0, category = "achievement", source = "BLU", isInternal = true },
+            battle_pet_level_default = { name = "Default Battle Pet Level", file = "Interface/AddOns/BLU/media/sounds/battle_pet_level_default.ogg", duration = 2.0, category = "battlepet", source = "BLU", isInternal = true },
+            honor_default = { name = "Default Honor", file = "Interface/AddOns/BLU/media/sounds/honor_default.ogg", duration = 2.0, category = "honorrank", source = "BLU", isInternal = true },
+            level_default = { name = "Default Level Up", file = "Interface/AddOns/BLU/media/sounds/level_default.ogg", duration = 2.0, category = "levelup", source = "BLU", isInternal = true },
+            post_default = { name = "Default Trading Post", file = "Interface/AddOns/BLU/media/sounds/post_default.ogg", duration = 2.0, category = "tradingpost", source = "BLU", isInternal = true },
+            quest_accept_default = { name = "Default Quest Accept", file = "Interface/AddOns/BLU/media/sounds/quest_accept_default.ogg", duration = 2.0, category = "questaccept", source = "BLU", isInternal = true },
+            quest_default = { name = "Default Quest Complete", file = "Interface/AddOns/BLU/media/sounds/quest_default.ogg", duration = 2.0, category = "quest", source = "BLU", isInternal = true },
+            renown_default = { name = "Default Renown", file = "Interface/AddOns/BLU/media/sounds/renown_default.ogg", duration = 2.0, category = "renownrank", source = "BLU", isInternal = true },
+            rep_default = { name = "Default Reputation", file = "Interface/AddOns/BLU/media/sounds/rep_default.ogg", duration = 2.0, category = "reputation", source = "BLU", isInternal = true }
         }
     }
     if BLU.RegisterSoundPack then
@@ -132,7 +132,7 @@ function InternalSounds:RegisterSoundPacks()
         for _, soundData in ipairs(packData.sounds) do
             soundsToRegister[soundData.soundId] = {
                 name = soundData.name,
-                file = string.format("Interface\\AddOns\\BLU\\sounds\\%s.ogg", soundData.file_id),
+                file = string.format("Interface/AddOns/BLU/media/sounds/%s.ogg", soundData.file_id),
                 duration = 2.0,
                 category = "levelup",
                 source = "BLU",

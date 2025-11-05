@@ -5,10 +5,10 @@
 
 local addonName = ...
 local BLU = _G["BLU"]
-local TradingPost = {}
+local tradingpost = {}
 
 -- Module initialization
-function TradingPost:Init()
+function tradingpost:Init()
     -- Trading Post events
     BLU:RegisterEvent("PERKS_PROGRAM_PURCHASE_SUCCESS", function(...) self:OnPurchaseSuccess(...) end)
     BLU:RegisterEvent("PERKS_PROGRAM_CURRENCY_REFRESH", function(...) self:OnCurrencyRefresh(...) end)
@@ -20,7 +20,7 @@ function TradingPost:Init()
 end
 
 -- Cleanup function
-function TradingPost:Cleanup()
+function tradingpost:Cleanup()
     BLU:UnregisterEvent("PERKS_PROGRAM_PURCHASE_SUCCESS")
     BLU:UnregisterEvent("PERKS_PROGRAM_CURRENCY_REFRESH")
     
@@ -28,7 +28,7 @@ function TradingPost:Cleanup()
 end
 
 -- Get current Trading Post currency
-function TradingPost:GetTradingPostCurrency()
+function tradingpost:GetTradingPostCurrency()
     if C_PerksProgram then
         return C_PerksProgram.GetCurrencyAmount() or 0
     end
@@ -36,7 +36,7 @@ function TradingPost:GetTradingPostCurrency()
 end
 
 -- Purchase success handler
-function TradingPost:OnPurchaseSuccess(event, vendorItemID)
+function tradingpost:OnPurchaseSuccess(event, vendorItemID)
     if not BLU.db.profile.enableTradingPost then return end
     
     self:PlayTradingPostSound()
@@ -47,7 +47,8 @@ function TradingPost:OnPurchaseSuccess(event, vendorItemID)
 end
 
 -- Currency refresh handler
-function TradingPost:OnCurrencyRefresh(event)
+function tradingpost:OnCurrencyRefresh(event)
+    if not BLU.db or not BLU.db.profile then return end
     if not BLU.db.profile.enableTradingPost then return end
     
     local currentAmount = self:GetTradingPostCurrency()
@@ -66,16 +67,10 @@ function TradingPost:OnCurrencyRefresh(event)
 end
 
 -- Play Trading Post sound
-function TradingPost:PlayTradingPostSound()
-    local soundName = BLU.db.profile.tradingPostSound
-    local volume = BLU.db.profile.tradingPostVolume * BLU.db.profile.masterVolume
-    
-    BLU:PlaySound(soundName, volume)
+function tradingpost:PlayTradingPostSound()
+    BLU:PlayCategorySound("tradingpost")
 end
 
 -- Register module
 BLU.Modules = BLU.Modules or {}
-BLU.Modules["tradingpost"] = TradingPost
-
--- Export module
-return TradingPost
+BLU.Modules["tradingpost"] = tradingpost

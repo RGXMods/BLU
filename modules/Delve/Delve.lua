@@ -5,10 +5,10 @@
 
 local addonName = ...
 local BLU = _G["BLU"]
-local DelveCompanion = {}
+local delve = {}
 
 -- Module initialization
-function DelveCompanion:Init()
+function delve:Init()
     -- Hook into system messages for Delve Companion
     -- ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", function(...) return self:OnSystemMessage(...) end)
     
@@ -21,7 +21,7 @@ function DelveCompanion:Init()
 end
 
 -- Cleanup function
-function DelveCompanion:Cleanup()
+function delve:Cleanup()
     -- ChatFrame_RemoveMessageEventFilter("CHAT_MSG_SYSTEM", self.OnSystemMessage)
     
     -- if C_DelvesUI then
@@ -32,7 +32,7 @@ function DelveCompanion:Cleanup()
 end
 
 -- System message handler
-function DelveCompanion:OnSystemMessage(chatFrame, event, msg)
+function delve:OnSystemMessage(chatFrame, event, msg)
     if not BLU.db.profile.enableDelveCompanion then return false end
     
     -- Check for Delve Companion level up messages
@@ -60,7 +60,7 @@ function DelveCompanion:OnSystemMessage(chatFrame, event, msg)
 end
 
 -- Delve companion level up handler (if API exists)
-function DelveCompanion:OnCompanionLevelUp(event, companionID, newLevel)
+function delve:OnCompanionLevelUp(event, companionID, newLevel)
     if not BLU.db.profile.enableDelveCompanion then return end
     
     self:PlayDelveSound()
@@ -71,16 +71,10 @@ function DelveCompanion:OnCompanionLevelUp(event, companionID, newLevel)
 end
 
 -- Play Delve Companion sound
-function DelveCompanion:PlayDelveSound()
-    local soundName = BLU.db.profile.delveCompanionSound
-    local volume = BLU.db.profile.delveCompanionVolume * BLU.db.profile.masterVolume
-    
-    BLU:PlaySound(soundName, volume)
+function delve:PlayDelveSound()
+    BLU:PlayCategorySound("delvecompanion")
 end
 
 -- Register module
 BLU.Modules = BLU.Modules or {}
-BLU.Modules["delve"] = DelveCompanion
-
--- Export module
-return DelveCompanion
+BLU.Modules["delve"] = delve

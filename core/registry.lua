@@ -191,11 +191,7 @@ function SoundRegistry:GetSoundsGroupedForUI(targetEvent)
     }
 
     for soundId, soundData in pairs(self:GetAllSounds()) do
-        if soundData.source == "SharedMedia" then
-            local packId = soundData.packId or "Unidentified Pack"
-            hierarchy["Shared Media"][packId] = hierarchy["Shared Media"][packId] or {}
-            table.insert(hierarchy["Shared Media"][packId], {id = soundId, name = soundData.name})
-        elseif soundData.category == targetEvent or soundData.category == "all" then
+        if soundData.category == targetEvent or soundData.category == "all" then
             if soundData.source == "BLU" or soundData.source == "BLU Built-in" then
                 local packName = soundData.packName or "BLU Defaults"
                 if packName == "BLU Defaults" then
@@ -273,7 +269,7 @@ function SoundRegistry:PlaySound(soundId, volume)
             end
             
             -- Build the variant file path
-            local baseFile = sound.file:gsub("_high%.ogg$", ""):gsub("_med%.ogg$", ""):gsub("_low%.ogg$", ""):gsub("%.ogg$", "")
+            local baseFile = sound.file:gsub("%.ogg$", "")
             local variantFile = baseFile .. variant .. ".ogg"
             
             fileToPlay = variantFile
@@ -282,9 +278,10 @@ function SoundRegistry:PlaySound(soundId, volume)
             willPlay, handle = PlaySoundFile(variantFile, channel)
             
             if not willPlay then
-                -- Fallback to base file if variant not found
-                BLU:PrintDebug("Failed to play variant, falling back to base file: " .. sound.file)
-                willPlay, handle = PlaySoundFile(sound.file, channel)
+                -- Fallback to medium file if variant not found
+                local fallbackFile = baseFile .. "_med.ogg"
+                BLU:PrintDebug("Failed to play variant, falling back to medium file: " .. fallbackFile)
+                willPlay, handle = PlaySoundFile(fallbackFile, channel)
             end
         else
             -- External sounds, SoundPaks, or BLU sounds without variants
@@ -323,6 +320,7 @@ end
 
 -- Play sound for a specific event category
 function SoundRegistry:PlayCategorySound(category, forceSound)
+    BLU:PrintDebug("PlayCategorySound called with category: " .. tostring(category))
     -- Check if muted in instances
     if BLU.db and BLU.db.profile and BLU.db.profile.muteInInstances then
         local inInstance, instanceType = IsInInstance()
@@ -382,14 +380,12 @@ function SoundRegistry:PlayCategorySound(category, forceSound)
         if soundId then
             return self:PlaySound(soundId)
         end
-        
     elseif selectedSound:match("^external:") then
         -- External sound from SharedMedia
         local externalName = selectedSound:gsub("^external:", "")
         if BLU.PlayExternalSound then
             return BLU:PlayExternalSound(externalName)
         end
-        
     else
         -- Direct sound ID
         return self:PlaySound(selectedSound)

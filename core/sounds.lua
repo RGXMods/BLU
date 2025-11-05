@@ -7,8 +7,7 @@
 local addonName, _ = ...
 local BLU = _G["BLU"]
 
-local Sounds = {}
-BLU.Modules["sounds"] = Sounds
+
 
 local wowDefaultSounds = {
     888,  -- LEVELUPSOUND
@@ -22,7 +21,7 @@ local wowDefaultSounds = {
     182235  -- Delve companion sound
 }
 
-function Sounds:MuteDefaultSounds()
+function BLU:MuteDefaultSounds()
     if not BLU.db or not BLU.db.profile or not BLU.db.profile.enabled then return end
     BLU:PrintDebug("Muting default WoW sounds.")
     for _, soundId in ipairs(wowDefaultSounds) do
@@ -30,21 +29,9 @@ function Sounds:MuteDefaultSounds()
     end
 end
 
-function Sounds:UnmuteDefaultSounds()
+function BLU:UnmuteDefaultSounds()
     BLU:PrintDebug("Unmuting default WoW sounds.")
     for _, soundId in ipairs(wowDefaultSounds) do
         UnmuteSoundFile(soundId)
     end
 end
-
-function Sounds:Init()
-    self:MuteDefaultSounds()
-end
-
-function Sounds:OnDisable()
-    self:UnmuteDefaultSounds()
-end
-
-BLU:RegisterEvent("PLAYER_LOGOUT", function()
-    Sounds:UnmuteDefaultSounds()
-end)

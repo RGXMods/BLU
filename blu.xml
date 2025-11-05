@@ -3,40 +3,31 @@
     <!-- Core Systems (Load Order Matters) -->
     <Script file="core/core.lua"/>
     <Script file="core/database.lua"/>
-    <Script file="core/database_safety.lua"/>
     <Script file="core/combat_protection.lua"/>
     <Script file="core/sounds.lua"/>
-    <Script file="core/module_management.lua"/>
     <Script file="core/config.lua"/>
     <Script file="core/utils.lua"/>
     <Script file="core/registry.lua"/>
     <Script file="core/loader.lua"/>
-    <Script file="libs/LibSharedMedia-3.0/LibStub/LibStub.lua"/>
-    <Script file="libs/LibSharedMedia-3.0/CallbackHandler-1.0/CallbackHandler-1.0.lua"/>
-    <Include file="libs/LibSharedMedia-3.0/lib.xml"/>
     <Script file="core/sharedmedia.lua"/>
+
     <Script file="core/internal_sounds.lua"/>
 
-    <Script file="core/commands.lua"/>
-    <Script file="core/initialization.lua"/>
-    
     <!-- Localization -->
     <Script file="localization/enUS.lua"/>
-    
-    <!-- Interface System from modules -->
-    <Script file="modules/interface/design.lua"/>
-    <Script file="modules/interface/widgets.lua"/>
 
-    <Script file="modules/interface/panels/general.lua"/>
-    <Script file="modules/interface/panels/about.lua"/>
-    <Script file="modules/interface/panels/sounds.lua"/>
-    <Script file="modules/interface/panels/modules.lua"/>
-    <Script file="modules/interface/options.lua"/>
+    <!-- Interface System MUST load before initialization -->
+    <Script file="core/interface/design.lua"/>
 
-    
+    <Script file="core/interface/options/tabs.lua"/>
+    <Script file="core/interface/options/sound_panel.lua"/>
+    <Script file="core/interface/options/general.lua"/>
+    <Script file="core/interface/options/sounds.lua"/>
+    <Script file="core/interface/options/about.lua"/>
+    <Script file="core/interface/options/main.lua"/>
+
     <!-- Feature Modules -->
     <Script file="modules/quest/quest.lua"/>
-    <Script file="modules/quest/questpanel.lua"/>
     <Script file="modules/levelup/levelup.lua"/>
     <Script file="modules/achievement/achievement.lua"/>
     <Script file="modules/reputation/reputation.lua"/>
@@ -45,6 +36,11 @@
     <Script file="modules/renown/renown.lua"/>
     <Script file="modules/tradingpost/tradingpost.lua"/>
     <Script file="modules/delve/delve.lua"/>
-    
+
+    <!-- Commands MUST load after options module is registered -->
+    <Script file="core/commands.lua"/>
+
+    <!-- Initialization MUST be LAST so all modules are registered -->
+    <Script file="core/initialization.lua"/>
 
 </Ui>

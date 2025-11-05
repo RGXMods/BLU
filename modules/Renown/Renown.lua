@@ -5,13 +5,13 @@
 
 local addonName = ...
 local BLU = _G["BLU"]
-local RenownRank = {}
+local renown = {}
 
 -- Module variables
-RenownRank.renownLevels = {}
+renown.renownLevels = {}
 
 -- Module initialization
-function RenownRank:Init()
+function renown:Init()
     -- Renown events
     BLU:RegisterEvent("MAJOR_FACTION_RENOWN_LEVEL_CHANGED", function(...) self:OnRenownLevelChanged(...) end)
     BLU:RegisterEvent("COVENANT_SANCTUM_RENOWN_LEVEL_CHANGED", function(...) self:OnCovenantRenownChanged(...) end)
@@ -26,7 +26,7 @@ function RenownRank:Init()
 end
 
 -- Cleanup function
-function RenownRank:Cleanup()
+function renown:Cleanup()
     BLU:UnregisterEvent("MAJOR_FACTION_RENOWN_LEVEL_CHANGED")
     BLU:UnregisterEvent("COVENANT_SANCTUM_RENOWN_LEVEL_CHANGED")
     ChatFrame_RemoveMessageEventFilter("CHAT_MSG_SYSTEM", self.OnSystemMessage)
@@ -35,7 +35,7 @@ function RenownRank:Cleanup()
 end
 
 -- Scan current renown levels
-function RenownRank:ScanRenownLevels()
+function renown:ScanRenownLevels()
     -- Check major factions (Dragonflight+)
     if C_MajorFactions then
         for _, factionID in ipairs(C_MajorFactions.GetMajorFactionIDs()) do
@@ -57,7 +57,7 @@ function RenownRank:ScanRenownLevels()
 end
 
 -- Major faction renown level changed
-function RenownRank:OnRenownLevelChanged(event, factionID, newLevel, oldLevel)
+function renown:OnRenownLevelChanged(event, factionID, newLevel, oldLevel)
     if not BLU.db.profile.enableRenownRank then return end
     
     if newLevel > oldLevel then
@@ -74,7 +74,7 @@ function RenownRank:OnRenownLevelChanged(event, factionID, newLevel, oldLevel)
 end
 
 -- Covenant renown changed
-function RenownRank:OnCovenantRenownChanged(event, newLevel, oldLevel)
+function renown:OnCovenantRenownChanged(event, newLevel, oldLevel)
     if not BLU.db.profile.enableRenownRank then return end
     
     if newLevel and oldLevel and newLevel > oldLevel then
@@ -87,8 +87,8 @@ function RenownRank:OnCovenantRenownChanged(event, newLevel, oldLevel)
 end
 
 -- System message handler
-function RenownRank:OnSystemMessage(chatFrame, event, msg)
-    if not BLU.db.profile.enableRenownRank then return false end
+function renown:OnSystemMessage(chatFrame, event, msg)
+    if not BLU.db or not BLU.db.profile or not BLU.db.profile.enableRenownRank then return false end
     
     -- Check for renown messages
     local patterns = {
@@ -114,16 +114,10 @@ function RenownRank:OnSystemMessage(chatFrame, event, msg)
 end
 
 -- Play renown sound
-function RenownRank:PlayRenownSound()
-    local soundName = BLU.db.profile.renownRankSound
-    local volume = BLU.db.profile.renownRankVolume * BLU.db.profile.masterVolume
-    
-    BLU:PlaySound(soundName, volume)
+function renown:PlayRenownSound()
+    BLU:PlayCategorySound("renownrank")
 end
 
 -- Register module
 BLU.Modules = BLU.Modules or {}
-BLU.Modules["renown"] = RenownRank
-
--- Export module
-return RenownRank
+BLU.Modules["renown"] = renown

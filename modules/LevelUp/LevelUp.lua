@@ -5,22 +5,22 @@
 
 local addonName = ...
 local BLU = _G["BLU"]
-local LevelUp = {}
+local levelup = {}
 
 -- Module initialization
-function LevelUp:Init()
+function levelup:Init()
     BLU:RegisterEvent("PLAYER_LEVEL_UP", function(...) self:OnLevelUp(...) end)
     BLU:PrintDebug(BLU:Loc("MODULE_LOADED", "LevelUp"))
 end
 
 -- Cleanup function
-function LevelUp:Cleanup()
+function levelup:Cleanup()
     BLU:UnregisterEvent("PLAYER_LEVEL_UP")
     BLU:PrintDebug(BLU:Loc("MODULE_CLEANED_UP", "LevelUp"))
 end
 
 -- Level up event handler
-function LevelUp:OnLevelUp(event, level)
+function levelup:OnLevelUp(event, level)
     if not BLU.db.profile.enabled then return end
     
     -- Play level up sound for this category
@@ -33,7 +33,4 @@ end
 
 -- Register module
 BLU.Modules = BLU.Modules or {}
-BLU.Modules["levelup"] = LevelUp
-
--- Export module
-return LevelUp
+BLU.Modules["levelup"] = levelup

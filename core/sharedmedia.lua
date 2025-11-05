@@ -1,436 +1,62 @@
 --=====================================================================================
--- BLU - sharedmedia.lua
--- Integration with LibSharedMedia and external sound pack addons
+-- BLU SharedMedia Implementation
+-- A lightweight, self-contained media library for BLU
 --=====================================================================================
 
-local addonName, _ = ...
+local addonName = ...
 local BLU = _G["BLU"]
 
--- Create SharedMedia module
 local SharedMedia = {}
-BLU.Modules = BLU.Modules or {}
 BLU.Modules["sharedmedia"] = SharedMedia
 
--- Storage for external sounds
-SharedMedia.externalSounds = {}
-SharedMedia.soundCategories = {}
+SharedMedia.media = {
+    sound = {},
+    texture = {},
+    font = {},
+    statusbar = {},
+}
 
--- Improved addon name extraction function
-local function ExtractAddonNameFromPath(path)
-    if not path or type(path) ~= "string" then return "SharedMedia" end
-
-    -- Pattern to match Interface/Addons/ or Interface/AddOns/
-    -- and capture the addon folder name
-    local _, _, addonFolder = string.find(path, "Interface\\Add[oO]ns\\([^\\]+)")
-    
-    if addonFolder then
-        BLU:PrintDebug(string.format("Extracted addon folder: '%s' from path: '%s'", addonFolder, path))
-        return addonFolder
+function SharedMedia:Register(mediaType, name, path)
+    if not self.media[mediaType] then
+        self.media[mediaType] = {}
     end
-
-    -- Fallback: try to extract from filename pattern
-    -- Handle patterns like: AddonName_SoundPack_SoundName.ogg
-    local fileName = path:match("([^\\]+)$") -- Get filename part
-    if fileName then
-        -- Try common patterns
-        local addonName = fileName:match("^([%%w_]+)_Sound") or 
-                         fileName:match("^([%%w_]+)_Pack") or
-                         fileName:match("^([%%w_]+)_Audio")
-        
-        if addonName then
-            BLU:PrintDebug(string.format("Extracted addon name from filename: '%s' from file: '%s'", addonName, fileName))
-            return addonName
-        end
-        
-        -- Last resort: get first part before first underscore
-        addonName = fileName:match("^([^_]+)")
-        if addonName and addonName ~= fileName then
-            BLU:PrintDebug(string.format("Extracted addon name from prefix: '%s' from file: '%s'", addonName, fileName))
-            return addonName
-        end
-    end
-
-    BLU:PrintDebug(string.format("Could not extract addonName from path: '%s'. Assigning packName: 'SharedMedia'", path))
-    return "SharedMedia" -- Fallback
+    self.media[mediaType][name] = path
 end
 
--- Initialize SharedMedia integration
-function SharedMedia:Init()
-    BLU:PrintDebug("SharedMedia:Init() called.")
-    -- Try to load LibSharedMedia
-    self.LSM = LibStub and LibStub("LibSharedMedia-3.0", true) or nil
-    BLU:PrintDebug("LSM found: " .. tostring(self.LSM ~= nil))
-    
-    if not self.LSM then
-        BLU:PrintDebug("LibSharedMedia not found - adding test sounds as fallback")
-        self:AddTestSounds()
-    else
-        BLU:PrintDebug("LibSharedMedia found - scanning for sounds")
-        -- Register callbacks
-        self.LSM.RegisterCallback(self, "LibSharedMedia_Registered", "OnMediaRegistered")
-        self.LSM.RegisterCallback(self, "LibSharedMedia_SetGlobal", "OnMediaSetGlobal")
-        
-        -- Scan existing sounds
-        self:ScanExternalSounds()
+function SharedMedia:Get(mediaType, name)
+    if self.media[mediaType] and self.media[mediaType][name] then
+        return self.media[mediaType][name]
     end
-    
-    -- Make functions available
-    BLU.GetExternalSounds = function() return self:GetExternalSounds() end
-    BLU.GetSoundCategories = function() return self:GetSoundCategories() end
-    BLU.PlayExternalSound = function(_, name) return self:PlayExternalSound(name) end
-    
-    BLU:PrintDebug("SharedMedia integration initialized")
+    return nil
 end
 
--- Scan for external sounds from SharedMedia
-function SharedMedia:ScanExternalSounds()
-    if not self.LSM then return end
-    
-    -- Clear existing
-    wipe(self.externalSounds)
-    wipe(self.soundCategories)
-    
-    -- Get all registered sounds
-    local soundList = self.LSM:List("sound")
-    
-    BLU:PrintDebug(string.format("SharedMedia:ScanExternalSounds() found %d sounds from LSM.", #soundList))
-    for i, soundName in ipairs(soundList) do
-        local soundPath = self.LSM:Fetch("sound", soundName)
-        BLU:PrintDebug(string.format("LSM Sound #%d: Name='%s', Path='%s'", i, soundName, soundPath or "nil"))
-        if soundPath then
-            local category = self:CategorizeSound(soundName, soundPath)
-            local packName = ExtractAddonNameFromPath(soundPath)
-            BLU:PrintDebug(string.format("  -> Extracted packName: '%s' for sound: '%s'", packName, soundName))
-
-            -- Store sound info
-            self.externalSounds[soundName] = {
-                name = soundName,
-                path = soundPath,
-                category = category,
-                source = "SharedMedia",
-                packId = packName,
-                packName = packName
-            }
-            
-            -- Add to category list
-            if not self.soundCategories[category] then
-                self.soundCategories[category] = {}
-            end
-            table.insert(self.soundCategories[category], soundName)
-
-            -- Register with BLU SoundRegistry
-            BLU.SoundRegistry:RegisterSound(soundName, {
-                name = soundName,
-                file = soundPath,
-                category = category,
-                source = "SharedMedia",
-                packId = packName,
-                packName = packName
-            })
-        end
+function SharedMedia:List(mediaType)
+    if not self.media[mediaType] then
+        return {}
     end
-    
-    BLU:PrintDebug(string.format("Found %d external sounds in %d categories", 
-        #soundList, self:GetTableSize(self.soundCategories)))
+    local list = {}
+    for name, _ in pairs(self.media[mediaType]) do
+        table.insert(list, name)
+    end
+    return list
 end
 
--- Categorize sounds by name patterns
-function SharedMedia:CategorizeSound(name, path)
-    if type(path) ~= "string" then return "Other Sounds" end
-    local nameLower = name:lower()
-    
-    -- Check for known sound pack patterns
-    local patterns = {
-        -- SharedMedia_MyMedia sounds
-        ["mymedia"] = "MyMedia Sounds",
-        ["custom"] = "Custom Sounds",
-        
-        -- Game-specific patterns
-        ["ff14"] = "Final Fantasy XIV",
-        ["ffxiv"] = "Final Fantasy XIV",
-        ["final fantasy"] = "Final Fantasy",
-        ["zelda"] = "Legend of Zelda",
-        ["mario"] = "Super Mario",
-        ["pokemon"] = "Pokemon",
-        ["sonic"] = "Sonic",
-        ["metroid"] = "Metroid",
-        ["megaman"] = "Mega Man",
-        ["chrono"] = "Chrono Trigger",
-        ["kingdom hearts"] = "Kingdom Hearts",
-        
-        -- Event type patterns
-        ["level"] = "levelup",
-        ["ding"] = "levelup",
-        ["achievement"] = "achievement",
-        ["quest"] = "quest",
-        ["complete"] = "quest",
-        ["reputation"] = "reputation",
-        ["honor"] = "honorrank",
-        ["renown"] = "renownrank",
-        ["battlepet"] = "battlepet",
-        ["pet battle"] = "battlepet",
-        ["trading post"] = "tradingpost",
-        ["delve"] = "delvecompanion",
-        ["victory"] = "all",
-        ["fanfare"] = "all",
-        
-        -- Addon-specific patterns
-        ["weakauras"] = "WeakAuras Sounds",
-        ["bigwigs"] = "BigWigs Sounds",
-        ["dbm"] = "DBM Sounds",
-        ["elvui"] = "ElvUI Sounds",
-        
-        -- Generic patterns
-        ["alert"] = "Alert Sounds",
-        ["warning"] = "Warning Sounds",
-        ["notification"] = "Notification Sounds"
-    }
-    
-    -- Check each pattern
-    for pattern, category in pairs(patterns) do
-        if nameLower:find(pattern) then
-            return category
-        end
-    end
-    
-    -- Check path for addon name
-    if path:find("SharedMedia_Ayarei") then
-        return "Ayarei's Sounds"
-    elseif path:find("SharedMedia_Arey") then
-        return "Arey's Sounds"
-    elseif path:find("ShadowPriest") then
-        return "Shadow Priest Sounds"
-    elseif path:find("SharedMedia") then
-        return "SharedMedia Sounds"
-    end
-    
-    -- Default category
-    return "Other Sounds"
-end
-
--- Get all external sounds
-function SharedMedia:GetExternalSounds()
-    return self.externalSounds
-end
-
--- Get sounds by category
 function SharedMedia:GetSoundCategories()
-    return self.soundCategories
-end
-
--- Get formatted sound list for dropdowns
-function SharedMedia:GetSoundList(filterCategory)
-    local sounds = {}
-    
-    -- Add BLU's built-in sounds first
-    table.insert(sounds, {
-        value = "blu_default",
-        text = "|cff05dffaBLU Default|r",
-        category = "BLU Built-in"
-    })
-    
-    -- Add external sounds
-    for name, info in pairs(self.externalSounds) do
-        if not filterCategory or info.category == filterCategory then
-            table.insert(sounds, {
-                value = "external:" .. name,
-                text = name,
-                category = info.category,
-                path = info.path
-            })
+    local categories = {}
+    for name, path in pairs(self.media.sound) do
+        local category = "BLU"
+        local game, soundName = name:match("([^_]+)_(.+)")
+        if game then
+            category = game
         end
-    end
-    
-    -- Sort by category then name
-    table.sort(sounds, function(a, b)
-        if a.category ~= b.category then
-            return a.category < b.category
+        if not categories[category] then
+            categories[category] = {}
         end
-        return a.text < b.text
-    end)
-    
-    return sounds
+        table.insert(categories[category], {id = name, name = soundName or name, path = path})
+    end
+    return categories
 end
 
--- Play external sound
-function SharedMedia:PlayExternalSound(name)
-    local sound = self.externalSounds[name]
-    if not sound then
-        BLU:PrintDebug("External sound not found: " .. name)
-        return false
-    end
-    
-    -- Get volume and channel from BLU settings
-    local volume = (BLU.db.profile.soundVolume or 100) / 100
-    local channel = BLU.db.profile.soundChannel or "Master"
-    
-    -- Play the sound
-    local willPlay, handle = PlaySoundFile(sound.path, channel)
-    
-    if willPlay then
-        BLU:PrintDebug(string.format("Playing external sound: %s", name))
-        
-        -- Show in chat if enabled
-        if BLU.db.profile.debugMode then
-            BLU:Print(string.format("|cff00ff00Playing:|r %s (External)", name))
-        end
-        
-        return true
-    else
-        BLU:PrintError("Failed to play external sound: " .. name)
-        return false
-    end
-end
-
--- Handle new media registration
-function SharedMedia:OnMediaRegistered(event, mediatype, key)
-    if mediatype ~= "sound" then return end
-    
-    BLU:PrintDebug("New sound registered: " .. key)
-    
-    -- Rescan sounds
-    self:ScanExternalSounds()
-    
-    -- Notify UI to refresh if open
-    if BLU.RefreshSoundLists then
-        BLU:RefreshSoundLists()
-    end
-end
-
--- Handle global media changes
-function SharedMedia:OnMediaSetGlobal(event, mediatype, key)
-    if mediatype ~= "sound" then return end
-    
-    -- Rescan sounds
-    self:ScanExternalSounds()
-end
-
--- Helper function to get table size
-function SharedMedia:GetTableSize(tbl)
-    local count = 0
-    for _ in pairs(tbl) do
-        count = count + 1
-    end
-    return count
-end
-
--- Alternative detection for sound addons without LibSharedMedia
-function SharedMedia:DetectSoundAddons()
-    BLU:PrintDebug("Detecting sound addons directly...")
-    
-    -- Check for common sound pack globals
-    local soundPackGlobals = {
-        -- SharedMedia addons often create these globals
-        "SharedMedia",
-        "SharedMediaAdditionalFonts",
-        "SharedMedia_MyMedia",
-        "SharedMedia_Causese",
-        -- WeakAuras
-        "WeakAurasSaved",
-        -- Other common sound addons
-        "DBM",
-        "BigWigs"
-    }
-    
-    local detectedAddons = {}
-    for _, global in ipairs(soundPackGlobals) do
-        if _G[global] then
-            table.insert(detectedAddons, global)
-            BLU:PrintDebug("Found global: " .. global)
-        end
-    end
-    
-    BLU:PrintDebug(string.format("Detected %d sound addon globals", #detectedAddons))
-    return detectedAddons
-end
-
--- Add test sounds for development and fallback
-function SharedMedia:AddTestSounds()
-    BLU:PrintDebug("Adding test sounds for development...")
-    
-    -- Clear and rebuild categories
-    self.soundCategories = {}
-    self.externalSounds = {}
-    
-    -- Add WoW built-in sounds as examples
-    local wowSounds = {
-        {name = "WoW Level Up", path = "Sound\\Interface\\levelup2.ogg", category = "WoW Sounds"},
-        {name = "WoW Quest Complete", path = "Sound\\Interface\\iQuestComplete.ogg", category = "WoW Sounds"},
-        {name = "WoW Achievement", path = "Sound\\Interface\\UI_Achievement_Alert.ogg", category = "WoW Sounds"},
-        {name = "WoW Epic Loot", path = "Sound\\Interface\\UI_EpicLoot_Toast.ogg", category = "WoW Sounds"},
-        {name = "WoW Legendary", path = "Sound\\Interface\\UI_Legendary_Item_Toast.ogg", category = "WoW Sounds"}
-    }
-    
-    for _, sound in ipairs(wowSounds) do
-        self.externalSounds[sound.name] = {
-            name = sound.name,
-            path = sound.path,
-            category = sound.category,
-            source = "WoW Built-in"
-        }
-        
-        -- Add to categories
-        if not self.soundCategories[category] then
-            self.soundCategories[category] = {}
-        end
-        table.insert(self.soundCategories[category], sound.name)
-    end
-    
-    self.soundCategories["Level Up Sounds"] = {
-        "Classic Ding",
-        "Power Up Fanfare",
-        "Victory Theme",
-        "Level Complete"
-    }
-    
-    self.soundCategories["Quest Sounds"] = {
-        "Quest Complete",
-        "Objective Done",
-        "Turn In Success",
-        "World Quest Complete"
-    }
-    
-    -- Store sound info for the test sounds
-    for category, sounds in pairs(self.soundCategories) do
-        for _, soundName in ipairs(sounds) do
-            self.externalSounds[soundName] = {
-                name = soundName,
-                path = "Interface\\AddOns\\BLU\\sounds\\level_default.ogg",
-                category = category,
-                source = "Test"
-            }
-        end
-    end
-    
-    local totalSounds = 0
-    for _, sounds in pairs(self.soundCategories) do
-        totalSounds = totalSounds + #sounds
-    end
-    
-    BLU:PrintDebug(string.format("Added %d test sounds in %d categories", totalSounds, self:GetTableSize(self.soundCategories)))
-end
-
--- Check if specific sound addons are loaded
-function SharedMedia:GetLoadedSoundAddons()
-    local addons = {}
-    
-    local soundAddons = {
-        "SharedMedia",
-        "SharedMedia_MyMedia", 
-        "SharedMedia_Causese",
-        "SharedMedia_Ayarei",
-        "SharedMedia_Arey",
-        "ShadowPriest-SoundPack",
-        "WeakAuras",
-        "BigWigs",
-        "DBM-Core"
-    }
-    
-    for _, addon in ipairs(soundAddons) do
-        if C_AddOns.IsAddOnLoaded(addon) then
-            table.insert(addons, addon)
-        end
-    end
-    
-    return addons
+function SharedMedia:Init()
+    BLU:PrintDebug("SharedMedia module initialized")
 end

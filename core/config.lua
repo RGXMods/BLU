@@ -60,6 +60,11 @@ Config.defaults = {
     }
 }
 
+function Config:ApplyDefaults()
+    if not BLU.db then BLU:InitializeDatabase() end
+    BLU:MergeDefaults(BLU.db, { profile = Config.defaults.profile })
+end
+
 -- Profile changed handler
 function Config:ApplySettings()
     if not BLU.db or not BLU.db.profile then return end
@@ -118,7 +123,11 @@ end
 
 -- Reset to defaults
 function Config:ResetToDefaults()
-    BLU.db:ResetProfile()
+    if BLU.db and BLU.db.profile then
+        wipe(BLU.db.profile)
+        Config:ApplyDefaults()
+        BLU:SaveSettings()
+    end
 end
 
 -- Export/Import functionality

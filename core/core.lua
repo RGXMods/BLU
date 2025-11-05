@@ -27,6 +27,9 @@ BLU = {
     isInitialized = false
 }
 
+print("BLU: BLU object created. BLU.db is " .. tostring(BLU.db))
+print("BLU: BLUDB global is " .. tostring(_G["BLUDB"]))
+
 -- Create event frame (early definition)
 BLU.eventFrame = CreateFrame("Frame")
 BLU.eventFrame:SetScript("OnEvent", function(self, event, ...) 
@@ -623,4 +626,7 @@ BLU:RegisterEvent("PLAYER_LOGOUT", function(event)
 end)
 
 -- Copy all BLU functions to addon table so other files can access them via local addonName, addonTable = ...
+for k, v in pairs(BLU) do
+    addonTable[k] = v
+end
 

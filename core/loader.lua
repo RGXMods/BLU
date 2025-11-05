@@ -28,7 +28,8 @@ local moduleRegistry = {
         "localization",
         "registry",
         "events",
-        "sounds"
+        "sounds",
+        "options"
     },
     
     -- Feature modules (loaded on demand)
@@ -177,3 +178,31 @@ function BLU:UpdateModuleLoading(feature, enabled)
 end
 
 -- Debug print function removed - using core framework BLU:PrintDebug() instead
+
+-- Check if a module is enabled
+function BLU:IsModuleEnabled(moduleName)
+    if not moduleName then return false end
+    
+    -- Check database setting
+    if self.db and self.db.profile and self.db.profile.modules then
+        return self.db.profile.modules[moduleName] ~= false
+    end
+    
+    -- Default to enabled if not specified
+    return true
+end
+
+-- Get list of all available modules
+function BLU:GetAvailableModules()
+    return {
+        {id = "levelup", name = "Level Up", desc = "Plays sounds when you gain a level"},
+        {id = "achievement", name = "Achievement", desc = "Plays sounds for achievements"},
+        {id = "quest", name = "Quest Complete", desc = "Plays sounds for quest completion"},
+        {id = "reputation", name = "Reputation", desc = "Plays sounds for reputation changes"},
+        {id = "honor", name = "Honor", desc = "Plays sounds for honor gains"},
+        {id = "battlepet", name = "Battle Pet", desc = "Plays sounds for pet levels"},
+        {id = "renown", name = "Renown", desc = "Plays sounds for renown increases"},
+        {id = "tradingpost", name = "Trading Post", desc = "Plays sounds for trading post"},
+        {id = "delve", name = "Delve", desc = "Plays sounds for delve completion"}
+    }
+end

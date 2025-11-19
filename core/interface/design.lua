@@ -10,10 +10,12 @@ local BLU = _G["BLU"]
 local Design = {}
 BLU.Modules = BLU.Modules or {}
 BLU.Modules["design"] = Design
+BLU.Design = Design
 
 -- Color palette
 Design.Colors = {
     Primary = {0.02, 0.47, 0.98},      -- #05DFFA (BLU cyan)
+    PrimaryHex = "cff05dffa",
     Secondary = {1.0, 0.84, 0.0},       -- #FFD700 (RGX gold)
     Success = {0.0, 0.8, 0.0},          -- Green
     Warning = {1.0, 0.65, 0.0},         -- Orange
@@ -27,8 +29,8 @@ Design.Colors = {
 -- Backdrop templates
 Design.Backdrops = {
     Dark = {
-        bgFile = "Interface\DialogFrame\UI-DialogBox-Background",
-        edgeFile = "Interface\DialogFrame\UI-DialogBox-Border",
+        bgFile = "Interface/DialogFrame/UI-DialogBox-Background",
+        edgeFile = "Interface/DialogFrame/UI-DialogBox-Border",
         tile = true,
         tileSize = 32,
         edgeSize = 32,
@@ -46,7 +48,7 @@ Design.Backdrops = {
     
     Button = {
         bgFile = "Interface\Tooltips\UI-Tooltip-Background",
-        edgeFile = "Interface\Buttons\WHITE8X8",
+        edgeFile = "Interface\Buttons\WHITE8x8",
         tile = true,
         tileSize = 16,
         edgeSize = 1,
@@ -55,11 +57,26 @@ Design.Backdrops = {
     
     Solid = {
         bgFile = "Interface\Tooltips\UI-Tooltip-Background",
-        edgeFile = "Interface\Buttons\WHITE8X8",
+        edgeFile = "Interface\Buttons\WHITE8x8",
         tile = false,
         edgeSize = 1,
         insets = {left = 0, right = 0, top = 0, bottom = 0}
+    },
+
+    Panel = {
+        bgFile = "Interface/DialogFrame/UI-DialogBox-Background",
+        edgeFile = "Interface/DialogFrame/UI-DialogBox-Border",
+        tile = true,
+        tileSize = 32,
+        edgeSize = 32,
+        insets = {left = 11, right = 12, top = 12, bottom = 11}
     }
+}
+
+-- Layout constants
+Design.Layout = {
+    Spacing = 10,
+    Padding = 15,
 }
 
 -- Font objects
@@ -69,6 +86,11 @@ Design.Fonts = {
     Small = "GameFontNormalSmall",
     Highlight = "GameFontHighlight",
 }
+
+-- Convert RGB (0-1) to Hex string
+function Design:RGBToHex(r, g, b)
+    return string.format("%02x%02x%02x", r * 255, g * 255, b * 255)
+end
 
 -- Helper function to create styled frames
 function Design:CreateStyledFrame(parent, width, height, template)
@@ -137,6 +159,18 @@ function Design:CreateDivider(parent)
     divider:SetHeight(1)
     divider:SetColorTexture(0.3, 0.3, 0.3, 0.8)
     return divider
+end
+
+function Design:ApplyBackdrop(frame, template, bgColor, borderColor)
+    template = template or "Dark"
+    local backdrop = self.Backdrops[template] or self.Backdrops.Dark
+    frame:SetBackdrop(backdrop)
+    if bgColor then
+        frame:SetBackdropColor(unpack(bgColor))
+    end
+    if borderColor then
+        frame:SetBackdropBorderColor(unpack(borderColor))
+    end
 end
 
 function Design:CreateCheckbox(parent, label, tooltip)
@@ -270,6 +304,10 @@ function Design:Init()
     end
     
     BLU:PrintDebug("[Design] Design system initialized successfully")
+
+    -- Alias for backward compatibility
+    Design.CreateButton = Design.CreateStyledButton
+    Design.CreateHeader = Design.CreateSectionHeader
 end
 
 -- Register module

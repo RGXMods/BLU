@@ -113,7 +113,7 @@ function BLU.CreateGeneralPanel(panel)
     local audioSection = BLU.Design:CreateSection(content, "Audio Settings", "Interface\Icons\INV_Misc_Ear_Human_01")
     audioSection:SetPoint("TOPLEFT", coreSection, "BOTTOMLEFT", 0, -10)
     audioSection:SetPoint("RIGHT", 0, 0)
-    audioSection:SetHeight(180)
+    audioSection:SetHeight(100)
     
     -- Volume slider
     local volumeLabel = audioSection.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
@@ -148,68 +148,14 @@ function BLU.CreateGeneralPanel(panel)
         volumeValue:SetText(value .. "% ")
     end)
     
-    -- Sound channel
-    local channelLabel = audioSection.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    channelLabel:SetPoint("TOPLEFT", volumeSlider, "BOTTOMLEFT", 0, -20)
-    channelLabel:SetText("Sound Channel")
-    
     -- Volume note
     local volumeNote = audioSection.content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     volumeNote:SetPoint("TOPLEFT", volumeLabel, "TOPRIGHT", 10, 0)
     volumeNote:SetText("|cff888888(BLU sounds only)|r")
     
-    local channelDropdown = CreateFrame("Frame", "BLUChannelDropdown", audioSection.content, "UIDropDownMenuTemplate")
-    channelDropdown:SetPoint("TOPLEFT", channelLabel, "BOTTOMLEFT", -20, -5)
-    UIDropDownMenu_SetWidth(channelDropdown, 200)
-    
-    local channels = {
-        {text = "Master", value = "Master"},
-        {text = "Sound", value = "Sound"},
-        {text = "Music", value = "Music"},
-        {text = "Ambience", value = "Ambience"},
-        {text = "Dialog", value = "Dialog"}
-    }
-    
-    UIDropDownMenu_Initialize(channelDropdown, function(self)
-        -- Ensure database is initialized
-        if not BLU.db or not BLU.db.profile then
-            BLU:PrintDebug("Database not initialized for channel dropdown")
-            return
-        end
-        
-        for _, channel in ipairs(channels) do
-            local info = UIDropDownMenu_CreateInfo()
-            info.text = channel.text
-            info.value = channel.value
-            info.func = function()
-                if BLU.db and BLU.db.profile then
-                    BLU.db.profile.soundChannel = channel.value
-                end
-                UIDropDownMenu_SetText(self, channel.text)
-                CloseDropDownMenus()
-            end
-            info.checked = (BLU.db and BLU.db.profile and BLU.db.profile.soundChannel == channel.value)
-            UIDropDownMenu_AddButton(info)
-        end
-    end)
-    
-    -- Set current text with proper database check
-    local currentChannel = "Master"
-    if BLU.db and BLU.db.profile then
-        currentChannel = BLU.db.profile.soundChannel or "Master"
-    end
-    UIDropDownMenu_SetText(channelDropdown, currentChannel)
-    
-    -- Volume info text
-    local volumeInfo = audioSection.content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    volumeInfo:SetPoint("TOPLEFT", channelDropdown, "BOTTOMLEFT", 20, -10)
-    volumeInfo:SetPoint("RIGHT", -10, 0)
-    volumeInfo:SetText("|cff888888Note: Volume control applies only to BLU internal sounds. External sounds and default WoW sounds use your system volume settings.|r")
-    volumeInfo:SetJustifyH("LEFT")
-    
     -- Test button
     local testBtn = BLU.Design:CreateButton(audioSection.content, "Test", 80, 22)
-    testBtn:SetPoint("LEFT", channelDropdown, "RIGHT", 10, 2)
+    testBtn:SetPoint("LEFT", volumeSlider, "RIGHT", 10, 0)
     testBtn:SetScript("OnClick", function(self)
         -- Visual feedback
         self:SetText("Playing...")

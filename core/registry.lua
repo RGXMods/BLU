@@ -178,7 +178,6 @@ function SoundRegistry:GetRegisteredPacks()
     return packs
 end
 
--- Get sounds grouped for UI with caching
 function SoundRegistry:GetSoundsGroupedForUI(targetEvent)
     if self.uiSoundCache[targetEvent] then
         return self.uiSoundCache[targetEvent]

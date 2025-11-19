@@ -36,8 +36,13 @@ end
 
 -- Update current honor level
 function HonorRank:UpdateCurrentHonorLevel()
-    if UnitLevel("player") >= 10 then
-        self.currentHonorLevel = UnitHonorLevel and UnitHonorLevel("player") or 0
+    local success, err = pcall(function()
+        if UnitLevel("player") >= 10 then
+            self.currentHonorLevel = UnitHonorLevel and UnitHonorLevel("player") or 0
+        end
+    end)
+    if not success then
+        BLU:PrintError("Error in HonorRank:UpdateCurrentHonorLevel: " .. tostring(err))
     end
 end
 

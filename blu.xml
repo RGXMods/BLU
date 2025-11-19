@@ -18,11 +18,13 @@
     
     <!-- Interface System MUST load before initialization -->
     <Script file="core/interface/design.lua"/>
+    <Script file="core/interface/widgets.lua"/>
     <Script file="core/interface/options/tabs.lua"/>
-    <Script file="core/interface/options/sound_panel.lua"/>
     <Script file="core/interface/options/general.lua"/>
     <Script file="core/interface/options/sounds.lua"/>
     <Script file="core/interface/options/about.lua"/>
+    <Script file="core/interface/options/modules.lua"/>
+    <Script file="core/interface/options/sound_panel.lua"/>
     <Script file="core/interface/options/main.lua"/>
 
     <!-- Feature Modules -->

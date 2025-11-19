@@ -25,6 +25,8 @@ function Database:InitializeDatabase()
     local charKey = UnitName("player") .. "-" .. GetRealmName()
     BLUDB.profiles[charKey] = BLUDB.profiles[charKey] or {}
     
+    BLUDB.profiles[charKey] = BLUDB.profiles[charKey] or {}
+    
     -- Set active database reference
     BLU.db = BLUDB.profiles[charKey]
     
@@ -38,17 +40,12 @@ end
 
 -- Apply default settings
 function Database:ApplyDefaults()
-    local defaults = {
-        profile = {
-            enabled = true,
-            showWelcomeMessage = true,
-            debugMode = false,
-            soundChannel = "Master",
-            selectedSounds = {},
-            modules = {},
-            events = {}
-        }
-    }
+    if not BLU.Modules.config or not BLU.Modules.config.defaults then
+        BLU:PrintError("Database:ApplyDefaults - Config defaults not found!")
+        return
+    end
+
+    local defaults = BLU.Modules.config.defaults
     
     -- Merge defaults into BLU.db
     if BLU.db then

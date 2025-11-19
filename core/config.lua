@@ -39,6 +39,8 @@ Config.defaults = {
         renownRankSound = "None",
         tradingPostSound = "None",
         
+        tradingPostVolume = 0.8,
+        
         soundVolumes = {
             levelup = "medium",
             achievement = "medium",
@@ -97,7 +99,7 @@ function Config:GetAvailableSounds(category)
     }
     
     -- Add BLU sounds
-    for soundId, soundData in pairs(BLU.soundRegistry or {}) do
+    for soundId, soundData in pairs(BLU.SoundRegistry or {}) do
         if not soundData.category or soundData.category == category or soundData.category == "all" then
             table.insert(sounds, {
                 value = soundId,

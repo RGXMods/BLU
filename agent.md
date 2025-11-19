@@ -1,50 +1,102 @@
-# 🤖 AI Agent: Goose for BLU
+# 🤖 AI Agent for BLU
 
-## 🚀 Project: BLU | Better Level-Up!
+This document provides guidance for any AI agent when working with the BLU repository.
 
-This document is my internal configuration and knowledge base for the "BLU | Better Level-Up!" project. It outlines my purpose, capabilities, and a verified map of the repository.
+## 🚀 Project Overview
 
-## 🎯 My Purpose
+BLU (Better Level-Up!) is a World of Warcraft addon that replaces default sounds with iconic audio from 50+ games. The project is currently in `v6.0.0-alpha` and has undergone a complete professional reorganization.
 
-My primary goal is to assist with the development and maintenance of the BLU addon by analyzing code, managing files, and executing tasks according to established repository standards.
-
-## 🛠️ My Capabilities
-
-*   **Code Analysis:** I can analyze the codebase to understand file structure and symbol relationships.
-*   **File Operations:** I can read, write, and modify files within the project.
-*   **Shell Commands:** I can execute shell commands for tasks like searching, listing files, and running scripts.
-*   **Project Information:** I can provide information about the project based on its files.
+**Key Points:**
+- **Target**: Retail WoW (The War Within 11.0.5)
+- **Framework**: Custom lightweight, modular, event-driven framework.
+- **Dependencies**: No external library dependencies.
+- **Branding**: RGX Mods (RealmGX Community Project)
+- **Testing**: A directory junction is in place for automatic in-game testing.
 
 ## 📂 Repository Structure
 
-*   **`.github/workflows/`**: Contains GitHub Actions for automation.
-    *   `release.yml`: Automates the packaging and release process when a new version tag is pushed.
-    *   `copy-secrets.yml`: A manual workflow to sync secrets to the `BLU_Classic` repository.
-*   **`data/`**: The core logic of the addon.
-    *   `core.lua`: Handles the addon's main event logic.
-    *   `initialization.lua`: Manages addon startup, version detection, and event registration.
-    *   `localization.lua`: Contains all user-facing text and translations.
-    *   `options.lua`: Defines the in-game configuration panel and its options.
-    *   `sounds.lua`: Maps all sound files, including custom and default sounds.
-    *   `utils.lua`: Provides helper functions for event queuing, sound playback, and slash commands.
-    *   `battlepets.lua`: Contained logic for battle pet level-up sounds.
-*   **`docs/`**: Project documentation.
-    *   `guidelines_changelog.md`: Defines the format for changelogs.
-    *   `changelog.txt`: The complete history of changes.
-    *   `CHANGES.md`: A list of changes for the next upcoming release.
-*   **`images/`**: Contains addon assets like icons.
-*   **`Libs/`**: Contains third-party libraries, primarily the Ace3 framework.
-*   **`sounds/`**: Contains all `.ogg` sound files.
-*   **`.toc` Files**: (`BLU.toc`, `BLU_Cata.toc`, etc.) Table of Contents files that tell WoW how to load the addon for different game versions.
-*   **`README.md`**: The main project overview.
+```
+BLU/
+├── core/               # Framework and core systems
+├── modules/            # Feature modules (quest, levelup, etc)
+│   ├── achievement/
+│   ├── battlepet/
+│   ├── delve/
+│   ├── honor/
+│   ├── levelup/
+│   ├── quest/
+│   ├── renown/
+│   ├── reputation/
+│   └── tradingpost/
+├── media/              # Sounds and textures
+│   ├── sounds/         # Game sound files (.ogg)
+│   └── Textures/       # Icons and images (.tga, .blp, .png)
+├── localization/       # Language files
+├── libs/               # External libraries (LibSharedMedia-3.0)
+├── .github/            # GitHub Actions workflows
+├── .claude-code-router/ # AI agent configurations
+├── BLU.toc             # Table of Contents (uppercase)
+├── blu.xml             # Main XML loader (lowercase)
+├── README.md           # Public documentation
+└── agent.md            # This file
+```
 
-## 📝 Repository Standards
+## 🏗️ Architecture
 
-I am aware of and will adhere to the following standards:
+- **Loading Order**: `BLU.toc` -> `blu.xml` -> Core Systems -> Localization -> Interface -> Feature Modules.
+- **Core Systems**: `core.lua` (main framework), `database.lua`, `config.lua`, `registry.lua` (sound system), `loader.lua`.
+- **Modules**: Feature modules (e.g., `levelup`, `quest`) are loaded on-demand based on user settings to optimize performance.
+- **Design**: The addon uses a custom lightweight framework that mimics some Ace3 API patterns for potential future migration.
 
-*   **`.toc` File Path Separators:** I will use the correct path separator style for each `.toc` file (`/` for Retail/Cata, `\\` for Mists, `\` for Vanilla).
-*   **Changelog:** I will follow the strict format outlined in `docs/guidelines_changelog.md` when updating `CHANGES.md` and `changelog.txt`.
+## 🤖 AI Assistant Integration
 
-## 🤝 How to Interact With Me
+This project uses `claude-code-router` to delegate tasks to specialized AI models:
+- **`wow-ui-expert` (GPT-4o)**: For UI/UX design and implementation.
+- **`lua-optimizer` (Deepseek)**: For performance and memory optimization.
+- **`code-reviewer` (Gemini)**: For code quality, architecture, and security reviews.
 
-You can direct me with natural language commands to perform the tasks outlined above.
+## 📝 Common Development Tasks
+
+### Testing the Addon
+To test changes in-game, you need to manually copy the addon files to your World of Warcraft directory.
+
+1.  Run the `copy_to_wow.bat` script in the root of the repository.
+2.  This will copy all the necessary files to `C:\Program Files (x86)\World of Warcraft\_retail_\Interface\AddOns\BLU`.
+3.  After the script finishes, use `/reload` in-game to see the changes.
+
+### Adding a New Feature Module
+1.  Create `modules/NewFeature/NewFeature.lua`.
+2.  Implement the module structure:
+    ```lua
+    local module = BLU:NewModule("NewFeature")
+    function module:Init() ... end
+    function module:Cleanup() ... end
+    ```
+3.  Add the new Lua file to `blu.xml` to be loaded.
+
+### Git Workflow
+- **`main`**: Stable releases.
+- **`alpha`**: Active development.
+- Commits should be made as the repository owner. Do not add AI assistants as co-authors.
+
+## 📜 Important Conventions
+
+### Naming Conventions (STRICT)
+- **ALL directories**: MUST be `lowercase`.
+- **ALL Lua and XML files**: MUST be `lowercase`.
+- **EXCEPTIONS**:
+  - `BLU.toc` MUST be `UPPERCASE`.
+- **Addon Name in Code**: `BLU` (uppercase).
+- **Author**: `donniedice`
+- **Email**: `60427166+donniedice@users.noreply.github.com`
+
+*Reasoning: Windows is case-insensitive, but WoW's Lua environment is case-sensitive. All paths in XML and Lua must match the exact case on the file system to prevent issues.*
+
+### Sound File Structure
+- The project is transitioning its sound file structure. While the goal is to have consolidated sound files with volume handled by addon settings, the current implementation still uses volume variants in filenames (e.g., `gamename_soundtype_high.ogg`).
+- The sound registry (`core/registry.lua`) contains logic to handle both consolidated and variant filenames.
+- When working with sounds, refer to `core/registry.lua` and the existing files in `media/sounds/` to understand the current conventions.
+
+### Localization
+- Use `BLU:Loc(key, ...)` for all user-facing strings.
+- All localizations are stored in `localization/`.

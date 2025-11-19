@@ -134,7 +134,7 @@ function InternalSounds:RegisterSoundPacks()
                 name = soundData.name,
                 file = string.format("Interface\\AddOns\\BLU\\sounds\\%s.ogg", soundData.file_id),
                 duration = 2.0,
-                category = "levelup",
+                category = "all",
                 source = "BLU",
                 isInternal = true
             }

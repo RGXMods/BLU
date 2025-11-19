@@ -50,8 +50,6 @@ BLU/
 │   ├── battlepet/
 │   ├── delve/
 │   ├── honor/
-│   ├── interface/
-│   │   └── panels/     # UI panels for different settings sections
 │   ├── levelup/
 │   ├── quest/
 │   ├── renown/

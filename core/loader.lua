@@ -44,15 +44,7 @@ local moduleRegistry = {
         tradingpost = "TradingPost"
     },
     
-    -- Sound modules (loaded per game selection)
-    sounds = {
-        wowdefault = "WoWDefault",
-        finalfantasy = "FinalFantasy",
-        zelda = "Zelda",
-        pokemon = "Pokemon",
-        mario = "Mario",
-        -- Other sound packs will be added as they're created
-    }
+
 }
 
 -- Module loader function

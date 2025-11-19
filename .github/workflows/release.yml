@@ -81,6 +81,24 @@ jobs:
       - name: 📦 Package and Release
         uses: BigWigsMods/packager@master
 
+      - name: 🚀 Upload to Wago.io
+        uses: BigWigsMods/wago-upload@v2
+        with:
+          wago-token: ${{ secrets.WAGO_API_TOKEN }}
+          project-id: "vEGPgWK1"
+          version: ${{ steps.version.outputs.version }}
+          changelog: ${{ steps.changelog.outputs.changelog }}
+          game-version: "11.0.5"
+
+      - name: 🚀 Upload to WoWInterface
+        uses: BigWigsMods/wowinterface-upload@v2
+        with:
+          wow-token: ${{ secrets.WOWI_API_TOKEN }}
+          addon-id: "26465"
+          version: ${{ steps.version.outputs.version }}
+          changelog: ${{ steps.changelog.outputs.changelog }}
+          game-version: "11.0.5"
+
       - name: 📢 Send Discord Notification
         if: success()
         run: |

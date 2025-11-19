@@ -87,7 +87,7 @@ end
 -- Initialize a phase of modules
 function BLU:InitializePhase(phaseName, moduleList)
     self:PrintDebug("[Init] Phase: " .. phaseName)
-    
+
     for _, moduleName in ipairs(moduleList) do
         if not self.initialized[moduleName] then
             local success = self:InitializeModule(moduleName)
@@ -191,30 +191,18 @@ function BLU:PlayTestSound(eventType)
     end
 end
 
--- Hook into ADDON_LOADED
-BLU:RegisterEvent("ADDON_LOADED", function(event, loadedAddonName)
-    if loadedAddonName == "BLU" then
-        BLU:PrintDebug("[Init] ADDON_LOADED event fired for BLU")
-        
-        -- Small delay to ensure everything is loaded
-        C_Timer.After(0.1, function()
-            BLU:Initialize()
-            
-            -- Verify initialization
-            BLU:PrintDebug("[Init] Post-initialization check:")
-            BLU:PrintDebug("[Init]   BLU.db: " .. tostring(BLU.db ~= nil))
-            BLU:PrintDebug("[Init]   BLU.OpenOptions: " .. tostring(BLU.OpenOptions ~= nil))
-            BLU:PrintDebug("[Init]   BLU.OptionsPanel: " .. tostring(BLU.OptionsPanel ~= nil))
-            
-            -- Test if /blu command works
-            if BLU.OpenOptions then
-                BLU:PrintDebug("[Init] /blu command should now work!")
-            else
-                BLU:PrintError("[Init] OpenOptions not available after initialization!")
-            end
-        end)
-        
-        -- Unregister this event
-        BLU:UnregisterEvent("ADDON_LOADED", "core")
+-- Hook into PLAYER_ENTERING_WORLD
+BLU:RegisterEvent("PLAYER_ENTERING_WORLD", function()
+    BLU:PrintDebug("[Init] PLAYER_ENTERING_WORLD event fired for BLU. Initializing...")
+    BLU:Initialize()
+    
+    -- Create the options panel so it's available in the interface options
+    if BLU.CreateOptionsPanel then
+        BLU:CreateOptionsPanel()
+    else
+        BLU:PrintError("[Init] CreateOptionsPanel not available after initialization!")
     end
-end, "core")
+
+    -- Unregister this event as it only needs to fire once
+    BLU:UnregisterEvent("PLAYER_ENTERING_WORLD")
+end)

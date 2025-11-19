@@ -39,25 +39,7 @@
 
 </div>
 
-## 🌟 Join the RGX Mods Community!
 
-<div align="center">
-
-### 💬 **RealmGX Discord - Your Gaming Home!**
-
-[![Join Discord](https://img.shields.io/badge/Join%20Our%20Discord-RealmGX%20Community-7289da?style=for-the-badge&logo=discord&logoColor=white&labelColor=5865F2)](https://discord.gg/N7kdKAHVVF)
-
-**🎮 <span style="color:#ff6b6b">R</span>ealm <span style="color:#4ecdc4">G</span>amers e<span style="color:#4ecdc4">X</span>treme - Where WoW Enthusiasts Unite!**
-
-✨ **What awaits you in our Discord:**
-- 🛠️  **Instant addon support** from the RGX Mods team
-- 🎯 **Feature requests** and direct dev communication
-- 🚀 **Beta testing** opportunities for new releases
-- 🤝 **Community of WoW players** sharing tips and experiences
-- 📢 **First to know** about new RGX Mods releases
-- 🎉 **Events, giveaways**, and community activities
-
-</div>
 
 ## 💖 Support RGX Mods
 
@@ -125,7 +107,10 @@
 | `/blu` | Open the options panel |
 | `/blu help` | Display help information |
 | `/blu debug` | Toggle debug mode on/off |
-| `/blu welcome` | Toggle welcome message on/off |
+| `/blu status` | Show addon status |
+| `/blu enable` | Enable addon |
+| `/blu disable` | Disable addon |
+| `/blu test` | Play test sound |
 
 </div>
 
@@ -195,7 +180,7 @@
 
 | WoW Version | Interface | Status |
 |-------------|-----------|---------|
-| The War Within (Retail) | 110105 | ✅ Fully Supported |
+| The War Within (Retail) | 110005 | ✅ Fully Supported |
 
 **Note**: For Classic support, please use [BLU Classic](https://github.com/donniedice/BLU_Classic).
 
@@ -222,6 +207,8 @@
 - **Enhanced Volume Control**: Per-event volume overrides
 - **Better Performance**: Modular loading system
 - **RGXMods Integration**: Community features and support
+- **Dynamic Module Loading**: Modules are now loaded dynamically from the modules folder.
+- **Dynamic Testable Events**: Testable events are now dynamically populated.
 
 ### Looking for Classic Support?
 <div align="center">

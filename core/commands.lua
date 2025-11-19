@@ -89,46 +89,41 @@ SlashCmdList["BLUTEST"] = function(event)
         BLU:Print("Database not loaded yet")
         return
     end
-    
-    local events = {
-        levelup = function() 
-            BLU:Print("Simulating PLAYER_LEVEL_UP...")
-            if BLU.Modules.LevelUp and BLU.Modules.LevelUp.OnLevelUp then
-                BLU.Modules.LevelUp:OnLevelUp("PLAYER_LEVEL_UP", UnitLevel("player") + 1)
-            end
-        end,
-        achievement = function()
-            BLU:Print("Simulating ACHIEVEMENT_EARNED...")
-            if BLU.Modules.Achievement and BLU.Modules.Achievement.OnAchievementEarned then
-                BLU.Modules.Achievement:OnAchievementEarned("ACHIEVEMENT_EARNED", 6193, false)
-            end
-        end,
-        quest = function()
-            BLU:Print("Simulating QUEST_TURNED_IN...")
-            if BLU.Modules.Quest and BLU.Modules.Quest.OnQuestTurnedIn then
-                BLU.Modules.Quest:OnQuestTurnedIn("QUEST_TURNED_IN", 12345, 1000, 50)
-            end
-        end,
-        reputation = function()
-            BLU:Print("Simulating CHAT_MSG_COMBAT_FACTION_CHANGE...")
-            if BLU.Modules.Reputation and BLU.Modules.Reputation.OnReputationMessage then
-                local chatFrame = DEFAULT_CHAT_FRAME
-                BLU.Modules.Reputation:OnReputationMessage(chatFrame, "CHAT_MSG_COMBAT_FACTION_CHANGE", 
-                    "You are now Friendly with Valdrakken Accord.")
+
+    local events = {}
+    for moduleName, module in pairs(BLU.Modules) do
+        for functionName, _ in pairs(module) do
+            if functionName:find("^On") then
+                local eventName = functionName:gsub("On", ""):lower()
+                events[eventName] = function()
+                    BLU:Print("Simulating " .. functionName .. "...")
+                    if module[functionName] then
+                        module[functionName](module)
+                    end
+                end
             end
         end
-    }
-    
+    end
+
     if event == "" then
-        BLU:Print("Usage: /blutest [levelup|achievement|quest|reputation]")
+        BLU:Print("Usage: /blutest [event]")
+        local available_events = ""
+        for eventName, _ in pairs(events) do
+            available_events = available_events .. eventName .. ", "
+        end
+        BLU:Print("Available events: " .. available_events:sub(1, -3))
         return
     end
-    
+
     local handler = events[event:lower()]
     if handler then
         handler()
     else
         BLU:Print("Unknown event: " .. event)
-        BLU:Print("Available: levelup, achievement, quest, reputation")
+        local available_events = ""
+        for eventName, _ in pairs(events) do
+            available_events = available_events .. eventName .. ", "
+        end
+        BLU:Print("Available events: " .. available_events:sub(1, -3))
     end
 end

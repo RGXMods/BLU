@@ -1,0 +1,29 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+    <!-- Libraries -->
+    <Script file="Libs/LibStub/LibStub.lua"/>
+    <Script file="Libs/CallbackHandler-1.0/CallbackHandler-1.0.lua"/>
+    <Script file="Libs/AceAddon-3.0/AceAddon-3.0.lua"/>
+    <Script file="Libs/AceEvent-3.0/AceEvent-3.0.lua"/>
+    <Script file="Libs/AceTimer-3.0/AceTimer-3.0.lua"/>
+    <Script file="Libs/AceDB-3.0/AceDB-3.0.lua"/>
+    <Script file="Libs/AceDBOptions-3.0/AceDBOptions-3.0.lua"/>
+    <Script file="Libs/AceLocale-3.0/AceLocale-3.0.lua"/>
+    <Script file="Libs/AceConsole-3.0/AceConsole-3.0.lua"/>
+    <Script file="Libs/AceGUI-3.0/AceGUI-3.0.lua"/>
+    <Script file="Libs/AceConfig-3.0/AceConfig-3.0.lua"/>
+
+    <!-- Data Files (BLU Core and Modules) -->
+    <Script file="data/localization.lua"/>
+    <Script file="data/initialization.lua"/>
+    <Script file="data/sounds.lua"/>
+    <Script file="data/utils.lua"/>
+    <Script file="data/core.lua"/>
+    <Script file="data/options.lua"/>
+    <Script file="data/battlepets.lua"/>
+
+    <!-- Add any other module files here if they exist in the codebase -->
+    <!-- <Script file="modules/quest/quest.lua"/> -->
+    <!-- <Script file="modules/levelup/levelup.lua"/> -->
+    <!-- etc. -->
+
+</Ui>

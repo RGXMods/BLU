@@ -1,10 +1,8 @@
+
+BLU_L = BLU_L or {}
 --=====================================================================================
 -- BLU | Better Level-Up! - utils.lua
 --=====================================================================================
---=====================================================================================
--- 
---=====================================================================================
-BLU_L = BLU_L or {}
 
 -- Global table to hold the event queue
 BLU_EventQueue = {}
@@ -24,10 +22,18 @@ end
 -- Event Handling Functions
 --=====================================================================================
 function BLU:HandleEvent(eventName, soundSelectKey, volumeKey, defaultSound, debugMessage)
-    
     if self.functionsHalted then 
         self:PrintDebugMessage("FUNCTIONS_HALTED")
         return 
+    end
+
+    -- Mute the default sound for this event
+    local version = self:GetGameVersion()
+    local soundIDs = muteSoundIDs[version]
+    if soundIDs then
+        for _, soundID in ipairs(soundIDs) do
+            MuteSoundFile(soundID)
+        end
     end
     
     table.insert(BLU_EventQueue, {
@@ -45,7 +51,7 @@ function BLU:HandleEvent(eventName, soundSelectKey, volumeKey, defaultSound, deb
 end
 
 --=====================================================================================
--- 
+-- Process Event Queue
 --=====================================================================================
 function BLU:ProcessEventQueue()
     if #BLU_EventQueue == 0 then
@@ -87,12 +93,15 @@ function BLU:ProcessEventQueue()
 end
 
 --=====================================================================================
+-- Player Entering World Handler
+--=====================================================================================
 function BLU:HandlePlayerEnteringWorld()
     self:HaltOperations()
 end
 
 --=====================================================================================
-
+-- Halt Operations
+--=====================================================================================
 function BLU:HaltOperations()
 
     -- Ensure functions are halted
@@ -114,7 +123,7 @@ function BLU:HaltOperations()
         countdownTime = countdownTime - 1
 
         -- Debug message for each countdown tick
-        self:PrintDebugMessage("COUNTDOWN_TICK", countdownTime)
+        -- self:PrintDebugMessage("COUNTDOWN_TICK", countdownTime)
 
         if countdownTime <= 0 then
             -- Call the resume function when countdown finishes
@@ -122,8 +131,9 @@ function BLU:HaltOperations()
         end
     end, countdownTime)
 end
+
 --=====================================================================================
--- 
+-- Resume Operations
 --=====================================================================================
 function BLU:ResumeOperations()
 
@@ -145,12 +155,34 @@ end
 --=====================================================================================
 -- Slash Command Registration
 --=====================================================================================
-
 function BLU:HandleSlashCommands(input)
-    input = input:trim():lower()  -- Convert input to lowercase
+    input = input:trim():lower()
 
     if input == "" then
-        Settings.OpenToCategory(self.optionsFrame.name)
+        -- Make sure options are initialized first
+        if not self.optionsFrame then
+            self:InitializeOptions()
+        end
+        
+        if self.optionsFrame then
+            -- Try modern API first (Retail)
+            if Settings and Settings.OpenToCategory then
+                Settings.OpenToCategory(self.optionsFrame.name)
+            -- Try legacy API (all Classic versions)
+            elseif InterfaceOptionsFrame_OpenToCategory then
+                if InterfaceAddOnsList_Update then
+                    InterfaceAddOnsList_Update()
+                end
+                InterfaceOptionsFrame_OpenToCategory(self.optionsFrame.name)
+                InterfaceOptionsFrame_OpenToCategory(self.optionsFrame.name)
+            else
+                print(BLU_PREFIX .. "InterfaceOptionsFrame_OpenToCategory not found")
+                print(BLU_PREFIX .. "Type: " .. tostring(type(InterfaceOptionsFrame_OpenToCategory)))
+            end
+        else
+            print(BLU_PREFIX .. "Options not initialized. Please reload UI.")
+        end
+        
         if self.debugMode then
             self:PrintDebugMessage("OPTIONS_PANEL_OPENED")
         end
@@ -165,13 +197,13 @@ function BLU:HandleSlashCommands(input)
     end
 end
 --=====================================================================================
--- 
+-- Display BLU Help
 --=====================================================================================
 function BLU:DisplayBLUHelp()
     local helpCommand = BLU_L["HELP_COMMAND"] or "/blu help - Displays help information."
     local helpDebug = BLU_L["HELP_DEBUG"] or "/blu debug - Toggles debug mode."
     local helpWelcome = BLU_L["HELP_WELCOME"] or "/blu welcome - Toggles welcome messages."
-    local helpPanel = BLU_L["HELP_PANEL"] or "/blu panel - Opens the options panel."
+    local helpPanel = BLU_L["HELP_PANEL"] or "/blu - Opens the options panel."
 
     print(BLU_PREFIX .. helpCommand)
     print(BLU_PREFIX .. helpDebug)
@@ -197,7 +229,7 @@ function BLU:GetLocalizedString(key)
 end
 ]]
 --=====================================================================================
--- 
+-- Toggle Debug Mode
 --=====================================================================================
 function BLU:ToggleDebugMode()
     self.debugMode = not self.debugMode
@@ -214,7 +246,7 @@ function BLU:ToggleDebugMode()
     end
 end
 --=====================================================================================
--- 
+-- Toggle Welcome Message
 --=====================================================================================
 
 function BLU:ToggleWelcomeMessage()
@@ -277,7 +309,7 @@ function BLU:RandomSoundID()
     return selectedSoundID
 end
 --=====================================================================================
--- 
+-- Select Sound
 --=====================================================================================
 function BLU:SelectSound(soundID)
     self:PrintDebugMessage("SELECTING_SOUND", "|cff8080ff" .. tostring(soundID) .. "|r")
@@ -307,7 +339,7 @@ function BLU:TestSound(soundID, volumeKey, defaultSound, debugMessage)
     self:PlaySelectedSound(sound, volumeLevel, defaultSound)
 end
 --=====================================================================================
--- 
+-- Play Selected Sound
 --=====================================================================================
 function BLU:PlaySelectedSound(sound, volumeLevel, defaultTable)
     self:PrintDebugMessage("PLAYING_SOUND", sound.id, volumeLevel)

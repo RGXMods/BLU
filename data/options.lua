@@ -1,3 +1,4 @@
+
 --=====================================================================================
 -- Default Profile Settings
 --=====================================================================================
@@ -9,7 +10,8 @@ BLU.defaults = {
         AchievementVolume = 2.0,
         BattlePetLevelSoundSelect = 37,
         BattlePetLevelVolume = 2.0,
-
+        DelveLevelUpSoundSelect = 50,
+        DelveLevelUpVolume = 2.0,
         HonorSoundSelect = 27,
         HonorVolume = 2.0,
         LevelSoundSelect = 24,
@@ -43,7 +45,7 @@ BLU.options = {
         group2 = {
             type = "group",
             order = 2,
-            name = BLU_L["ACHIEVEMENT_EARNED"], --COLOR SHOULD BE BLU
+            name = BLU_L["ACHIEVEMENT_EARNED"],
             inline = true,
             get = "GetValue",
             set = "SetValue",
@@ -51,8 +53,8 @@ BLU.options = {
                 AchievementSoundSelect = {
                     type = "select",
                     order = 1,
-                    name = "",  -- Can leave blank if desired
-                    desc = "",  -- Blank sound description
+                    name = "",
+                    desc = "",
                     values = soundOptions,
                 },
                 TestAchievementSound = {
@@ -62,14 +64,14 @@ BLU.options = {
                     imageWidth = 20,
                     imageHeight = 20,
                     name = "",
-                    desc = "",  -- Description not needed for button
+                    desc = "",
                     func = function() BLU:TestAchievementSound() end,
                 },
                 AchievementVolume = {
                     type = "range",
                     order = 3,
-                    name = BLU_L["ACHIEVEMENT_VOLUME_LABEL"], -- COLOR SHOULD BE BLU
-                    desc = BLU_L["ACHIEVEMENT_VOLUME_DESC"], -- color should be white
+                    name = BLU_L["ACHIEVEMENT_VOLUME_LABEL"],
+                    desc = BLU_L["ACHIEVEMENT_VOLUME_DESC"],
                     min = 0,
                     max = 3,
                     step = 1,
@@ -79,7 +81,7 @@ BLU.options = {
         group3 = {
             type = "group",
             order = 3,
-            name = BLU_L["BATTLE_PET_LEVEL_UP"], -- color should be white
+            name = BLU_L["BATTLE_PET_LEVEL_UP"],
             inline = true,
             get = "GetValue",
             set = "SetValue",
@@ -87,8 +89,8 @@ BLU.options = {
                 BattlePetLevelSoundSelect = {
                     type = "select",
                     order = 1,
-                    name = "",  -- Can leave blank if desired
-                    desc = "",  -- Blank sound description
+                    name = "",
+                    desc = "",
                     values = soundOptions,
                 },
                 TestBattlePetLevelSound = {
@@ -96,27 +98,62 @@ BLU.options = {
                     order = 2,
                     image = "Interface\\Addons\\BLU\\images\\play.blp",
                     imageWidth = 20,
-                   imageHeight = 20,
+                    imageHeight = 20,
                     name = "",
-                    desc = "",  -- Description not needed for button
+                    desc = "",
                     func = function() BLU:TestBattlePetLevelSound() end,
                 },
                 BattlePetLevelVolume = {
                     type = "range",
                     order = 3,
-                    name = BLU_L["BATTLE_PET_VOLUME_LABEL"], -- color should be white
-                    desc = BLU_L["BATTLE_PET_VOLUME_DESC"], -- color should be blu
+                    name = BLU_L["BATTLE_PET_VOLUME_LABEL"],
+                    desc = BLU_L["BATTLE_PET_VOLUME_DESC"],
                     min = 0,
                     max = 3,
                     step = 1,
                 },
             },
         },
-
+        group4 = {
+            type = "group",
+            order = 4,
+            name = BLU_L["DELVE_COMPANION_LEVEL_UP"],
+            inline = true,
+            get = "GetValue",
+            set = "SetValue",
+            args = {
+                DelveLevelUpSoundSelect = {
+                    type = "select",
+                    order = 1,
+                    name = "",
+                    desc = "",
+                    values = soundOptions,
+                },
+                TestDelveLevelUpSound = {
+                    type = "execute",
+                    order = 2,
+                    image = "Interface\\Addons\\BLU\\images\\play.blp",
+                    imageWidth = 20,
+                    imageHeight = 20,
+                    name = "",
+                    desc = "",
+                    func = function() BLU:TestDelveLevelUpSound() end,
+                },
+                DelveLevelUpVolume = {
+                    type = "range",
+                    order = 3,
+                    name = BLU_L["DELVE_VOLUME_LABEL"],
+                    desc = BLU_L["DELVE_VOLUME_DESC"],
+                    min = 0,
+                    max = 3,
+                    step = 1,
+                },
+            },
+        },
         group5 = {
             type = "group",
             order = 5,
-            name = BLU_L["HONOR_RANK_UP"],-- color should be white
+            name = BLU_L["HONOR_RANK_UP"],
             inline = true,
             get = "GetValue",
             set = "SetValue",
@@ -124,8 +161,8 @@ BLU.options = {
                 HonorSoundSelect = {
                     type = "select",
                     order = 1,
-                    name = "",  -- Can leave blank if desired
-                    desc = "",  -- Blank sound description
+                    name = "",
+                    desc = "",
                     values = soundOptions,
                 },
                 TestHonorSound = {
@@ -135,14 +172,14 @@ BLU.options = {
                     imageWidth = 20,
                     imageHeight = 20,
                     name = "",
-                    desc = "",  -- Description not needed for button
+                    desc = "",
                     func = function() BLU:TestHonorSound() end,
                 },
                 HonorVolume = {
                     type = "range",
                     order = 3,
-                    name = BLU_L["HONOR_VOLUME_LABEL"],-- color should be white
-                    desc = BLU_L["HONOR_VOLUME_DESC"],-- COLOR SHOULD BE BLU
+                    name = BLU_L["HONOR_VOLUME_LABEL"],
+                    desc = BLU_L["HONOR_VOLUME_DESC"],
                     min = 0,
                     max = 3,
                     step = 1,
@@ -160,8 +197,8 @@ BLU.options = {
                 LevelSoundSelect = {
                     type = "select",
                     order = 1,
-                    name = "",  -- Can leave blank if desired
-                    desc = "",  -- Blank sound description
+                    name = "",
+                    desc = "",
                     values = soundOptions,
                 },
                 TestLevelSound = {
@@ -171,7 +208,7 @@ BLU.options = {
                     imageWidth = 20,
                     imageHeight = 20,
                     name = "",
-                    desc = "",  -- Description not needed for button
+                    desc = "",
                     func = function() BLU:TestLevelSound() end,
                 },
                 LevelVolume = {
@@ -196,8 +233,8 @@ BLU.options = {
                 QuestAcceptSoundSelect = {
                     type = "select",
                     order = 1,
-                    name = "",  -- Can leave blank if desired
-                    desc = "",  -- Blank sound description
+                    name = "",
+                    desc = "",
                     values = soundOptions,
                 },
                 TestQuestAcceptSound = {
@@ -207,7 +244,7 @@ BLU.options = {
                     imageWidth = 20,
                     imageHeight = 20,
                     name = "",
-                    desc = "",  -- Description not needed for button
+                    desc = "",
                     func = function() BLU:TestQuestAcceptSound() end,
                 },
                 QuestAcceptVolume = {
@@ -232,8 +269,8 @@ BLU.options = {
                 QuestSoundSelect = {
                     type = "select",
                     order = 1,
-                    name = "",  -- Can leave blank if desired
-                    desc = "",  -- Blank sound description
+                    name = "",
+                    desc = "",
                     values = soundOptions,
                 },
                 TestQuestSound = {
@@ -243,7 +280,7 @@ BLU.options = {
                     imageWidth = 20,
                     imageHeight = 20,
                     name = "",
-                    desc = "",  -- Description not needed for button
+                    desc = "",
                     func = function() BLU:TestQuestSound() end,
                 },
                 QuestVolume = {
@@ -268,8 +305,8 @@ BLU.options = {
                 RenownSoundSelect = {
                     type = "select",
                     order = 1,
-                    name = "",  -- Can leave blank if desired
-                    desc = "",  -- Blank sound description
+                    name = "",
+                    desc = "",
                     values = soundOptions,
                 },
                 TestRenownSound = {
@@ -279,7 +316,7 @@ BLU.options = {
                     imageWidth = 20,
                     imageHeight = 20,
                     name = "",
-                    desc = "",  -- Description not needed for button
+                    desc = "",
                     func = function() BLU:TestRenownSound() end,
                 },
                 RenownVolume = {
@@ -304,8 +341,8 @@ BLU.options = {
                 RepSoundSelect = {
                     type = "select",
                     order = 1,
-                    name = "",  -- Can leave blank if desired
-                    desc = "",  -- Blank sound description
+                    name = "",
+                    desc = "",
                     values = soundOptions,
                 },
                 TestRepSound = {
@@ -315,7 +352,7 @@ BLU.options = {
                     imageWidth = 20,
                     imageHeight = 20,
                     name = "",
-                    desc = "",  -- Description not needed for button
+                    desc = "",
                     func = function() BLU:TestRepSound() end,
                 },
                 RepVolume = {
@@ -340,8 +377,8 @@ BLU.options = {
                 PostSoundSelect = {
                     type = "select",
                     order = 1,
-                    name = "",  -- Can leave blank if desired
-                    desc = "",  -- Blank sound description
+                    name = "",
+                    desc = "",
                     values = soundOptions,
                 },
                 TestPostSound = {
@@ -351,7 +388,7 @@ BLU.options = {
                     imageWidth = 20,
                     imageHeight = 20,
                     name = "",
-                    desc = "",  -- Description not needed for button
+                    desc = "",
                     func = function() BLU:TestPostSound() end,
                 },
                 PostVolume = {
@@ -368,7 +405,7 @@ BLU.options = {
         versionHeader = {
             type = "header",
             order = 12,
-            name = "|cff8080ff" .. BLU.VersionNumber .. "|r",
+            name = "|cff8080ff" .. (BLU.VersionNumber or "v1.1.8") .. "|r",
         },
     },
 }

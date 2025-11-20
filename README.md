@@ -3,7 +3,7 @@
 
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/donniedice/BLU_Classic/main/images/BLU_Logo.png" alt="BLU Classic Logo" width="256">
+<img src="https://raw.githubusercontent.com/donniedice/BLU/main/images/BLU_Logo.png" alt="BLU Logo" width="256">
 
 [![BLU Icon](https://img.shields.io/badge/BLU-Better%20Level%20Up!-05dffa?style=for-the-badge&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==&logoColor=white)](https://github.com/donniedice/BLU)
 
@@ -187,7 +187,7 @@ Each sound type has three volume levels:
 
 | WoW Version | Interface | Status | Features |
 |-------------|-----------|--------|----------|
-| The War Within (Retail) | 110105 | ✅ Fully Supported | All Features |
+| The War Within (Retail) | 120000 | ✅ Fully Supported | All Features |
 | Cataclysm Classic | 40402 | ✅ Fully Supported | Core Features |
 | Classic Era / Hardcore / SoD | 11507 | ✅ Fully Supported | Core Features |
 
@@ -205,22 +205,11 @@ Each sound type has three volume levels:
 
 2. **Extract** to your WoW AddOns directory:
    - **Retail**: `World of Warcraft/_retail_/Interface/AddOns`
-   - **Classic**: `World of Warcraft/_classic_/Interface/AddOns`
-   - **Classic Era**: `World of Warcraft/_classic_era_/Interface/AddOns`
+
 
 3. **Restart** WoW and enable in AddOns menu
 
-## 🆕 Looking for Universal Support?
 
-<div align="center">
-
-### 🌟 **Try BLU Classic!**
-
-[![BLU Classic](https://img.shields.io/badge/BLU%20Classic-Universal%20Version-FFD700?style=for-the-badge&logo=worldofwarcraft)](https://github.com/donniedice/BLU_Classic)
-
-**BLU Classic** is the universal version that supports ALL WoW versions with a single addon!
-
-</div>
 
 ## 🛠️ Configuration Tips
 

@@ -1,6 +1,6 @@
 # 🤖 AI Agent: Goose for BLU
 
-## 🚀 Project: BLU | Better Level-Up!
+## 🚀 Project: BLU | Better Level-Up! (v5.2.13) 
 
 This document is my internal configuration and knowledge base for the "BLU | Better Level-Up!" project. It outlines my purpose, capabilities, and a verified map of the repository.
 
@@ -19,7 +19,7 @@ My primary goal is to assist with the development and maintenance of the BLU add
 
 *   **`.github/workflows/`**: Contains GitHub Actions for automation.
     *   `release.yml`: Automates the packaging and release process when a new version tag is pushed.
-    *   `copy-secrets.yml`: A manual workflow to sync secrets to the `BLU_Classic` repository.
+    *   `copy-secrets.yml`: A manual workflow to sync secrets to the `BLU` repository.
 *   **`data/`**: The core logic of the addon.
     *   `core.lua`: Handles the addon's main event logic.
     *   `initialization.lua`: Manages addon startup, version detection, and event registration.
@@ -35,14 +35,14 @@ My primary goal is to assist with the development and maintenance of the BLU add
 *   **`images/`**: Contains addon assets like icons.
 *   **`Libs/`**: Contains third-party libraries, primarily the Ace3 framework.
 *   **`sounds/`**: Contains all `.ogg` sound files.
-*   **`.toc` Files**: (`BLU.toc`, `BLU_Cata.toc`, etc.) Table of Contents files that tell WoW how to load the addon for different game versions.
+*   **`.toc` Files**: (`BLU.toc`, `BLU_Vanilla.toc`, `BLU_Mists.toc`) Table of Contents files that tell WoW how to load the addon for different game versions.
 *   **`README.md`**: The main project overview.
 
 ## 📝 Repository Standards
 
 I am aware of and will adhere to the following standards:
 
-*   **`.toc` File Path Separators:** I will use the correct path separator style for each `.toc` file (`/` for Retail/Cata, `\\` for Mists, `\` for Vanilla).
+*   **`.toc` File Path Separators:** I will use the correct path separator style for each `.toc` file (`/` for Retail/Cata, `\` for Mists, `\` for Vanilla).
 *   **Changelog:** I will follow the strict format outlined in `docs/guidelines_changelog.md` when updating `CHANGES.md` and `changelog.txt`.
 
 ## 🤝 How to Interact With Me

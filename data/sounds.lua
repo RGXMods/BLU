@@ -14,8 +14,29 @@ muteSoundIDs = {
         567439,  -- Quest Turned In
         2066672  -- Trade Post
     },
+    mists = {
+        569143,  -- Achievement
+        569593,  -- Level Up
+        642841,  -- Battle Pet Level
+        568016,  -- Reputation
+        567400,  -- Quest Accepted
+        567439   -- Quest Turned In
+    },
     cata = {
         569143,  -- Achievement
+        569593,  -- Level Up
+        568016,  -- Reputation
+        567400,  -- Quest Accepted
+        567439   -- Quest Turned In
+    },
+    wrath = {
+        569143,  -- Achievement
+        569593,  -- Level Up
+        568016,  -- Reputation
+        567400,  -- Quest Accepted
+        567439   -- Quest Turned In
+    },
+    tbc = {
         569593,  -- Level Up
         568016,  -- Reputation
         567400,  -- Quest Accepted

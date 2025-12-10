@@ -1,148 +1,187 @@
-BLU = LibStub("AceAddon-3.0"):NewAddon("BLU", "AceEvent-3.0", "AceConsole-3.0", "AceTimer-3.0")
-BLU_L = BLU_L or {}
-
-function BLU:GetGameVersion()
-    local _, _, _, interfaceVersion = GetBuildInfo()
-
-    if interfaceVersion >= 110000 then
-        return "retail"
-    elseif interfaceVersion >= 100000 and interfaceVersion < 110000 then
-        return "retail"
-    elseif interfaceVersion >= 50000 and interfaceVersion < 60000 then
-        return "mists"
-    elseif interfaceVersion >= 40000 and interfaceVersion < 50000 then
-        return "cata"
-    elseif interfaceVersion >= 30000 and interfaceVersion < 40000 then
-        return "wrath"
-    elseif interfaceVersion >= 20000 and interfaceVersion < 30000 then
-        return "tbc"
-    elseif interfaceVersion >= 10000 and interfaceVersion < 20000 then
-        return "vanilla"
-    else
-        self:PrintDebugMessage("ERROR_UNKNOWN_GAME_VERSION: " .. tostring(interfaceVersion))
-        return "unknown"
-    end
-end
-
-function BLU:RegisterSharedEvents()
-    local version = self:GetGameVersion()
-
-    local events = {
-        PLAYER_ENTERING_WORLD = "HandlePlayerEnteringWorld",
-        PLAYER_LEVEL_UP = "HandlePlayerLevelUp",
-        QUEST_ACCEPTED = "HandleQuestAccepted",
-        QUEST_TURNED_IN = "HandleQuestTurnedInAndScanReputation",
-        UPDATE_FACTION = "ScheduleReputationScan",
-    }
-
-    if version == "retail" then
-        events.ACHIEVEMENT_EARNED = "HandleAchievementEarned"
-        events.HONOR_LEVEL_UPDATE = "HandleHonorLevelUpdate"
-        events.MAJOR_FACTION_RENOWN_LEVEL_CHANGED = "HandleRenownLevelChanged"
-        events.PERKS_ACTIVITY_COMPLETED = "HandlePerksActivityCompleted"
-        events.PET_BATTLE_LEVEL_CHANGED = "HandleBattlePetLevelUp"
-        events.PET_JOURNAL_LIST_UPDATE = "HandleBattlePetLevelUp"
-    elseif version == "mists" then
-        events.ACHIEVEMENT_EARNED = "HandleAchievementEarned"
-        events.PET_BATTLE_LEVEL_CHANGED = "HandleBattlePetLevelUp"
-        events.PET_JOURNAL_LIST_UPDATE = "HandleBattlePetLevelUp"
-    elseif version == "cata" or version == "wrath" then
-        events.ACHIEVEMENT_EARNED = "HandleAchievementEarned"
-    end
-
-    for event, handler in pairs(events) do
-        if type(self[handler]) == "function" then
-            self:RegisterEvent(event, handler)
-        end
-    end
-end
-
 --=====================================================================================
 -- BLU | Better Level-Up! - core.lua
+-- Consolidated addon core with version-aware functionality
 --=====================================================================================
 
+-- Safely create or get the BLU addon (prevents "already exists" error)
+local addonName = "BLU"
+BLU = LibStub("AceAddon-3.0"):GetAddon(addonName, true) or LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0", "AceConsole-3.0", "AceTimer-3.0")
+BLU_L = BLU_L or {}
+
+--=====================================================================================
+-- Game Version Detection (cached for performance)
+--=====================================================================================
+local cachedGameVersion = nil
+
+function BLU:GetGameVersion()
+    if cachedGameVersion then return cachedGameVersion end
+    
+    local _, _, _, interfaceVersion = GetBuildInfo()
+    
+    if interfaceVersion >= 110000 then
+        cachedGameVersion = "retail"
+    elseif interfaceVersion >= 100000 then
+        cachedGameVersion = "retail"
+    elseif interfaceVersion >= 50000 and interfaceVersion < 60000 then
+        cachedGameVersion = "mists"
+    elseif interfaceVersion >= 40000 and interfaceVersion < 50000 then
+        cachedGameVersion = "cata"
+    elseif interfaceVersion >= 30000 and interfaceVersion < 40000 then
+        cachedGameVersion = "wrath"
+    elseif interfaceVersion >= 20000 and interfaceVersion < 30000 then
+        cachedGameVersion = "tbc"
+    elseif interfaceVersion >= 10000 and interfaceVersion < 20000 then
+        cachedGameVersion = "vanilla"
+    else
+        cachedGameVersion = "unknown"
+    end
+    
+    return cachedGameVersion
+end
+
+--=====================================================================================
+-- Feature Compatibility Tables (single source of truth)
+--=====================================================================================
+local FEATURE_AVAILABILITY = {
+    Achievement = { retail = true, mists = true, cata = true, wrath = true },
+    BattlePet = { retail = true, mists = true },
+    Honor = { retail = true },
+    Delve = { retail = true },
+    Renown = { retail = true },
+    Post = { retail = true },
+    Level = { retail = true, mists = true, cata = true, wrath = true, tbc = true, vanilla = true },
+    Quest = { retail = true, mists = true, cata = true, wrath = true, tbc = true, vanilla = true },
+    QuestAccept = { retail = true, mists = true, cata = true, wrath = true, tbc = true, vanilla = true },
+    Reputation = { retail = true, mists = true, cata = true, wrath = true, tbc = true, vanilla = true },
+}
+
+function BLU:IsFeatureAvailable(feature)
+    local version = self:GetGameVersion()
+    return FEATURE_AVAILABILITY[feature] and FEATURE_AVAILABILITY[feature][version] or false
+end
+
+--=====================================================================================
+-- Event Registration
+--=====================================================================================
+function BLU:RegisterSharedEvents()
+    local version = self:GetGameVersion()
+    
+    -- Base events for all versions
+    self:RegisterEvent("PLAYER_ENTERING_WORLD", "HandlePlayerEnteringWorld")
+    self:RegisterEvent("PLAYER_LEVEL_UP", "HandlePlayerLevelUp")
+    self:RegisterEvent("QUEST_ACCEPTED", "HandleQuestAccepted")
+    self:RegisterEvent("QUEST_TURNED_IN", "HandleQuestTurnedInAndScanReputation")
+    self:RegisterEvent("UPDATE_FACTION", "ScheduleReputationScan")
+    
+    -- Version-specific events
+    if self:IsFeatureAvailable("Achievement") then
+        self:RegisterEvent("ACHIEVEMENT_EARNED", "HandleAchievementEarned")
+    end
+    
+    if version == "retail" then
+        self:RegisterEvent("HONOR_LEVEL_UPDATE", "HandleHonorLevelUpdate")
+        self:RegisterEvent("MAJOR_FACTION_RENOWN_LEVEL_CHANGED", "HandleRenownLevelChanged")
+        self:RegisterEvent("PERKS_ACTIVITY_COMPLETED", "HandlePerksActivityCompleted")
+        -- Note: Battle pet events handled by separate battlepets.lua for retail
+    end
+end
+
+--=====================================================================================
+-- Event Handlers
+--=====================================================================================
 function BLU:HandleQuestTurnedInAndScanReputation()
     self:HandleQuestTurnedIn()
     self:ScheduleReputationScan()
 end
 
 function BLU:HandlePlayerLevelUp()
-    self:HandleEvent("PLAYER_LEVEL_UP", "LevelSoundSelect", "LevelVolume", defaultSounds[4], "PLAYER_LEVEL_UP_TRIGGERED")
+    self:HandleEvent("PLAYER_LEVEL_UP", "LevelSoundSelect", "LevelVolume", defaultSounds and defaultSounds[4], "PLAYER_LEVEL_UP_TRIGGERED")
 end
 
 function BLU:HandleQuestAccepted()
-    self:HandleEvent("QUEST_ACCEPTED", "QuestAcceptSoundSelect", "QuestAcceptVolume", defaultSounds[7], "QUEST_ACCEPTED_TRIGGERED")
+    self:HandleEvent("QUEST_ACCEPTED", "QuestAcceptSoundSelect", "QuestAcceptVolume", defaultSounds and defaultSounds[7], "QUEST_ACCEPTED_TRIGGERED")
 end
 
 function BLU:HandleQuestTurnedIn()
-    self:HandleEvent("QUEST_TURNED_IN", "QuestSoundSelect", "QuestVolume", defaultSounds[8], "QUEST_TURNED_IN_TRIGGERED")
+    self:HandleEvent("QUEST_TURNED_IN", "QuestSoundSelect", "QuestVolume", defaultSounds and defaultSounds[8], "QUEST_TURNED_IN_TRIGGERED")
 end
 
 function BLU:HandleAchievementEarned()
-    self:HandleEvent("ACHIEVEMENT_EARNED", "AchievementSoundSelect", "AchievementVolume", defaultSounds[1], "ACHIEVEMENT_EARNED_TRIGGERED")
+    if not self:IsFeatureAvailable("Achievement") then return end
+    self:HandleEvent("ACHIEVEMENT_EARNED", "AchievementSoundSelect", "AchievementVolume", defaultSounds and defaultSounds[1], "ACHIEVEMENT_EARNED_TRIGGERED")
 end
 
 function BLU:HandleHonorLevelUpdate()
-    self:HandleEvent("HONOR_LEVEL_UPDATE", "HonorSoundSelect", "HonorVolume", defaultSounds[5], "HONOR_LEVEL_UPDATE_TRIGGERED")
+    if not self:IsFeatureAvailable("Honor") then return end
+    self:HandleEvent("HONOR_LEVEL_UPDATE", "HonorSoundSelect", "HonorVolume", defaultSounds and defaultSounds[5], "HONOR_LEVEL_UPDATE_TRIGGERED")
 end
 
 function BLU:HandleBattlePetLevelUp()
-    self:HandleEvent("PET_BATTLE_LEVEL_CHANGED", "BattlePetLevelSoundSelect", "BattlePetLevelVolume", defaultSounds[2], "BATTLE_PET_LEVEL_UP_TRIGGERED")
+    if not self:IsFeatureAvailable("BattlePet") then return end
+    self:HandleEvent("PET_BATTLE_LEVEL_CHANGED", "BattlePetLevelSoundSelect", "BattlePetLevelVolume", defaultSounds and defaultSounds[2], "BATTLE_PET_LEVEL_UP_TRIGGERED")
 end
 
 function BLU:HandleRenownLevelChanged()
-    self:HandleEvent("MAJOR_FACTION_RENOWN_LEVEL_CHANGED", "RenownSoundSelect", "RenownVolume", defaultSounds[6], "MAJOR_FACTION_RENOWN_LEVEL_CHANGED_TRIGGERED")
+    if not self:IsFeatureAvailable("Renown") then return end
+    self:HandleEvent("MAJOR_FACTION_RENOWN_LEVEL_CHANGED", "RenownSoundSelect", "RenownVolume", defaultSounds and defaultSounds[6], "MAJOR_FACTION_RENOWN_LEVEL_CHANGED_TRIGGERED")
 end
 
 function BLU:HandlePerksActivityCompleted()
-    self:HandleEvent("PERKS_ACTIVITY_COMPLETED", "PostSoundSelect", "PostVolume", defaultSounds[9], "PERKS_ACTIVITY_COMPLETED_TRIGGERED")
+    if not self:IsFeatureAvailable("Post") then return end
+    self:HandleEvent("PERKS_ACTIVITY_COMPLETED", "PostSoundSelect", "PostVolume", defaultSounds and defaultSounds[9], "PERKS_ACTIVITY_COMPLETED_TRIGGERED")
 end
 
 --=====================================================================================
--- Test Sound Trigger Functions
+-- Test Sound Functions
 --=====================================================================================
 function BLU:TestAchievementSound()
-    self:TestSound("AchievementSoundSelect", "AchievementVolume", defaultSounds[1], "TEST_ACHIEVEMENT_SOUND")
+    if not self:IsFeatureAvailable("Achievement") then return end
+    self:TestSound("AchievementSoundSelect", "AchievementVolume", defaultSounds and defaultSounds[1], "TEST_ACHIEVEMENT_SOUND")
 end
 
 function BLU:TestBattlePetLevelSound()
-    self:TestSound("BattlePetLevelSoundSelect", "BattlePetLevelVolume", defaultSounds[2], "TEST_BATTLE_PET_LEVEL_SOUND")
+    if not self:IsFeatureAvailable("BattlePet") then return end
+    self:TestSound("BattlePetLevelSoundSelect", "BattlePetLevelVolume", defaultSounds and defaultSounds[2], "TEST_BATTLE_PET_LEVEL_SOUND")
 end
 
 function BLU:TestDelveLevelUpSound()
-    self:TestSound("DelveLevelUpSoundSelect", "DelveLevelUpVolume", defaultSounds[3], "TEST_DELVE_LEVEL_UP_SOUND")
+    if not self:IsFeatureAvailable("Delve") then return end
+    self:TestSound("DelveLevelUpSoundSelect", "DelveLevelUpVolume", defaultSounds and defaultSounds[3], "TEST_DELVE_LEVEL_UP_SOUND")
 end
 
 function BLU:TestHonorSound()
-    self:TestSound("HonorSoundSelect", "HonorVolume", defaultSounds[5], "TEST_HONOR_SOUND")
+    if not self:IsFeatureAvailable("Honor") then return end
+    self:TestSound("HonorSoundSelect", "HonorVolume", defaultSounds and defaultSounds[5], "TEST_HONOR_SOUND")
 end
 
 function BLU:TestLevelSound()
-    self:TestSound("LevelSoundSelect", "LevelVolume", defaultSounds[4], "TEST_LEVEL_SOUND")
+    self:TestSound("LevelSoundSelect", "LevelVolume", defaultSounds and defaultSounds[4], "TEST_LEVEL_SOUND")
 end
 
 function BLU:TestPostSound()
-    self:TestSound("PostSoundSelect", "PostVolume", defaultSounds[9], "TEST_POST_SOUND")
+    if not self:IsFeatureAvailable("Post") then return end
+    self:TestSound("PostSoundSelect", "PostVolume", defaultSounds and defaultSounds[9], "TEST_POST_SOUND")
 end
 
 function BLU:TestQuestAcceptSound()
-    self:TestSound("QuestAcceptSoundSelect", "QuestAcceptVolume", defaultSounds[7], "TEST_QUEST_ACCEPT_SOUND")
+    self:TestSound("QuestAcceptSoundSelect", "QuestAcceptVolume", defaultSounds and defaultSounds[7], "TEST_QUEST_ACCEPT_SOUND")
 end
 
 function BLU:TestQuestSound()
-    self:TestSound("QuestSoundSelect", "QuestVolume", defaultSounds[8], "TEST_QUEST_SOUND")
+    self:TestSound("QuestSoundSelect", "QuestVolume", defaultSounds and defaultSounds[8], "TEST_QUEST_SOUND")
 end
 
 function BLU:TestRenownSound()
-    self:TestSound("RenownSoundSelect", "RenownVolume", defaultSounds[6], "TEST_RENOWN_SOUND")
+    if not self:IsFeatureAvailable("Renown") then return end
+    self:TestSound("RenownSoundSelect", "RenownVolume", defaultSounds and defaultSounds[6], "TEST_RENOWN_SOUND")
 end
 
 function BLU:TestRepSound()
-    self:TestSound("RepSoundSelect", "RepVolume", defaultSounds[6], "TEST_REP_SOUND")
+    self:TestSound("RepSoundSelect", "RepVolume", defaultSounds and defaultSounds[6], "TEST_REP_SOUND")
 end
 
 --=====================================================================================
--- Reputation Event Handler
+-- Reputation System
 --=====================================================================================
 local function GetReputationFunctions()
     local GetNumFactions = _G.GetNumFactions or (C_Reputation and C_Reputation.GetNumFactions)
@@ -150,7 +189,12 @@ local function GetReputationFunctions()
         if not factionIndex then return nil end
         local factionData = C_Reputation.GetFactionDataByIndex(factionIndex)
         if not factionData then return nil end
-        return factionData.name, factionData.description, factionData.reaction, factionData.currentReactionThreshold, factionData.nextReactionThreshold, factionData.currentStanding, factionData.atWarWith, factionData.canToggleAtWar, factionData.isHeader, factionData.isCollapsed, factionData.isHeaderWithRep, factionData.isWatched, factionData.isChild, factionData.factionID, factionData.hasBonusRepGain, factionData.canSetInactive
+        return factionData.name, factionData.description, factionData.reaction, 
+               factionData.currentReactionThreshold, factionData.nextReactionThreshold, 
+               factionData.currentStanding, factionData.atWarWith, factionData.canToggleAtWar, 
+               factionData.isHeader, factionData.isCollapsed, factionData.isHeaderWithRep, 
+               factionData.isWatched, factionData.isChild, factionData.factionID, 
+               factionData.hasBonusRepGain, factionData.canSetInactive
     end)
     return GetNumFactions, GetFactionInfo
 end
@@ -184,13 +228,13 @@ function BLU:ScanForReputationChanges()
         local name, _, standingId, _, _, _, _, _, _, _, _, _, _, factionID = GetFactionInfo(i)
         if factionID and self.db.char.reputationCache[factionID] then
             local oldStandingId = self.db.char.reputationCache[factionID].standingId
-            if standingId > oldStandingId then
-                self:PrintDebugMessage("Reputation rank-up detected for " .. name)
-                self:HandleEvent("REPUTATION_RANK_INCREASE", "RepSoundSelect", "RepVolume", defaultSounds[6], "REPUTATION_RANK_INCREASE_TRIGGERED")
+            if standingId and oldStandingId and standingId > oldStandingId then
+                self:PrintDebugMessage("Reputation rank-up detected for " .. (name or "Unknown"))
+                self:HandleEvent("REPUTATION_RANK_INCREASE", "RepSoundSelect", "RepVolume", defaultSounds and defaultSounds[6], "REPUTATION_RANK_INCREASE_TRIGGERED")
             end
             self.db.char.reputationCache[factionID].standingId = standingId
         elseif factionID then
-             self.db.char.reputationCache[factionID] = {
+            self.db.char.reputationCache[factionID] = {
                 name = name,
                 standingId = standingId
             }
@@ -206,231 +250,108 @@ function BLU:ScheduleReputationScan()
 end
 
 --=====================================================================================
--- Delve Level-Up Event Handler
+-- Options System
 --=====================================================================================
-function BLU:OnDelveCompanionLevelUp(event, ...)
-    if self:GetGameVersion() == "retail" then return end
-    self:PrintDebugMessage(event .. " event fired, awaiting CHAT_MSG_SYSTEM for confirmation.")
+-- Map option groups to features for filtering
+local OPTION_GROUP_FEATURES = {
+    group2 = "Achievement",
+    group3 = "BattlePet",
+    group4 = "Delve",
+    group5 = "Honor",
+    group6 = "Level",
+    group7 = "QuestAccept",
+    group8 = "Quest",
+    group9 = "Renown",
+    group10 = "Reputation",
+    group11 = "Post",
+}
 
-    if event == "CHAT_MSG_SYSTEM" then
-        local msg = ...
-        self:PrintDebugMessage("INCOMING_CHAT_MESSAGE: " .. msg)
-
-        local levelUpMatch = string.match(msg, "Brann Bronzebeard has reached Level (%d+)")
-        if levelUpMatch then
-            local level = tonumber(levelUpMatch)
-            self:PrintDebugMessage("|cff00ff00Brann Level-Up detected: Level " .. level .. "|r")
-            self:TriggerDelveLevelUpSound(level)
-        else
-            self:PrintDebugMessage("NO_LEVEL_FOUND")
-        end
-    end
-end
-
-function BLU:TriggerDelveLevelUpSound(level)
-    self:HandleEvent("DELVE_LEVEL_UP", "DelveLevelUpSoundSelect", "DelveLevelUpVolume", defaultSounds[3], "DELVE_LEVEL_UP_TRIGGERED")
-end
-
---=====================================================================================
--- Saved Variables Cleanup for Version Compatibility
---=====================================================================================
-function BLU:CleanupIncompatibleSavedVariables(version)
-    if version ~= "retail" then
-        self.db.profile.HonorSoundSelect = nil
-        self.db.profile.HonorVolume = nil
-        self.db.profile.DelveLevelUpSoundSelect = nil
-        self.db.profile.DelveLevelUpVolume = nil
-        self.db.profile.RenownSoundSelect = nil
-        self.db.profile.RenownVolume = nil
-        self.db.profile.PostSoundSelect = nil
-        self.db.profile.PostVolume = nil
-        
-        if version ~= "mists" then
-            self.db.profile.BattlePetLevelSoundSelect = nil
-            self.db.profile.BattlePetLevelVolume = nil
-        end
-    end
+function BLU:FilterOptionsForVersion()
+    if not self.options or not self.options.args then return end
     
-    if version == "vanilla" or version == "tbc" then
-        self.db.profile.AchievementSoundSelect = nil
-        self.db.profile.AchievementVolume = nil
+    for groupKey, feature in pairs(OPTION_GROUP_FEATURES) do
+        if not self:IsFeatureAvailable(feature) then
+            self.options.args[groupKey] = nil
+        end
     end
 end
 
---=====================================================================================
--- Options Initialization
---=====================================================================================
 function BLU:InitializeOptions()
     local AC = LibStub("AceConfig-3.0")
     local ACD = LibStub("AceConfigDialog-3.0")
-    local version = self:GetGameVersion()
 
     if not self.options or not self.options.args then
-        self:PrintDebugMessage("ERROR_OPTIONS_NOT_INITIALIZED")
+        if self.debugMode then
+            print(BLU_PREFIX .. "|cffff0000Options table not loaded|r")
+        end
         return
     end
 
+    -- Filter options based on game version (single pass)
+    self:FilterOptionsForVersion()
+    
+    -- Build sorted options list and apply colors
     self.sortedOptions = {}
-    self:RemoveOptionsForVersion(version)
-
     for _, group in pairs(self.options.args) do
-        if self:IsGroupCompatibleWithVersion(group, version) then
+        if group.order then
             table.insert(self.sortedOptions, group)
-        else
-            self:PrintDebugMessage("SKIPPING_GROUP_NOT_COMPATIBLE") 
         end
     end
+    
+    self:AssignGroupColors()
 
     if not self.optionsRegistered then
-        self:AssignGroupColors()
+        local optionsTitle = BLU_L["OPTIONS_PANEL_TITLE"] or "BLU | Better Level-Up!"
+        local profilesTitle = BLU_L["PROFILES_TITLE"] or "Profiles"
+        
         AC:RegisterOptionsTable("BLU_Options", self.options)
-        self.optionsFrame = ACD:AddToBlizOptions("BLU_Options", BLU_L["OPTIONS_PANEL_TITLE"]) 
+        self.optionsFrame = ACD:AddToBlizOptions("BLU_Options", optionsTitle)
 
         local profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
         AC:RegisterOptionsTable("BLU_Profiles", profiles)
-        ACD:AddToBlizOptions("BLU_Profiles", BLU_L["PROFILES_TITLE"], BLU_L["OPTIONS_PANEL_TITLE"])
+        ACD:AddToBlizOptions("BLU_Profiles", profilesTitle, optionsTitle)
 
         self.optionsRegistered = true
-    else
-        self:PrintDebugMessage("OPTIONS_ALREADY_REGISTERED")
-    end
-end
-
-function BLU:IsGroupCompatibleWithVersion(group, version)
-    if not group or not group.name then return true end
-    
-    local incompatible = {
-        retail = {"Delve", "Reputation"},
-        mists = {"Honor", "Delve", "Renown", "Post"},
-        cata = {"Battle Pet", "Honor", "Delve", "Renown", "Post"},
-        wrath = {"Battle Pet", "Honor", "Delve", "Renown", "Post"},
-        tbc = {"Achievement", "Battle Pet", "Honor", "Delve", "Renown", "Post"},
-        vanilla = {"Achievement", "Battle Pet", "Honor", "Delve", "Renown", "Post"},
-    }
-    
-    local patterns = incompatible[version] or {}
-    for _, pattern in ipairs(patterns) do
-        if group.name:match(pattern) then
-            return false
-        end
-    end
-    
-    return true
-end
-
-function BLU:RemoveOptionsForVersion(version)
-    local args = self.options.args
-    
-    local groupsToRemove = {
-        vanilla = {"group2", "group3", "group4", "group5", "group9", "group11"},
-        tbc = {"group2", "group3", "group4", "group5", "group9", "group11"},
-        wrath = {"group3", "group4", "group5", "group9", "group11"},
-        cata = {"group3", "group4", "group5", "group9", "group11"},
-        mists = {"group4", "group5", "group9", "group11"},
-        retail = {"group4", "group10"},
-    }
-    
-    local toRemove = groupsToRemove[version] or {}
-    for _, groupName in ipairs(toRemove) do
-        args[groupName] = nil
-    end
-    
-    if version ~= "retail" then
-        self.db.profile.HonorSoundSelect = nil
-        self.db.profile.DelveLevelUpSoundSelect = nil
-        self.db.profile.RenownSoundSelect = nil
-        self.db.profile.PostSoundSelect = nil
-        
-        if version ~= "mists" then
-            self.db.profile.BattlePetLevelSoundSelect = nil
-        end
-    end
-    
-    if version == "vanilla" or version == "tbc" then
-        self.db.profile.AchievementSoundSelect = nil
     end
 end
 
 function BLU:AssignGroupColors()
-    local colors = { BLU_L.optionColor1, BLU_L.optionColor2 } 
+    local colors = { 
+        BLU_L.optionColor1 or "|cffffffff", 
+        BLU_L.optionColor2 or "|cffcccccc" 
+    }
     local patternIndex = 1
 
-    if self.sortedOptions and #self.sortedOptions > 0 then
-        table.sort(self.sortedOptions, function(a, b) return a.order < b.order end)
+    if not self.sortedOptions or #self.sortedOptions == 0 then return end
+    
+    table.sort(self.sortedOptions, function(a, b) 
+        return (a.order or 0) < (b.order or 0) 
+    end)
 
-        for _, group in ipairs(self.sortedOptions) do
-            if group.name and group.args then
-                group.name = colors[patternIndex] .. group.name .. "|r"
+    for _, group in ipairs(self.sortedOptions) do
+        if group.name and group.args then
+            group.name = colors[patternIndex] .. group.name .. "|r"
 
-                for _, arg in pairs(group.args) do
-                    if arg.name and arg.name ~= "" then
-                        arg.name = colors[patternIndex] .. arg.name .. "|r"
-                    end
-
-                    if arg.desc and arg.desc ~= "" then
-                        arg.desc = colors[(patternIndex % 2) + 1] .. arg.desc .. "|r"
-                    end
+            for _, arg in pairs(group.args) do
+                if arg.name and arg.name ~= "" then
+                    arg.name = colors[patternIndex] .. arg.name .. "|r"
                 end
-
-                patternIndex = patternIndex % 2 + 1
+                if arg.desc and arg.desc ~= "" then
+                    arg.desc = colors[(patternIndex % 2) + 1] .. arg.desc .. "|r"
+                end
             end
+
+            patternIndex = patternIndex % 2 + 1
         end
     end
 end
 
 --=====================================================================================
--- Addon Initialization
+-- Sound Muting System
 --=====================================================================================
-function BLU:OnInitialize()
-    self.db = LibStub("AceDB-3.0"):New("BLUDB", self.defaults, true)
-
-    if C_AddOns and C_AddOns.GetAddOnMetadata then
-        self.VersionNumber = C_AddOns.GetAddOnMetadata("BLU", "Version")
-    else
-        self.VersionNumber = GetAddOnMetadata("BLU", "Version")
-    end
-    
-    local version = self:GetGameVersion()
-    self:CleanupIncompatibleSavedVariables(version)
-    
-    self.db.char.reputationCache = self.db.char.reputationCache or {}
-    
-    self.debugMode = self.db.profile.debugMode or false
-    self.showWelcomeMessage = self.db.profile.showWelcomeMessage
-    if self.showWelcomeMessage == nil then
-        self.showWelcomeMessage = true
-        self.db.profile.showWelcomeMessage = true
-    end
-
-    self.functionsHalted = false
-    self.sortedOptions = {}
-    self.optionsRegistered = false
-    
-    self:RegisterChatCommand("blu", "HandleSlashCommands")
-    self:InitializeOptions()
-end
-
---=====================================================================================
--- Addon Enable/Disable
---=====================================================================================
-function BLU:OnEnable()
-    self:RegisterSharedEvents()
-    self:InitializeReputationCache()
-    self:MuteSounds()
-    
-    if self.showWelcomeMessage then
-        print(BLU_PREFIX .. BLU_L["WELCOME_MESSAGE"])
-        print(BLU_PREFIX .. BLU_L["VERSION"] .. " " .. self.VersionNumber)
-    end
-end
-
-function BLU:OnDisable()
-    self:UnmuteSounds()
-end
-
 function BLU:MuteSounds()
     local version = self:GetGameVersion()
-    local soundIDs = muteSoundIDs[version]
+    local soundIDs = muteSoundIDs and muteSoundIDs[version]
     if soundIDs then
         for _, soundID in ipairs(soundIDs) do
             MuteSoundFile(soundID)
@@ -440,24 +361,66 @@ end
 
 function BLU:UnmuteSounds()
     local version = self:GetGameVersion()
-    local soundIDs = muteSoundIDs[version]
+    local soundIDs = muteSoundIDs and muteSoundIDs[version]
     if soundIDs then
         for _, soundID in ipairs(soundIDs) do
             UnmuteSoundFile(soundID)
         end
+    end
+end
+
+--=====================================================================================
+-- Addon Lifecycle
+--=====================================================================================
+function BLU:OnInitialize()
+    -- Initialize database
+    self.db = LibStub("AceDB-3.0"):New("BLUDB", self.defaults, true)
+
+    -- Get version number (API differs between versions)
+    if C_AddOns and C_AddOns.GetAddOnMetadata then
+        self.VersionNumber = C_AddOns.GetAddOnMetadata("BLU", "Version")
+    elseif GetAddOnMetadata then
+        self.VersionNumber = GetAddOnMetadata("BLU", "Version")
+    else
+        self.VersionNumber = "Unknown"
+    end
+    
+    -- Initialize character-specific data
+    self.db.char.reputationCache = self.db.char.reputationCache or {}
+    
+    -- Load settings
+    self.debugMode = self.db.profile.debugMode or false
+    self.showWelcomeMessage = self.db.profile.showWelcomeMessage
+    if self.showWelcomeMessage == nil then
+        self.showWelcomeMessage = true
+        self.db.profile.showWelcomeMessage = true
+    end
+
+    -- Initialize state
+    self.functionsHalted = false
+    self.sortedOptions = {}
+    self.optionsRegistered = false
+    
+    -- Register slash commands
+    self:RegisterChatCommand("blu", "HandleSlashCommands")
+    
+    -- Initialize options panel
+    self:InitializeOptions()
+end
+
+function BLU:OnEnable()
+    self:RegisterSharedEvents()
+    self:InitializeReputationCache()
+    self:MuteSounds()
+    
+    if self.showWelcomeMessage then
+        local welcomeMsg = BLU_L["WELCOME_MESSAGE"] or "Loaded successfully!"
+        local versionText = BLU_L["VERSION"] or "Version:"
+        print(BLU_PREFIX .. welcomeMsg)
+        print(BLU_PREFIX .. versionText .. " |cff8080ff" .. (self.VersionNumber or "Unknown") .. "|r")
     end
 end
 
 function BLU:OnDisable()
     self:UnmuteSounds()
-end
-
-function BLU:UnmuteSounds()
-    local version = self:GetGameVersion()
-    local soundIDs = muteSoundIDs[version]
-    if soundIDs then
-        for _, soundID in ipairs(soundIDs) do
-            UnmuteSoundFile(soundID)
-        end
-    end
 end

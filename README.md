@@ -81,6 +81,25 @@
 
 **BLU | Better Level-Up!** transforms the repetitive sounds in World of Warcraft by letting you hear iconic sounds from your favorite games when you level-up, complete activities, gain reputation, or achieve milestones. With support for over 50 games and extensive customization options, BLU makes every achievement feel special.
 
+## 🎮 Supported Events Matrix
+
+<div align="center">
+
+| Event | Retail | Cata Classic | MoP Remix | Classic Era |
+|:------|:------:|:------------:|:---------:|:-----------:|
+| ⭐ **Level-Up** | ✅ | ✅ | ✅ | ✅ |
+| 📜 **Quest Accept** | ✅ | ✅ | ✅ | ✅ |
+| ✅ **Quest Complete** | ✅ | ✅ | ✅ | ✅ |
+| 📈 **Reputation Rank-Up** | ✅ | ✅ | ✅ | ✅ |
+| 🏆 **Achievement Earned** | ✅ | ✅ | ✅ | ❌ |
+| 🐾 **Battle Pet Level-Up** | ✅ | ❌ | ✅ | ❌ |
+| ⚔️ **Honor Level-Up** | ✅ | ❌ | ❌ | ❌ |
+| 👑 **Renown Rank-Up** | ✅ | ❌ | ❌ | ❌ |
+| 🛒 **Trading Post Complete** | ✅ | ❌ | ❌ | ❌ |
+| 🗡️ **Delve Companion Level-Up** | ✅ | ❌ | ❌ | ❌ |
+
+</div>
+
 ## ✨ Features
 
 <div align="center">
@@ -88,16 +107,7 @@
 | Feature | Description | Availability |
 |---------|-------------|--------------|
 | 🎵 **50+ Game Sounds** | Choose from iconic sounds from games like Final Fantasy, Zelda, Mario, and more | All Versions |
-| 🎯 **Achievements** | Celebrate achievements with unique sounds | All Versions |
-| 🐾 **Battle Pets** | Custom sounds when leveling battle pets | Retail Only |
-| ⚔️ **Delve Companion** | Sounds for Delve Companion level-ups | Retail Only |
-| 🏆 **Honor Ranks** | Audio feedback for honor rank gains | Retail Only |
-| ⭐ **Level-Up** | Replace default level-up sounds | All Versions |
-| 👑 **Renown Ranks** | Sounds for renown reputation gains | Retail Only |
-| 📈 **Reputation** | Custom sounds for reputation increases | All Versions |
-| 📜 **Quests** | Unique sounds for quest accept/turn-in | All Versions |
-| 🛒 **Trading Post** | Sounds for Trading Post activities | Retail Only |
-| 🔊 **Volume Control** | Independent volume adjustment for each sound type | All Versions |
+| 🔊 **Volume Control** | Independent volume adjustment for each sound type (Off, Low, Medium, High) | All Versions |
 | ⚙️ **Smart Management** | Automatically mutes default WoW sounds when replacing | All Versions |
 | 💾 **Persistent Settings** | Your preferences are saved between sessions | All Versions |
 | 🎨 **Professional UI** | Clean options panel with intuitive controls | All Versions |
@@ -167,7 +177,7 @@
 - **Quest Accept**: Custom sound when accepting quests
 - **Quest Complete**: Rewarding sounds for quest turn-ins
 - **Reputation Gains**: Audio feedback for reputation increases
-- **Battle Pet Level-Up**: Special sounds for pet leveling (Retail only)
+- **Battle Pet Level-Up**: Special sounds for pet leveling (Retail/MoP only)
 - **Trading Post**: Completion sounds for activities (Retail only)
 - **Honor Ranks**: Recognition for PvP progression (Retail only)
 - **Renown**: Sounds for renown reputation gains (Retail only)
@@ -179,15 +189,6 @@ Each sound type has three volume levels:
 - **Medium**: Balanced volume (default)
 - **Low**: Subtle volume for background play
 
-## 🎮 Compatibility
-
-<div align="center">
-
-
-**Note**: Some features are Retail-only due to game limitations.
-
-</div>
-
 ## 📥 Installation
 
 1. **Download** from your preferred platform:
@@ -198,11 +199,10 @@ Each sound type has three volume levels:
 
 2. **Extract** to your WoW AddOns directory:
    - **Retail**: `World of Warcraft/_retail_/Interface/AddOns`
-
+   - **Cata Classic**: `World of Warcraft/_classic_/Interface/AddOns`
+   - **Classic Era**: `World of Warcraft/_classic_era_/Interface/AddOns`
 
 3. **Restart** WoW and enable in AddOns menu
-
-
 
 ## 🛠️ Configuration Tips
 
@@ -294,4 +294,3 @@ Thanks to all the amazing people who have contributed to BLU! 🎉
 **🎮 RGX Mods - Powered by RealmGX Community**
 
 </div>
-

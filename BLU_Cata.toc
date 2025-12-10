@@ -1,0 +1,32 @@
+## Interface: 40400
+## Title: BLU | Better Level-Up!
+## Notes: Replace default level-up sounds with iconic sounds from your favorite games!
+## Author: DonnieDice
+## Version: 5.3.0
+## SavedVariables: BLUDB
+## IconTexture: Interface\AddOns\BLU\images\icon.tga
+## X-Category: Audio & Video
+## X-License: MIT
+## X-Website: https://github.com/DonnieDice/BLU
+## X-Curse-Project-ID: 697841
+## X-Wago-ID: vEGPgWK1
+## X-WoWI-ID: 26465
+
+# Libraries
+Libs\LibStub\LibStub.lua
+Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
+Libs\AceAddon-3.0\AceAddon-3.0.lua
+Libs\AceEvent-3.0\AceEvent-3.0.lua
+Libs\AceTimer-3.0\AceTimer-3.0.lua
+Libs\AceDB-3.0\AceDB-3.0.lua
+Libs\AceDBOptions-3.0\AceDBOptions-3.0.lua
+Libs\AceConsole-3.0\AceConsole-3.0.lua
+Libs\AceGUI-3.0\AceGUI-3.0.xml
+Libs\AceConfig-3.0\AceConfig-3.0.xml
+
+# Data files - LOAD ORDER CRITICAL
+data\localization.lua
+data\sounds.lua
+data\core.lua
+data\options.lua
+data\utils.lua

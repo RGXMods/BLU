@@ -1,13 +1,12 @@
-fix: resolve critical addon errors and add missing functions
+fix: resolve addon conflicts, Classic Era support, and sound playback
 
-- Add PrintDebugMessage() function for safe debug logging
-- Add GetGameVersion() to detect game version (retail/classic)
-- Add HaltOperations() and ResumeOperations() for sound spam prevention
-- Fix PET_BATTLE_LEVEL_CHANGED handler - properly retrieve speciesID
-- Fix inconsistent pet tracking - use speciesID for previousPetLevels
-- Add nil checks for optional HandleEvent and defaultSounds functions
-- Add UNIT_SPELLCAST_SUCCEEDED event for pet training item detection
-- Consolidate initialization and improve code organization
-- Add comprehensive comments and improve error handling
-
-Fixes all errors from debug output and improves overall stability.
+- Fix "Addon already exists" error with safe addon creation
+- Fix sounds not playing (corrected TOC load order)
+- Fix /blu command in Classic Era (multi-version options panel)
+- Consolidate initialization.lua into core.lua
+- Add FEATURE_AVAILABILITY table for version-aware features
+- Add BLU_Cata.toc for Cataclysm Classic
+- Update README with Supported Events Matrix
+- Updated .gitignore
+- Updated Discord webhook
+- Fix version number in options panel

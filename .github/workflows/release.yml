@@ -12,7 +12,7 @@ env:
   WOWI_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
   WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
   GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
-  DISCORD_WEBHOOK: https://discord.com/api/webhooks/1424937755229683752/f0bNBmvI2cAFR0Q9d4YeKBuakF-0tjE_wAKAbtIlK5X2n5rv-SxJXvsekaLE9p5OpYqe
+  DISCORD_WEBHOOK: https://discord.com/api/webhooks/1448152572446642279/-8cP4iFqOCq-WvACQB8dmNZGMBItWUBA652wW-L_bEcCfn42LdJ-2g8-mwEHu-pJ5MFb
 
 jobs:
   release:

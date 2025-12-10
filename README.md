@@ -183,13 +183,6 @@ Each sound type has three volume levels:
 
 <div align="center">
 
-### 🌍 **Supported WoW Versions**
-
-| WoW Version | Interface | Status | Features |
-|-------------|-----------|--------|----------|
-| The War Within (Retail) | 120000 | ✅ Fully Supported | All Features |
-| Cataclysm Classic | 40402 | ✅ Fully Supported | Core Features |
-| Classic Era / Hardcore / SoD | 11507 | ✅ Fully Supported | Core Features |
 
 **Note**: Some features are Retail-only due to game limitations.
 
@@ -241,18 +234,6 @@ Contributions are welcome! Feel free to:
 
 <div align="center">
 
-<a href="https://github.com/donniedice/BLU">
-  <img align="center" src="https://github-readme-stats.vercel.app/api?username=donniedice&show_icons=true&include_all_commits=true&theme=radical&hide_border=true" alt="DonnieDice's GitHub Stats" />
-</a>
-
-<a href="https://github.com/donniedice/BLU">
-  <img align="center" src="https://github-readme-stats.vercel.app/api/top-langs/?username=donniedice&layout=compact&theme=radical&hide_border=true" alt="Top Languages" />
-</a>
-
-</div>
-
-<div align="center">
-
 [![GitHub Activity Graph](https://github-readme-activity-graph.vercel.app/graph?username=donniedice&theme=react-dark&hide_border=true)](https://github.com/donniedice/BLU)
 
 </div>
@@ -265,7 +246,6 @@ Contributions are welcome! Feel free to:
 
 | Metric | Value |
 |--------|-------|
-| **Total Lines of Code** | ![Lines of code](https://img.shields.io/tokei/lines/github/donniedice/BLU?style=flat-square) |
 | **Repository Size** | ![GitHub repo size](https://img.shields.io/github/repo-size/donniedice/BLU?style=flat-square) |
 | **Last Commit** | ![GitHub last commit](https://img.shields.io/github/last-commit/donniedice/BLU?style=flat-square) |
 | **Open Issues** | ![GitHub issues](https://img.shields.io/github/issues/donniedice/BLU?style=flat-square) |
@@ -293,15 +273,6 @@ Thanks to all the amazing people who have contributed to BLU! 🎉
 
 </div>
 
----
-
-## 🏆 GitHub Achievements
-
-<div align="center">
-
-[![trophy](https://github-profile-trophy.vercel.app/?username=donniedice&theme=radical&no-frame=true&row=1&column=6)](https://github.com/donniedice/BLU)
-
-</div>
 
 ---
 

@@ -188,5 +188,11 @@ function Config:MigrateVolumeSettings()
     end
 end
 
+-- Initialize config module
+function Config:Init()
+    BLU:PrintDebug("[Config] Config module initialized")
+    BLU:PrintDebug("[Config] Defaults available: " .. tostring(self.defaults ~= nil))
+end
+
 -- Export module
 return Config

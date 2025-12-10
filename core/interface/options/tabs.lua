@@ -11,24 +11,6 @@ local Tabs = {}
 BLU.Modules = BLU.Modules or {}
 BLU.Modules["tabs"] = Tabs
 
--- Tab configuration from alpha.3
-BLU.OptionsTabs = {
-    -- Row 1
-    {text = "General", create = BLU.CreateGeneralPanel, row = 1, col = 1},
-    {text = "Sounds", create = BLU.CreateSoundsPanel, row = 1, col = 2},
-    {text = "Level Up", eventType = "levelup", row = 1, col = 3},
-    {text = "Achievement", eventType = "achievement", row = 1, col = 4},
-    {text = "Quest", eventType = "quest", row = 1, col = 5},
-    {text = "Reputation", eventType = "reputation", row = 1, col = 6},
-    -- Row 2
-    {text = "Battle Pets", eventType = "battlepet", row = 2, col = 1},
-    {text = "Honor", eventType = "honorrank", row = 2, col = 2},
-    {text = "Renown", eventType = "renownrank", row = 2, col = 3},
-    {text = "Trading Post", eventType = "tradingpost", row = 2, col = 4},
-    {text = "Delve", eventType = "delvecompanion", row = 2, col = 5},
-    {text = "About", create = BLU.CreateAboutPanel, row = 2, col = 6}
-}
-
 -- Create a tab button (alpha.3 style)
 function BLU.CreateTabButton(parent, text, index, row, col, panel)
     local button = CreateFrame("Button", "BLUTab" .. text:gsub(" ", ""), parent)
@@ -98,6 +80,26 @@ end
 
 function Tabs:Init()
     BLU:PrintDebug("[Tabs] Initializing tab system (alpha.3 style)")
+    
+    -- Tab configuration - defined here so panel creation functions are available
+    BLU.OptionsTabs = {
+        -- Row 1
+        {text = "General", create = BLU.CreateGeneralPanel, row = 1, col = 1},
+        {text = "Sounds", create = BLU.CreateSoundsPanel, row = 1, col = 2},
+        {text = "Level Up", eventType = "levelup", row = 1, col = 3},
+        {text = "Achievement", eventType = "achievement", row = 1, col = 4},
+        {text = "Quest", eventType = "quest", row = 1, col = 5},
+        {text = "Reputation", eventType = "reputation", row = 1, col = 6},
+        -- Row 2
+        {text = "Battle Pets", eventType = "battlepet", row = 2, col = 1},
+        {text = "Honor", eventType = "honorrank", row = 2, col = 2},
+        {text = "Renown", eventType = "renownrank", row = 2, col = 3},
+        {text = "Trading Post", eventType = "tradingpost", row = 2, col = 4},
+        {text = "Delve", eventType = "delvecompanion", row = 2, col = 5},
+        {text = "About", create = BLU.CreateAboutPanel, row = 2, col = 6}
+    }
+    
+    BLU:PrintDebug("[Tabs] Registered " .. #BLU.OptionsTabs .. " tabs")
 end
 
 -- Register module

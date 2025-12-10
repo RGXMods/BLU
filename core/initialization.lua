@@ -24,8 +24,8 @@ function BLU:Initialize()
     
     -- Phase 1: Core Systems (must be first)
     self:InitializePhase("core", {
-        "database",        -- Database must be first
-        "config",         -- Configuration system
+        "config",         -- Configuration system (MUST be first for defaults)
+        "database",        -- Database (needs config.defaults)
         "utils",          -- Utility functions
         "combat_protection", -- Combat lockdown protection
         "sounds"          -- Sound muting/unmuting
@@ -37,6 +37,7 @@ function BLU:Initialize()
     -- Phase 2: Registry and Loader
     self:InitializePhase("registry", {
         "registry",
+        "internal_sounds",  -- Must come after registry
         "loader",
         "sharedmedia"
     })
@@ -46,11 +47,13 @@ function BLU:Initialize()
     -- Phase 3: Interface System (design MUST come first!)
     self:InitializePhase("interface", {
         "design",      -- Design system MUST be first
+        "widgets",     -- Widget helpers
         "tabs",        -- Tab system
         "general",     -- General panel
         "sound_panel", -- Sound panel components
         "sounds",      -- Sounds panel
         "about",       -- About panel
+        "modules",     -- Modules panel
         "options"      -- Main options panel (MUST be last)
     })
     

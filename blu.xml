@@ -14,7 +14,7 @@
     <Script file="core/internal_sounds.lua"/>
     
     <!-- Localization -->
-    <Script file="localization/enUS.lua"/>
+    <Script file="Localization/enUS.lua"/>
     
     <!-- Interface System MUST load before initialization -->
     <Script file="core/interface/design.lua"/>
@@ -28,16 +28,15 @@
     <Script file="core/interface/options/main.lua"/>
 
     <!-- Feature Modules -->
-    <Script file="modules/quest/quest.lua"/>
-    <Script file="modules/levelup/levelup.lua"/>
-    <Script file="modules/achievement/achievement.lua"/>
-    <Script file="modules/reputation/reputation.lua"/>
-    <Script file="modules/battlepet/battlepet.lua"/>
-    <Script file="modules/honor/honor.lua"/>
-
-    <Script file="modules/renown/renown.lua"/>
-    <Script file="modules/tradingpost/tradingpost.lua"/>
-    <Script file="modules/delve/delve.lua"/>
+    <Script file="modules/Quest/Quest.lua"/>
+    <Script file="modules/LevelUp/LevelUp.lua"/>
+    <Script file="modules/Achievement/Achievement.lua"/>
+    <Script file="modules/Reputation/Reputation.lua"/>
+    <Script file="modules/BattlePet/BattlePet.lua"/>
+    <Script file="modules/Honor/Honor.lua"/>
+    <Script file="modules/Renown/Renown.lua"/>
+    <Script file="modules/TradingPost/TradingPost.lua"/>
+    <Script file="modules/Delve/Delve.lua"/>
     
     <!-- Commands MUST load after options module is registered -->
     <Script file="core/commands.lua"/>

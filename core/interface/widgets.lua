@@ -6,16 +6,19 @@
 local addonName = ...
 local BLU = _G["BLU"]
 
-BLU.Widgets = {}
+local Widgets = {}
+BLU.Modules = BLU.Modules or {}
+BLU.Modules["widgets"] = Widgets
+BLU.Widgets = Widgets
 
 -- Initialize widgets
-function BLU.Widgets:Init()
+function Widgets:Init()
     -- Widget system is ready
     BLU:PrintDebug("Widgets initialized")
 end
 
 -- Create a checkbox
-function BLU.Widgets:CreateCheckbox(parent, label, tooltip)
+function Widgets:CreateCheckbox(parent, label, tooltip)
     local check = CreateFrame("CheckButton", nil, parent, "UICheckButtonTemplate")
     check.text = check:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     check.text:SetPoint("LEFT", check, "RIGHT", 5, 0)
@@ -34,7 +37,7 @@ function BLU.Widgets:CreateCheckbox(parent, label, tooltip)
 end
 
 -- Create a slider
-function BLU.Widgets:CreateSlider(parent, label, min, max, step, tooltip)
+function Widgets:CreateSlider(parent, label, min, max, step, tooltip)
     local slider = CreateFrame("Slider", nil, parent, "OptionsSliderTemplate")
     slider:SetMinMaxValues(min, max)
     slider:SetValueStep(step)
@@ -60,7 +63,7 @@ function BLU.Widgets:CreateSlider(parent, label, min, max, step, tooltip)
 end
 
 -- Create a dropdown
-function BLU.Widgets:CreateDropdown(parent, label, width, items, tooltip)
+function Widgets:CreateDropdown(parent, label, width, items, tooltip)
     local dropdown = CreateFrame("Frame", nil, parent, "UIDropDownMenuTemplate")
     UIDropDownMenu_SetWidth(dropdown, width or 200)
     
@@ -83,7 +86,7 @@ function BLU.Widgets:CreateDropdown(parent, label, width, items, tooltip)
 end
 
 -- Create a button
-function BLU.Widgets:CreateButton(parent, text, width, height, tooltip)
+function Widgets:CreateButton(parent, text, width, height, tooltip)
     local button = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
     button:SetSize(width or 100, height or 22)
     button:SetText(text)
@@ -101,7 +104,7 @@ function BLU.Widgets:CreateButton(parent, text, width, height, tooltip)
 end
 
 -- Create a color picker
-function BLU.Widgets:CreateColorPicker(parent, label, r, g, b, callback)
+function Widgets:CreateColorPicker(parent, label, r, g, b, callback)
     local frame = CreateFrame("Frame", nil, parent)
     frame:SetSize(150, 22)
     
@@ -155,14 +158,14 @@ function BLU.Widgets:CreateColorPicker(parent, label, r, g, b, callback)
 end
 
 -- Create section header
-function BLU.Widgets:CreateHeader(parent, text)
+function Widgets:CreateHeader(parent, text)
     local header = parent:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     header:SetText(text)
     return header
 end
 
 -- Create divider line
-function BLU.Widgets:CreateDivider(parent, width)
+function Widgets:CreateDivider(parent, width)
     local divider = parent:CreateTexture(nil, "OVERLAY")
     divider:SetHeight(1)
     divider:SetWidth(width or 550)

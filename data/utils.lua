@@ -1,4 +1,3 @@
-
 BLU_L = BLU_L or {}
 --=====================================================================================
 -- BLU | Better Level-Up! - utils.lua
@@ -159,33 +158,7 @@ function BLU:HandleSlashCommands(input)
     input = input:trim():lower()
 
     if input == "" then
-        -- Make sure options are initialized first
-        if not self.optionsFrame then
-            self:InitializeOptions()
-        end
-        
-        if self.optionsFrame then
-            -- Try modern API first (Retail)
-            if Settings and Settings.OpenToCategory then
-                Settings.OpenToCategory(self.optionsFrame.name)
-            -- Try legacy API (all Classic versions)
-            elseif InterfaceOptionsFrame_OpenToCategory then
-                if InterfaceAddOnsList_Update then
-                    InterfaceAddOnsList_Update()
-                end
-                InterfaceOptionsFrame_OpenToCategory(self.optionsFrame.name)
-                InterfaceOptionsFrame_OpenToCategory(self.optionsFrame.name)
-            else
-                print(BLU_PREFIX .. "InterfaceOptionsFrame_OpenToCategory not found")
-                print(BLU_PREFIX .. "Type: " .. tostring(type(InterfaceOptionsFrame_OpenToCategory)))
-            end
-        else
-            print(BLU_PREFIX .. "Options not initialized. Please reload UI.")
-        end
-        
-        if self.debugMode then
-            self:PrintDebugMessage("OPTIONS_PANEL_OPENED")
-        end
+        self:OpenOptionsPanel()
     elseif input == "debug" then
         self:ToggleDebugMode()
     elseif input == "welcome" then
@@ -196,6 +169,60 @@ function BLU:HandleSlashCommands(input)
         print(BLU_PREFIX .. BLU_L["UNKNOWN_SLASH_COMMAND"])
     end
 end
+
+--=====================================================================================
+-- Open Options Panel (with Classic Era compatibility)
+--=====================================================================================
+function BLU:OpenOptionsPanel()
+    -- Make sure options are initialized first
+    if not self.optionsFrame then
+        self:InitializeOptions()
+    end
+    
+    if not self.optionsFrame then
+        print(BLU_PREFIX .. "Options not initialized. Please reload UI.")
+        return
+    end
+    
+    local opened = false
+    
+    -- Try modern API first (Retail 10.0+)
+    if Settings and Settings.OpenToCategory then
+        -- In Retail, optionsFrame.name contains the category name
+        local categoryName = self.optionsFrame.name or BLU_L["OPTIONS_PANEL_TITLE"]
+        Settings.OpenToCategory(categoryName)
+        opened = true
+    end
+    
+    -- Try legacy API (Classic Era, Classic, older Retail)
+    if not opened and InterfaceOptionsFrame_OpenToCategory then
+        -- Classic needs the frame itself, not just the name
+        -- Call twice to ensure it opens to the correct category (known Blizzard bug)
+        InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
+        InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
+        opened = true
+    end
+    
+    -- Fallback: Try to show the Interface Options frame directly
+    if not opened then
+        if InterfaceOptionsFrame then
+            InterfaceOptionsFrame:Show()
+            opened = true
+        elseif SettingsPanel then
+            SettingsPanel:Show()
+            opened = true
+        end
+    end
+    
+    if opened then
+        if self.debugMode then
+            self:PrintDebugMessage("OPTIONS_PANEL_OPENED")
+        end
+    else
+        print(BLU_PREFIX .. "Unable to open options panel. Try /interface instead.")
+    end
+end
+
 --=====================================================================================
 -- Display BLU Help
 --=====================================================================================

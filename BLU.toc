@@ -1,5 +1,5 @@
 ## Interface: 110207,120000
-## Version: v5.2.14
+## Version: v5.2.15
 ## Title: |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel-|r|cff05dffaU|r|cffffffffp!|r 
 ## Notes: Play sounds from other games!  |n|r  |cff05dffa/blu -|r Open options panel  |n|r   |cff05dffaBy DonnieDice|r
 ## Author: DonnieDice
@@ -30,7 +30,7 @@ Libs\AceConfig-3.0\AceConfig-3.0.xml
 data\localization.lua
 data\initialization.lua
 data\sounds.lua
-data\utils.lua
-data\battlepets.lua
 data\core.lua
+data\utils.lua
 data\options.lua
+data\battlepets.lua

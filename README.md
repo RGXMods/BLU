@@ -276,16 +276,6 @@ Thanks to all the amazing people who have contributed to BLU! 🎉
 
 ---
 
-## 🔥 Streak Stats
-
-<div align="center">
-
-[![GitHub Streak](https://github-readme-streak-stats.herokuapp.com?user=donniedice&theme=radical&hide_border=true)](https://github.com/donniedice/BLU)
-
-</div>
-
----
-
 <div align="center">
 
 ## 🌟 **Thank you for choosing RGX Mods!** 🌟

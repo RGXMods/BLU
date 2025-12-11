@@ -1,8 +1,8 @@
-## Interface: 50500
-## Title: BLU | Better Level-Up!
-## Notes: Replace default level-up sounds with iconic sounds from your favorite games!
+## Interface: 50503
+## Title: |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel-|r|cff05dffaU|r|cffffffffp!|r - |cff8080ffv5.3.1|r 
+## Notes: Play sounds from other games!  |n|r  |cff05dffa/blu -|r Open options panel  |n|r   |cff05dffaBy DonnieDice|r
 ## Author: DonnieDice
-## Version: 5.3.0
+## Version: 5.3.1
 ## SavedVariables: BLUDB
 ## IconTexture: Interface\\AddOns\\BLU\\images\\icon.tga
 ## X-Category: Audio & Video

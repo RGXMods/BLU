@@ -17,5 +17,4 @@ packages/
 
 # User-specific files
 .env
-deploy.sh
 .claude/

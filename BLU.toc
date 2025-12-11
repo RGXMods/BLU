@@ -1,8 +1,8 @@
 ## Interface: 110002
-## Title: BLU | Better Level-Up!
-## Notes: Replace default level-up sounds with iconic sounds from your favorite games!
+## Title: |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel-|r|cff05dffaU|r|cffffffffp!|r 
+## Notes: Play sounds from other games!  |n|r  |cff05dffa/blu -|r Open options panel  |n|r   |cff05dffaBy DonnieDice|r
 ## Author: DonnieDice
-## Version: 5.3.0
+## Version: 5.3.1
 ## SavedVariables: BLUDB
 ## IconTexture: Interface\AddOns\BLU\images\icon.tga
 ## X-Category: Audio & Video
@@ -25,15 +25,9 @@ Libs\AceGUI-3.0\AceGUI-3.0.xml
 Libs\AceConfig-3.0\AceConfig-3.0.xml
 
 # Data files - LOAD ORDER CRITICAL
-# 1. Localization (defines BLU_L strings)
 data\localization.lua
-# 2. Sounds (defines sounds tables)
 data\sounds.lua
-# 3. Core (creates BLU addon - MUST be before options.lua)
 data\core.lua
-# 4. Options (references BLU.defaults, BLU.options)
 data\options.lua
-# 5. Utils (adds methods to BLU)
 data\utils.lua
-# 6. Battle Pets (retail only)
 data\battlepets.lua

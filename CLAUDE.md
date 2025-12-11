@@ -7,12 +7,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 BLU (Better Level-Up!) is a World of Warcraft addon that replaces default sounds with iconic audio from 50+ games. Currently in v5.2.13 with a complete professional reorganization.
 
 **Key Points:**
-- Retail WoW only (TWW 12.0.0)
 - Ace3 library dependencies
 - Professional folder structure with proper capitalization
 - Modular architecture for performance
 - RGX Mods branding (RealmGX Community Project)
-- Manual copy script (`copy_to_wow.bat`) for testing
 
 ## Current Directory Structure
 
@@ -57,19 +55,9 @@ This project uses `claude-code-router` to delegate tasks to specialized AI model
 
 ## Common Development Tasks
 
-### Testing the Addon
-To test changes in-game, you need to manually copy the addon files to your World of Warcraft directory.
-
-1.  Run the `copy_to_wow.bat` script in the root of the repository.
-2.  This will copy all the necessary files to your WoW AddOns directory (retail and beta).
-3.  After the script finishes, use `/reload` in-game to see the changes.
-
 ### Git Workflow
 - **`main`**: Stable releases.
 - **`dev`**: Active development.
-- **IMPORTANT**: Do NOT add Claude as co-author in commits
-- Do NOT include any AI assistant attribution
-- Commits should be made as the repository owner only
 
 ## Important Conventions
 

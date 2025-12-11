@@ -1,10 +1,10 @@
 ## Interface: 50503
-## Title: |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel-|r|cff05dffaU|r|cffffffffp!|r - |cff8080ffv5.3.1|r 
+## Title: |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel-|r|cff05dffaU|r|cffffffffp!|r - |cff8080ffv5.3.2|r 
 ## Notes: Play sounds from other games!  |n|r  |cff05dffa/blu -|r Open options panel  |n|r   |cff05dffaBy DonnieDice|r
 ## Author: DonnieDice
-## Version: 5.3.1
+## Version: 5.3.2
 ## SavedVariables: BLUDB
-## IconTexture: Interface\\AddOns\\BLU\\images\\icon.tga
+## IconTexture: Interface\AddOns\BLU\images\icon.tga
 ## X-Category: Audio & Video
 ## X-License: MIT
 ## X-Website: https://github.com/DonnieDice/BLU
@@ -13,20 +13,20 @@
 ## X-WoWI-ID: 26465
 
 # Libraries
-Libs\\LibStub\\LibStub.lua
-Libs\\CallbackHandler-1.0\\CallbackHandler-1.0.lua
-Libs\\AceAddon-3.0\\AceAddon-3.0.lua
-Libs\\AceEvent-3.0\\AceEvent-3.0.lua
-Libs\\AceTimer-3.0\\AceTimer-3.0.lua
-Libs\\AceDB-3.0\\AceDB-3.0.lua
-Libs\\AceDBOptions-3.0\\AceDBOptions-3.0.lua
-Libs\\AceConsole-3.0\\AceConsole-3.0.lua
-Libs\\AceGUI-3.0\\AceGUI-3.0.xml
-Libs\\AceConfig-3.0\\AceConfig-3.0.xml
+Libs\LibStub\LibStub.lua
+Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
+Libs\AceAddon-3.0\AceAddon-3.0.lua
+Libs\AceEvent-3.0\AceEvent-3.0.lua
+Libs\AceTimer-3.0\AceTimer-3.0.lua
+Libs\AceDB-3.0\AceDB-3.0.lua
+Libs\AceDBOptions-3.0\AceDBOptions-3.0.lua
+Libs\AceConsole-3.0\AceConsole-3.0.lua
+Libs\AceGUI-3.0\AceGUI-3.0.xml
+Libs\AceConfig-3.0\AceConfig-3.0.xml
 
 # Data files - LOAD ORDER CRITICAL
-data\\localization.lua
-data\\sounds.lua
-data\\core.lua
-data\\options.lua
-data\\utils.lua
+data\localization.lua
+data\sounds.lua
+data\core.lua
+data\options.lua
+data\utils.lua

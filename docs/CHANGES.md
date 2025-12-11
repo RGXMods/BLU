@@ -1,1 +1,1 @@
-- Update version numbers to include `v` prefix.
+- Update .toc for retail

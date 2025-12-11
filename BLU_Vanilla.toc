@@ -1,8 +1,8 @@
 ## Interface: 11508
-## Title: |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel-|r|cff05dffaU|r|cffffffffp!|r - |cff8080ffv5.3.3|r 
+## Title: |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel-|r|cff05dffaU|r|cffffffffp!|r - |cff8080ffv5.3.4|r 
 ## Notes: Play sounds from other games!  |n|r  |cff05dffa/blu -|r Open options panel  |n|r   |cff05dffaBy DonnieDice|r
 ## Author: DonnieDice
-## Version: v5.3.3
+## Version: v5.3.4
 ## SavedVariables: BLUDB
 ## IconTexture: Interface\AddOns\BLU\images\icon.tga
 ## X-Category: Audio & Video

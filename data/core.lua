@@ -55,6 +55,9 @@ local FEATURE_AVAILABILITY = {
     Reputation = { retail = true, mists = true, cata = true, wrath = true, tbc = true, vanilla = true },
 }
 
+-- Delve companion detection state
+local cachedDelveCompanionFactionID = nil
+
 function BLU:IsFeatureAvailable(feature)
     local version = self:GetGameVersion()
     return FEATURE_AVAILABILITY[feature] and FEATURE_AVAILABILITY[feature][version] or false
@@ -82,6 +85,8 @@ function BLU:RegisterSharedEvents()
         self:RegisterEvent("HONOR_LEVEL_UPDATE", "HandleHonorLevelUpdate")
         self:RegisterEvent("MAJOR_FACTION_RENOWN_LEVEL_CHANGED", "HandleRenownLevelChanged")
         self:RegisterEvent("PERKS_ACTIVITY_COMPLETED", "HandlePerksActivityCompleted")
+        self:RegisterEvent("CHAT_MSG_SYSTEM", "HandleChatSystemMessage")
+        self:RegisterEvent("FACTION_STANDING_CHANGED", "HandleFactionStandingChanged")
         -- Note: Battle pet events handled by separate battlepets.lua for retail
     end
 end
@@ -129,6 +134,124 @@ end
 function BLU:HandlePerksActivityCompleted()
     if not self:IsFeatureAvailable("Post") then return end
     self:HandleEvent("PERKS_ACTIVITY_COMPLETED", "PostSoundSelect", "PostVolume", defaultSounds and defaultSounds[9], "PERKS_ACTIVITY_COMPLETED_TRIGGERED")
+end
+
+local function GetDelveCompanionFactionID()
+    if not C_DelvesUI then
+        return nil
+    end
+
+    if C_DelvesUI.GetFactionForCompanion then
+        local factionID = C_DelvesUI.GetFactionForCompanion()
+        if factionID and factionID > 0 then
+            return factionID
+        end
+    end
+
+    if C_DelvesUI.GetDelvesFactionForSeason then
+        local factionID = C_DelvesUI.GetDelvesFactionForSeason()
+        if factionID and factionID > 0 then
+            return factionID
+        end
+    end
+
+    return nil
+end
+
+function BLU:GetDelveCompanionLevel()
+    local factionID = cachedDelveCompanionFactionID or GetDelveCompanionFactionID()
+    if factionID then
+        cachedDelveCompanionFactionID = factionID
+    else
+        return nil, nil
+    end
+
+    if not C_GossipInfo or not C_GossipInfo.GetFriendshipReputationRanks then
+        return nil, factionID
+    end
+
+    local rankInfo = C_GossipInfo.GetFriendshipReputationRanks(factionID)
+    if rankInfo and rankInfo.currentLevel then
+        return rankInfo.currentLevel, factionID
+    end
+
+    return nil, factionID
+end
+
+function BLU:UpdateDelveCompanionLevelCache()
+    local level, factionID = self:GetDelveCompanionLevel()
+    if factionID then
+        cachedDelveCompanionFactionID = factionID
+    end
+    if level then
+        self.lastDelveCompanionLevel = level
+    end
+end
+
+function BLU:TriggerDelveCompanionLevelUp(level)
+    if not self:IsFeatureAvailable("Delve") then
+        return
+    end
+
+    if level and self.lastPlayedDelveCompanionLevel and level <= self.lastPlayedDelveCompanionLevel then
+        return
+    end
+
+    if level then
+        self.lastPlayedDelveCompanionLevel = level
+        self.lastDelveCompanionLevel = level
+    end
+
+    self:HandleEvent("DELVE_LEVEL_UP", "DelveLevelUpSoundSelect", "DelveLevelUpVolume", defaultSounds and defaultSounds[3], "DELVE_LEVEL_UP_TRIGGERED")
+end
+
+function BLU:HandleChatSystemMessage(_, message)
+    if not self:IsFeatureAvailable("Delve") then
+        return
+    end
+
+    if type(message) ~= "string" or message == "" then
+        return
+    end
+
+    self:PrintDebugMessage("INCOMING_CHAT_MESSAGE", tostring(message))
+
+    local normalized = message:lower()
+    local hasDelveCompanionToken = normalized:find("brann", 1, true)
+        or normalized:find("valeera", 1, true)
+        or (normalized:find("delve", 1, true) and normalized:find("companion", 1, true))
+
+    if not hasDelveCompanionToken or not normalized:find("level", 1, true) then
+        return
+    end
+
+    local level = tonumber(message:match("[Ll]evel%s*(%d+)"))
+    if not level then
+        level = tonumber(message:match("(%d+)"))
+    end
+
+    if not level then
+        self:PrintDebugMessage("NO_BRANN_LEVEL_FOUND")
+    end
+
+    self:TriggerDelveCompanionLevelUp(level)
+end
+
+function BLU:HandleFactionStandingChanged(_, factionID)
+    if not self:IsFeatureAvailable("Delve") then
+        return
+    end
+
+    local currentLevel, companionFactionID = self:GetDelveCompanionLevel()
+    if not companionFactionID or factionID ~= companionFactionID then
+        return
+    end
+
+    if currentLevel and self.lastDelveCompanionLevel and currentLevel > self.lastDelveCompanionLevel then
+        self:TriggerDelveCompanionLevelUp(currentLevel)
+    elseif currentLevel then
+        self.lastDelveCompanionLevel = currentLevel
+    end
 end
 
 --=====================================================================================
@@ -411,6 +534,7 @@ end
 function BLU:OnEnable()
     self:RegisterSharedEvents()
     self:InitializeReputationCache()
+    self:UpdateDelveCompanionLevelCache()
     self:MuteSounds()
     
     if self.showWelcomeMessage then

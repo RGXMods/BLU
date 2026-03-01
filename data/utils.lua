@@ -154,17 +154,37 @@ function BLU:OpenOptionsPanel()
     
     -- Try modern API first (Retail 10.0+)
     if Settings and Settings.OpenToCategory then
-        local categoryName = self.optionsFrame.name or BLU_L["OPTIONS_PANEL_TITLE"] or "BLU"
-        Settings.OpenToCategory(categoryName)
-        opened = true
+        local categoryID = nil
+        local categoryRef = self.optionsFrame and self.optionsFrame.name
+
+        -- Retail now expects a numeric category ID for OpenToCategory.
+        if Settings.GetCategory and categoryRef then
+            local category = Settings.GetCategory(categoryRef)
+            if category then
+                if type(category.GetID) == "function" then
+                    categoryID = category:GetID()
+                else
+                    categoryID = category.ID
+                end
+            end
+        end
+
+        if type(categoryID) ~= "number" then
+            categoryID = tonumber(categoryID)
+        end
+
+        if categoryID then
+            local ok = pcall(Settings.OpenToCategory, categoryID)
+            opened = ok
+        end
     end
     
     -- Try legacy API (Classic Era, Classic, older Retail)
     if not opened and InterfaceOptionsFrame_OpenToCategory then
         -- Classic needs the frame itself, called twice (Blizzard bug workaround)
-        InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
-        InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
-        opened = true
+        local okFirst = pcall(InterfaceOptionsFrame_OpenToCategory, self.optionsFrame)
+        local okSecond = pcall(InterfaceOptionsFrame_OpenToCategory, self.optionsFrame)
+        opened = okFirst or okSecond
     end
     
     -- Fallback: Show Interface Options frame directly

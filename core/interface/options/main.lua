@@ -11,6 +11,42 @@ local Options = {}
 BLU.Modules = BLU.Modules or {}
 BLU.Modules["options"] = Options
 
+function Options:ResolveOptionsCategoryID()
+    if type(BLU.OptionsCategoryID) == "number" then
+        return BLU.OptionsCategoryID
+    end
+
+    local category = BLU.OptionsCategory
+    if not category and Settings and Settings.GetCategory and BLU.OptionsPanel then
+        category = Settings.GetCategory(BLU.OptionsPanel.name)
+    end
+    if not category then
+        return nil
+    end
+
+    local categoryID = nil
+    if type(category.GetID) == "function" then
+        categoryID = category:GetID()
+    else
+        categoryID = category.ID
+    end
+
+    if type(categoryID) ~= "number" and type(category.GetOrder) == "function" then
+        local repairedID = category:GetOrder()
+        if type(repairedID) == "number" then
+            category.ID = repairedID
+            categoryID = repairedID
+        end
+    end
+
+    if type(categoryID) == "number" then
+        BLU.OptionsCategoryID = categoryID
+        return categoryID
+    end
+
+    return nil
+end
+
 -- Create main options panel
 function Options:CreateOptionsPanel()
     BLU:PrintDebug("Creating new options panel...")
@@ -125,6 +161,7 @@ function Options:CreateOptionsPanel()
         category = Settings.RegisterCanvasLayoutCategory(panel, panel.name)
         Settings.RegisterAddOnCategory(category)
         BLU.OptionsCategory = category
+        self:ResolveOptionsCategoryID()
     else
         InterfaceOptions_AddCategory(panel)
         BLU.OptionsCategory = panel
@@ -149,11 +186,38 @@ function Options:OpenOptions()
         return
     end
 
-    if Settings and Settings.OpenToCategory and BLU.OptionsCategory and BLU.OptionsCategory.ID then
-        Settings.OpenToCategory(BLU.OptionsCategory.ID)
-    elseif InterfaceOptionsFrame_OpenToCategory and BLU.OptionsCategory then
-        InterfaceOptionsFrame_OpenToCategory(BLU.OptionsCategory)
-    else
+    local opened = false
+
+    if Settings and Settings.OpenToCategory and BLU.OptionsCategory then
+        local categoryID = self:ResolveOptionsCategoryID()
+        if type(categoryID) == "number" then
+            local ok = pcall(Settings.OpenToCategory, categoryID)
+            opened = ok
+        end
+
+        if not opened then
+            local ok = pcall(Settings.OpenToCategory, BLU.OptionsCategory)
+            opened = ok
+        end
+    end
+
+    if not opened and InterfaceOptionsFrame_OpenToCategory and BLU.OptionsCategory then
+        local okFirst = pcall(InterfaceOptionsFrame_OpenToCategory, BLU.OptionsCategory)
+        local okSecond = pcall(InterfaceOptionsFrame_OpenToCategory, BLU.OptionsCategory)
+        opened = okFirst or okSecond
+    end
+
+    if not opened then
+        if SettingsPanel then
+            SettingsPanel:Show()
+            opened = true
+        elseif InterfaceOptionsFrame then
+            InterfaceOptionsFrame:Show()
+            opened = true
+        end
+    end
+
+    if not opened then
         BLU:Print("Unable to open options panel")
     end
 end

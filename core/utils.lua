@@ -11,9 +11,50 @@ BLU.Modules["utils"] = Utils
 -- Sound queue for managing multiple sounds
 Utils.soundQueue = {}
 Utils.isPlaying = false
+Utils.queueHead = 1
+Utils.queueTail = 0
+Utils.recentQueuedSounds = {}
+
+local SOUND_QUEUE_HARD_CAP = 40
+local SOUND_QUEUE_DEDUPE_WINDOW_SECONDS = 0.15
+
+local function GetQueueSize(self)
+    if self.queueTail < self.queueHead then
+        return 0
+    end
+
+    return (self.queueTail - self.queueHead) + 1
+end
+
+local function EnqueueSound(self, soundData)
+    self.queueTail = self.queueTail + 1
+    self.soundQueue[self.queueTail] = soundData
+end
+
+local function DequeueSound(self)
+    if self.queueTail < self.queueHead then
+        return nil
+    end
+
+    local soundData = self.soundQueue[self.queueHead]
+    self.soundQueue[self.queueHead] = nil
+    self.queueHead = self.queueHead + 1
+
+    if self.queueHead > self.queueTail then
+        self.queueHead = 1
+        self.queueTail = 0
+    end
+
+    return soundData
+end
 
 -- Initialize utils module
 function Utils:Init()
+    self.soundQueue = {}
+    self.queueHead = 1
+    self.queueTail = 0
+    self.recentQueuedSounds = {}
+    self.isPlaying = false
     BLU:PrintDebug("Utils module initialized")
 end
 
@@ -24,20 +65,31 @@ function Utils:QueueSound(soundFile, volume, callback)
         self:PlaySoundFile(soundFile, volume, callback)
         return
     end
-    
+
+    local now = GetTime and GetTime() or 0
+    local signature = tostring(soundFile) .. "|" .. tostring(volume)
+    local lastQueuedAt = self.recentQueuedSounds[signature]
+    if lastQueuedAt and (now - lastQueuedAt) < SOUND_QUEUE_DEDUPE_WINDOW_SECONDS then
+        return
+    end
+    self.recentQueuedSounds[signature] = now
+
     -- Add to queue
-    table.insert(self.soundQueue, {
+    local configuredMaxSize = tonumber(BLU.db.profile.maxQueueSize) or 3
+    if configuredMaxSize < 1 then
+        configuredMaxSize = 1
+    end
+    local maxSize = math.min(configuredMaxSize, SOUND_QUEUE_HARD_CAP)
+    if GetQueueSize(self) >= maxSize then
+        DequeueSound(self)
+    end
+
+    EnqueueSound(self, {
         file = soundFile,
         volume = volume,
         callback = callback
     })
-    
-    -- Limit queue size
-    local maxSize = BLU.db.profile.maxQueueSize or 3
-    while #self.soundQueue > maxSize do
-        table.remove(self.soundQueue, 1)
-    end
-    
+
     -- Process queue if not already playing
     if not self.isPlaying then
         self:ProcessSoundQueue()
@@ -46,14 +98,14 @@ end
 
 -- Process sound queue
 function Utils:ProcessSoundQueue()
-    if #self.soundQueue == 0 then
+    local sound = DequeueSound(self)
+    if not sound then
         self.isPlaying = false
         return
     end
-    
+
     self.isPlaying = true
-    local sound = table.remove(self.soundQueue, 1)
-    
+
     self:PlaySoundFile(sound.file, sound.volume, function()
         if sound.callback then
             sound.callback()

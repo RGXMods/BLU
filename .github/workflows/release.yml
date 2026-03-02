@@ -111,10 +111,15 @@ jobs:
       - name: 📢 Send Discord Notification
         if: success()
         shell: bash
+        env:
+          CHANGELOG_CONTENT: ${{ steps.changelog.outputs.body }}
+          RELEASE_TYPE: ${{ steps.release_type.outputs.type }}
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+          RELEASE_TIMESTAMP: ${{ steps.version.outputs.timestamp }}
         run: |
-          changelog_content="${{ steps.changelog.outputs.body }}"
-          release_type="${{ steps.release_type.outputs.type }}"
-          version="${{ steps.version.outputs.version }}"
+          changelog_content="${CHANGELOG_CONTENT}"
+          release_type="${RELEASE_TYPE}"
+          version="${RELEASE_VERSION}"
 
           case "$release_type" in
             "release")
@@ -182,7 +187,7 @@ jobs:
             --argjson color "$color" \
             --arg footer "$footer" \
             --arg icon_url "https://raw.githubusercontent.com/donniedice/SimpleQuestPlates/main/images/kiwi.gif" \
-            --arg timestamp "${{ steps.version.outputs.timestamp }}" \
+            --arg timestamp "${RELEASE_TIMESTAMP}" \
             --argjson fields "$fields" \
             '{
               username: $username,

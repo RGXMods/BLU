@@ -141,7 +141,7 @@ end
 -- Helper function to create section headers
 function Design:CreateSectionHeader(parent, text, icon)
     local header = CreateFrame("Frame", nil, parent, "BackdropTemplate")
-    header:SetHeight(30)
+    header:SetHeight(32)
     header:SetBackdrop(Design.Backdrops.Solid)
     header:SetBackdropColor(0.09, 0.12, 0.16, 0.95)
     header:SetBackdropBorderColor(unpack(Design.Colors.Accent))
@@ -280,16 +280,16 @@ function Design:CreateSection(parent, title, icon)
     
     if title then
         local header = self:CreateHeader(section, title, icon)
-        header:SetPoint("TOPLEFT", 8, -6)
-        header:SetPoint("TOPRIGHT", -8, -6)
+        header:SetPoint("TOPLEFT", 10, -8)
+        header:SetPoint("TOPRIGHT", -10, -8)
         section.header = header
         section.content = CreateFrame("Frame", nil, section)
-        section.content:SetPoint("TOPLEFT", 15, -38)
-        section.content:SetPoint("BOTTOMRIGHT", -15, 10)
+        section.content:SetPoint("TOPLEFT", 16, -42)
+        section.content:SetPoint("BOTTOMRIGHT", -16, 12)
     else
         section.content = CreateFrame("Frame", nil, section)
-        section.content:SetPoint("TOPLEFT", 15, -8)
-        section.content:SetPoint("BOTTOMRIGHT", -15, 8)
+        section.content:SetPoint("TOPLEFT", 16, -10)
+        section.content:SetPoint("BOTTOMRIGHT", -16, 10)
     end
     
     return section

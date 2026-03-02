@@ -141,7 +141,7 @@ function Options:CreateOptionsPanel()
     end
 
     for i, tabInfo in ipairs(tabs) do
-        local tab = BLU.CreateTabButton(tabContainer, tabInfo.text, i, tabInfo.row, tabInfo.col, panel)
+        local tab = BLU.CreateTabButton(tabContainer, tabInfo.text, i, tabInfo.row, tabInfo.col, panel, tabInfo.icon)
         panel.tabs[i] = tab
 
         local content = CreateFrame("Frame", nil, container, "BackdropTemplate")

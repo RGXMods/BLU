@@ -35,17 +35,13 @@ local function CreateCheckbox(parent, text, x, y, checked, onClick)
 end
 
 function BLU.CreateGeneralPanel(panel)
-    local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
-    scrollFrame:SetPoint("TOPLEFT", 5, -5)
-    scrollFrame:SetPoint("BOTTOMRIGHT", -30, 5)
+    local content = CreateFrame("Frame", nil, panel)
+    content:SetPoint("TOPLEFT", 8, -8)
+    content:SetPoint("BOTTOMRIGHT", -8, 8)
 
-    local scrollBg = scrollFrame:CreateTexture(nil, "BACKGROUND")
-    scrollBg:SetAllPoints()
-    scrollBg:SetColorTexture(0.04, 0.06, 0.08, 0.35)
-
-    local content = CreateFrame("Frame", nil, scrollFrame)
-    content:SetWidth(680)
-    scrollFrame:SetScrollChild(content)
+    local contentBg = content:CreateTexture(nil, "BACKGROUND")
+    contentBg:SetAllPoints()
+    contentBg:SetColorTexture(0.04, 0.06, 0.08, 0.35)
 
     local hero = CreateFrame("Frame", nil, content, "BackdropTemplate")
     hero:SetPoint("TOPLEFT", 0, 0)

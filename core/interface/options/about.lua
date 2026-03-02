@@ -35,19 +35,13 @@ local function GetBLUSoundStats()
 end
 
 function BLU.CreateAboutPanel(panel)
-    -- Create scrollable content with proper sizing
-    local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
-    scrollFrame:SetPoint("TOPLEFT", 5, -5)
-    scrollFrame:SetPoint("BOTTOMRIGHT", -30, 5)
+    local content = CreateFrame("Frame", nil, panel)
+    content:SetPoint("TOPLEFT", 8, -8)
+    content:SetPoint("BOTTOMRIGHT", -8, 8)
 
-    -- Add scroll frame background
-    local scrollBg = scrollFrame:CreateTexture(nil, "BACKGROUND")
-    scrollBg:SetAllPoints()
-    scrollBg:SetColorTexture(0.05, 0.05, 0.05, 0.3)
-
-    local content = CreateFrame("Frame", nil, scrollFrame)
-    content:SetWidth(680)
-    scrollFrame:SetScrollChild(content)
+    local contentBg = content:CreateTexture(nil, "BACKGROUND")
+    contentBg:SetAllPoints()
+    contentBg:SetColorTexture(0.05, 0.05, 0.05, 0.3)
 
     -- BLU Logo/Header
     local logoFrame = CreateFrame("Frame", nil, content)

@@ -21,7 +21,7 @@ jobs:
   release:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
 
     steps:
       - name: 🛠️ Clone Project
@@ -81,23 +81,10 @@ jobs:
       - name: 📦 Package and Release
         uses: BigWigsMods/packager@master
 
-      - name: 🚀 Upload to Wago.io
-        uses: BigWigsMods/wago-upload@v2
-        with:
-          wago-token: ${{ secrets.WAGO_API_TOKEN }}
-          project-id: "vEGPgWK1"
-          version: ${{ steps.version.outputs.version }}
-          changelog: ${{ steps.changelog.outputs.changelog }}
-          game-version: "11.0.5"
-
-      - name: 🚀 Upload to WoWInterface
-        uses: BigWigsMods/wowinterface-upload@v2
-        with:
-          wow-token: ${{ secrets.WOWI_API_TOKEN }}
-          addon-id: "26465"
-          version: ${{ steps.version.outputs.version }}
-          changelog: ${{ steps.changelog.outputs.changelog }}
-          game-version: "11.0.5"
+      - name: ℹ️ Upload Notes
+        run: |
+          echo "Wago and WoWInterface uploads are handled by BigWigsMods/packager"
+          echo "using X-Wago-ID and X-WoWI-ID from BLU.toc."
 
       - name: 📢 Send Discord Notification
         if: success()
@@ -181,7 +168,7 @@ jobs:
           # Create JSON payload
           jq -n \
             --arg username "BLU Notification" \
-            --arg avatar_url "https://raw.githubusercontent.com/DonnieDice/BLU/main/images/logo.png" \
+            --arg avatar_url "https://raw.githubusercontent.com/DonnieDice/BLU/main/media/Textures/logo.png" \
             --arg title "$title" \
             --arg desc "$desc" \
             --argjson color "$color" \
@@ -216,7 +203,7 @@ jobs:
             --arg timestamp "${{ steps.version.outputs.timestamp }}" \
             '{
               username: "BLU Build Failed",
-              avatar_url: "https://raw.githubusercontent.com/DonnieDice/BLU/main/images/logo.png",
+              avatar_url: "https://raw.githubusercontent.com/DonnieDice/BLU/main/media/Textures/logo.png",
               embeds: [{
                 title: "❌ BLU Build Failed",
                 description: "The release workflow encountered an error",

@@ -3,7 +3,7 @@
 
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/donniedice/BLU/main/images/icon.tga" alt="BLU Logo" width="128" height="128">
+<img src="https://raw.githubusercontent.com/donniedice/BLU/main/media/Textures/logo.png" alt="BLU Logo" width="128" height="128">
 
 [![BLU Icon](https://img.shields.io/badge/BLU-Better%20Level%20Up!-05dffa?style=for-the-badge&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==&logoColor=white)](https://github.com/donniedice/BLU)
 

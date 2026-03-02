@@ -40,34 +40,81 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 
     local controlsFrame = CreateFrame("Frame", nil, container)
     controlsFrame:SetPoint("TOPRIGHT", container, "TOPRIGHT", -150, -20)
-    controlsFrame:SetSize(190, 60)
+    controlsFrame:SetSize(230, 60)
 
-    local volumeDropdown = CreateFrame("Frame", nil, controlsFrame, "UIDropDownMenuTemplate")
-    volumeDropdown:SetPoint("LEFT", 0, 0)
-    UIDropDownMenu_SetWidth(volumeDropdown, 120)
-
-    local function setVolume(self, volume)
-        if not BLU.db or not BLU.db.profile then return end
-        BLU.db.profile.soundVolumes = BLU.db.profile.soundVolumes or {}
-        BLU.db.profile.soundVolumes[actualEventType] = volume
-        UIDropDownMenu_SetText(volumeDropdown, volume)
+    local function volumeToStep(volume)
+        if volume == "low" then
+            return 1
+        elseif volume == "high" then
+            return 3
+        end
+        return 2
     end
 
-    UIDropDownMenu_Initialize(volumeDropdown, function(self)
-        local volumes = {"Low", "Medium", "High"}
-        for _, volume in ipairs(volumes) do
-            local info = UIDropDownMenu_CreateInfo()
-            info.text = volume
-            info.value = volume:lower()
-            info.func = function() setVolume(self, volume:lower()) end
-            info.checked = (BLU.db.profile.soundVolumes and BLU.db.profile.soundVolumes[actualEventType] or "medium") == volume:lower()
-            UIDropDownMenu_AddButton(info)
+    local function stepToVolume(step)
+        if step <= 1 then
+            return "low"
+        elseif step >= 3 then
+            return "high"
         end
+        return "medium"
+    end
+
+    local volumeSlider = CreateFrame("Slider", nil, controlsFrame, "OptionsSliderTemplate")
+    volumeSlider:SetPoint("LEFT", 6, 2)
+    volumeSlider:SetWidth(130)
+    volumeSlider:SetMinMaxValues(1, 3)
+    volumeSlider:SetValueStep(1)
+    volumeSlider:SetObeyStepOnDrag(true)
+    volumeSlider.Low:SetText("Low")
+    volumeSlider.High:SetText("High")
+    volumeSlider.Text:SetText("")
+
+    local sliderValue = controlsFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    sliderValue:SetPoint("TOP", volumeSlider, "BOTTOM", 0, -2)
+    sliderValue:SetText("Medium")
+
+    local sliderUpdating = false
+    local function setVolumeSliderValue(volume)
+        local step = volumeToStep(volume)
+        sliderUpdating = true
+        volumeSlider:SetValue(step)
+        sliderUpdating = false
+        sliderValue:SetText(volume:gsub("^%l", string.upper))
+    end
+
+    volumeSlider:SetScript("OnValueChanged", function(self, value)
+        if sliderUpdating then
+            return
+        end
+
+        local step = math.floor((value or 2) + 0.5)
+        if step < 1 then step = 1 end
+        if step > 3 then step = 3 end
+
+        if self:GetValue() ~= step then
+            sliderUpdating = true
+            self:SetValue(step)
+            sliderUpdating = false
+        end
+
+        local volume = stepToVolume(step)
+        sliderValue:SetText(volume:gsub("^%l", string.upper))
+
+        if not BLU.db or not BLU.db.profile then
+            return
+        end
+        BLU.db.profile.soundVolumes = BLU.db.profile.soundVolumes or {}
+        BLU.db.profile.soundVolumes[actualEventType] = volume
     end)
-    UIDropDownMenu_SetText(volumeDropdown, (BLU.db.profile.soundVolumes and BLU.db.profile.soundVolumes[actualEventType] or "medium"):gsub("^%l", string.upper))
+
+    local initialVolume = (BLU.db and BLU.db.profile and BLU.db.profile.soundVolumes and BLU.db.profile.soundVolumes[actualEventType]) or "medium"
+    setVolumeSliderValue(initialVolume)
 
     local channelHint = controlsFrame:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
-    channelHint:SetPoint("LEFT", 16, -1)
+    channelHint:SetPoint("LEFT", 8, 2)
+    channelHint:SetPoint("RIGHT", -72, 2)
+    channelHint:SetJustifyH("LEFT")
     channelHint:SetText("Uses game channel")
     channelHint:Hide()
 
@@ -94,16 +141,24 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 
     local function updateSoundControlMode(selectionValue)
         if isBluVolumeSelection(selectionValue) then
-            volumeDropdown:Show()
+            local stored = (BLU.db and BLU.db.profile and BLU.db.profile.soundVolumes and BLU.db.profile.soundVolumes[actualEventType]) or "medium"
+            setVolumeSliderValue(stored)
+            volumeSlider:Show()
+            sliderValue:Show()
+            volumeSlider.Low:Show()
+            volumeSlider.High:Show()
             channelHint:Hide()
         else
-            volumeDropdown:Hide()
+            volumeSlider:Hide()
+            sliderValue:Hide()
+            volumeSlider.Low:Hide()
+            volumeSlider.High:Hide()
             channelHint:Show()
         end
     end
 
     local testBtn = BLU.Modules.design:CreateButton(controlsFrame, "Test", 60, 22)
-    testBtn:SetPoint("LEFT", volumeDropdown, "RIGHT", 10, 0)
+    testBtn:SetPoint("RIGHT", controlsFrame, "RIGHT", 0, 2)
     testBtn:SetScript("OnClick", function(self)
         BLU:PrintDebug("Test button clicked for event: " .. actualEventType)
         local selectedSound = BLU.db and BLU.db.profile and BLU.db.profile.selectedSounds and BLU.db.profile.selectedSounds[actualEventType]
@@ -308,20 +363,12 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 end
 
 function BLU.CreateEventSoundPanel(panel, eventType, eventName)
-    local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
-    scrollFrame:SetPoint("TOPLEFT", 10, -5)
-    scrollFrame:SetPoint("BOTTOMRIGHT", -30, 5)
-
-    local scrollBg = scrollFrame:CreateTexture(nil, "BACKGROUND")
-    scrollBg:SetAllPoints()
-    scrollBg:SetColorTexture(0.05, 0.05, 0.05, 0.3)
-
-    local content = CreateFrame("Frame", nil, scrollFrame)
-    content:SetWidth(680)
-    scrollFrame:SetScrollChild(content)
+    local content = CreateFrame("Frame", nil, panel)
+    content:SetPoint("TOPLEFT", 10, -10)
+    content:SetPoint("BOTTOMRIGHT", -10, 10)
 
     local header = CreateFrame("Frame", nil, content)
-    header:SetHeight(45)
+    header:SetHeight(44)
     header:SetPoint("TOPLEFT", 0, 0)
     header:SetPoint("RIGHT", 0, 0)
 
@@ -335,8 +382,8 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
         reputation = "Interface\\Icons\\Achievement_Reputation_01",
         battlepet = "Interface\\Icons\\INV_Pet_BattlePetTraining",
         honorrank = "Interface\\Icons\\PVPCurrency-Honor-Horde",
-        renownrank = "Interface\\Icons\\UI_MajorFaction_Renown",
-        tradingpost = "Interface\\Icons\\INV_TradingPostCurrency",
+        renownrank = "Interface\\Icons\\UI_MajorFaction_Centaur",
+        tradingpost = "Interface\\Icons\\INV_Tradingpost_Currency",
         delvecompanion = "Interface\\Icons\\UI_MajorFaction_Delve"
     }
     icon:SetTexture(icons[eventType] or "Interface\\Icons\\INV_Misc_QuestionMark")
@@ -346,16 +393,17 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     title:SetText("|cff05dffa" .. eventName .. " Sounds|r")
 
     local moduleSection = BLU.Modules.design:CreateSection(content, "Module Control", "Interface\\Icons\\INV_Misc_Gear_08")
-    moduleSection:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -10)
+    moduleSection:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -8)
     moduleSection:SetPoint("RIGHT", -10, 0)
-    moduleSection:SetHeight(140)
+    moduleSection:SetHeight(86)
 
     local toggleFrame = CreateFrame("Frame", nil, moduleSection.content)
-    toggleFrame:SetPoint("TOPLEFT", BLU.Modules.design.Layout.Spacing, -BLU.Modules.design.Layout.Spacing)
-    toggleFrame:SetSize(500, 60)
+    toggleFrame:SetPoint("TOPLEFT", 0, 0)
+    toggleFrame:SetPoint("RIGHT", 0, 0)
+    toggleFrame:SetHeight(26)
 
     local switchFrame = CreateFrame("Frame", nil, toggleFrame)
-    switchFrame:SetSize(60, 24)
+    switchFrame:SetSize(44, 20)
     switchFrame:SetPoint("LEFT", 0, 0)
 
     local switchBg = switchFrame:CreateTexture(nil, "BACKGROUND")
@@ -363,7 +411,7 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     switchBg:SetTexture("Interface\\Buttons\\WHITE8x8")
 
     local toggle = CreateFrame("Button", nil, switchFrame)
-    toggle:SetSize(28, 28)
+    toggle:SetSize(18, 18)
     toggle:EnableMouse(true)
 
     local toggleBg = toggle:CreateTexture(nil, "ARTWORK")
@@ -372,26 +420,21 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     toggleBg:SetVertexColor(1, 1, 1, 1)
 
     local moduleText = toggleFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    moduleText:SetPoint("LEFT", switchFrame, "RIGHT", 15, 5)
+    moduleText:SetPoint("LEFT", switchFrame, "RIGHT", 10, 0)
     moduleText:SetText("Enable " .. eventName .. " Module")
 
-    local moduleDesc = toggleFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    moduleDesc:SetPoint("TOPLEFT", moduleText, "BOTTOMLEFT", 0, -3)
-    moduleDesc:SetText("When enabled, BLU will respond to " .. eventName:lower() .. " events and play custom sounds")
-    moduleDesc:SetTextColor(0.7, 0.7, 0.7)
-
     local status = toggleFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    status:SetPoint("RIGHT", toggleFrame, "RIGHT", -10, 0)
+    status:SetPoint("RIGHT", toggleFrame, "RIGHT", -4, 0)
 
     local function UpdateToggleState(enabled)
         if enabled then
-            toggle:SetPoint("RIGHT", switchFrame, "RIGHT", -2, 0)
+            toggle:SetPoint("RIGHT", switchFrame, "RIGHT", -1, 0)
             switchBg:SetVertexColor(unpack(BLU.Modules.design.Colors.Primary))
-            status:SetText("|cff00ff00ENABLED|r")
+            status:SetText("|cff00ff00ON|r")
         else
-            toggle:SetPoint("LEFT", switchFrame, "LEFT", 2, 0)
+            toggle:SetPoint("LEFT", switchFrame, "LEFT", 1, 0)
             switchBg:SetVertexColor(0.3, 0.3, 0.3, 1)
-            status:SetText("|cffff0000DISABLED|r")
+            status:SetText("|cffff0000OFF|r")
         end
     end
 
@@ -427,10 +470,10 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     end)
 
     local soundSection = BLU.Modules.design:CreateSection(content, "Sound Selection", "Interface\\Icons\\INV_Misc_Bell_01")
-    soundSection:SetPoint("TOPLEFT", moduleSection, "BOTTOMLEFT", 0, -10)
-    soundSection:SetPoint("RIGHT", -20, 0)
+    soundSection:SetPoint("TOPLEFT", moduleSection, "BOTTOMLEFT", 0, -8)
+    soundSection:SetPoint("RIGHT", -10, 0)
 
-    local sectionHeight = (eventType == "quest") and 260 or 150
+    local sectionHeight = (eventType == "quest") and 240 or 130
     soundSection:SetHeight(sectionHeight)
 
     if eventType == "quest" then
@@ -439,9 +482,6 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     else
         CreateSoundDropdown(soundSection.content, eventType, eventName .. " Sound", -5)
     end
-
-    local contentHeight = (eventType == "quest") and 450 or 400
-    content:SetHeight(contentHeight)
 end
 
 function SoundPanel:Init()

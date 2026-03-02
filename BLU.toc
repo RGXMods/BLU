@@ -6,5 +6,7 @@
 ## Email: 60427166+donniedice@users.noreply.github.com
 ## SavedVariables: BLUDB
 ## IconTexture: Interface\AddOns\BLU\media\textures\icon.tga
+## X-Wago-ID: vEGPgWK1
+## X-WoWI-ID: 26465
 
 blu.xml

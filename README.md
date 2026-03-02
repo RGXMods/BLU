@@ -35,7 +35,7 @@
 
 <!-- WoW Compatibility -->
 [![WoW Retail](https://img.shields.io/badge/WoW-The%20War%20Within-green?style=flat-square&logo=worldofwarcraft)](https://worldofwarcraft.com)
-[![Version](https://img.shields.io/badge/Version-v6.0.0--alpha-red?style=flat-square)](https://github.com/donniedice/BLU/releases)
+[![Version](https://img.shields.io/badge/Version-v6.0.0--alpha.6-red?style=flat-square)](https://github.com/donniedice/BLU/releases)
 
 </div>
 
@@ -176,7 +176,7 @@
 
 ### 🌍 **Supported WoW Versions**
 
-**BLU v6.0.0-alpha supports World of Warcraft Retail only.**
+**BLU v6.0.0-alpha.6 supports World of Warcraft Retail only.**
 
 | WoW Version | Interface | Status |
 |-------------|-----------|---------|
@@ -199,7 +199,7 @@
 
 3. **Restart** WoW and enable in AddOns menu
 
-## 🆕 What's New in v6.0.0-alpha
+## 🆕 What's New in v6.0.0-alpha.6
 
 ### Major Updates:
 - **Complete Rewrite**: No external dependencies (removed Ace3)

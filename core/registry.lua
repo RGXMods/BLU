@@ -13,6 +13,7 @@ local defaultBluSounds = {
     achievement = "achievement_default",
     quest = "quest_default",
     questaccept = "quest_accept_default",
+    questturnin = "quest_turnin_default",
     reputation = "rep_default",
     battlepet = "battle_pet_level_default",
     honorrank = "honor_default",
@@ -21,8 +22,17 @@ local defaultBluSounds = {
     delvecompanion = "delve_default",
 }
 
+local moduleCategoryMap = {
+    questaccept = "quest",
+    questturnin = "quest",
+}
+
+local CATEGORY_SOUND_COOLDOWN_SECONDS = 0.20
+local GLOBAL_SOUND_COOLDOWN_SECONDS = 0.05
+
 BLU.Modules["registry"] = SoundRegistry
 BLU.SoundRegistry = SoundRegistry
+BLU.Registry = SoundRegistry
 
 -- Sound storage with caching
 SoundRegistry.sounds = {}
@@ -30,6 +40,8 @@ SoundRegistry.categories = {}
 SoundRegistry.soundCache = {} -- Performance cache
 SoundRegistry.lastCacheUpdate = 0
 SoundRegistry.uiSoundCache = {} -- Cache for UI dropdowns
+SoundRegistry.lastCategoryPlayAt = {}
+SoundRegistry.lastAnyPlayAt = 0
 
 -- Initialize
 function SoundRegistry:Init()
@@ -322,6 +334,11 @@ end
 
 -- Play sound for a specific event category
 function SoundRegistry:PlayCategorySound(category, forceSound)
+    if BLU.db and BLU.db.profile and BLU.db.profile.enabled == false then
+        BLU:PrintDebug("BLU disabled, skipping category sound: " .. tostring(category))
+        return false
+    end
+
     -- Check if muted in instances
     if BLU.db and BLU.db.profile and BLU.db.profile.muteInInstances then
         local inInstance, instanceType = IsInInstance()
@@ -338,8 +355,21 @@ function SoundRegistry:PlayCategorySound(category, forceSound)
     end
     
     -- Check if module is enabled
-    if BLU.db and BLU.db.profile and BLU.db.profile.modules and BLU.db.profile.modules[category] == false then
+    local moduleKey = moduleCategoryMap[category] or category
+    if BLU.db and BLU.db.profile and BLU.db.profile.modules and BLU.db.profile.modules[moduleKey] == false then
         BLU:PrintDebug("Module disabled for category: " .. category)
+        return false
+    end
+
+    local now = GetTime and GetTime() or 0
+    local lastForCategory = self.lastCategoryPlayAt[category]
+    if lastForCategory and (now - lastForCategory) < CATEGORY_SOUND_COOLDOWN_SECONDS then
+        BLU:PrintDebug("Skipped duplicate sound in cooldown window for category: " .. category)
+        return false
+    end
+
+    if self.lastAnyPlayAt and (now - self.lastAnyPlayAt) < GLOBAL_SOUND_COOLDOWN_SECONDS then
+        BLU:PrintDebug("Skipped sound due to global cooldown for category: " .. category)
         return false
     end
     
@@ -368,7 +398,12 @@ function SoundRegistry:PlayCategorySound(category, forceSound)
         if #soundIds > 0 then
             local randomIndex = math.random(1, #soundIds)
             local randomSoundId = soundIds[randomIndex]
-            return self:PlaySound(randomSoundId)
+            local played = self:PlaySound(randomSoundId)
+            if played then
+                self.lastCategoryPlayAt[category] = now
+                self.lastAnyPlayAt = now
+            end
+            return played
         else
             -- fallback to default if no sounds in category
             selectedSound = "default"
@@ -379,19 +414,34 @@ function SoundRegistry:PlayCategorySound(category, forceSound)
     if selectedSound == "default" then
         local soundId = defaultBluSounds[category]
         if soundId then
-            return self:PlaySound(soundId)
+            local played = self:PlaySound(soundId)
+            if played then
+                self.lastCategoryPlayAt[category] = now
+                self.lastAnyPlayAt = now
+            end
+            return played
         end
         
     elseif selectedSound:match("^external:") then
         -- External sound from SharedMedia
         local externalName = selectedSound:gsub("^external:", "")
         if BLU.PlayExternalSound then
-            return BLU:PlayExternalSound(externalName)
+            local played = BLU:PlayExternalSound(externalName)
+            if played then
+                self.lastCategoryPlayAt[category] = now
+                self.lastAnyPlayAt = now
+            end
+            return played
         end
         
     else
         -- Direct sound ID
-        return self:PlaySound(selectedSound)
+        local played = self:PlaySound(selectedSound)
+        if played then
+            self.lastCategoryPlayAt[category] = now
+            self.lastAnyPlayAt = now
+        end
+        return played
     end
     
     return false

@@ -6,13 +6,14 @@
 -- Removed redundant BluPrint function - using BLU:Print() instead
 
 local addonName, addonTable = ...
+local CORE_EVENT_ID_LOGOUT = "core_player_logout"
 
 print("BLU: Core loading started.")
 
 -- Create the main addon object (global)
 BLU = {
     name = addonName,
-    version = "v6.0.0-alpha.4",
+    version = "v6.0.0-alpha.6",
     author = C_AddOns.GetAddOnMetadata(addonName, "Author"),
     
     -- Core tables
@@ -23,7 +24,7 @@ BLU = {
     timers = {},
     
     -- Settings
-    debugMode = true,  -- Debug on to see tab creation
+    debugMode = false,
     isInitialized = false
 }
 
@@ -259,7 +260,7 @@ function BLU:ShowWelcomeMessage()
         -- First time welcome
         self:Print("|cff00ccff========================================|r")
         self:Print("|cff00ccffWelcome to Better Level-Up!|r")
-        self:Print("Thank you for installing BLU v6.0.0-alpha")
+        self:Print("Thank you for installing BLU v6.0.0-alpha.6")
         self:Print("")
         self:Print("Replace boring WoW sounds with iconic audio from 50+ games!")
         self:Print("")
@@ -278,7 +279,7 @@ function BLU:ShowWelcomeMessage()
     else
         -- Regular welcome (if enabled)
         if self.db and self.db.profile and self.db.profile.showWelcomeMessage ~= false then
-            local version = GetAddOnMetadata("BLU", "Version") or "6.0.0-alpha"
+            local version = GetAddOnMetadata("BLU", "Version") or "6.0.0-alpha.6"
             self:Print("|cff00ccffBLU|r " .. version .. " loaded! Type |cff05dffa/blu|r for options")
         end
     end
@@ -488,9 +489,9 @@ end
 function BLU:PlayTestSound(category, volume)
     if self.Modules.registry then
         local testSounds = {
-            levelup = "Interface\AddOns\BLU\media\sounds\level_default.ogg",
-            achievement = "Interface\AddOns\BLU\media\sounds\achievement_default.ogg",
-            quest = "Interface\AddOns\BLU\media\sounds\quest_default.ogg"
+            levelup = "Interface\\AddOns\\BLU\\media\\sounds\\level_default.ogg",
+            achievement = "Interface\\AddOns\\BLU\\media\\sounds\\achievement_default.ogg",
+            quest = "Interface\\AddOns\\BLU\\media\\sounds\\quest_default.ogg"
         }
         
         local soundFile = testSounds[category] or testSounds.levelup
@@ -640,7 +641,7 @@ end
 
 BLU:RegisterEvent("PLAYER_LOGOUT", function(event)
     BLU:OnDisable()
-end)
+end, CORE_EVENT_ID_LOGOUT)
 
 -- Copy all BLU functions to addon table so other files can access them via local addonName, addonTable = ...
 

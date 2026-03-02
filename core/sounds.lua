@@ -8,7 +8,8 @@ local addonName, _ = ...
 local BLU = _G["BLU"]
 
 local Sounds = {}
-BLU.Modules["sounds"] = Sounds
+BLU.Modules["sound_muter"] = Sounds
+local SOUNDS_EVENT_ID_LOGOUT = "sound_muter_logout"
 
 local wowDefaultSounds = {
     888,  -- LEVELUPSOUND
@@ -47,4 +48,4 @@ end
 
 BLU:RegisterEvent("PLAYER_LOGOUT", function()
     Sounds:UnmuteDefaultSounds()
-end)
+end, SOUNDS_EVENT_ID_LOGOUT)

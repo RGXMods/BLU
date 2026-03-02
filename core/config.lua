@@ -14,7 +14,10 @@ Config.defaults = {
         -- General settings
         showWelcomeMessage = true,
         masterVolume = 0.5,
+        soundVolume = 100,
         debugMode = false,
+        muteInInstances = false,
+        muteInCombat = false,
         
         -- Feature toggles
         enableLevelUp = true,
@@ -26,6 +29,18 @@ Config.defaults = {
         enableHonorRank = true,
         enableRenownRank = true,
         enableTradingPost = true,
+
+        modules = {
+            levelup = true,
+            achievement = true,
+            reputation = true,
+            quest = true,
+            battlepet = true,
+            honorrank = true,
+            renownrank = true,
+            tradingpost = true,
+            delvecompanion = true,
+        },
         
         -- Sound selections (will be populated dynamically)
         levelUpSound = "None",
@@ -40,15 +55,16 @@ Config.defaults = {
         tradingPostSound = "None",
         
         tradingPostVolume = 0.8,
+        selectedSounds = {},
         
         soundVolumes = {
             levelup = "medium",
             achievement = "medium",
             reputation = "medium",
-            quest_complete = "medium",
-            quest_progress = "medium",
+            questturnin = "medium",
+            questaccept = "medium",
             battlepet = "medium",
-            delve = "medium",
+            delvecompanion = "medium",
             honorrank = "medium",
             renownrank = "medium",
             tradingpost = "medium",

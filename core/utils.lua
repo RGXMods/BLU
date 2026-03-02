@@ -58,6 +58,26 @@ function Utils:Init()
     BLU:PrintDebug("Utils module initialized")
 end
 
+function Utils:DeepCopy(value, seen)
+    if type(value) ~= "table" then
+        return value
+    end
+
+    seen = seen or {}
+    if seen[value] then
+        return seen[value]
+    end
+
+    local copy = {}
+    seen[value] = copy
+
+    for k, v in pairs(value) do
+        copy[self:DeepCopy(k, seen)] = self:DeepCopy(v, seen)
+    end
+
+    return setmetatable(copy, getmetatable(value))
+end
+
 -- Queue a sound to be played
 function Utils:QueueSound(soundFile, volume, callback)
     if not BLU.db.profile.queueSounds then
@@ -202,10 +222,11 @@ end
 -- Safe function call (delays if in combat)
 function Utils:SafeCall(func)
     if self:IsInCombat() then
+        local eventId = "utils_safe_call_" .. tostring(GetTime and GetTime() or 0) .. "_" .. tostring(math.random(100000, 999999))
         BLU:RegisterEvent("PLAYER_REGEN_ENABLED", function()
-            BLU:UnregisterEvent("PLAYER_REGEN_ENABLED")
+            BLU:UnregisterEvent("PLAYER_REGEN_ENABLED", eventId)
             func()
-        end)
+        end, eventId)
     else
         func()
     end

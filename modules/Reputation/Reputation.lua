@@ -7,6 +7,10 @@ local addonName = ...
 local BLU = _G["BLU"]
 local Reputation = {}
 
+local REPUTATION_EVENT_ID_UPDATE = "reputation_update"
+local REPUTATION_EVENT_ID_LOGIN = "reputation_login"
+local REPUTATION_SCAN_DELAY_SECONDS = 0.10
+
 -- Reputation rank names
 local REPUTATION_RANKS = {
     [1] = "Hated",
@@ -21,32 +25,34 @@ local REPUTATION_RANKS = {
 
 -- Module initialization
 function Reputation:Init()
-    -- Hook into chat messages for reputation gains
-    -- ChatFrame_AddMessageEventFilter("CHAT_MSG_COMBAT_FACTION_CHANGE", function(...) return self:OnReputationMessage(...) end)
-    
-    -- Track reputation changes
-    -- BLU:RegisterEvent("UPDATE_FACTION", function(...) self:OnUpdateFaction(...) end)
-    
-    -- Initialize reputation tracking
-    -- self.reputationData = {}
-    -- self:ScanReputation()
-    
+    self.reputationData = {}
+    self.pendingScan = false
+
+    BLU:RegisterEvent("UPDATE_FACTION", function(...) self:OnUpdateFaction(...) end, REPUTATION_EVENT_ID_UPDATE)
+    BLU:RegisterEvent("PLAYER_ENTERING_WORLD", function(...) self:OnPlayerEnteringWorld(...) end, REPUTATION_EVENT_ID_LOGIN)
+
+    self:ScanReputation()
     BLU:PrintDebug("Reputation module initialized")
 end
 
 -- Cleanup function
 function Reputation:Cleanup()
-    -- ChatFrame_RemoveMessageEventFilter("CHAT_MSG_COMBAT_FACTION_CHANGE", self.OnReputationMessage)
-    -- BLU:UnregisterEvent("UPDATE_FACTION")
+    BLU:UnregisterEvent("UPDATE_FACTION", REPUTATION_EVENT_ID_UPDATE)
+    BLU:UnregisterEvent("PLAYER_ENTERING_WORLD", REPUTATION_EVENT_ID_LOGIN)
+    self.pendingScan = false
     BLU:PrintDebug("Reputation module cleaned up")
 end
 
 -- Scan current reputation standings
 function Reputation:ScanReputation()
+    if not C_Reputation or not C_Reputation.GetNumFactions or not C_Reputation.GetFactionDataByIndex then
+        return
+    end
+
     local numFactions = C_Reputation.GetNumFactions()
     for i = 1, numFactions do
         local factionData = C_Reputation.GetFactionDataByIndex(i)
-        if factionData and factionData.name then
+        if factionData and factionData.name and factionData.reaction then
             self.reputationData[factionData.name] = {
                 standing = factionData.reaction,
                 value = factionData.currentStanding
@@ -55,40 +61,42 @@ function Reputation:ScanReputation()
     end
 end
 
--- Handle reputation chat messages
-function Reputation:OnReputationMessage(chatFrame, event, msg)
-    if not BLU.db.profile.enabled then return false end
-    
-    -- Check for rank up messages
-    if msg:find("You are now") and (msg:find("Friendly") or msg:find("Honored") or 
-       msg:find("Revered") or msg:find("Exalted")) then
-        self:PlayReputationSound()
-    end
-    
-    return false
-end
-
 -- Handle faction updates
 function Reputation:OnUpdateFaction(event)
-    if not BLU.db.profile.enabled then return end
-    
-    C_Timer.After(0.1, function()
+    if not BLU.db or not BLU.db.profile or not BLU.db.profile.enabled then return end
+    if BLU.db.profile.enableReputation == false then return end
+    if BLU.db.profile.modules and BLU.db.profile.modules.reputation == false then return end
+
+    if self.pendingScan then
+        return
+    end
+
+    self.pendingScan = true
+    C_Timer.After(REPUTATION_SCAN_DELAY_SECONDS, function()
+        self.pendingScan = false
         self:CheckReputationChanges()
     end)
 end
 
+function Reputation:OnPlayerEnteringWorld()
+    self:ScanReputation()
+end
+
 -- Check for reputation standing changes
 function Reputation:CheckReputationChanges()
+    if not C_Reputation or not C_Reputation.GetNumFactions or not C_Reputation.GetFactionDataByIndex then
+        return
+    end
+
     local playSound = false
     local numFactions = C_Reputation.GetNumFactions()
     
     for i = 1, numFactions do
         local factionData = C_Reputation.GetFactionDataByIndex(i)
-        if factionData and factionData.name and self.reputationData[factionData.name] then
+        if factionData and factionData.name and factionData.reaction then
             local oldData = self.reputationData[factionData.name]
-            
-            -- Check if standing increased
-            if factionData.reaction > oldData.standing then
+
+            if oldData and factionData.reaction > oldData.standing then
                 playSound = true
                 
                 if BLU.debugMode then
@@ -99,7 +107,6 @@ function Reputation:CheckReputationChanges()
                 end
             end
             
-            -- Update stored data
             self.reputationData[factionData.name] = {
                 standing = factionData.reaction,
                 value = factionData.currentStanding

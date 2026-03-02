@@ -9,7 +9,18 @@ local Modules = {}
 BLU.Modules = BLU.Modules or {}
 BLU.Modules["modules"] = Modules
 
+local MODULE_LOAD_MAP = {
+    honorrank = "honor",
+    renownrank = "renown",
+    delvecompanion = "delve",
+}
+
 function BLU.CreateModulesPanel(panel)
+    for _, child in ipairs({panel:GetChildren()}) do
+        child:Hide()
+        child:SetParent(nil)
+    end
+
     -- Create scrollable content with proper sizing
     local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
     scrollFrame:SetPoint("TOPLEFT", 5, -5)
@@ -25,7 +36,7 @@ function BLU.CreateModulesPanel(panel)
     scrollFrame:SetScrollChild(content)
 
     -- Header
-    local header = BLU.Modules.design:CreateSectionHeader(content, "Module Management", "Interface\Icons\INV_Misc_Gear_08")
+    local header = BLU.Modules.design:CreateSectionHeader(content, "Module Management", "Interface\\Icons\\INV_Misc_Gear_08")
     header:SetPoint("TOPLEFT", 0, 0)
     header:SetPoint("RIGHT", 0, 0)
 
@@ -54,81 +65,81 @@ function BLU.CreateModulesPanel(panel)
     local categories = {
         {
             name = "Core Features",
-            icon = "Interface\Icons\Achievement_General",
+            icon = "Interface\\Icons\\Achievement_General",
             modules = {
                 {
                     id = "levelup",
                     name = "Level Up",
                     desc = "Plays sounds when you gain a level",
-                    icon = "Interface\Icons\Achievement_Level_100",
+                    icon = "Interface\\Icons\\Achievement_Level_100",
                     default = true
                 },
                 {
                     id = "achievement",
                     name = "Achievements",
                     desc = "Play sounds when you earn achievements",
-                    icon = "Interface\Icons\Achievement_GuildPerk_MobileMailbox",
+                    icon = "Interface\\Icons\\Achievement_GuildPerk_MobileMailbox",
                     default = true
                 },
                 {
                     id = "quest",
                     name = "Quest Complete",
                     desc = "Play sounds when you complete quests",
-                    icon = "Interface\Icons\INV_Misc_Note_01",
+                    icon = "Interface\\Icons\\INV_Misc_Note_01",
                     default = true
                 },
                 {
                     id = "reputation",
                     name = "Reputation",
                     desc = "Play sounds when you gain reputation",
-                    icon = "Interface\Icons\Achievement_Reputation_01",
+                    icon = "Interface\\Icons\\Achievement_Reputation_01",
                     default = true
                 }
             }
         },
         {
             name = "PvP Features",
-            icon = "Interface\Icons\Achievement_PVP_A_A",
+            icon = "Interface\\Icons\\Achievement_PVP_A_A",
             modules = {
                 {
                     id = "honorrank",
                     name = "Honor Rank",
                     desc = "Play sounds when you gain honor ranks",
-                    icon = "Interface\Icons\PVPCurrency-Honor-Horde",
+                    icon = "Interface\\Icons\\PVPCurrency-Honor-Horde",
                     default = false
                 },
                 {
                     id = "renownrank",
                     name = "Renown Rank",
                     desc = "Play sounds when you gain renown with factions",
-                    icon = "Interface\Icons\UI_MajorFaction_Centaur",
+                    icon = "Interface\\Icons\\UI_MajorFaction_Centaur",
                     default = true
                 }
             }
         },
         {
             name = "Special Features",
-            icon = "Interface\Icons\INV_Misc_Coin_01",
+            icon = "Interface\\Icons\\INV_Misc_Coin_01",
             modules = {
                 {
                     id = "tradingpost",
                     name = "Trading Post",
                     desc = "Play sounds for trading post rewards",
-                    icon = "Interface\Icons\INV_Tradingpost_Currency",
+                    icon = "Interface\\Icons\\INV_Tradingpost_Currency",
                     default = false
                 },
                 {
                     id = "battlepet",
                     name = "Battle Pets",
                     desc = "Play sounds for pet battle victories and level ups",
-                    icon = "Interface\Icons\INV_Pet_BattlePetTraining",
+                    icon = "Interface\\Icons\\INV_Pet_BattlePetTraining",
                     default = false
                 },
                 {
                     id = "delvecompanion",
                     name = "Delve Companion",
                     desc = "Play sounds for delve companion events",
-                    icon = "Interface\Icons\UI_MajorFaction_Delve",
+                    icon = "Interface\\Icons\\UI_MajorFaction_Delve",
                     default = false
                 }
             }
@@ -151,7 +162,8 @@ function BLU.CreateModulesPanel(panel)
         local section = BLU.Modules.design:CreateSection(content, category.name, category.icon)
         section:SetPoint("TOPLEFT", 0, yOffset)
         section:SetPoint("RIGHT", 0, 0)
-        section:SetHeight(40 + #category.modules * 55)
+        -- Extra vertical room prevents bottom row clipping under section borders.
+        section:SetHeight(56 + #category.modules * 55)
 
         local moduleY = -10
 
@@ -199,7 +211,7 @@ function BLU.CreateModulesPanel(panel)
 
             local switchBg = switchFrame:CreateTexture(nil, "BACKGROUND")
             switchBg:SetAllPoints()
-            switchBg:SetTexture("Interface\Buttons\WHITE8x8")
+            switchBg:SetTexture("Interface\\Buttons\\WHITE8x8")
 
             local toggle = CreateFrame("Button", nil, switchFrame)
             toggle:SetSize(28, 28)
@@ -207,13 +219,13 @@ function BLU.CreateModulesPanel(panel)
 
             local toggleBg = toggle:CreateTexture(nil, "ARTWORK")
             toggleBg:SetAllPoints()
-            toggleBg:SetTexture("Interface\Buttons\WHITE8x8")
+            toggleBg:SetTexture("Interface\\Buttons\\WHITE8x8")
             toggleBg:SetVertexColor(1, 1, 1, 1)
 
             local glow = toggle:CreateTexture(nil, "OVERLAY")
             glow:SetSize(32, 32)
             glow:SetPoint("CENTER")
-            glow:SetTexture("Interface\Buttons\UI-CheckBox-Highlight")
+            glow:SetTexture("Interface\\Buttons\\UI-CheckBox-Highlight")
             glow:SetBlendMode("ADD")
             glow:SetAlpha(0)
 
@@ -266,11 +278,11 @@ function BLU.CreateModulesPanel(panel)
 
                 if enabled then
                     if BLU.LoadModule then
-                        BLU:LoadModule("features", self.moduleId)
+                        BLU:LoadModule("features", MODULE_LOAD_MAP[self.moduleId] or self.moduleId)
                     end
                 else
                     if BLU.UnloadModule then
-                        BLU:UnloadModule(self.moduleId)
+                        BLU:UnloadModule(MODULE_LOAD_MAP[self.moduleId] or self.moduleId)
                     end
                 end
             end)
@@ -297,7 +309,7 @@ function BLU.CreateModulesPanel(panel)
             for _, module in ipairs(category.modules) do
                 BLU.db.profile.modules[module.id] = true
                 if BLU.LoadModule then
-                    BLU:LoadModule("features", module.id)
+                    BLU:LoadModule("features", MODULE_LOAD_MAP[module.id] or module.id)
                 end
             end
         end
@@ -318,7 +330,7 @@ function BLU.CreateModulesPanel(panel)
             for _, module in ipairs(category.modules) do
                 BLU.db.profile.modules[module.id] = false
                 if BLU.UnloadModule then
-                    BLU:UnloadModule(module.id)
+                    BLU:UnloadModule(MODULE_LOAD_MAP[module.id] or module.id)
                 end
             end
         end
@@ -340,11 +352,11 @@ function BLU.CreateModulesPanel(panel)
                 BLU.db.profile.modules[module.id] = module.default
                 if module.default then
                     if BLU.LoadModule then
-                        BLU:LoadModule("features", module.id)
+                        BLU:LoadModule("features", MODULE_LOAD_MAP[module.id] or module.id)
                     end
                 else
                     if BLU.UnloadModule then
-                        BLU:UnloadModule(module.id)
+                        BLU:UnloadModule(MODULE_LOAD_MAP[module.id] or module.id)
                     end
                 end
             end

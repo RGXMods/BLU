@@ -6,9 +6,47 @@
 
 local addonName = ...
 local BLU = _G["BLU"]
+local INIT_EVENT_ID_ENTERING_WORLD = "init_player_entering_world"
 
 -- Track what's been initialized
 BLU.initialized = {}
+
+local moduleSettingKeyMap = {
+    honor = "honorrank",
+    renown = "renownrank",
+    delve = "delvecompanion",
+}
+
+local moduleLegacyToggleMap = {
+    levelup = "enableLevelUp",
+    achievement = "enableAchievement",
+    reputation = "enableReputation",
+    quest = "enableQuest",
+    battlepet = "enableBattlePet",
+    honor = "enableHonorRank",
+    renown = "enableRenownRank",
+    tradingpost = "enableTradingPost",
+    delve = "enableDelveCompanion",
+}
+
+function BLU:IsFeatureModuleEnabled(moduleName)
+    if not self.db or not self.db.profile then
+        return true
+    end
+
+    local profile = self.db.profile
+    local moduleKey = moduleSettingKeyMap[moduleName] or moduleName
+    if profile.modules and profile.modules[moduleKey] == false then
+        return false
+    end
+
+    local legacyToggle = moduleLegacyToggleMap[moduleName]
+    if legacyToggle and profile[legacyToggle] == false then
+        return false
+    end
+
+    return true
+end
 
 -- Main initialization function
 function BLU:Initialize()
@@ -28,7 +66,7 @@ function BLU:Initialize()
         "database",        -- Database (needs config.defaults)
         "utils",          -- Utility functions
         "combat_protection", -- Combat lockdown protection
-        "sounds"          -- Sound muting/unmuting
+        "sound_muter"     -- Sound muting/unmuting
     })
 
     BLU:PrintDebug("[Init] BLU.db after Phase 1: " .. tostring(BLU.db))
@@ -92,10 +130,14 @@ function BLU:InitializePhase(phaseName, moduleList)
     self:PrintDebug("[Init] Phase: " .. phaseName)
 
     for _, moduleName in ipairs(moduleList) do
-        if not self.initialized[moduleName] then
-            local success = self:InitializeModule(moduleName)
-            if not success then
-                self:PrintDebug("[Init] Warning: Module '" .. moduleName .. "' failed to initialize")
+        if phaseName == "modules" and not self:IsFeatureModuleEnabled(moduleName) then
+            self:PrintDebug("[Init] Skipping disabled feature module: " .. moduleName)
+        else
+            if not self.initialized[moduleName] then
+                local success = self:InitializeModule(moduleName)
+                if not success then
+                    self:PrintDebug("[Init] Warning: Module '" .. moduleName .. "' failed to initialize")
+                end
             end
         end
     end
@@ -125,6 +167,8 @@ function BLU:InitializeModule(moduleName)
             local success, err = pcall(function() module:Init() end)
             if success then
                 self.initialized[moduleName] = true
+                self.LoadedModules = self.LoadedModules or {}
+                self.LoadedModules[moduleName] = module
                 self:PrintDebug("[Init] Successfully initialized: " .. moduleName)
                 return true
             else
@@ -207,5 +251,5 @@ BLU:RegisterEvent("PLAYER_ENTERING_WORLD", function()
     end
 
     -- Unregister this event as it only needs to fire once
-    BLU:UnregisterEvent("PLAYER_ENTERING_WORLD")
-end)
+    BLU:UnregisterEvent("PLAYER_ENTERING_WORLD", INIT_EVENT_ID_ENTERING_WORLD)
+end, INIT_EVENT_ID_ENTERING_WORLD)

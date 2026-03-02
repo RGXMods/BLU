@@ -7,16 +7,19 @@ local addonName = ...
 local BLU = _G["BLU"]
 local BattlePet = {}
 
+local PET_EVENT_ID_LEVEL = "battlepet_level_changed"
+local PET_EVENT_ID_CHANGED = "battlepet_pet_changed"
+
 -- Module variables
 BattlePet.lastPetLevel = {}
 BattlePet.levelUpCooldown = {}
+BattlePet.pendingLevelScan = false
 
 -- Module initialization
 function BattlePet:Init()
     -- Battle pet events
-    BLU:RegisterEvent("PET_BATTLE_LEVEL_CHANGED", function(...) self:OnPetLevelChanged(...) end)
-    BLU:RegisterEvent("PET_BATTLE_PET_CHANGED", function(...) self:OnPetChanged(...) end)
-    BLU:RegisterEvent("CHAT_MSG_COMBAT_XP_GAIN", function(...) self:OnCombatXPGain(...) end)
+    BLU:RegisterEvent("PET_BATTLE_LEVEL_CHANGED", function(...) self:OnPetLevelChanged(...) end, PET_EVENT_ID_LEVEL)
+    BLU:RegisterEvent("PET_BATTLE_PET_CHANGED", function(...) self:OnPetChanged(...) end, PET_EVENT_ID_CHANGED)
     
     -- Initialize pet levels
     self:ScanPetLevels()
@@ -26,14 +29,18 @@ end
 
 -- Cleanup function
 function BattlePet:Cleanup()
-    BLU:UnregisterEvent("PET_BATTLE_LEVEL_CHANGED")
-    BLU:UnregisterEvent("PET_BATTLE_PET_CHANGED")
-    BLU:UnregisterEvent("CHAT_MSG_COMBAT_XP_GAIN")
+    BLU:UnregisterEvent("PET_BATTLE_LEVEL_CHANGED", PET_EVENT_ID_LEVEL)
+    BLU:UnregisterEvent("PET_BATTLE_PET_CHANGED", PET_EVENT_ID_CHANGED)
+    self.pendingLevelScan = false
     BLU:PrintDebug("BattlePet module cleaned up")
 end
 
 -- Scan current pet levels
 function BattlePet:ScanPetLevels()
+    if not C_PetJournal or not C_PetJournal.GetNumPets or not C_PetJournal.GetPetInfoByIndex or not C_PetJournal.GetPetInfoByPetID then
+        return
+    end
+
     local numPets = C_PetJournal.GetNumPets()
     
     for i = 1, numPets do
@@ -49,7 +56,10 @@ end
 
 -- Pet level changed handler
 function BattlePet:OnPetLevelChanged(event, owner, petSlot, newLevel, oldLevel)
+    if not BLU.db or not BLU.db.profile then return end
+    if not BLU.db.profile.enabled then return end
     if not BLU.db.profile.enableBattlePet then return end
+    if BLU.db.profile.modules and BLU.db.profile.modules.battlepet == false then return end
     
     -- Only play for player's pets
     if owner ~= Enum.BattlePetOwner.Ally then return end
@@ -62,10 +72,7 @@ function BattlePet:OnPetLevelChanged(event, owner, petSlot, newLevel, oldLevel)
     
     self.levelUpCooldown[petSlot] = now
     
-    local soundName = BLU.db.profile.battlePetSound
-    local volume = BLU.db.profile.battlePetVolume * BLU.db.profile.masterVolume
-    
-    BLU:PlaySound(soundName, volume)
+    BLU:PlayCategorySound("battlepet")
     
     if BLU.debugMode then
         BLU:Print(string.format("Battle pet leveled up! Slot %d: %d -> %d", petSlot, oldLevel, newLevel))
@@ -74,27 +81,31 @@ end
 
 -- Pet changed handler
 function BattlePet:OnPetChanged(event)
-    -- Update pet levels after battle
-    C_Timer.After(0.5, function()
-        self:CheckPetLevels()
-    end)
-end
-
--- Combat XP gain handler (for pets outside of battles)
-function BattlePet:OnCombatXPGain(event, msg)
+    if not BLU.db or not BLU.db.profile then return end
+    if not BLU.db.profile.enabled then return end
     if not BLU.db.profile.enableBattlePet then return end
-    
-    -- Check if message is about battle pet XP
-    if msg:find("gains %d+ experience") and msg:find("Battle Pet") then
-        -- Check for level ups after XP gain
-        C_Timer.After(0.1, function()
-            self:CheckPetLevels()
-        end)
-    end
+    if BLU.db.profile.modules and BLU.db.profile.modules.battlepet == false then return end
+    self:SchedulePetLevelScan(0.2)
 end
 
 -- Check for pet level changes
 function BattlePet:CheckPetLevels()
+    if not BLU.db or not BLU.db.profile then
+        return
+    end
+
+    if BLU.db.profile.enabled == false or BLU.db.profile.enableBattlePet == false then
+        return
+    end
+
+    if BLU.db.profile.modules and BLU.db.profile.modules.battlepet == false then
+        return
+    end
+
+    if not C_PetJournal or not C_PetJournal.GetNumPets or not C_PetJournal.GetPetInfoByIndex or not C_PetJournal.GetPetInfoByPetID then
+        return
+    end
+
     local numPets = C_PetJournal.GetNumPets()
     
     for i = 1, numPets do
@@ -106,10 +117,7 @@ function BattlePet:CheckPetLevels()
                 
                 if level > lastLevel then
                     -- Pet leveled up!
-                    local soundName = BLU.db.profile.battlePetSound
-                    local volume = BLU.db.profile.battlePetVolume * BLU.db.profile.masterVolume
-                    
-                    BLU:PlaySound(soundName, volume)
+                    BLU:PlayCategorySound("battlepet")
                     
                     if BLU.debugMode then
                         BLU:Print(string.format("Battle pet '%s' leveled up to %d!", name or "Unknown", level))
@@ -120,6 +128,18 @@ function BattlePet:CheckPetLevels()
             end
         end
     end
+end
+
+function BattlePet:SchedulePetLevelScan(delay)
+    if self.pendingLevelScan then
+        return
+    end
+
+    self.pendingLevelScan = true
+    C_Timer.After(delay or 0.1, function()
+        self.pendingLevelScan = false
+        self:CheckPetLevels()
+    end)
 end
 
 -- Register module

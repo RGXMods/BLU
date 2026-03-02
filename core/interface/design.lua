@@ -14,9 +14,11 @@ BLU.Design = Design
 
 -- Color palette
 Design.Colors = {
-    Primary = {0.02, 0.47, 0.98},      -- #05DFFA (BLU cyan)
+    Primary = {0.02, 0.87, 0.98},      -- #05DFFA (BLU cyan)
     PrimaryHex = "cff05dffa",
-    Secondary = {1.0, 0.84, 0.0},       -- #FFD700 (RGX gold)
+    Secondary = {1.0, 0.84, 0.0},      -- #FFD700 (RGX gold)
+    Accent = {0.08, 0.22, 0.30},       -- Deep cyan accent
+    Surface = {0.07, 0.09, 0.12},      -- Panel surface
     Success = {0.0, 0.8, 0.0},          -- Green
     Warning = {1.0, 0.65, 0.0},         -- Orange
     Error = {1.0, 0.2, 0.2},            -- Red
@@ -29,17 +31,17 @@ Design.Colors = {
 -- Backdrop templates
 Design.Backdrops = {
     Dark = {
-        bgFile = "Interface/DialogFrame/UI-DialogBox-Background",
-        edgeFile = "Interface/DialogFrame/UI-DialogBox-Border",
+        bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+        edgeFile = "Interface\\Buttons\\WHITE8x8",
         tile = true,
-        tileSize = 32,
-        edgeSize = 32,
-        insets = {left = 11, right = 12, top = 12, bottom = 11}
+        tileSize = 16,
+        edgeSize = 1,
+        insets = {left = 1, right = 1, top = 1, bottom = 1}
     },
     
     Light = {
-        bgFile = "Interface\Tooltips\UI-Tooltip-Background",
-        edgeFile = "Interface\Tooltips\UI-Tooltip-Border",
+        bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
         tile = true,
         tileSize = 16,
         edgeSize = 16,
@@ -47,8 +49,8 @@ Design.Backdrops = {
     },
     
     Button = {
-        bgFile = "Interface\Tooltips\UI-Tooltip-Background",
-        edgeFile = "Interface\Buttons\WHITE8x8",
+        bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+        edgeFile = "Interface\\Buttons\\WHITE8x8",
         tile = true,
         tileSize = 16,
         edgeSize = 1,
@@ -56,20 +58,20 @@ Design.Backdrops = {
     },
     
     Solid = {
-        bgFile = "Interface\Tooltips\UI-Tooltip-Background",
-        edgeFile = "Interface\Buttons\WHITE8x8",
+        bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+        edgeFile = "Interface\\Buttons\\WHITE8x8",
         tile = false,
         edgeSize = 1,
         insets = {left = 0, right = 0, top = 0, bottom = 0}
     },
 
     Panel = {
-        bgFile = "Interface/DialogFrame/UI-DialogBox-Background",
-        edgeFile = "Interface/DialogFrame/UI-DialogBox-Border",
+        bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+        edgeFile = "Interface\\Buttons\\WHITE8x8",
         tile = true,
-        tileSize = 32,
-        edgeSize = 32,
-        insets = {left = 11, right = 12, top = 12, bottom = 11}
+        tileSize = 16,
+        edgeSize = 1,
+        insets = {left = 1, right = 1, top = 1, bottom = 1}
     }
 }
 
@@ -102,8 +104,8 @@ function Design:CreateStyledFrame(parent, width, height, template)
     
     local backdrop = Design.Backdrops[template] or Design.Backdrops.Dark
     frame:SetBackdrop(backdrop)
-    frame:SetBackdropColor(0.05, 0.05, 0.05, 0.95)
-    frame:SetBackdropBorderColor(0.3, 0.3, 0.3, 1)
+    frame:SetBackdropColor(unpack(Design.Colors.Surface))
+    frame:SetBackdropBorderColor(unpack(Design.Colors.Accent))
     
     return frame
 end
@@ -114,8 +116,8 @@ function Design:CreateStyledButton(parent, text, width, height)
     button:SetSize(width or 120, height or 30)
     
     button:SetBackdrop(Design.Backdrops.Button)
-    button:SetBackdropColor(0.15, 0.15, 0.15, 0.9)
-    button:SetBackdropBorderColor(0.3, 0.3, 0.3, 1)
+    button:SetBackdropColor(0.08, 0.10, 0.13, 0.95)
+    button:SetBackdropBorderColor(0.14, 0.20, 0.28, 1)
     
     local label = button:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     label:SetPoint("CENTER")
@@ -124,28 +126,37 @@ function Design:CreateStyledButton(parent, text, width, height)
     
     -- Hover effects
     button:SetScript("OnEnter", function(self)
-        self:SetBackdropColor(0.25, 0.25, 0.25, 1)
+        self:SetBackdropColor(0.12, 0.16, 0.22, 1)
         self:SetBackdropBorderColor(unpack(Design.Colors.Primary))
     end)
     
     button:SetScript("OnLeave", function(self)
-        self:SetBackdropColor(0.15, 0.15, 0.15, 0.9)
-        self:SetBackdropBorderColor(0.3, 0.3, 0.3, 1)
+        self:SetBackdropColor(0.08, 0.10, 0.13, 0.95)
+        self:SetBackdropBorderColor(0.14, 0.20, 0.28, 1)
     end)
     
     return button
 end
 
 -- Helper function to create section headers
-function Design:CreateSectionHeader(parent, text)
+function Design:CreateSectionHeader(parent, text, icon)
     local header = CreateFrame("Frame", nil, parent, "BackdropTemplate")
     header:SetHeight(30)
     header:SetBackdrop(Design.Backdrops.Solid)
-    header:SetBackdropColor(0.1, 0.1, 0.1, 0.8)
-    header:SetBackdropBorderColor(unpack(Design.Colors.Primary))
+    header:SetBackdropColor(0.09, 0.12, 0.16, 0.95)
+    header:SetBackdropBorderColor(unpack(Design.Colors.Accent))
+
+    local leftInset = 10
+    if icon then
+        local iconTexture = header:CreateTexture(nil, "ARTWORK")
+        iconTexture:SetSize(16, 16)
+        iconTexture:SetPoint("LEFT", 8, 0)
+        iconTexture:SetTexture(icon)
+        leftInset = 30
+    end
     
     local label = header:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    label:SetPoint("LEFT", 10, 0)
+    label:SetPoint("LEFT", leftInset, 0)
     label:SetText(text)
     label:SetTextColor(unpack(Design.Colors.Primary))
     header.label = label
@@ -269,12 +280,12 @@ function Design:CreateSection(parent, title, icon)
     
     if title then
         local header = self:CreateHeader(section, title, icon)
-        header:SetPoint("TOPLEFT", 8, -8)
-        header:SetPoint("TOPRIGHT", -8, -8)
+        header:SetPoint("TOPLEFT", 8, -6)
+        header:SetPoint("TOPRIGHT", -8, -6)
         section.header = header
         section.content = CreateFrame("Frame", nil, section)
-        section.content:SetPoint("TOPLEFT", 15, -32)
-        section.content:SetPoint("BOTTOMRIGHT", -15, 8)
+        section.content:SetPoint("TOPLEFT", 15, -38)
+        section.content:SetPoint("BOTTOMRIGHT", -15, 10)
     else
         section.content = CreateFrame("Frame", nil, section)
         section.content:SetPoint("TOPLEFT", 15, -8)

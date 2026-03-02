@@ -9,6 +9,31 @@ local About = {}
 BLU.Modules = BLU.Modules or {}
 BLU.Modules["about"] = About
 
+local function GetBLUSoundStats()
+    local packMap = {}
+    local soundCount = 0
+
+    if BLU.SoundRegistry and BLU.SoundRegistry.GetAllSounds then
+        local allSounds = BLU.SoundRegistry:GetAllSounds()
+        for _, soundData in pairs(allSounds) do
+            local isBluSound = soundData and (soundData.source == "BLU" or soundData.source == "BLU Built-in" or soundData.isInternal)
+            if isBluSound then
+                soundCount = soundCount + 1
+                if soundData.packId and soundData.packId ~= "" then
+                    packMap[soundData.packId] = true
+                end
+            end
+        end
+    end
+
+    local packCount = 0
+    for _ in pairs(packMap) do
+        packCount = packCount + 1
+    end
+
+    return packCount, soundCount
+end
+
 function BLU.CreateAboutPanel(panel)
     -- Create scrollable content with proper sizing
     local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
@@ -39,7 +64,7 @@ function BLU.CreateAboutPanel(panel)
     local logoIcon = logoFrame:CreateTexture(nil, "ARTWORK")
     logoIcon:SetSize(80, 80)
     logoIcon:SetPoint("LEFT", 20, 0)
-    logoIcon:SetTexture("Interface\\AddOns\\BLU\\media\\images\\icon")
+    logoIcon:SetTexture("Interface\\AddOns\\BLU\\media\\Textures\\icon.tga")
 
     -- Title
     local title = logoFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalHuge")
@@ -53,9 +78,15 @@ function BLU.CreateAboutPanel(panel)
     version:SetText("Version " .. (BLU.version or "Unknown") .. " - RGX Mods")
     version:SetTextColor(0.8, 0.8, 0.8)
 
+    local bluPackCount = GetBLUSoundStats()
+
     local tagline = logoFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     tagline:SetPoint("TOPLEFT", version, "BOTTOMLEFT", 0, -5)
-    tagline:SetText("Replace default sounds with iconic audio from 50+ games")
+    if bluPackCount > 0 then
+        tagline:SetText(string.format("Replace default sounds with iconic audio from %d BLU packs", bluPackCount))
+    else
+        tagline:SetText("Replace default sounds with iconic audio from curated BLU packs")
+    end
 
     -- Info Section
     local infoSection = BLU.Modules.design:CreateSection(content, "Information", "Interface\\Icons\\INV_Misc_Book_09")
@@ -93,7 +124,7 @@ function BLU.CreateAboutPanel(panel)
     end
 
     CreateInfoRow(infoGrid, "Interface\\Icons\\INV_Misc_Note_05", "Author", "|cffffd700donniedice|r", 0)
-    CreateInfoRow(infoGrid, "Interface\\Icons\\ACHIEVEMENT_GUILDPERK_EVERYONES A HERO_RANK2", "Discord", "|cffffd700discord.gg/rgxmods|r", -30)
+    CreateInfoRow(infoGrid, "Interface\\Icons\\INV_Misc_GroupNeedMore", "Discord", "|cffffd700discord.gg/rgxmods|r", -30)
     CreateInfoRow(infoGrid, "Interface\\Icons\\INV_Misc_Web_01", "Website", "|cffffd700rgxmods.com|r", -60)
     CreateInfoRow(infoGrid, "Interface\\Icons\\Trade_Engineering", "GitHub", "|cffffd700github.com/donniedice/BLU|r", -90)
     CreateInfoRow(infoGrid, "Interface\\Icons\\INV_Misc_GroupLooking", "Support", "|cff00ff00/help|r for assistance", -120)
@@ -104,8 +135,13 @@ function BLU.CreateAboutPanel(panel)
     featuresSection:SetPoint("RIGHT", -BLU.Modules.design.Layout.Spacing, 0)
     featuresSection:SetHeight(200)
 
+    local packFeatureText = "|cff05dffaCurated BLU Sound Packs|r - Curated sounds from your favorite games"
+    if bluPackCount > 0 then
+        packFeatureText = string.format("|cff05dffa%d BLU Sound Packs|r - Curated sounds from your favorite games", bluPackCount)
+    end
+
     local features = {
-        "|cff05dffa50+ Game Sounds|r - Iconic sounds from your favorite games",
+        packFeatureText,
         "|cff05dffaSharedMedia Support|r - Use sounds from other addons",
         "|cff05dffaVolume Control|r - Adjust sound levels to your preference",
         "|cff05dffaPer-Event Customization|r - Different sounds for each event type",
@@ -119,7 +155,7 @@ function BLU.CreateAboutPanel(panel)
         local featureText = featuresSection.content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
         featureText:SetPoint("TOPLEFT", 20, yOffset)
         featureText:SetPoint("RIGHT", -20, 0)
-        featureText:SetText("• " .. feature)
+        featureText:SetText("* " .. feature)
         featureText:SetJustifyH("LEFT")
         yOffset = yOffset - 25
     end
@@ -174,11 +210,11 @@ function BLU.CreateAboutPanel(panel)
     end
 
     CreateStatDisplay(statsSection.content, 20, -10, "Modules Active", tostring(enabledModules), {r=0.02, g=0.87, b=0.98})
-    CreateStatDisplay(statsSection.content, 180, -10, "Sound Packs", "50+", {r=0.02, g=0.87, b=0.98})
+    CreateStatDisplay(statsSection.content, 180, -10, "BLU Packs", tostring(bluPackCount), {r=0.02, g=0.87, b=0.98})
     CreateStatDisplay(statsSection.content, 340, -10, "Version", BLU.version or "?", {r=0.02, g=0.87, b=0.98})
 
     -- Credits Section
-    local creditsSection = BLU.Modules.design:CreateSection(content, "Credits & Thanks", "Interface\\Icons\\Achievement_GuildPerk_Honorable Mention")
+    local creditsSection = BLU.Modules.design:CreateSection(content, "Credits & Thanks", "Interface\\Icons\\ACHIEVEMENT_GUILDPERK_HONORABLEMENTION")
     creditsSection:SetPoint("TOPLEFT", statsSection, "BOTTOMLEFT", 0, -BLU.Modules.design.Layout.Spacing)
     creditsSection:SetPoint("RIGHT", -BLU.Modules.design.Layout.Spacing, 0)
     creditsSection:SetHeight(100)

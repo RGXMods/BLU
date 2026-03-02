@@ -7,9 +7,8 @@ local addonName = ...
 local BLU = _G["BLU"]
 local DelveCompanion = {}
 
-local DELVE_SYSTEM_SCAN_THROTTLE_SECONDS = 0.25
-local DELVE_EVENT_ID_CHAT = "delve_chat_system"
 local DELVE_EVENT_ID_FACTION = "delve_faction_standing_changed"
+local DELVE_EVENT_ID_RENOWN = "delve_renown_changed"
 
 local function IsRetailClient()
     local _, _, _, interfaceVersion = GetBuildInfo()
@@ -21,15 +20,14 @@ function DelveCompanion:Init()
     self.cachedCompanionFactionID = nil
     self.lastCompanionLevel = nil
     self.lastPlayedCompanionLevel = nil
-    self.lastSystemScanAt = nil
 
     if not IsRetailClient() then
         BLU:PrintDebug("DelveCompanion skipped (non-retail client)")
         return
     end
 
-    BLU:RegisterEvent("CHAT_MSG_SYSTEM", function(...) self:OnSystemMessage(...) end, DELVE_EVENT_ID_CHAT)
     BLU:RegisterEvent("FACTION_STANDING_CHANGED", function(...) self:OnFactionStandingChanged(...) end, DELVE_EVENT_ID_FACTION)
+    BLU:RegisterEvent("MAJOR_FACTION_RENOWN_LEVEL_CHANGED", function(...) self:OnMajorFactionRenownLevelChanged(...) end, DELVE_EVENT_ID_RENOWN)
 
     self:UpdateCompanionLevelCache()
     BLU:PrintDebug("DelveCompanion module initialized")
@@ -37,13 +35,29 @@ end
 
 -- Cleanup function
 function DelveCompanion:Cleanup()
-    BLU:UnregisterEvent("CHAT_MSG_SYSTEM", DELVE_EVENT_ID_CHAT)
     BLU:UnregisterEvent("FACTION_STANDING_CHANGED", DELVE_EVENT_ID_FACTION)
+    BLU:UnregisterEvent("MAJOR_FACTION_RENOWN_LEVEL_CHANGED", DELVE_EVENT_ID_RENOWN)
     BLU:PrintDebug("DelveCompanion module cleaned up")
 end
 
 function DelveCompanion:IsEnabled()
-    return BLU.db and BLU.db.profile and BLU.db.profile.enableDelveCompanion ~= false
+    if not (BLU.db and BLU.db.profile) then
+        return false
+    end
+
+    if BLU.db.profile.enabled == false then
+        return false
+    end
+
+    if BLU.db.profile.enableDelveCompanion == false then
+        return false
+    end
+
+    if BLU.db.profile.modules and BLU.db.profile.modules.delvecompanion == false then
+        return false
+    end
+
+    return true
 end
 
 function DelveCompanion:GetCompanionFactionID()
@@ -144,22 +158,25 @@ function DelveCompanion:CheckForLevelIncrease(expectedFactionID)
     end
 end
 
--- System message handler (taint-safe: does not inspect message payload)
-function DelveCompanion:OnSystemMessage()
+function DelveCompanion:OnFactionStandingChanged(event, factionID)
+    self:CheckForLevelIncrease(factionID)
+end
+
+function DelveCompanion:OnMajorFactionRenownLevelChanged(event, factionID, newLevel, oldLevel)
     if not self:IsEnabled() then
         return
     end
 
-    local now = GetTime and GetTime() or 0
-    if self.lastSystemScanAt and (now - self.lastSystemScanAt) < DELVE_SYSTEM_SCAN_THROTTLE_SECONDS then
+    local companionFactionID = self.cachedCompanionFactionID or self:GetCompanionFactionID()
+    if not companionFactionID or factionID ~= companionFactionID then
         return
     end
 
-    self.lastSystemScanAt = now
-    self:CheckForLevelIncrease(nil)
-end
+    if newLevel and oldLevel and newLevel > oldLevel then
+        self:TriggerLevelUp(newLevel)
+        return
+    end
 
-function DelveCompanion:OnFactionStandingChanged(event, factionID)
     self:CheckForLevelIncrease(factionID)
 end
 

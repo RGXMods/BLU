@@ -6,14 +6,16 @@
 
 local addonName, _ = ...
 local BLU = _G["BLU"]
+local COMBAT_EVENT_ID_ENTER = "combat_protection_enter"
+local COMBAT_EVENT_ID_LEAVE = "combat_protection_leave"
 
 -- Queue for operations blocked by combat
 BLU.CombatQueue = {}
 
 -- Register combat events
 function BLU:InitializeCombatProtection()
-    _G.BLU:RegisterEvent("PLAYER_REGEN_DISABLED", function(...) BLU:OnEnterCombat(...) end)
-    _G.BLU:RegisterEvent("PLAYER_REGEN_ENABLED", function(...) BLU:OnLeaveCombat(...) end)
+    _G.BLU:RegisterEvent("PLAYER_REGEN_DISABLED", function(...) BLU:OnEnterCombat(...) end, COMBAT_EVENT_ID_ENTER)
+    _G.BLU:RegisterEvent("PLAYER_REGEN_ENABLED", function(...) BLU:OnLeaveCombat(...) end, COMBAT_EVENT_ID_LEAVE)
     
     -- Flag for combat state
     self.inCombat = InCombatLockdown()

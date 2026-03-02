@@ -7,17 +7,19 @@ local addonName = ...
 local BLU = _G["BLU"]
 local HonorRank = {}
 
+local HONOR_EVENT_ID_LEVEL = "honor_level_update"
+local HONOR_EVENT_ID_RANK = "honor_pvp_rank_changed"
+local HONOR_SOUND_COOLDOWN_SECONDS = 0.30
+
 -- Module variables
 HonorRank.currentHonorLevel = nil
+HonorRank.lastSoundAt = 0
 
 -- Module initialization
 function HonorRank:Init()
     -- Honor events
-    BLU:RegisterEvent("HONOR_LEVEL_UPDATE", function(...) self:OnHonorLevelUpdate(...) end)
-    BLU:RegisterEvent("PLAYER_PVP_RANK_CHANGED", function(...) self:OnPvPRankChanged(...) end)
-    
-    -- Chat message filter for honor gains
-    ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", function(...) return self:OnSystemMessage(...) end)
+    BLU:RegisterEvent("HONOR_LEVEL_UPDATE", function(...) self:OnHonorLevelUpdate(...) end, HONOR_EVENT_ID_LEVEL)
+    BLU:RegisterEvent("PLAYER_PVP_RANK_CHANGED", function(...) self:OnPvPRankChanged(...) end, HONOR_EVENT_ID_RANK)
     
     -- Get current honor level
     self:UpdateCurrentHonorLevel()
@@ -27,9 +29,8 @@ end
 
 -- Cleanup function
 function HonorRank:Cleanup()
-    BLU:UnregisterEvent("HONOR_LEVEL_UPDATE")
-    BLU:UnregisterEvent("PLAYER_PVP_RANK_CHANGED")
-    ChatFrame_RemoveMessageEventFilter("CHAT_MSG_SYSTEM", self.OnSystemMessage)
+    BLU:UnregisterEvent("HONOR_LEVEL_UPDATE", HONOR_EVENT_ID_LEVEL)
+    BLU:UnregisterEvent("PLAYER_PVP_RANK_CHANGED", HONOR_EVENT_ID_RANK)
     
     BLU:PrintDebug("HonorRank module cleaned up")
 end
@@ -48,7 +49,10 @@ end
 
 -- Honor level update handler
 function HonorRank:OnHonorLevelUpdate(event, isLevelUp)
+    if not BLU.db or not BLU.db.profile then return end
+    if not BLU.db.profile.enabled then return end
     if not BLU.db.profile.enableHonorRank then return end
+    if BLU.db.profile.modules and BLU.db.profile.modules.honorrank == false then return end
     if not isLevelUp then return end
     
     self:PlayHonorSound()
@@ -57,11 +61,16 @@ function HonorRank:OnHonorLevelUpdate(event, isLevelUp)
         local newLevel = UnitHonorLevel and UnitHonorLevel("player") or 0
         BLU:Print(string.format("Honor level increased to %d!", newLevel))
     end
+
+    self:UpdateCurrentHonorLevel()
 end
 
 -- PvP rank changed handler
 function HonorRank:OnPvPRankChanged(event)
+    if not BLU.db or not BLU.db.profile then return end
+    if not BLU.db.profile.enabled then return end
     if not BLU.db.profile.enableHonorRank then return end
+    if BLU.db.profile.modules and BLU.db.profile.modules.honorrank == false then return end
     
     -- Check if honor level actually increased
     local newLevel = UnitHonorLevel and UnitHonorLevel("player") or 0
@@ -72,41 +81,19 @@ function HonorRank:OnPvPRankChanged(event)
         if BLU.debugMode then
             BLU:Print(string.format("PvP Honor rank increased: %d -> %d", self.currentHonorLevel, newLevel))
         end
-            end
-        end
--- System message handler
-function HonorRank:OnSystemMessage(chatFrame, event, msg)
-    if not BLU.db.profile.enableHonorRank then return false end
-    
-    -- Check for honor rank messages
-    local patterns = {
-        "You have earned the rank of",
-        "You've advanced to Honor Level",
-        "Honor Level %d+ achieved",
-        "New Honor Rank:"
-    }
-    
-    for _, pattern in ipairs(patterns) do
-        if msg:find(pattern) then
-            self:PlayHonorSound()
-            
-            if BLU.debugMode then
-                BLU:Print("Honor rank increased!")
-            end
-            
-            break
-        end
     end
-    
-    return false
+
+    self.currentHonorLevel = newLevel
 end
 
 -- Play honor rank sound
 function HonorRank:PlayHonorSound()
-    local soundName = BLU.db.profile.honorRankSound
-    local volume = BLU.db.profile.honorRankVolume * BLU.db.profile.masterVolume
-    
-    BLU:PlaySound(soundName, volume)
+    local now = GetTime and GetTime() or 0
+    if self.lastSoundAt and (now - self.lastSoundAt) < HONOR_SOUND_COOLDOWN_SECONDS then
+        return
+    end
+    self.lastSoundAt = now
+    BLU:PlayCategorySound("honorrank")
 end
 
 -- Register module

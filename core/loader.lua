@@ -28,34 +28,83 @@ local moduleRegistry = {
         "localization",
         "registry",
         "events",
-        "sounds"
+        "sound_muter"
     },
     
     -- Feature modules (loaded on demand)
     features = {
-        levelup = "LevelUp",
-        achievement = "Achievement",
-        reputation = "Reputation", 
-        quest = "Quest",
-        battlepet = "BattlePet",
-        delve = "DelveCompanion",
-        honor = "HonorRank",
-        renown = "RenownRank",
-        tradingpost = "TradingPost"
+        levelup = "levelup",
+        achievement = "achievement",
+        reputation = "reputation",
+        quest = "quest",
+        battlepet = "battlepet",
+        honor = "honor",
+        renown = "renown",
+        tradingpost = "tradingpost",
+        delve = "delve",
+
+        -- UI/event aliases mapped to concrete module ids.
+        honorrank = "honor",
+        renownrank = "renown",
+        delvecompanion = "delve",
+        questaccept = "quest",
+        questturnin = "quest"
     },
     
 
 }
+
+local function ResolveModuleKey(moduleType, moduleName)
+    local moduleKey = moduleRegistry[moduleType] and moduleRegistry[moduleType][moduleName]
+    if moduleKey then
+        return moduleKey
+    end
+
+    return moduleName
+end
+
+local moduleSettingKeyMap = {
+    honor = "honorrank",
+    renown = "renownrank",
+    delve = "delvecompanion",
+}
+
+local moduleLegacyToggleMap = {
+    levelup = "enableLevelUp",
+    achievement = "enableAchievement",
+    reputation = "enableReputation",
+    quest = "enableQuest",
+    battlepet = "enableBattlePet",
+    honor = "enableHonorRank",
+    renown = "enableRenownRank",
+    tradingpost = "enableTradingPost",
+    delve = "enableDelveCompanion",
+}
+
+local function IsFeatureEnabled(db, moduleName)
+    if not db then
+        return true
+    end
+
+    local moduleSettingKey = moduleSettingKeyMap[moduleName] or moduleName
+    if db.modules and db.modules[moduleSettingKey] == false then
+        return false
+    end
+
+    local legacyKey = moduleLegacyToggleMap[moduleName]
+    if legacyKey and db[legacyKey] == false then
+        return false
+    end
+
+    return true
+end
 
 -- Module loader function
 function BLU:LoadModule(moduleType, moduleName)
     -- All modules must be pre-loaded via XML files in WoW
     -- This function now just enables/initializes already loaded modules
     
-    local moduleKey = moduleRegistry[moduleType] and moduleRegistry[moduleType][moduleName]
-    if not moduleKey then
-        moduleKey = moduleName -- For core modules
-    end
+    local moduleKey = ResolveModuleKey(moduleType, moduleName)
     
     -- Check if module exists in BLU.Modules (pre-loaded via XML)
     local module = self.Modules[moduleKey]
@@ -66,13 +115,14 @@ function BLU:LoadModule(moduleType, moduleName)
     end
     
     -- Check if already initialized
-    if self.LoadedModules[moduleName] then
+    if self.LoadedModules[moduleName] or self.LoadedModules[moduleKey] then
         self:PrintDebug("Module already loaded: " .. moduleName)
         return true
     end
     
     -- Mark as loaded
     self.LoadedModules[moduleName] = module
+    self.LoadedModules[moduleKey] = module
     
     -- Initialize module if it has an Init function
     if type(module.Init) == "function" then
@@ -82,6 +132,7 @@ function BLU:LoadModule(moduleType, moduleName)
         else
             self:PrintDebug("Failed to initialize module: " .. moduleName .. " - " .. tostring(err))
             self.LoadedModules[moduleName] = nil
+            self.LoadedModules[moduleKey] = nil
             return false
         end
     else
@@ -93,11 +144,11 @@ end
 
 -- Module unloader function
 function BLU:UnloadModule(moduleName)
-    if not self.LoadedModules[moduleName] then
+    local moduleKey = ResolveModuleKey("features", moduleName)
+    local module = self.LoadedModules[moduleName] or self.LoadedModules[moduleKey]
+    if not module then
         return
     end
-    
-    local module = self.LoadedModules[moduleName]
     
     -- Call cleanup if available
     if module and type(module.Cleanup) == "function" then
@@ -110,24 +161,39 @@ function BLU:UnloadModule(moduleName)
     end
     
     self.LoadedModules[moduleName] = nil
+    self.LoadedModules[moduleKey] = nil
     self:PrintDebug("Unloaded module: " .. moduleName)
 end
 
 -- Load modules based on saved settings
 function BLU:LoadModulesFromSettings()
+    if not self.db or not self.db.profile then
+        return
+    end
+
     local db = self.db.profile
     
     -- Load all feature modules if addon is enabled
     if db.enabled then
-        self:LoadModule("features", "levelup")
-        self:LoadModule("features", "achievement")
-        self:LoadModule("features", "reputation")
-        self:LoadModule("features", "quest")
-        self:LoadModule("features", "battlepet")
-        self:LoadModule("features", "delve")
-        self:LoadModule("features", "honor")
-        self:LoadModule("features", "renown")
-        self:LoadModule("features", "tradingpost")
+        local featureModules = {
+            "levelup",
+            "achievement",
+            "reputation",
+            "quest",
+            "battlepet",
+            "delve",
+            "honor",
+            "renown",
+            "tradingpost",
+        }
+
+        for _, moduleName in ipairs(featureModules) do
+            if IsFeatureEnabled(db, moduleName) then
+                self:LoadModule("features", moduleName)
+            else
+                self:UnloadModule(moduleName)
+            end
+        end
     end
     
     -- Load sound modules for selected games

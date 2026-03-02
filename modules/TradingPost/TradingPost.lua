@@ -7,11 +7,14 @@ local addonName = ...
 local BLU = _G["BLU"]
 local TradingPost = {}
 
+local TRADING_EVENT_ID_PURCHASE = "tradingpost_purchase_success"
+local TRADING_EVENT_ID_REFRESH = "tradingpost_currency_refresh"
+
 -- Module initialization
 function TradingPost:Init()
     -- Trading Post events
-    BLU:RegisterEvent("PERKS_PROGRAM_PURCHASE_SUCCESS", function(...) self:OnPurchaseSuccess(...) end)
-    BLU:RegisterEvent("PERKS_PROGRAM_CURRENCY_REFRESH", function(...) self:OnCurrencyRefresh(...) end)
+    BLU:RegisterEvent("PERKS_PROGRAM_PURCHASE_SUCCESS", function(...) self:OnPurchaseSuccess(...) end, TRADING_EVENT_ID_PURCHASE)
+    BLU:RegisterEvent("PERKS_PROGRAM_CURRENCY_REFRESH", function(...) self:OnCurrencyRefresh(...) end, TRADING_EVENT_ID_REFRESH)
     
     -- Track currency for changes
     self.lastCurrencyAmount = self:GetTradingPostCurrency()
@@ -21,8 +24,8 @@ end
 
 -- Cleanup function
 function TradingPost:Cleanup()
-    BLU:UnregisterEvent("PERKS_PROGRAM_PURCHASE_SUCCESS")
-    BLU:UnregisterEvent("PERKS_PROGRAM_CURRENCY_REFRESH")
+    BLU:UnregisterEvent("PERKS_PROGRAM_PURCHASE_SUCCESS", TRADING_EVENT_ID_PURCHASE)
+    BLU:UnregisterEvent("PERKS_PROGRAM_CURRENCY_REFRESH", TRADING_EVENT_ID_REFRESH)
     
     BLU:PrintDebug("TradingPost module cleaned up")
 end
@@ -37,7 +40,10 @@ end
 
 -- Purchase success handler
 function TradingPost:OnPurchaseSuccess(event, vendorItemID)
+    if not BLU.db or not BLU.db.profile then return end
+    if not BLU.db.profile.enabled then return end
     if not BLU.db.profile.enableTradingPost then return end
+    if BLU.db.profile.modules and BLU.db.profile.modules.tradingpost == false then return end
     
     self:PlayTradingPostSound()
     
@@ -48,7 +54,10 @@ end
 
 -- Currency refresh handler
 function TradingPost:OnCurrencyRefresh(event)
+    if not BLU.db or not BLU.db.profile then return end
+    if not BLU.db.profile.enabled then return end
     if not BLU.db.profile.enableTradingPost then return end
+    if BLU.db.profile.modules and BLU.db.profile.modules.tradingpost == false then return end
     
     local currentAmount = self:GetTradingPostCurrency()
     
@@ -67,10 +76,7 @@ end
 
 -- Play Trading Post sound
 function TradingPost:PlayTradingPostSound()
-    local soundName = BLU.db.profile.tradingPostSound
-    local volume = BLU.db.profile.tradingPostVolume * BLU.db.profile.masterVolume
-    
-    BLU:PlaySound(soundName, volume)
+    BLU:PlayCategorySound("tradingpost")
 end
 
 -- Register module

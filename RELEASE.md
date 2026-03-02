@@ -1,5 +1,23 @@
 # BLU Release Notes
 
+## Version 6.0.0-alpha.6 (2026-03-02)
+
+### UI and Release Updates
+
+-   **Settings List:**
+    -   Styled the BLU entry in the Retail Settings list with BLU icon + v5-style colored title text.
+-   **Options UI:**
+    -   Improved section/header spacing and border rendering to prevent clipped headers and borders.
+    -   Added nested dropdown sound previews (`♪ Preview`) in event sound selection menus.
+    -   Removed `None` as a sound choice from event selection menus.
+-   **Panels:**
+    -   Updated Sounds tab pack list to show only `wow default-blu` and `other games-blu`.
+    -   Updated About tab to use real BLU pack counts instead of hardcoded `50+`.
+-   **Versioning:**
+    -   Bumped addon version to `v6.0.0-alpha.6`.
+
+---
+
 ## Version 6.0.0-alpha.4 (2025-10-31)
 
 ### 🐞 Bug Fixes & Improvements

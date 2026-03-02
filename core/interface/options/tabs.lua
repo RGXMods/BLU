@@ -14,26 +14,26 @@ BLU.Modules["tabs"] = Tabs
 -- Create a tab button (alpha.3 style)
 function BLU.CreateTabButton(parent, text, index, row, col, panel)
     local button = CreateFrame("Button", "BLUTab" .. text:gsub(" ", ""), parent)
-    button:SetSize(80, 22)
+    button:SetSize(94, 24)
 
-    local tabWidth = 80
-    local tabSpacing = 3
+    local tabWidth = 94
+    local tabSpacing = 4
     local xOffset = 10 + (col - 1) * (tabWidth + tabSpacing)
     local yOffset = -8 - (row - 1) * 26
     button:SetPoint("TOPLEFT", parent, "TOPLEFT", xOffset, yOffset)
 
     local bg = button:CreateTexture(nil, "BACKGROUND")
     bg:SetAllPoints()
-    bg:SetColorTexture(0.1, 0.1, 0.1, 0.8)
+    bg:SetColorTexture(0.08, 0.11, 0.15, 0.90)
     button.bg = bg
 
     local border = CreateFrame("Frame", nil, button, "BackdropTemplate")
     border:SetAllPoints()
     border:SetBackdrop({
-        edgeFile = "Interface/Buttons/WHITE8x8",
+        edgeFile = "Interface\\Buttons\\WHITE8x8",
         edgeSize = 1,
     })
-    border:SetBackdropBorderColor(0.3, 0.3, 0.3, 1)
+    border:SetBackdropBorderColor(0.14, 0.20, 0.28, 1)
     button.border = border
 
     local buttonText = button:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
@@ -65,13 +65,13 @@ function BLU.CreateTabButton(parent, text, index, row, col, panel)
     function button:SetActive(active)
         self.isActive = active
         if active then
-            self.bg:SetColorTexture(0.08, 0.08, 0.08, 1)
+            self.bg:SetColorTexture(0.11, 0.18, 0.24, 1)
             self.text:SetTextColor(unpack(BLU.Modules.design.Colors.Primary))
             self.border:SetBackdropBorderColor(unpack(BLU.Modules.design.Colors.Primary))
         else
-            self.bg:SetColorTexture(0.1, 0.1, 0.1, 0.8)
+            self.bg:SetColorTexture(0.08, 0.11, 0.15, 0.90)
             self.text:SetTextColor(0.7, 0.7, 0.7, 1)
-            self.border:SetBackdropBorderColor(0.3, 0.3, 0.3, 1)
+            self.border:SetBackdropBorderColor(0.14, 0.20, 0.28, 1)
         end
     end
 

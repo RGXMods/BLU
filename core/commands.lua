@@ -7,13 +7,22 @@ BLU:PrintDebug("core/commands.lua loaded.")
 local addonName = ...
 local BLU = _G["BLU"]
 
+local function NormalizeCommandInput(msg)
+    if type(msg) ~= "string" then
+        return ""
+    end
+
+    msg = msg:gsub("^%s+", ""):gsub("%s+$", "")
+    return msg:lower()
+end
+
 -- Register slash commands
 SLASH_BLU1 = "/blu"
 SLASH_BLU2 = "/bluesound"
 
 SlashCmdList["BLU"] = function(msg)
     BLU:PrintDebug("/blu command executed with message: " .. tostring(msg))
-    msg = (msg or ""):trim():lower()
+    msg = NormalizeCommandInput(msg)
     
     -- Check if database is ready
     if not BLU.db then

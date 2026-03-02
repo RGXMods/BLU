@@ -30,10 +30,10 @@ function BLU.CreateSoundsPanel(panel)
 
     local yOffset = -40
 
-    local function createPackEntry(parent, pack, x, y)
+    local function createPackEntry(parent, pack, y)
         local frame = CreateFrame("Frame", nil, parent)
-        frame:SetSize(200, 40)
-        frame:SetPoint("TOPLEFT", x, y)
+        frame:SetSize(620, 40)
+        frame:SetPoint("TOPLEFT", 10, y)
 
         local icon = frame:CreateTexture(nil, "ARTWORK")
         icon:SetSize(24, 24)
@@ -47,91 +47,46 @@ function BLU.CreateSoundsPanel(panel)
 
         local status = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         status:SetPoint("TOPLEFT", name, "BOTTOMLEFT", 0, -2)
-        -- Set status color based on source
-        local statusText = ""
-        if pack.source == "BLU Built-in" then
-            statusText = "|cff05dffaBLU Built-in|r"
-        elseif pack.source == "SharedMedia" then
-            statusText = "|cff00ff00SharedMedia|r"
-        elseif pack.source == "WoW Built-in" then
-            statusText = "|cffb0b0b0WoW Sound|r"
-        else
-            statusText = "|cff00ff00Loaded|r"
-        end
-        status:SetText(statusText)
+        status:SetText(pack.status or "|cff00ff00Loaded|r")
 
         return frame
     end
 
-    local allSounds = BLU.SoundRegistry:GetAllSounds()
-    local uniquePacks = {}
+    local packRows = {
+        {
+            id = "wow_default_blu",
+            name = "wow default-blu",
+            icon = "Interface\\Icons\\Achievement_General",
+            status = "|cff05dffaBLU defaults|r",
+            soundCount = 0,
+        },
+        {
+            id = "other_games_blu",
+            name = "other games-blu",
+            icon = "Interface\\Icons\\INV_Misc_Bag_33",
+            status = "|cff05dffaBLU game library|r",
+            soundCount = 0,
+        },
+    }
 
-    for _, soundData in pairs(allSounds) do
-        local id = soundData.packId or soundData.packName or soundData.source
-
-        if id and not uniquePacks[id] then
-            local packName = soundData.packName or id
-            if soundData.source == "WoW Built-in" then
-                packName = "WoW Default Sounds"
-                id = "WoW Default Sounds"
-            elseif soundData.source == "Test" then
-                packName = "Test Sounds (LSM Missing)"
-                id = "Test Sounds"
-            end
-
-            uniquePacks[id] = {
-                id = id,
-                name = packName,
-                source = soundData.source,
-                icon = "Interface\\Icons\\INV_Misc_Bag_33",
-                soundCount = 0,
-            }
-
-            if soundData.source == "BLU Built-in" and soundData.packId then
-                uniquePacks[id].icon = "Interface\\Icons\\ACHIEVEMENT_GUILDPERK_HONORABLEMENTION"
-            end
-
-            if soundData.source == "SharedMedia" and soundData.packId then
-                local success, _, _, addonIcon = pcall(C_AddOns.GetAddOnInfo, soundData.packId)
-                if success and addonIcon and addonIcon ~= "" then
-                    uniquePacks[id].icon = addonIcon
+    if BLU.SoundRegistry and BLU.SoundRegistry.GetAllSounds then
+        local allSounds = BLU.SoundRegistry:GetAllSounds()
+        for _, soundData in pairs(allSounds) do
+            local isBluSound = soundData and (soundData.source == "BLU" or soundData.source == "BLU Built-in" or soundData.isInternal)
+            if isBluSound then
+                if soundData.packId == "blu_default" then
+                    packRows[1].soundCount = packRows[1].soundCount + 1
+                else
+                    packRows[2].soundCount = packRows[2].soundCount + 1
                 end
             end
         end
-        if id then
-            uniquePacks[id].soundCount = uniquePacks[id].soundCount + 1
-        end
     end
 
-    local packsArray = {}
-    for _, pack in pairs(uniquePacks) do
-        table.insert(packsArray, pack)
-    end
-
-    table.sort(packsArray, function(a, b)
-        return a.name < b.name
-    end)
-
-    local xOffset = 10
-    local col = 0
-
-    if #packsArray == 0 then
-        local noPacks = content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        noPacks:SetPoint("TOPLEFT", xOffset, yOffset)
-        noPacks:SetText("|cffff0000No sound packs detected or loaded by BLU.|r")
-        yOffset = yOffset - 20
-    else
-        for _, pack in ipairs(packsArray) do
-            local frame = createPackEntry(content, pack, xOffset + (col * 210), yOffset)
-
-            frame.name:SetText(pack.name .. " (" .. pack.soundCount .. ")")
-
-            col = col + 1
-            if col >= 3 then
-                col = 0
-                yOffset = yOffset - 45
-            end
-        end
+    for _, pack in ipairs(packRows) do
+        local frame = createPackEntry(content, pack, yOffset)
+        frame.name:SetText(pack.name .. " (" .. pack.soundCount .. ")")
+        yOffset = yOffset - 45
     end
 
     content:SetHeight(math.abs(yOffset) + 50)

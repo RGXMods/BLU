@@ -9,6 +9,14 @@ local SoundPanel = {}
 BLU.Modules = BLU.Modules or {}
 BLU.Modules["sound_panel"] = SoundPanel
 
+local EVENT_MODULE_MAP = {
+    honorrank = "honor",
+    renownrank = "renown",
+    delvecompanion = "delve",
+    questaccept = "quest",
+    questturnin = "quest",
+}
+
 local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
     local actualEventType = soundType or eventType
 
@@ -106,12 +114,36 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
             CloseDropDownMenus()
         end
 
+        local function previewSound(soundId)
+            if BLU.SoundRegistry and BLU.SoundRegistry.PlaySound then
+                BLU.SoundRegistry:PlaySound(soundId)
+            end
+        end
+
+        local function addSoundSelectAndPreviewEntries(levelToUse, soundId, soundName)
+            local selectInfo = UIDropDownMenu_CreateInfo()
+            selectInfo.text = soundName .. " |cff05dffa♪|r"
+            selectInfo.value = soundId
+            selectInfo.func = function() onSoundSelected(soundId, soundName) end
+            selectInfo.checked = BLU.db.profile.selectedSounds[dropdown.eventId] == soundId
+            UIDropDownMenu_AddButton(selectInfo, levelToUse)
+
+            local previewInfo = UIDropDownMenu_CreateInfo()
+            previewInfo.text = "    |cff05dffa♪ Preview|r"
+            previewInfo.value = "preview_" .. tostring(soundId)
+            previewInfo.notCheckable = true
+            previewInfo.keepShownOnClick = true
+            previewInfo.func = function()
+                previewSound(soundId)
+            end
+            UIDropDownMenu_AddButton(previewInfo, levelToUse)
+        end
+
         local customHierarchy = BLU.SoundRegistry:GetSoundsGroupedForUI(self.eventId)
 
         if level == 1 then
             local specialOptions = {
                 {text = "|cff00ff00Random|r", value = "random"},
-                {text = "None", value = "None"},
                 {text = "Default Sound", value = "default"},
             }
             for _, info in ipairs(specialOptions) do
@@ -154,12 +186,7 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
             if groupKey == "BLU WoW Defaults" then
                 table.sort(subgroups, function(a, b) return a.name < b.name end)
                 for _, sound in ipairs(subgroups) do
-                    local info = UIDropDownMenu_CreateInfo()
-                    info.text = sound.name
-                    info.value = sound.id
-                    info.func = function() onSoundSelected(sound.id, sound.name) end
-                    info.checked = BLU.db.profile.selectedSounds[dropdown.eventId] == sound.id
-                    UIDropDownMenu_AddButton(info, level)
+                    addSoundSelectAndPreviewEntries(level, sound.id, sound.name)
                 end
             else
                 local sortedSubKeys = {}
@@ -186,20 +213,26 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
                 table.sort(soundsToDisplay, function(a, b) return a.name < b.name end)
 
                 for _, sound in ipairs(soundsToDisplay) do
-                    local info = UIDropDownMenu_CreateInfo()
-                    info.text = sound.name
-                    info.value = sound.id
-                    info.func = function() onSoundSelected(sound.id, sound.name) end
-                    info.checked = BLU.db.profile.selectedSounds[dropdown.eventId] == sound.id
-                    UIDropDownMenu_AddButton(info, level)
+                    addSoundSelectAndPreviewEntries(level, sound.id, sound.name)
                 end
             end
         end
     end)
 
-    local selectedValue = BLU.db and BLU.db.profile and BLU.db.profile.selectedSounds and BLU.db.profile.selectedSounds[actualEventType] or "None"
+    local selectedValue = BLU.db and BLU.db.profile and BLU.db.profile.selectedSounds and BLU.db.profile.selectedSounds[actualEventType] or "default"
+    if selectedValue == "None" then
+        selectedValue = "default"
+        if BLU.db and BLU.db.profile and BLU.db.profile.selectedSounds then
+            BLU.db.profile.selectedSounds[actualEventType] = "default"
+        end
+    end
+
     local selectedText = selectedValue
-    if selectedValue ~= "None" and selectedValue ~= "default" and selectedValue ~= "random" then
+    if selectedValue == "default" then
+        selectedText = "Default Sound"
+    elseif selectedValue == "random" then
+        selectedText = "Random"
+    else
         local soundInfo = BLU.SoundRegistry:GetSound(selectedValue)
         if soundInfo then
             selectedText = soundInfo.name
@@ -233,23 +266,23 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     icon:SetSize(32, 32)
     icon:SetPoint("LEFT", 0, 0)
     local icons = {
-        levelup = "Interface\Icons\Achievement_Level_100",
-        achievement = "Interface\Icons\Achievement_GuildPerk_MobileMailbox",
-        quest = "Interface\Icons\INV_Misc_Note_01",
-        reputation = "Interface\Icons\Achievement_Reputation_01",
-        battlepet = "Interface\Icons\INV_Pet_BattlePetTraining",
-        honorrank = "Interface\Icons\PVPCurrency-Honor-Horde",
-        renownrank = "Interface\Icons\UI_MajorFaction_Renown",
-        tradingpost = "Interface\Icons\INV_TradingPostCurrency",
-        delvecompanion = "Interface\Icons\UI_MajorFaction_Delve"
+        levelup = "Interface\\Icons\\Achievement_Level_100",
+        achievement = "Interface\\Icons\\Achievement_GuildPerk_MobileMailbox",
+        quest = "Interface\\Icons\\INV_Misc_Note_01",
+        reputation = "Interface\\Icons\\Achievement_Reputation_01",
+        battlepet = "Interface\\Icons\\INV_Pet_BattlePetTraining",
+        honorrank = "Interface\\Icons\\PVPCurrency-Honor-Horde",
+        renownrank = "Interface\\Icons\\UI_MajorFaction_Renown",
+        tradingpost = "Interface\\Icons\\INV_TradingPostCurrency",
+        delvecompanion = "Interface\\Icons\\UI_MajorFaction_Delve"
     }
-    icon:SetTexture(icons[eventType] or "Interface\Icons\INV_Misc_QuestionMark")
+    icon:SetTexture(icons[eventType] or "Interface\\Icons\\INV_Misc_QuestionMark")
 
     local title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     title:SetPoint("LEFT", icon, "RIGHT", 10, 0)
     title:SetText("|cff05dffa" .. eventName .. " Sounds|r")
 
-    local moduleSection = BLU.Modules.design:CreateSection(content, "Module Control", "Interface\Icons\INV_Misc_Gear_08")
+    local moduleSection = BLU.Modules.design:CreateSection(content, "Module Control", "Interface\\Icons\\INV_Misc_Gear_08")
     moduleSection:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -10)
     moduleSection:SetPoint("RIGHT", -10, 0)
     moduleSection:SetHeight(140)
@@ -264,7 +297,7 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
 
     local switchBg = switchFrame:CreateTexture(nil, "BACKGROUND")
     switchBg:SetAllPoints()
-    switchBg:SetTexture("Interface\Buttons\WHITE8x8")
+    switchBg:SetTexture("Interface\\Buttons\\WHITE8x8")
 
     local toggle = CreateFrame("Button", nil, switchFrame)
     toggle:SetSize(28, 28)
@@ -272,7 +305,7 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
 
     local toggleBg = toggle:CreateTexture(nil, "ARTWORK")
     toggleBg:SetAllPoints()
-    toggleBg:SetTexture("Interface\Buttons\WHITE8x8")
+    toggleBg:SetTexture("Interface\\Buttons\\WHITE8x8")
     toggleBg:SetVertexColor(1, 1, 1, 1)
 
     local moduleText = toggleFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
@@ -299,9 +332,11 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
         end
     end
 
+    local moduleToggleKey = eventType
+    local moduleLoadName = EVENT_MODULE_MAP[eventType] or eventType
     local enabled = true
     if BLU.db and BLU.db.profile and BLU.db.profile.modules then
-        enabled = BLU.db.profile.modules[eventType] ~= false
+        enabled = BLU.db.profile.modules[moduleToggleKey] ~= false
     end
     UpdateToggleState(enabled)
 
@@ -311,24 +346,24 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
             return
         end
         BLU.db.profile.modules = BLU.db.profile.modules or {}
-        local currentlyEnabled = BLU.db.profile.modules[eventType] ~= false
+        local currentlyEnabled = BLU.db.profile.modules[moduleToggleKey] ~= false
         local newState = not currentlyEnabled
 
-        BLU.db.profile.modules[eventType] = newState
+        BLU.db.profile.modules[moduleToggleKey] = newState
         UpdateToggleState(newState)
 
         if newState then
             if BLU.LoadModule then
-                BLU:LoadModule("features", eventType)
+                BLU:LoadModule("features", moduleLoadName)
             end
         else
             if BLU.UnloadModule then
-                BLU:UnloadModule(eventType)
+                BLU:UnloadModule(moduleLoadName)
             end
         end
     end)
 
-    local soundSection = BLU.Modules.design:CreateSection(content, "Sound Selection", "Interface\Icons\INV_Misc_Bell_01")
+    local soundSection = BLU.Modules.design:CreateSection(content, "Sound Selection", "Interface\\Icons\\INV_Misc_Bell_01")
     soundSection:SetPoint("TOPLEFT", moduleSection, "BOTTOMLEFT", 0, -10)
     soundSection:SetPoint("RIGHT", -20, 0)
 
@@ -336,8 +371,8 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     soundSection:SetHeight(sectionHeight)
 
     if eventType == "quest" then
-        CreateSoundDropdown(soundSection.content, "quest", "Quest Complete Sound", -5, "quest_complete")
-        CreateSoundDropdown(soundSection.content, "quest", "Quest Progress Sound", -95, "quest_progress")
+        CreateSoundDropdown(soundSection.content, "quest", "Quest Turn-In Sound", -5, "questturnin")
+        CreateSoundDropdown(soundSection.content, "quest", "Quest Accept Sound", -95, "questaccept")
     else
         CreateSoundDropdown(soundSection.content, eventType, eventName .. " Sound", -5)
     end

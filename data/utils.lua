@@ -4,7 +4,44 @@
 --=====================================================================================
 
 -- Event queue for processing sounds
-BLU_EventQueue = {}
+BLU_EventQueue = BLU_EventQueue or {}
+
+local EVENT_QUEUE_DELAY_SECONDS = 1
+local EVENT_QUEUE_MAX_SIZE = 40
+local EVENT_DEDUPE_WINDOW_SECONDS = 0.2
+
+local queueHead = 1
+local queueTail = 0
+
+local function GetQueueSize()
+    if queueTail < queueHead then
+        return 0
+    end
+
+    return (queueTail - queueHead) + 1
+end
+
+local function QueueEvent(eventData)
+    queueTail = queueTail + 1
+    BLU_EventQueue[queueTail] = eventData
+end
+
+local function DequeueEvent()
+    if queueTail < queueHead then
+        return nil
+    end
+
+    local eventData = BLU_EventQueue[queueHead]
+    BLU_EventQueue[queueHead] = nil
+    queueHead = queueHead + 1
+
+    if queueHead > queueTail then
+        queueHead = 1
+        queueTail = 0
+    end
+
+    return eventData
+end
 
 --=====================================================================================
 -- Database Get/Set Functions
@@ -26,17 +63,28 @@ function BLU:HandleEvent(eventName, soundSelectKey, volumeKey, defaultSound, deb
         return 
     end
 
-    -- Mute default sounds for this event
-    local version = self:GetGameVersion()
-    local soundIDs = muteSoundIDs and muteSoundIDs[version]
-    if soundIDs then
-        for _, soundID in ipairs(soundIDs) do
-            MuteSoundFile(soundID)
-        end
+    self.recentQueuedEvents = self.recentQueuedEvents or {}
+
+    local now = GetTime and GetTime() or 0
+    local eventSignature = table.concat({
+        tostring(eventName),
+        tostring(soundSelectKey),
+        tostring(volumeKey)
+    }, "|")
+
+    local lastQueuedAt = self.recentQueuedEvents[eventSignature]
+    if lastQueuedAt and (now - lastQueuedAt) < EVENT_DEDUPE_WINDOW_SECONDS then
+        return
+    end
+    self.recentQueuedEvents[eventSignature] = now
+
+    if GetQueueSize() >= EVENT_QUEUE_MAX_SIZE then
+        DequeueEvent()
+        self:PrintDebugMessage("EVENT_QUEUE_DROPPED_OLDEST")
     end
     
     -- Queue the event
-    table.insert(BLU_EventQueue, {
+    QueueEvent({
         eventName = eventName,
         soundSelectKey = soundSelectKey,
         volumeKey = volumeKey,
@@ -51,12 +99,11 @@ function BLU:HandleEvent(eventName, soundSelectKey, volumeKey, defaultSound, deb
 end
 
 function BLU:ProcessEventQueue()
-    if #BLU_EventQueue == 0 then
+    local event = DequeueEvent()
+    if not event then
         self.isProcessingQueue = false
         return
     end
-
-    local event = table.remove(BLU_EventQueue, 1)
 
     if event.debugMessage then
         self:PrintDebugMessage(event.debugMessage)
@@ -65,7 +112,7 @@ function BLU:ProcessEventQueue()
     local sound = self:SelectSound(self.db.profile[event.soundSelectKey])
     if not sound then
         self:PrintDebugMessage("ERROR_SOUND_NOT_FOUND", tostring(event.soundSelectKey))
-        C_Timer.After(1, function() self:ProcessEventQueue() end)
+        C_Timer.After(EVENT_QUEUE_DELAY_SECONDS, function() self:ProcessEventQueue() end)
         return
     end
 
@@ -75,7 +122,7 @@ function BLU:ProcessEventQueue()
     end
 
     self:PlaySelectedSound(sound, volumeLevel, event.defaultSound)
-    C_Timer.After(1, function() self:ProcessEventQueue() end)
+    C_Timer.After(EVENT_QUEUE_DELAY_SECONDS, function() self:ProcessEventQueue() end)
 end
 
 --=====================================================================================

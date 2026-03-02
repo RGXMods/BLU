@@ -1,3 +1,11 @@
+## v5.3.8 - 2026-03-01
+
+- Fixed trigger burst freezes by hardening the shared event queue with O(1) dequeue logic.
+- Added short duplicate-event suppression to prevent rapid identical trigger spam from flooding the queue.
+- Added queue size cap with oldest-event drop behavior under heavy trigger storms.
+- Removed per-event default sound muting from `HandleEvent` to avoid repeated expensive mute loops during bursts.
+- Updated addon version metadata to `v5.3.8` across `.toc` files and options fallback version label.
+
 ## v5.3.7 - 2026-03-01
 
 - Fixed `/blu` on Retail not navigating to BLU settings by resolving and caching a numeric Settings category ID.

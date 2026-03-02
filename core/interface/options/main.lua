@@ -12,7 +12,7 @@ BLU.Modules = BLU.Modules or {}
 BLU.Modules["options"] = Options
 
 local OPTIONS_PANEL_NAME = "Better Level-Up!"
-local OPTIONS_LIST_STYLED_NAME = "|TInterface\\AddOns\\BLU\\images\\icon.tga:16:16:0:0|t |cff05dffaBLU|r |cffffffffBetter Level-Up!|r"
+local OPTIONS_LIST_STYLED_NAME = "|cffffffffBetter Level-Up|r|cff05dffa!|r"
 
 function Options:ResolveOptionsCategoryID()
     if type(BLU.OptionsCategoryID) == "number" then

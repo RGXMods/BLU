@@ -171,21 +171,14 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 
         local function addSoundSelectAndPreviewEntries(levelToUse, soundId, soundName)
             local selectInfo = UIDropDownMenu_CreateInfo()
-            selectInfo.text = soundName
+            selectInfo.text = soundName .. "  |cff7fd0ff|TInterface\\Buttons\\UI-SpellbookIcon-NextPage-Up:12:12:0:0|t|r"
             selectInfo.value = soundId
-            selectInfo.func = function() onSoundSelected(soundId, soundName) end
-            selectInfo.checked = BLU.db.profile.selectedSounds[dropdown.eventId] == soundId
-            UIDropDownMenu_AddButton(selectInfo, levelToUse)
-
-            local previewInfo = UIDropDownMenu_CreateInfo()
-            previewInfo.text = "    |TInterface\\Buttons\\UI-SpellbookIcon-NextPage-Up:12:12:0:0|t Preview"
-            previewInfo.value = tostring(soundId) .. "_preview"
-            previewInfo.notCheckable = true
-            previewInfo.keepShownOnClick = true
-            previewInfo.func = function()
+            selectInfo.func = function()
+                onSoundSelected(soundId, soundName)
                 previewSound(soundId)
             end
-            UIDropDownMenu_AddButton(previewInfo, levelToUse)
+            selectInfo.checked = BLU.db.profile.selectedSounds[dropdown.eventId] == soundId
+            UIDropDownMenu_AddButton(selectInfo, levelToUse)
         end
 
         local customHierarchy = {

@@ -154,19 +154,10 @@ function BLU:OpenOptionsPanel()
     
     -- Try modern API first (Retail 10.0+)
     if Settings and Settings.OpenToCategory then
-        local categoryID = nil
-        local categoryRef = self.optionsFrame and self.optionsFrame.name
+        local categoryID = self.optionsCategoryID
 
-        -- Retail now expects a numeric category ID for OpenToCategory.
-        if Settings.GetCategory and categoryRef then
-            local category = Settings.GetCategory(categoryRef)
-            if category then
-                if type(category.GetID) == "function" then
-                    categoryID = category:GetID()
-                else
-                    categoryID = category.ID
-                end
-            end
+        if type(categoryID) ~= "number" and self.ResolveOptionsCategoryID then
+            categoryID = self:ResolveOptionsCategoryID(BLU_L["OPTIONS_PANEL_TITLE"] or "BLU")
         end
 
         if type(categoryID) ~= "number" then

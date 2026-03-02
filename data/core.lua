@@ -428,14 +428,65 @@ function BLU:InitializeOptions()
         local profilesTitle = BLU_L["PROFILES_TITLE"] or "Profiles"
         
         AC:RegisterOptionsTable("BLU_Options", self.options)
-        self.optionsFrame = ACD:AddToBlizOptions("BLU_Options", optionsTitle)
+        local optionsFrame, optionsCategoryRef = ACD:AddToBlizOptions("BLU_Options", optionsTitle)
+        self.optionsFrame = optionsFrame
+        self.optionsCategoryRef = optionsCategoryRef
 
         local profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
         AC:RegisterOptionsTable("BLU_Profiles", profiles)
         ACD:AddToBlizOptions("BLU_Profiles", profilesTitle, optionsTitle)
 
+        -- Retail requires numeric category IDs in Settings.OpenToCategory.
+        self:ResolveOptionsCategoryID(optionsTitle)
+
         self.optionsRegistered = true
     end
+end
+
+function BLU:ResolveOptionsCategoryID(optionsTitle)
+    if type(self.optionsCategoryID) == "number" then
+        return self.optionsCategoryID
+    end
+
+    if not Settings or not Settings.GetCategory then
+        return nil
+    end
+
+    local categoryRef = self.optionsCategoryRef
+        or (self.optionsFrame and self.optionsFrame.name)
+        or optionsTitle
+    if not categoryRef then
+        return nil
+    end
+
+    local category = Settings.GetCategory(categoryRef)
+    if not category then
+        return nil
+    end
+
+    local categoryID = nil
+    if type(category.GetID) == "function" then
+        categoryID = category:GetID()
+    else
+        categoryID = category.ID
+    end
+
+    -- Some external libs still assign string IDs to top-level categories.
+    -- Recover the engine-generated numeric ID from order, then restore ID.
+    if type(categoryID) ~= "number" and type(category.GetOrder) == "function" then
+        local repairedID = category:GetOrder()
+        if type(repairedID) == "number" then
+            category.ID = repairedID
+            categoryID = repairedID
+        end
+    end
+
+    if type(categoryID) == "number" then
+        self.optionsCategoryID = categoryID
+        return categoryID
+    end
+
+    return nil
 end
 
 function BLU:AssignGroupColors()

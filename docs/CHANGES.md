@@ -1,3 +1,10 @@
+## v5.3.7 - 2026-03-01
+
+- Fixed `/blu` on Retail not navigating to BLU settings by resolving and caching a numeric Settings category ID.
+- Added compatibility repair for top-level addon categories that expose string IDs by recovering the engine numeric ID from category order.
+- Updated options panel open flow to prefer the cached numeric category ID before fallback behavior.
+- Updated addon version metadata to `v5.3.7` across `.toc` files and options fallback version label.
+
 ## v5.3.6 - 2026-03-01
 
 - Fixed Retail `/blu` options panel opening error by resolving and using a numeric Settings category ID before calling `Settings.OpenToCategory`.

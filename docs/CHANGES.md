@@ -1,3 +1,9 @@
+## v5.3.9 - 2026-03-02
+
+- Fixed a Retail taint error in Delve companion detection by avoiding direct access/comparison of `CHAT_MSG_SYSTEM` payload strings.
+- Reworked `HandleChatSystemMessage` to use throttled companion-level API checks instead of parsing system chat text.
+- Updated addon version metadata to `v5.3.9` across `.toc` files and options fallback version label.
+
 ## v5.3.8 - 2026-03-01
 
 - Fixed trigger burst freezes by hardening the shared event queue with O(1) dequeue logic.

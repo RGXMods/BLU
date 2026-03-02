@@ -57,6 +57,7 @@ local FEATURE_AVAILABILITY = {
 
 -- Delve companion detection state
 local cachedDelveCompanionFactionID = nil
+local DELVE_SYSTEM_SCAN_THROTTLE_SECONDS = 0.25
 
 function BLU:IsFeatureAvailable(feature)
     local version = self:GetGameVersion()
@@ -205,36 +206,29 @@ function BLU:TriggerDelveCompanionLevelUp(level)
     self:HandleEvent("DELVE_LEVEL_UP", "DelveLevelUpSoundSelect", "DelveLevelUpVolume", defaultSounds and defaultSounds[3], "DELVE_LEVEL_UP_TRIGGERED")
 end
 
-function BLU:HandleChatSystemMessage(_, message)
+function BLU:HandleChatSystemMessage()
     if not self:IsFeatureAvailable("Delve") then
         return
     end
 
-    if type(message) ~= "string" or message == "" then
+    -- Avoid touching CHAT_MSG_SYSTEM payload directly.
+    -- Retail can pass secret strings that error on comparison/manipulation when tainted.
+    local now = GetTime and GetTime() or 0
+    if self.lastDelveSystemScanAt and (now - self.lastDelveSystemScanAt) < DELVE_SYSTEM_SCAN_THROTTLE_SECONDS then
+        return
+    end
+    self.lastDelveSystemScanAt = now
+
+    local currentLevel, companionFactionID = self:GetDelveCompanionLevel()
+    if not companionFactionID or not currentLevel then
         return
     end
 
-    self:PrintDebugMessage("INCOMING_CHAT_MESSAGE", tostring(message))
-
-    local normalized = message:lower()
-    local hasDelveCompanionToken = normalized:find("brann", 1, true)
-        or normalized:find("valeera", 1, true)
-        or (normalized:find("delve", 1, true) and normalized:find("companion", 1, true))
-
-    if not hasDelveCompanionToken or not normalized:find("level", 1, true) then
-        return
+    if self.lastDelveCompanionLevel and currentLevel > self.lastDelveCompanionLevel then
+        self:TriggerDelveCompanionLevelUp(currentLevel)
+    else
+        self.lastDelveCompanionLevel = currentLevel
     end
-
-    local level = tonumber(message:match("[Ll]evel%s*(%d+)"))
-    if not level then
-        level = tonumber(message:match("(%d+)"))
-    end
-
-    if not level then
-        self:PrintDebugMessage("NO_BRANN_LEVEL_FOUND")
-    end
-
-    self:TriggerDelveCompanionLevelUp(level)
 end
 
 function BLU:HandleFactionStandingChanged(_, factionID)

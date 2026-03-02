@@ -253,36 +253,20 @@ end
 
 -- Show welcome message
 function BLU:ShowWelcomeMessage()
-    -- Check if first time loading
-    local isFirstTime = not (self.db and self.db.global and self.db.global.notFirstTime)
-    
-    if isFirstTime then
-        -- First time welcome
-        self:Print("|cff00ccff========================================|r")
-        self:Print("|cff00ccffWelcome to Better Level-Up!|r")
-        self:Print("Thank you for installing BLU v6.0.0-alpha.6")
-        self:Print("")
-        self:Print("Replace boring WoW sounds with iconic audio from 50+ games!")
-        self:Print("")
-        self:Print("Quick Start:")
-        self:Print("  |cff05dffa/blu|r - Open settings panel")
-        self:Print("  |cff05dffa/blu test|r - Play a test sound")
-        self:Print("  |cff05dffa/blu help|r - Show all commands")
-        self:Print("")
-        self:Print("Join our Discord: |cffffd700discord.gg/rgxmods|r")
-        self:Print("|cff00ccff========================================|r")
-        
-        -- Mark as not first time
-        if self.db and self.db.global then
-            self.db.global.notFirstTime = true
-        end
-    else
-        -- Regular welcome (if enabled)
-        if self.db and self.db.profile and self.db.profile.showWelcomeMessage ~= false then
-            local version = GetAddOnMetadata("BLU", "Version") or "6.0.0-alpha.6"
-            self:Print("|cff00ccffBLU|r " .. version .. " loaded! Type |cff05dffa/blu|r for options")
-        end
+    if not (self.db and self.db.profile and self.db.profile.showWelcomeMessage ~= false) then
+        return
     end
+
+    local version = "Unknown"
+    if C_AddOns and C_AddOns.GetAddOnMetadata then
+        version = C_AddOns.GetAddOnMetadata("BLU", "Version") or version
+    elseif GetAddOnMetadata then
+        version = GetAddOnMetadata("BLU", "Version") or version
+    end
+
+    local legacyPrefix = "|TInterface\\AddOns\\BLU\\images\\icon.tga:16:16:0:0|t - [|cff05dffaBLU|r] "
+    print(legacyPrefix .. "Welcome! Use |cff05dffa/blu|r to open the options panel or |cff05dffa/blu help|r for more commands.")
+    print(legacyPrefix .. "|cffffff00Version:|r |cff8080ff" .. version .. "|r")
 end
 
 --=====================================================================================

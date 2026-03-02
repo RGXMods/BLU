@@ -66,6 +66,42 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
     end)
     UIDropDownMenu_SetText(volumeDropdown, (BLU.db.profile.soundVolumes and BLU.db.profile.soundVolumes[actualEventType] or "medium"):gsub("^%l", string.upper))
 
+    local channelHint = controlsFrame:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
+    channelHint:SetPoint("LEFT", 16, -1)
+    channelHint:SetText("Uses game channel")
+    channelHint:Hide()
+
+    local function isBluVolumeSelection(selectionValue)
+        if not selectionValue or selectionValue == "default" or selectionValue == "random" then
+            return true
+        end
+
+        if type(selectionValue) ~= "string" or selectionValue:match("^external:") then
+            return false
+        end
+
+        if not (BLU.SoundRegistry and BLU.SoundRegistry.GetSound) then
+            return false
+        end
+
+        local soundInfo = BLU.SoundRegistry:GetSound(selectionValue)
+        if not soundInfo then
+            return false
+        end
+
+        return soundInfo.source == "BLU" or soundInfo.source == "BLU Built-in" or soundInfo.isInternal == true
+    end
+
+    local function updateSoundControlMode(selectionValue)
+        if isBluVolumeSelection(selectionValue) then
+            volumeDropdown:Show()
+            channelHint:Hide()
+        else
+            volumeDropdown:Hide()
+            channelHint:Show()
+        end
+    end
+
     local testBtn = BLU.Modules.design:CreateButton(controlsFrame, "Test", 60, 22)
     testBtn:SetPoint("LEFT", volumeDropdown, "RIGHT", 10, 0)
     testBtn:SetScript("OnClick", function(self)
@@ -101,36 +137,49 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
         if not BLU.db or not BLU.db.profile then return end
         BLU.db.profile.selectedSounds = BLU.db.profile.selectedSounds or {}
 
+        local function hasEntries(groupData)
+            if type(groupData) ~= "table" then
+                return false
+            end
+
+            if #groupData > 0 then
+                return true
+            end
+
+            for _, value in pairs(groupData) do
+                if type(value) == "table" and #value > 0 then
+                    return true
+                end
+            end
+
+            return false
+        end
+
         local function onSoundSelected(value, text)
             BLU.db.profile.selectedSounds[self.eventId] = value
             UIDropDownMenu_SetText(self, text)
             self.currentSound:SetText(text)
-            local soundInfo = BLU.SoundRegistry:GetSound(value)
-            if value == "default" then
-                volumeDropdown:Show()
-            else
-                volumeDropdown:Hide()
-            end
+            updateSoundControlMode(value)
             CloseDropDownMenus()
         end
 
         local function previewSound(soundId)
-            if BLU.SoundRegistry and BLU.SoundRegistry.PlaySound then
+            if soundId and BLU.SoundRegistry and BLU.SoundRegistry.PlaySound then
                 BLU.SoundRegistry:PlaySound(soundId)
             end
         end
 
         local function addSoundSelectAndPreviewEntries(levelToUse, soundId, soundName)
             local selectInfo = UIDropDownMenu_CreateInfo()
-            selectInfo.text = soundName .. " |cff05dffa♪|r"
+            selectInfo.text = soundName
             selectInfo.value = soundId
             selectInfo.func = function() onSoundSelected(soundId, soundName) end
             selectInfo.checked = BLU.db.profile.selectedSounds[dropdown.eventId] == soundId
             UIDropDownMenu_AddButton(selectInfo, levelToUse)
 
             local previewInfo = UIDropDownMenu_CreateInfo()
-            previewInfo.text = "    |cff05dffa♪ Preview|r"
-            previewInfo.value = "preview_" .. tostring(soundId)
+            previewInfo.text = "    |TInterface\\Buttons\\UI-SpellbookIcon-NextPage-Up:12:12:0:0|t Preview"
+            previewInfo.value = tostring(soundId) .. "_preview"
             previewInfo.notCheckable = true
             previewInfo.keepShownOnClick = true
             previewInfo.func = function()
@@ -139,7 +188,14 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
             UIDropDownMenu_AddButton(previewInfo, levelToUse)
         end
 
-        local customHierarchy = BLU.SoundRegistry:GetSoundsGroupedForUI(self.eventId)
+        local customHierarchy = {
+            ["BLU WoW Defaults"] = {},
+            ["BLU Other Game Sounds"] = {},
+            ["Shared Media"] = {},
+        }
+        if BLU.SoundRegistry and BLU.SoundRegistry.GetSoundsGroupedForUI then
+            customHierarchy = BLU.SoundRegistry:GetSoundsGroupedForUI(self.eventId) or customHierarchy
+        end
 
         if level == 1 then
             local specialOptions = {
@@ -156,18 +212,21 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
             end
 
             local sep = UIDropDownMenu_CreateInfo()
-            sep.notClickable = true; sep.notCheckable = true
+            sep.notClickable = true
+            sep.notCheckable = true
             UIDropDownMenu_AddButton(sep, level)
 
             local sortedTopLevelKeys = {"BLU WoW Defaults", "BLU Other Game Sounds", "Shared Media"}
 
             for _, groupKey in ipairs(sortedTopLevelKeys) do
-                if next(customHierarchy[groupKey]) then
+                if hasEntries(customHierarchy[groupKey]) then
                     local count = 0
                     if groupKey == "BLU WoW Defaults" then
                         count = #customHierarchy[groupKey]
                     else
-                        for _, packSounds in pairs(customHierarchy[groupKey]) do count = count + #packSounds end
+                        for _, packSounds in pairs(customHierarchy[groupKey]) do
+                            count = count + #packSounds
+                        end
                     end
 
                     local info = UIDropDownMenu_CreateInfo()
@@ -182,6 +241,9 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
         elseif level == 2 then
             local groupKey = menuList
             local subgroups = customHierarchy[groupKey]
+            if type(subgroups) ~= "table" then
+                return
+            end
 
             if groupKey == "BLU WoW Defaults" then
                 table.sort(subgroups, function(a, b) return a.name < b.name end)
@@ -190,7 +252,9 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
                 end
             else
                 local sortedSubKeys = {}
-                for subKey in pairs(subgroups) do table.insert(sortedSubKeys, subKey) end
+                for subKey in pairs(subgroups) do
+                    table.insert(sortedSubKeys, subKey)
+                end
                 table.sort(sortedSubKeys)
 
                 for _, subKey in ipairs(sortedSubKeys) do
@@ -205,11 +269,16 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
                 end
             end
         elseif level == 3 then
+            if type(menuList) ~= "table" then
+                return
+            end
+
             local groupKey = menuList.group
             local subKey = menuList.sub
-            local soundsToDisplay = customHierarchy[groupKey][subKey]
+            local groupData = customHierarchy[groupKey]
+            local soundsToDisplay = groupData and groupData[subKey]
 
-            if soundsToDisplay then
+            if type(soundsToDisplay) == "table" then
                 table.sort(soundsToDisplay, function(a, b) return a.name < b.name end)
 
                 for _, sound in ipairs(soundsToDisplay) do
@@ -233,13 +302,14 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
     elseif selectedValue == "random" then
         selectedText = "Random"
     else
-        local soundInfo = BLU.SoundRegistry:GetSound(selectedValue)
+        local soundInfo = BLU.SoundRegistry and BLU.SoundRegistry.GetSound and BLU.SoundRegistry:GetSound(selectedValue)
         if soundInfo then
             selectedText = soundInfo.name
         end
     end
     UIDropDownMenu_SetText(dropdown, selectedText)
     dropdown.currentSound:SetText(selectedText)
+    updateSoundControlMode(selectedValue)
 
     return container
 end
@@ -388,3 +458,4 @@ end
 if BLU.RegisterModule then
     BLU:RegisterModule(SoundPanel, "sound_panel", "Sound Panel")
 end
+

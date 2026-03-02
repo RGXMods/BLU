@@ -1,11 +1,12 @@
 ## Interface: 120000
-## Version: v6.0.0-alpha.5
+## Version: v6.0.0-alpha.6
 ## Title: Better Level-Up|cff05dffa!|r |cffff0000[ALPHA]|r 
 ## Notes: Play sounds from other games!  |n|r  |cff05dffa/blu -|r Open options panel  |n|r   |cff05dffaBy DonnieDice|r
 ## Author: DonnieDice
 ## Email: 60427166+donniedice@users.noreply.github.com
 ## SavedVariables: BLUDB
 ## IconTexture: Interface\AddOns\BLU\media\textures\icon.tga
+## X-Curse-Project-ID: 697841
 ## X-Wago-ID: vEGPgWK1
 ## X-WoWI-ID: 26465
 

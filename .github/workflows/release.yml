@@ -68,6 +68,46 @@ jobs:
           echo "version=$version" >> $GITHUB_OUTPUT
           echo "timestamp=$(date -u +%Y-%m-%dT%H:%M:%S.000Z)" >> $GITHUB_OUTPUT
 
+      - name: Validate Release Metadata
+        shell: bash
+        run: |
+          version="${{ steps.version.outputs.version }}"
+          curse_id="$(grep -oP '^## X-Curse-Project-ID:\s*\K(.*)' BLU.toc || true)"
+          wago_id="$(grep -oP '^## X-Wago-ID:\s*\K(.*)' BLU.toc || true)"
+          wowi_id="$(grep -oP '^## X-WoWI-ID:\s*\K(.*)' BLU.toc || true)"
+
+          echo "Detected project IDs:"
+          echo "  X-Curse-Project-ID: ${curse_id:-missing}"
+          echo "  X-Wago-ID: ${wago_id:-missing}"
+          echo "  X-WoWI-ID: ${wowi_id:-missing}"
+
+          if [[ -z "$wago_id" ]]; then
+            echo "::warning::X-Wago-ID is missing in BLU.toc. Wago upload will be skipped."
+          fi
+
+          if [[ -z "$wowi_id" ]]; then
+            echo "::warning::X-WoWI-ID is missing in BLU.toc. WoWInterface upload will be skipped."
+          fi
+
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            tag="${GITHUB_REF#refs/tags/}"
+
+            if [[ "$tag" != "$version" ]]; then
+              echo "::error::Tag '$tag' does not match BLU.toc version '$version'."
+              exit 1
+            fi
+
+            if [[ -z "$curse_id" ]]; then
+              echo "::error::Missing X-Curse-Project-ID in BLU.toc. CurseForge upload cannot run."
+              exit 1
+            fi
+
+            if [[ -z "${CF_API_KEY:-}" ]]; then
+              echo "::error::CF_API_KEY secret is missing. CurseForge upload cannot run."
+              exit 1
+            fi
+          fi
+
       - name: 📝 Extract Latest Changelog
         id: changelog
         shell: bash
@@ -234,3 +274,4 @@ jobs:
               }]
             }' > payload.json
           curl -H "Content-Type: application/json" -X POST -d @payload.json $DISCORD_WEBHOOK
+

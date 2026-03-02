@@ -68,104 +68,112 @@ jobs:
           echo "version=$version" >> $GITHUB_OUTPUT
           echo "timestamp=$(date -u +%Y-%m-%dT%H:%M:%S.000Z)" >> $GITHUB_OUTPUT
 
-      - name: 📝 Extract Changelog
+      - name: 📝 Extract Latest Changelog
         id: changelog
+        shell: bash
         run: |
-          if [[ -f "docs/CHANGES.md" ]]; then
-            changelog=$(jq -Rs '.' < docs/CHANGES.md)
-            echo "changelog=${changelog}" >> $GITHUB_OUTPUT
+          version="${{ steps.version.outputs.version }}"
+          short_version="${version#v}"
+
+          if [[ -f "docs/changelogs/${short_version}.md" ]]; then
+            changelog_content="$(cat "docs/changelogs/${short_version}.md")"
+          elif [[ -f "docs/CHANGES.md" ]]; then
+            changelog_content="$(awk '
+              /^## / {
+                if (started) { exit }
+                started=1
+              }
+              started { print }
+            ' docs/CHANGES.md)"
           else
-            echo "changelog=\"No changelog available\"" >> $GITHUB_OUTPUT
+            changelog_content="No changelog available."
           fi
+
+          # Keep embed size safe for Discord limits.
+          if ((${#changelog_content} > 2500)); then
+            changelog_content="${changelog_content:0:2497}..."
+          fi
+
+          {
+            echo "body<<EOF"
+            echo "$changelog_content"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
       - name: 📦 Package and Release
         uses: BigWigsMods/packager@master
 
       - name: ℹ️ Upload Notes
         run: |
-          echo "Wago and WoWInterface uploads are handled by BigWigsMods/packager"
-          echo "using X-Wago-ID and X-WoWI-ID from BLU.toc."
+          echo "CurseForge, Wago, and WoWInterface uploads are handled by BigWigsMods/packager."
+          echo "Project IDs come from X-Curse-Project-ID, X-Wago-ID, and X-WoWI-ID in BLU.toc."
 
       - name: 📢 Send Discord Notification
         if: success()
+        shell: bash
         run: |
-          # Read changelog content
-          if [[ -f "docs/CHANGES.md" ]]; then
-            changelog_content=$(cat docs/CHANGES.md)
-          else
-            changelog_content="No changelog available"
-          fi
-          
-          # Determine release type and set variables
-          case "${{ steps.release_type.outputs.type }}" in
+          changelog_content="${{ steps.changelog.outputs.body }}"
+          release_type="${{ steps.release_type.outputs.type }}"
+          version="${{ steps.version.outputs.version }}"
+
+          case "$release_type" in
             "release")
-              title="🎉 BLU | Better Level-Up! - ${{ steps.version.outputs.version }}"
-              color=9830721
-              footer="RGX Mods - RealmGX Community"
+              title="BLU | Better Level-Up! ${version}"
+              color=385018
+              footer="RGX Mods • Stable Release"
+              intro="A new stable release is live."
               fields='[
-                {
-                  "name": "📥 Downloads",
-                  "value": "[CurseForge](https://www.curseforge.com/wow/addons/blu)\n[Wago.io](https://addons.wago.io/addons/vEGPgWK1)\n[GitHub](https://github.com/DonnieDice/BLU)",
-                  "inline": true
-                },
-                {
-                  "name": "🎮 Compatibility",
-                  "value": "✅ The War Within",
-                  "inline": true
-                },
-                {
-                  "name": "💬 Support",
-                  "value": "[Report Issues](https://github.com/DonnieDice/BLU/issues)\n[Buy Me Coffee](https://www.buymeacoffee.com/donniedice)",
-                  "inline": true
-                }
+                {"name":"Channel","value":"Release","inline":true},
+                {"name":"Downloads","value":"[CurseForge](https://www.curseforge.com/wow/addons/blu-better-level-up) • [Wago](https://addons.wago.io/addons/vEGPgWK1) • [GitHub](https://github.com/DonnieDice/BLU/releases)","inline":false}
               ]'
               ;;
             "beta")
-              title="🧪 BLU Beta - ${{ steps.version.outputs.version }}"
+              title="BLU | Better Level-Up! ${version} (Beta)"
               color=16744448
-              footer="RGX Mods - Beta Build"
-              fields='[{"name":"📥 Download Beta","value":"[CurseForge](https://www.curseforge.com/wow/addons/blu)\n[GitHub](https://github.com/DonnieDice/BLU/releases)"}]'
+              footer="RGX Mods • Beta Build"
+              intro="Beta build for testing."
+              fields='[
+                {"name":"Channel","value":"Beta","inline":true},
+                {"name":"Downloads","value":"[CurseForge](https://www.curseforge.com/wow/addons/blu-better-level-up) • [GitHub](https://github.com/DonnieDice/BLU/releases)","inline":false}
+              ]'
+              ;;
+            "alpha"|"alpha-branch")
+              title="BLU | Better Level-Up! ${version} (Alpha)"
+              color=385018
+              footer="RGX Mods • Alpha Build"
+              intro="Alpha build for testing."
+              fields='[
+                {"name":"Channel","value":"Alpha","inline":true},
+                {"name":"Downloads","value":"[CurseForge](https://www.curseforge.com/wow/addons/blu-better-level-up) • [GitHub](https://github.com/DonnieDice/BLU/tree/alpha)","inline":false}
+              ]'
               ;;
             "dev")
-              title="🛠️ BLU Dev Build - ${{ steps.version.outputs.version }}"
+              title="BLU | Better Level-Up! ${version} (Dev)"
               color=3447003
-              footer="RGX Mods - Development Build"
-              fields='[{"name":"⚠️ Important","value":"This is not a stable release. Use only for testing purposes."}]'
-              ;;
-            "alpha-branch")
-              title="🔬 BLU Alpha - ${{ steps.version.outputs.version }}"
-              color=16711680
-              footer="RGX Mods - Alpha Build"
-              fields='null'
+              footer="RGX Mods • Dev Build"
+              intro="Development build from the dev branch."
+              fields='[
+                {"name":"Channel","value":"Dev","inline":true},
+                {"name":"Branch","value":"`dev`","inline":true}
+              ]'
               ;;
             *)
-              title="⚠️ Unknown Build"
+              title="BLU | Better Level-Up! ${version}"
               color=10000000
-              footer="RGX Mods - Unknown"
-              fields='null'
+              footer="RGX Mods"
+              intro="Build completed."
+              fields='[]'
               ;;
           esac
-          
-          # Create description with changelog
-          desc="**Play sounds from other games!** A new version of BLU has been released!\n\n🎵 **What's New:**\n${changelog_content}"
-          
-          # Adjust description based on release type
-          case "${{ steps.release_type.outputs.type }}" in
-            "beta")
-              desc="A beta version of Better Level-Up! is available for testing!\n\n**What's New:**\n${changelog_content}"
-              ;;
-            "dev")
-              desc="A new development build has been pushed to the \`dev\` branch.\n\n**What's New:**\n${changelog_content}"
-              ;;
-            "alpha-branch")
-              desc="Development build for testing\n\n**What's New:**\n${changelog_content}"
-              ;;
-            *)
-              # Release description is already set
-              ;;
-          esac
-          
-          # Create JSON payload
+
+          desc=$(cat <<EOF
+          ${intro}
+
+          ### What's New
+          ${changelog_content}
+          EOF
+          )
+
           jq -n \
             --arg username "BLU Notification" \
             --arg avatar_url "https://raw.githubusercontent.com/DonnieDice/BLU/main/media/Textures/logo.png" \
@@ -187,12 +195,12 @@ jobs:
                   text: $footer,
                   icon_url: $icon_url
                 },
+                fields: $fields,
                 timestamp: $timestamp
-              } | if $fields != null and $fields != "null" then .fields = $fields else . end]
+              }]
             }' > payload.json
-          
-          # Send to Discord
-          curl -H "Content-Type: application/json" -X POST -d @payload.json $DISCORD_WEBHOOK
+
+          curl -H "Content-Type: application/json" -X POST -d @payload.json "$DISCORD_WEBHOOK"
 
       - name: ❌ Send Failure Notification
         if: failure()

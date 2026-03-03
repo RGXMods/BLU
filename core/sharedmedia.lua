@@ -14,123 +14,269 @@ BLU.Modules["sharedmedia"] = SharedMedia
 -- Storage for external sounds
 SharedMedia.externalSounds = {}
 SharedMedia.soundCategories = {}
+SharedMedia.callbacksRegistered = false
+SharedMedia.eventsRegistered = false
+SharedMedia.pendingRescan = false
 
--- Improved addon name extraction function
-local function ExtractAddonNameFromPath(path)
-    if not path or type(path) ~= "string" then return "SharedMedia" end
+local SHARED_MEDIA_ADDON_EVENT_ID = "sharedmedia_addon_loaded"
+local SHARED_MEDIA_LOGIN_EVENT_ID = "sharedmedia_player_login"
 
-    -- Pattern to match Interface/Addons/ or Interface/AddOns/
-    -- and capture the addon folder name
-    local _, _, addonFolder = string.find(path, "Interface\\Add[oO]ns\\([^\]+")
-    
-    if addonFolder then
-        BLU:PrintDebug(string.format("Extracted addon folder: '%s' from path: '%s'", addonFolder, path))
-        return addonFolder
-    end
-    return "SharedMedia" -- Fallback
+local function SortCaseInsensitive(a, b)
+    return string.lower(a) < string.lower(b)
 end
 
--- Initialize SharedMedia integration
-function SharedMedia:Init()
-    BLU:PrintDebug("SharedMedia:Init() called.")
-    -- Try to load LibSharedMedia
-    self.LSM = LibStub and LibStub("LibSharedMedia-3.0", true) or nil
-    BLU:PrintDebug("LSM found: " .. tostring(self.LSM ~= nil))
-    
-    if not self.LSM then
-        BLU:PrintDebug("LibSharedMedia not found - no external sounds will be loaded.")
-    else
-        BLU:PrintDebug("LibSharedMedia found - scanning for sounds")
-        -- Register callbacks
+-- Attempt to infer addon folder name from a media file path.
+local function ExtractAddonNameFromPath(path)
+    if type(path) ~= "string" or path == "" then
+        return "SharedMedia"
+    end
+
+    -- Normalize separators so matching works on both slash styles.
+    local normalizedPath = path:gsub("\\", "/")
+    local addonFolder = normalizedPath:match("[Ii]nterface/[Aa]dd[oO]ns/([^/]+)")
+
+    if addonFolder and addonFolder ~= "" then
+        return addonFolder
+    end
+
+    return "SharedMedia"
+end
+
+-- Try to bind to LibSharedMedia when it becomes available.
+function SharedMedia:TryBindLSM()
+    if self.LSM then
+        return true
+    end
+
+    local libStub = _G.LibStub
+    if not libStub then
+        return false
+    end
+
+    local ok, lsm = pcall(function()
+        return libStub("LibSharedMedia-3.0", true)
+    end)
+
+    if not ok or not lsm then
+        return false
+    end
+
+    self.LSM = lsm
+
+    if not self.callbacksRegistered then
         self.LSM.RegisterCallback(self, "LibSharedMedia_Registered", "OnMediaRegistered")
         self.LSM.RegisterCallback(self, "LibSharedMedia_SetGlobal", "OnMediaSetGlobal")
-        
-        -- Scan existing sounds
-        self:ScanExternalSounds()
+        self.callbacksRegistered = true
     end
-    
+
+    BLU:PrintDebug("LibSharedMedia found and callbacks registered.")
+    return true
+end
+
+-- Remove previously registered external sounds before rebuilding the set.
+function SharedMedia:ClearExternalFromRegistry()
+    if not BLU.SoundRegistry or not BLU.SoundRegistry.GetAllSounds or not BLU.SoundRegistry.UnregisterSound then
+        return
+    end
+
+    local removeIds = {}
+    for soundId, soundData in pairs(BLU.SoundRegistry:GetAllSounds()) do
+        if soundData and soundData.source == "SharedMedia" then
+            table.insert(removeIds, soundId)
+        end
+    end
+
+    for _, soundId in ipairs(removeIds) do
+        BLU.SoundRegistry:UnregisterSound(soundId)
+    end
+end
+
+-- Queue a rescan to avoid repeated full scans during burst registrations.
+function SharedMedia:QueueRescan(delaySeconds)
+    if self.pendingRescan then
+        return
+    end
+
+    self.pendingRescan = true
+
+    local function runRescan()
+        self.pendingRescan = false
+
+        local ok, err = pcall(function()
+            self:ScanExternalSounds()
+        end)
+
+        if not ok then
+            BLU:PrintError("SharedMedia rescan failed: " .. tostring(err))
+        end
+    end
+
+    if C_Timer and C_Timer.After then
+        C_Timer.After(delaySeconds or 0, runRescan)
+    else
+        runRescan()
+    end
+end
+
+-- Initialize SharedMedia integration.
+function SharedMedia:Init()
+    BLU:PrintDebug("SharedMedia:Init() called.")
+
+    if not self.eventsRegistered then
+        BLU:RegisterEvent("ADDON_LOADED", function(event, loadedAddonName)
+            self:OnAddonLoaded(loadedAddonName)
+        end, SHARED_MEDIA_ADDON_EVENT_ID)
+
+        BLU:RegisterEvent("PLAYER_LOGIN", function()
+            self:OnPlayerLogin()
+        end, SHARED_MEDIA_LOGIN_EVENT_ID)
+
+        self.eventsRegistered = true
+    end
+
+    if self:TryBindLSM() then
+        self:ScanExternalSounds()
+    else
+        BLU:PrintDebug("LibSharedMedia not found at init; waiting for later addon loads.")
+    end
+
     -- Make functions available
-    BLU.GetExternalSounds = function() return self:GetExternalSounds() end
-    BLU.GetSoundCategories = function() return self:GetSoundCategories() end
-    BLU.PlayExternalSound = function(_, name) return self:PlayExternalSound(name) end
-    
+    BLU.GetExternalSounds = function()
+        return self:GetExternalSounds()
+    end
+
+    BLU.GetSoundCategories = function()
+        return self:GetSoundCategories()
+    end
+
+    BLU.PlayExternalSound = function(_, name)
+        return self:PlayExternalSound(name)
+    end
+
     BLU:PrintDebug("SharedMedia integration initialized")
 end
 
--- Scan for external sounds from SharedMedia
+-- Rebuild external sound inventory from LibSharedMedia.
 function SharedMedia:ScanExternalSounds()
-    if not self.LSM then return end
-    
-    -- Clear existing
+    if not self:TryBindLSM() then
+        return
+    end
+
     wipe(self.externalSounds)
     wipe(self.soundCategories)
-    
-    -- Get all registered sounds
-    local soundList = self.LSM:List("sound")
-    
-    BLU:PrintDebug(string.format("SharedMedia:ScanExternalSounds() found %d sounds from LSM.", #soundList))
-    for i, soundName in ipairs(soundList) do
+    self:ClearExternalFromRegistry()
+
+    local soundList = self.LSM:List("sound") or {}
+    local registeredCount = 0
+
+    for _, soundName in ipairs(soundList) do
         local soundPath = self.LSM:Fetch("sound", soundName)
-        if soundPath then
+        if type(soundPath) == "string" and soundPath ~= "" then
             local packName = ExtractAddonNameFromPath(soundPath)
-            
-            -- Register with BLU SoundRegistry
-            BLU.SoundRegistry:RegisterSound("external:"..soundName, {
+
+            self.externalSounds[soundName] = {
                 name = soundName,
                 file = soundPath,
-                category = "all", -- External sounds are available for all categories
-                source = "SharedMedia",
                 packId = packName,
-                packName = packName
-            })
+                packName = packName,
+            }
+
+            self.soundCategories[packName] = self.soundCategories[packName] or {}
+            table.insert(self.soundCategories[packName], soundName)
+
+            if BLU.SoundRegistry and BLU.SoundRegistry.RegisterSound then
+                BLU.SoundRegistry:RegisterSound("external:" .. soundName, {
+                    name = soundName,
+                    file = soundPath,
+                    category = "all", -- External sounds are available for all categories.
+                    source = "SharedMedia",
+                    packId = packName,
+                    packName = packName,
+                })
+            end
+
+            registeredCount = registeredCount + 1
         end
     end
+
+    local categoryCount = 0
+    for _, categorySounds in pairs(self.soundCategories) do
+        table.sort(categorySounds, SortCaseInsensitive)
+        categoryCount = categoryCount + 1
+    end
+
+    BLU:PrintDebug(string.format("SharedMedia scan complete: %d sounds across %d packs.", registeredCount, categoryCount))
 end
 
--- Play external sound
+-- Get all discovered external sounds keyed by sound name.
+function SharedMedia:GetExternalSounds()
+    return self.externalSounds
+end
+
+-- Get discovered external sounds grouped by source pack.
+function SharedMedia:GetSoundCategories()
+    return self.soundCategories
+end
+
+-- Play an external sound by LibSharedMedia key.
 function SharedMedia:PlayExternalSound(name)
+    if not self:TryBindLSM() then
+        BLU:PrintDebug("LibSharedMedia unavailable; cannot play external sound.")
+        return false
+    end
+
     local soundPath = self.LSM:Fetch("sound", name)
     if not soundPath then
-        BLU:PrintDebug("External sound not found: " .. name)
+        BLU:PrintDebug("External sound not found: " .. tostring(name))
         return false
     end
-    
-    -- Get volume and channel from BLU settings
-    local volume = (BLU.db.profile.soundVolume or 100) / 100
+
     local channel = "Master"
-    
-    -- Play the sound
-    local willPlay, handle = PlaySoundFile(soundPath, channel)
-    
+    local willPlay = PlaySoundFile(soundPath, channel)
+
     if willPlay then
-        BLU:PrintDebug(string.format("Playing external sound: %s", name))
-        
-        -- Show in chat if enabled
-        if BLU.db.profile.debugMode then
-            BLU:Print(string.format("|cff00ff00Playing:|r %s (External)", name))
-        end
-        
+        BLU:PrintDebug(string.format("Playing external sound: %s", tostring(name)))
         return true
-    else
-        BLU:PrintError("Failed to play external sound: " .. name)
-        return false
+    end
+
+    BLU:PrintError("Failed to play external sound: " .. tostring(name))
+    return false
+end
+
+-- Handle addon load and bind/re-scan when LibSharedMedia becomes available.
+function SharedMedia:OnAddonLoaded(loadedAddonName)
+    if self.LSM then
+        return
+    end
+
+    if self:TryBindLSM() then
+        BLU:PrintDebug("LibSharedMedia became available after addon load: " .. tostring(loadedAddonName))
+        self:QueueRescan(0)
     end
 end
 
--- Handle new media registration
-function SharedMedia:OnMediaRegistered(event, mediatype, key)
-    if mediatype ~= "sound" then return end
-    
-    BLU:PrintDebug("New sound registered: " .. key)
-    
-    -- Rescan sounds
-    self:ScanExternalSounds()
+-- Final login pass to catch late registrations.
+function SharedMedia:OnPlayerLogin()
+    if self:TryBindLSM() then
+        self:QueueRescan(0)
+    end
 end
 
--- Handle global media changes
+-- Handle new media registration callback.
+function SharedMedia:OnMediaRegistered(event, mediatype, key)
+    if mediatype ~= "sound" then
+        return
+    end
+
+    BLU:PrintDebug("New shared media sound registered: " .. tostring(key))
+    self:QueueRescan(0.1)
+end
+
+-- Handle global media changes callback.
 function SharedMedia:OnMediaSetGlobal(event, mediatype, key)
-    if mediatype ~= "sound" then return end
-    
-    -- Rescan sounds
-    self:ScanExternalSounds()
+    if mediatype ~= "sound" then
+        return
+    end
+
+    self:QueueRescan(0.1)
 end

@@ -12,7 +12,7 @@ BLU.Modules = BLU.Modules or {}
 BLU.Modules["options"] = Options
 
 local OPTIONS_PANEL_NAME = "Better Level-Up!"
-local OPTIONS_LIST_STYLED_NAME = "|cffffffffBetter Level-Up|r|cff05dffa!|r"
+local OPTIONS_LIST_STYLED_NAME = "|TInterface\\AddOns\\BLU\\media\\Textures\\icon:16:16:0:0|t |cff05dffaB|r|cffffffffetter |cff05dffaL|r|cffffffffevel-|cff05dffaU|r|cffffffffp|cff05dffa!|r"
 
 function Options:ResolveOptionsCategoryID()
     if type(BLU.OptionsCategoryID) == "number" then
@@ -109,7 +109,7 @@ function Options:CreateOptionsPanel()
     local metadataVersion = (C_AddOns and C_AddOns.GetAddOnMetadata and C_AddOns.GetAddOnMetadata("BLU", "Version"))
         or (GetAddOnMetadata and GetAddOnMetadata("BLU", "Version"))
         or BLU.version
-        or "v6.0.0-alpha.6"
+        or "v6.0.0-alpha.7"
     version:SetText(metadataVersion)
     version:SetTextColor(unpack(BLU.Modules.design.Colors.Primary))
 

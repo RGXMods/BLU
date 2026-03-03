@@ -229,6 +229,8 @@ function BLU.CreateModulesPanel(panel)
             toggle.glow = glow
 
             local function UpdateToggleState(btn, enabled)
+                btn:ClearAllPoints()
+                btn.isEnabled = enabled
                 if enabled then
                     btn:SetPoint("RIGHT", switchFrame, "RIGHT", -2, 0)
                     btn.switchBg:SetVertexColor(0.02, 0.37, 1, 1)
@@ -279,6 +281,12 @@ function BLU.CreateModulesPanel(panel)
                         BLU:UnloadModule(MODULE_LOAD_MAP[self.moduleId] or self.moduleId)
                     end
                 end
+
+                C_Timer.After(0, function()
+                    if self and self:IsVisible() and BLU.db and BLU.db.profile and BLU.db.profile.modules then
+                        UpdateToggleState(self, BLU.db.profile.modules[self.moduleId] ~= false)
+                    end
+                end)
             end)
 
             modFrame.toggle = toggle

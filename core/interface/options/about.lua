@@ -35,9 +35,15 @@ local function GetBLUSoundStats()
 end
 
 function BLU.CreateAboutPanel(panel)
-    local content = CreateFrame("Frame", nil, panel)
-    content:SetPoint("TOPLEFT", 8, -8)
-    content:SetPoint("BOTTOMRIGHT", -8, 8)
+    local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
+    scrollFrame:SetPoint("TOPLEFT", 8, -8)
+    scrollFrame:SetPoint("BOTTOMRIGHT", -28, 8)
+
+    local content = CreateFrame("Frame", nil, scrollFrame)
+    content:SetPoint("TOPLEFT", 0, 0)
+    content:SetPoint("TOPRIGHT", -8, 0)
+    content:SetHeight(900)
+    scrollFrame:SetScrollChild(content)
 
     local contentBg = content:CreateTexture(nil, "BACKGROUND")
     contentBg:SetAllPoints()
@@ -223,7 +229,6 @@ function BLU.CreateAboutPanel(panel)
         "Thanks to the WoW addon development community for inspiration and guidance."
     )
 
-    content:SetHeight(700)
 end
 
 function About:Init()

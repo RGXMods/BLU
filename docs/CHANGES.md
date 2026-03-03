@@ -1,3 +1,17 @@
+## Version 6.0.0-alpha.7 (2026-03-03)
+
+### Release Prep and Compatibility
+
+- **TOC Compatibility:**
+    - Updated `BLU.toc` interface to `120001` for WoW Midnight `12.0.1`.
+- **Versioning:**
+    - Updated addon version to `v6.0.0-alpha.7` in runtime and options metadata.
+- **SharedMedia / External Packs:**
+    - Added `LibSharedMedia-3.0` as an optional dependency.
+    - Improved external sound pack discovery by rebinding and rescanning when media/addons register after startup.
+
+---
+
 ## Version 6.0.0-alpha.6 (2026-03-02)
 
 ### UI and Release Updates

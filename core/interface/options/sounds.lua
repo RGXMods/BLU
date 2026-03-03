@@ -9,6 +9,26 @@ local Sounds = {}
 BLU.Modules = BLU.Modules or {}
 BLU.Modules["sounds"] = Sounds
 
+local function GetAddonIconTexture(addonName)
+    if not addonName or addonName == "" then
+        return nil
+    end
+
+    if C_AddOns and C_AddOns.GetAddOnMetadata then
+        local icon = C_AddOns.GetAddOnMetadata(addonName, "IconTexture")
+        if type(icon) == "string" and icon ~= "" then
+            return icon
+        end
+    elseif GetAddOnMetadata then
+        local icon = GetAddOnMetadata(addonName, "IconTexture")
+        if type(icon) == "string" and icon ~= "" then
+            return icon
+        end
+    end
+
+    return nil
+end
+
 function BLU.CreateSoundsPanel(panel)
     -- Wipe existing content
     for _, child in ipairs({panel:GetChildren()}) do
@@ -69,6 +89,8 @@ function BLU.CreateSoundsPanel(panel)
         },
     }
 
+    local sharedMediaPacks = {}
+
     if BLU.SoundRegistry and BLU.SoundRegistry.GetAllSounds then
         local allSounds = BLU.SoundRegistry:GetAllSounds()
         for _, soundData in pairs(allSounds) do
@@ -79,8 +101,45 @@ function BLU.CreateSoundsPanel(panel)
                 else
                     packRows[2].soundCount = packRows[2].soundCount + 1
                 end
+            elseif soundData and soundData.source == "SharedMedia" then
+                local packId = soundData.packId or soundData.packName or "SharedMedia"
+                local packName = soundData.packName or soundData.packId or "SharedMedia"
+
+                if not sharedMediaPacks[packId] then
+                    sharedMediaPacks[packId] = {
+                        id = "sharedmedia_" .. tostring(packId),
+                        name = packName,
+                        icon = GetAddonIconTexture(packId) or "Interface\\Icons\\INV_Misc_Book_11",
+                        status = "|cff00ff00SharedMedia loaded|r",
+                        soundCount = 0,
+                    }
+                end
+
+                sharedMediaPacks[packId].soundCount = sharedMediaPacks[packId].soundCount + 1
             end
         end
+    end
+
+    local sharedRows = {}
+    for _, row in pairs(sharedMediaPacks) do
+        table.insert(sharedRows, row)
+    end
+    table.sort(sharedRows, function(a, b)
+        return string.lower(a.name) < string.lower(b.name)
+    end)
+
+    for _, row in ipairs(sharedRows) do
+        table.insert(packRows, row)
+    end
+
+    if #sharedRows == 0 then
+        table.insert(packRows, {
+            id = "sharedmedia_none",
+            name = "shared media packs",
+            icon = "Interface\\Icons\\INV_Misc_Book_11",
+            status = "|cffffaa00No SharedMedia packs loaded|r",
+            soundCount = 0,
+        })
     end
 
     for _, pack in ipairs(packRows) do

@@ -8,7 +8,17 @@
     - Updated addon version to `v6.0.0-alpha.7` in runtime and options metadata.
 - **SharedMedia / External Packs:**
     - Added `LibSharedMedia-3.0` as an optional dependency.
-    - Improved external sound pack discovery by rebinding and rescanning when media/addons register after startup.
+    - Added generic external sound bridging that scans loaded addon globals for `Interface\\AddOns\\...` audio paths and registers them in BLU.
+    - Added public bridge API `BLU:RegisterExternalSoundPack(packName, soundEntries)` for direct third-party pack integration.
+    - Improved discovery timing by rebinding and rescanning when media/addons register after startup.
+- **Runtime Stability:**
+    - Fixed forbidden-table iteration errors during external sound rescans (`core/sharedmedia.lua` guarded table walking).
+    - Added `/blu refresh` and `/blu rescan` commands to trigger a safe manual external media rebuild without restarting the game.
+- **Sounds UI and Flyouts:**
+    - Updated the Sounds tab to a multi-column layout sized for higher-density pack lists.
+    - Added spillover/paging for very large sound packs so long lists (for example 175+ entries) remain navigable.
+    - Replaced text preview rows with an inline play button and tightened flyout spacing/alignment.
+    - Enforced single-line sound labels with truncation + tooltip and removed repeated addon/pack prefixes in nested menus.
 
 ---
 

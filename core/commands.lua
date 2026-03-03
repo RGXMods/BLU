@@ -76,12 +76,20 @@ SlashCmdList["BLU"] = function(msg)
         BLU:Print("  Options Panel: " .. (BLU.OptionsPanel and "|cff00ff00Created|r" or "|cffff9900Not Created|r"))
         BLU:Print("  Enabled: " .. ((BLU.db and BLU.db.profile and BLU.db.profile.enabled) and "|cff00ff00Yes|r" or "|cffff0000No|r"))
         BLU:Print("  Debug Mode: " .. (BLU.debugMode and "|cff00ff00On|r" or "|cff808080Off|r"))
+    elseif msg == "refresh" or msg == "rescan" then
+        if BLU.RefreshExternalSounds then
+            BLU:RefreshExternalSounds()
+            BLU:Print("|cff00ccffBLU:|r Rescanning external sound packs...")
+        else
+            BLU:Print("|cff00ccffBLU:|r SharedMedia bridge is not ready yet.")
+        end
     elseif msg == "help" then
         BLU:Print("|cff00ccffBLU Commands:|r")
         BLU:Print("  |cffffff00/blu|r - Open options")
         BLU:Print("  |cffffff00/blu test|r - Play test sound")
         BLU:Print("  |cffffff00/blu debug|r - Toggle debug mode")
         BLU:Print("  |cffffff00/blu status|r - Show addon status")
+        BLU:Print("  |cffffff00/blu refresh|r - Rescan external sound packs")
         BLU:Print("  |cffffff00/blu enable|r - Enable addon")
         BLU:Print("  |cffffff00/blu disable|r - Disable addon")
         BLU:Print("  |cffffff00/blu help|r - Show this help")

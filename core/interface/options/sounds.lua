@@ -29,6 +29,29 @@ local function GetAddonIconTexture(addonName)
     return nil
 end
 
+function BLU.RefreshSoundPackUI()
+    if not BLU.OptionsPanel or not BLU.OptionsPanel.contents then
+        return false
+    end
+
+    local soundsContent = BLU.OptionsPanel.contents[2]
+    if not soundsContent or not soundsContent:IsShown() then
+        return false
+    end
+
+    if not BLU.CreateSoundsPanel then
+        return false
+    end
+
+    local ok, err = pcall(BLU.CreateSoundsPanel, soundsContent)
+    if not ok then
+        BLU:PrintDebug("Failed to rebuild Sounds tab: " .. tostring(err))
+        return false
+    end
+
+    return true
+end
+
 function BLU.CreateSoundsPanel(panel)
     -- Wipe existing content
     for _, child in ipairs({panel:GetChildren()}) do
@@ -48,12 +71,19 @@ function BLU.CreateSoundsPanel(panel)
     header:SetPoint("TOPLEFT", 0, 0)
     header:SetPoint("RIGHT", 0, 0)
 
-    local yOffset = -40
+    local startY = -40
+    local rowsPerColumn = 9
+    local maxColumns = 2
+    local columnXStart = 10
+    local columnWidth = 312
+    local columnSpacing = 16
+    local rowStep = 45
+    local blockSpacing = 18
 
-    local function createPackEntry(parent, pack, y)
+    local function createPackEntry(parent, pack, x, y)
         local frame = CreateFrame("Frame", nil, parent)
-        frame:SetSize(620, 40)
-        frame:SetPoint("TOPLEFT", 10, y)
+        frame:SetSize(columnWidth, 40)
+        frame:SetPoint("TOPLEFT", x, y)
 
         local icon = frame:CreateTexture(nil, "ARTWORK")
         icon:SetSize(24, 24)
@@ -142,13 +172,25 @@ function BLU.CreateSoundsPanel(panel)
         })
     end
 
-    for _, pack in ipairs(packRows) do
-        local frame = createPackEntry(content, pack, yOffset)
+    for index, pack in ipairs(packRows) do
+        local zeroIndex = index - 1
+        local entriesPerBlock = rowsPerColumn * maxColumns
+        local blockIndex = math.floor(zeroIndex / entriesPerBlock)
+        local indexInBlock = zeroIndex % entriesPerBlock
+        local columnIndex = math.floor(indexInBlock / rowsPerColumn)
+        local rowIndex = indexInBlock % rowsPerColumn
+
+        local xOffset = columnXStart + (columnIndex * (columnWidth + columnSpacing))
+        local yOffset = startY - (rowIndex * rowStep) - (blockIndex * ((rowsPerColumn * rowStep) + blockSpacing))
+
+        local frame = createPackEntry(content, pack, xOffset, yOffset)
         frame.name:SetText(pack.name .. " (" .. pack.soundCount .. ")")
-        yOffset = yOffset - 45
     end
 
-    content:SetHeight(math.abs(yOffset) + 50)
+    local entriesPerBlock = rowsPerColumn * maxColumns
+    local blockCount = math.max(1, math.ceil(#packRows / entriesPerBlock))
+    local totalHeight = math.abs(startY) + (blockCount * (rowsPerColumn * rowStep)) + ((blockCount - 1) * blockSpacing) + 50
+    content:SetHeight(totalHeight)
 end
 
 function Sounds:Init()

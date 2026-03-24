@@ -1,29 +1,51 @@
+<!-- BLU Main Loader -->
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
-    <!-- Libraries -->
-    <Script file="Libs/LibStub/LibStub.lua"/>
-    <Script file="Libs/CallbackHandler-1.0/CallbackHandler-1.0.lua"/>
-    <Script file="Libs/AceAddon-3.0/AceAddon-3.0.lua"/>
-    <Script file="Libs/AceEvent-3.0/AceEvent-3.0.lua"/>
-    <Script file="Libs/AceTimer-3.0/AceTimer-3.0.lua"/>
-    <Script file="Libs/AceDB-3.0/AceDB-3.0.lua"/>
-    <Script file="Libs/AceDBOptions-3.0/AceDBOptions-3.0.lua"/>
-    <Script file="Libs/AceLocale-3.0/AceLocale-3.0.lua"/>
-    <Script file="Libs/AceConsole-3.0/AceConsole-3.0.lua"/>
-    <Script file="Libs/AceGUI-3.0/AceGUI-3.0.lua"/>
-    <Script file="Libs/AceConfig-3.0/AceConfig-3.0.lua"/>
+    <!-- Core Systems (Load Order Matters) -->
+    <Script file="core/core.lua"/>
+    <Script file="core/database.lua"/>
+    <Script file="core/combat_protection.lua"/>
+    <Script file="core/sounds.lua"/>
+    <Script file="core/config.lua"/>
+    <Script file="core/utils.lua"/>
+    <Script file="core/registry.lua"/>
+    <Script file="core/loader.lua"/>
+    <Script file="core/sharedmedia.lua"/>
 
-    <!-- Data Files (BLU Core and Modules) -->
-    <Script file="data/localization.lua"/>
-    <Script file="data/initialization.lua"/>
-    <Script file="data/sounds.lua"/>
-    <Script file="data/utils.lua"/>
-    <Script file="data/core.lua"/>
-    <Script file="data/options.lua"/>
-    <Script file="data/battlepets.lua"/>
+    <Script file="core/internal_sounds.lua"/>
 
-    <!-- Add any other module files here if they exist in the codebase -->
-    <!-- <Script file="modules/quest/quest.lua"/> -->
-    <!-- <Script file="modules/levelup/levelup.lua"/> -->
-    <!-- etc. -->
+    <!-- User Custom Sounds manifest (user-editable) -->
+    <Script file="user/user_sounds.lua"/>
+    <Script file="core/usersounds.lua"/>
+
+    <!-- Localization -->
+    <Script file="Localization/enUS.lua"/>
+    
+    <!-- Interface System MUST load before initialization -->
+    <Script file="core/interface/design.lua"/>
+    <Script file="core/interface/widgets.lua"/>
+    <Script file="core/interface/options/tabs.lua"/>
+    <Script file="core/interface/options/general.lua"/>
+    <Script file="core/interface/options/sounds.lua"/>
+    <Script file="core/interface/options/about.lua"/>
+    <Script file="core/interface/options/modules.lua"/>
+    <Script file="core/interface/options/sound_panel.lua"/>
+    <Script file="core/interface/options/main.lua"/>
+
+    <!-- Feature Modules -->
+    <Script file="modules/Quest/Quest.lua"/>
+    <Script file="modules/LevelUp/LevelUp.lua"/>
+    <Script file="modules/Achievement/Achievement.lua"/>
+    <Script file="modules/Reputation/Reputation.lua"/>
+    <Script file="modules/BattlePet/BattlePet.lua"/>
+    <Script file="modules/Honor/Honor.lua"/>
+    <Script file="modules/Renown/Renown.lua"/>
+    <Script file="modules/TradingPost/TradingPost.lua"/>
+    <Script file="modules/Delve/Delve.lua"/>
+    
+    <!-- Commands MUST load after options module is registered -->
+    <Script file="core/commands.lua"/>
+    
+    <!-- Initialization MUST be LAST so all modules are registered -->
+    <Script file="core/initialization.lua"/>
 
 </Ui>

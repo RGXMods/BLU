@@ -1,0 +1,751 @@
+--=====================================================================================
+-- BLU - interface/options/sound_panel.lua
+-- Sound selection panel for events
+--=====================================================================================
+
+local BLU = _G["BLU"]
+
+local SoundPanel = {}
+BLU.Modules = BLU.Modules or {}
+BLU.Modules["sound_panel"] = SoundPanel
+
+local EVENT_MODULE_MAP = {
+    honorrank = "honor",
+    renownrank = "renown",
+    delvecompanion = "delve",
+    questaccept = "quest",
+    questturnin = "quest",
+}
+
+local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
+    local actualEventType = soundType or eventType
+
+    local container = CreateFrame("Frame", nil, parent)
+    container:SetPoint("TOPLEFT", parent, "TOPLEFT", 0, yOffset)
+    container:SetPoint("RIGHT", parent, "RIGHT", -10, 0)
+    container:SetHeight(90)
+
+    local dropdownLabel = container:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    dropdownLabel:SetPoint("TOPLEFT", 10, -5)
+    dropdownLabel:SetText(label)
+
+    local currentLabel = container:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    currentLabel:SetPoint("TOPLEFT", dropdownLabel, "BOTTOMLEFT", 0, -5)
+    currentLabel:SetText("Currently selected: ")
+    currentLabel:SetTextColor(0.7, 0.7, 0.7)
+
+    local currentSound = container:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    currentSound:SetPoint("LEFT", currentLabel, "RIGHT", 5, 0)
+    currentSound:SetTextColor(0.02, 0.87, 0.98)
+    currentSound:SetWidth(360)
+    currentSound:SetJustifyH("LEFT")
+    currentSound:SetWordWrap(false)
+    if currentSound.SetMaxLines then
+        currentSound:SetMaxLines(1)
+    end
+
+    local controlsFrame = CreateFrame("Frame", nil, container)
+    controlsFrame:SetPoint("TOPRIGHT", container, "TOPRIGHT", -8, -30)
+    controlsFrame:SetSize(230, 24)
+
+    local function volumeToStep(volume)
+        if volume == "low" then
+            return 1
+        elseif volume == "high" then
+            return 3
+        end
+        return 2
+    end
+
+    local function stepToVolume(step)
+        if step <= 1 then
+            return "low"
+        elseif step >= 3 then
+            return "high"
+        end
+        return "medium"
+    end
+
+    local volumeSlider = CreateFrame("Slider", nil, controlsFrame, "OptionsSliderTemplate")
+    volumeSlider:SetPoint("LEFT", 0, 0)
+    volumeSlider:SetWidth(108)
+    volumeSlider:SetMinMaxValues(1, 3)
+    volumeSlider:SetValueStep(1)
+    volumeSlider:SetObeyStepOnDrag(true)
+    volumeSlider.Low:SetText("")
+    volumeSlider.High:SetText("")
+    volumeSlider.Text:SetText("")
+    volumeSlider.Low:Hide()
+    volumeSlider.High:Hide()
+
+    local sliderValue = controlsFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    sliderValue:SetPoint("LEFT", volumeSlider, "RIGHT", 6, 0)
+    sliderValue:SetText("Medium")
+
+    local sliderUpdating = false
+    local function setVolumeSliderValue(volume)
+        local step = volumeToStep(volume)
+        sliderUpdating = true
+        volumeSlider:SetValue(step)
+        sliderUpdating = false
+        sliderValue:SetText(volume:gsub("^%l", string.upper))
+    end
+
+    volumeSlider:SetScript("OnValueChanged", function(self, value)
+        if sliderUpdating then
+            return
+        end
+
+        local step = math.floor((value or 2) + 0.5)
+        if step < 1 then step = 1 end
+        if step > 3 then step = 3 end
+
+        if self:GetValue() ~= step then
+            sliderUpdating = true
+            self:SetValue(step)
+            sliderUpdating = false
+        end
+
+        local volume = stepToVolume(step)
+        sliderValue:SetText(volume:gsub("^%l", string.upper))
+
+        if not BLU.db or not BLU.db.profile then
+            return
+        end
+        BLU.db.profile.soundVolumes = BLU.db.profile.soundVolumes or {}
+        BLU.db.profile.soundVolumes[actualEventType] = volume
+    end)
+
+    local initialVolume = (BLU.db and BLU.db.profile and BLU.db.profile.soundVolumes and BLU.db.profile.soundVolumes[actualEventType]) or "medium"
+    setVolumeSliderValue(initialVolume)
+
+    local channelHint = controlsFrame:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
+    channelHint:SetPoint("LEFT", 0, 0)
+    channelHint:SetPoint("RIGHT", -72, 2)
+    channelHint:SetJustifyH("LEFT")
+    channelHint:SetText("Uses game channel")
+    channelHint:Hide()
+
+    local function isBluVolumeSelection(selectionValue)
+        if not selectionValue or selectionValue == "default" or selectionValue == "random" then
+            return true
+        end
+
+        if type(selectionValue) ~= "string" or selectionValue:match("^external:") then
+            return false
+        end
+
+        if not (BLU.SoundRegistry and BLU.SoundRegistry.GetSound) then
+            return false
+        end
+
+        local soundInfo = BLU.SoundRegistry:GetSound(selectionValue)
+        if not soundInfo then
+            return false
+        end
+
+        return soundInfo.source == "BLU" or soundInfo.source == "BLU Built-in" or soundInfo.isInternal == true
+    end
+
+    local function updateSoundControlMode(selectionValue)
+        if isBluVolumeSelection(selectionValue) then
+            local stored = (BLU.db and BLU.db.profile and BLU.db.profile.soundVolumes and BLU.db.profile.soundVolumes[actualEventType]) or "medium"
+            setVolumeSliderValue(stored)
+            volumeSlider:Show()
+            sliderValue:Show()
+            channelHint:Hide()
+        else
+            volumeSlider:Hide()
+            sliderValue:Hide()
+            channelHint:Show()
+        end
+    end
+
+    local testBtn = BLU.Modules.design:CreateButton(controlsFrame, "Test", 60, 22)
+    testBtn:SetPoint("RIGHT", controlsFrame, "RIGHT", 0, 0)
+    testBtn:SetScript("OnClick", function(self)
+        BLU:PrintDebug("Test button clicked for event: " .. actualEventType)
+        local selectedSound = BLU.db and BLU.db.profile and BLU.db.profile.selectedSounds and BLU.db.profile.selectedSounds[actualEventType]
+        BLU:PrintDebug("Selected sound is: " .. tostring(selectedSound))
+
+        self:SetText("Playing...")
+        self:Disable()
+
+        if BLU.PlayCategorySound then
+            BLU:PlayCategorySound(actualEventType)
+        elseif BLU.Modules.registry and BLU.Modules.registry.PlayCategorySound then
+            BLU.Modules.registry:PlayCategorySound(actualEventType)
+        end
+
+        C_Timer.After(2, function()
+            self:SetText("Test")
+            self:Enable()
+        end)
+    end)
+
+    local dropdown = CreateFrame("Frame", "BLUDropdown_" .. actualEventType, container, "UIDropDownMenuTemplate")
+    dropdown:SetPoint("TOPLEFT", currentLabel, "BOTTOMLEFT", -16, -5)
+    UIDropDownMenu_SetWidth(dropdown, 260)
+
+    dropdown.currentSound = currentSound
+    dropdown.eventId = actualEventType
+
+    UIDropDownMenu_Initialize(dropdown, function(self, level, menuList)
+        local MAX_SOUNDS_PER_MENU_PAGE = 24
+        local INLINE_PREVIEW_TEXTURE = "Interface\\AddOns\\BLU\\media\\Textures\\play.blp"
+        local MENU_BUTTON_WIDTH = 212
+        local MENU_TEXT_WIDTH = 174
+        local MENU_LIST_MIN_WIDTH = 236
+        local MENU_TITLE_TEXT_WIDTH = 186
+        level = level or 1
+
+        if not BLU.db or not BLU.db.profile then return end
+        BLU.db.profile.selectedSounds = BLU.db.profile.selectedSounds or {}
+
+        local function getDropDownListFrame(levelToUse)
+            return _G["DropDownList" .. levelToUse] or _G["LibDropDownMenu_List" .. levelToUse]
+        end
+
+        local function shortenLabel(text, maxChars)
+            if type(text) ~= "string" then
+                return "", false
+            end
+
+            if #text <= maxChars then
+                return text, false
+            end
+
+            return string.sub(text, 1, maxChars - 3) .. "...", true
+        end
+
+        local function trimSoundNameForSubmenu(soundName, parentLabel)
+            if type(soundName) ~= "string" then
+                return ""
+            end
+
+            if type(parentLabel) ~= "string" or parentLabel == "" then
+                return soundName
+            end
+
+            local escapedParent = string.gsub(parentLabel, "([%^%$%(%)%%%.%[%]%*%+%-%?])", "%%%1")
+            local withoutDashPrefix = string.gsub(soundName, "^" .. escapedParent .. "%s*%-%s*", "")
+            if withoutDashPrefix ~= soundName then
+                return withoutDashPrefix
+            end
+
+            local withoutColonPrefix = string.gsub(soundName, "^" .. escapedParent .. "%s*:%s*", "")
+            if withoutColonPrefix ~= soundName then
+                return withoutColonPrefix
+            end
+
+            return soundName
+        end
+
+        local function styleLastAddedButton(levelToUse, textWidth, buttonWidth)
+            local listFrame = getDropDownListFrame(levelToUse)
+            if not listFrame or not listFrame.numButtons then
+                return
+            end
+
+            local button = _G[listFrame:GetName() .. "Button" .. listFrame.numButtons]
+            if not button then
+                return
+            end
+
+            local effectiveButtonWidth = buttonWidth or MENU_BUTTON_WIDTH
+            button:SetWidth(effectiveButtonWidth)
+
+            local normalText = _G[button:GetName() .. "NormalText"]
+            if normalText then
+                normalText:SetWordWrap(false)
+                if normalText.SetMaxLines then
+                    normalText:SetMaxLines(1)
+                end
+                normalText:SetWidth(textWidth or MENU_TEXT_WIDTH)
+            end
+
+            if listFrame:GetWidth() < MENU_LIST_MIN_WIDTH then
+                listFrame:SetWidth(MENU_LIST_MIN_WIDTH)
+            end
+        end
+
+        local function hideInlinePreviewButtons(levelToUse)
+            local listFrame = getDropDownListFrame(levelToUse)
+            if not listFrame then
+                return
+            end
+
+            local maxButtons = UIDROPDOWNMENU_MAXBUTTONS or 32
+            for i = 1, maxButtons do
+                local button = _G[listFrame:GetName() .. "Button" .. i]
+                if button and button.bluPreviewButton then
+                    button.bluPreviewButton:Hide()
+                end
+            end
+        end
+
+        local function attachInlinePreviewButton(levelToUse, soundId)
+            local listFrame = getDropDownListFrame(levelToUse)
+            if not listFrame or not listFrame.numButtons then
+                return
+            end
+
+            local button = _G[listFrame:GetName() .. "Button" .. listFrame.numButtons]
+            if not button then
+                return
+            end
+
+            local previewButton = button.bluPreviewButton
+            if not previewButton then
+                previewButton = CreateFrame("Button", nil, button)
+                previewButton:SetSize(14, 14)
+                previewButton:RegisterForClicks("LeftButtonUp")
+                previewButton:SetScript("OnClick", function(btn)
+                    if btn.soundId and BLU.SoundRegistry and BLU.SoundRegistry.PlaySound then
+                        BLU.SoundRegistry:PlaySound(btn.soundId)
+                    end
+                end)
+                previewButton:SetScript("OnEnter", function(btn)
+                    GameTooltip:SetOwner(btn, "ANCHOR_RIGHT")
+                    GameTooltip:SetText("Preview")
+                    GameTooltip:AddLine("Click to play this sound.", 0.7, 0.7, 0.7, true)
+                    GameTooltip:Show()
+                end)
+                previewButton:SetScript("OnLeave", function()
+                    GameTooltip:Hide()
+                end)
+
+                local texture = previewButton:CreateTexture(nil, "ARTWORK")
+                texture:SetAllPoints()
+                texture:SetTexture(INLINE_PREVIEW_TEXTURE)
+                previewButton.texture = texture
+                button.bluPreviewButton = previewButton
+            end
+
+            previewButton.soundId = soundId
+            previewButton:Show()
+
+            local normalText = _G[button:GetName() .. "NormalText"]
+            if normalText then
+                local stringWidth = normalText:GetStringWidth() or 0
+                local defaultOffset = button:GetWidth() - 28
+                local desiredOffset = 16 + stringWidth + 8
+                if desiredOffset > defaultOffset then
+                    desiredOffset = defaultOffset
+                end
+                if desiredOffset < 92 then
+                    desiredOffset = 92
+                end
+                previewButton:ClearAllPoints()
+                previewButton:SetPoint("LEFT", button, "LEFT", desiredOffset, 0)
+            else
+                previewButton:ClearAllPoints()
+                previewButton:SetPoint("RIGHT", button, "RIGHT", -18, 0)
+            end
+        end
+
+        hideInlinePreviewButtons(level)
+
+        local function hasEntries(groupData)
+            if type(groupData) ~= "table" then
+                return false
+            end
+
+            if #groupData > 0 then
+                return true
+            end
+
+            for _, value in pairs(groupData) do
+                if type(value) == "table" and #value > 0 then
+                    return true
+                end
+            end
+
+            return false
+        end
+
+        local function onSoundSelected(value, text)
+            BLU.db.profile.selectedSounds[self.eventId] = value
+            UIDropDownMenu_SetText(self, text)
+            self.currentSound:SetText(text)
+            updateSoundControlMode(value)
+            CloseDropDownMenus()
+        end
+
+        local function addSoundSelectEntry(levelToUse, soundId, soundName, parentLabel)
+            local trimmedSoundName = trimSoundNameForSubmenu(soundName, parentLabel)
+            local displayText, wasTruncated = shortenLabel(trimmedSoundName, 44)
+            local selectInfo = UIDropDownMenu_CreateInfo()
+            selectInfo.text = displayText
+            selectInfo.value = soundId
+            selectInfo.func = function()
+                onSoundSelected(soundId, trimmedSoundName)
+            end
+            selectInfo.checked = BLU.db.profile.selectedSounds[dropdown.eventId] == soundId
+            if wasTruncated or trimmedSoundName ~= soundName then
+                selectInfo.tooltipTitle = soundName
+            end
+            UIDropDownMenu_AddButton(selectInfo, levelToUse)
+            styleLastAddedButton(levelToUse, MENU_TEXT_WIDTH, MENU_BUTTON_WIDTH)
+            attachInlinePreviewButton(levelToUse, soundId)
+        end
+
+        local function renderPagedSoundList(levelToUse, sounds, page, parentLabel)
+            table.sort(sounds, function(a, b) return a.name < b.name end)
+
+            local totalSounds = #sounds
+            local totalPages = math.max(1, math.ceil(totalSounds / MAX_SOUNDS_PER_MENU_PAGE))
+            local safePage = math.max(1, math.min(page or 1, totalPages))
+            local startIndex = ((safePage - 1) * MAX_SOUNDS_PER_MENU_PAGE) + 1
+            local endIndex = math.min(totalSounds, startIndex + MAX_SOUNDS_PER_MENU_PAGE - 1)
+
+            if totalPages > 1 then
+                local pageInfo = UIDropDownMenu_CreateInfo()
+                pageInfo.text = string.format("|cff7fd0ffPage %d/%d|r", safePage, totalPages)
+                pageInfo.isTitle = true
+                pageInfo.notCheckable = true
+                UIDropDownMenu_AddButton(pageInfo, levelToUse)
+                styleLastAddedButton(levelToUse, MENU_TITLE_TEXT_WIDTH, MENU_BUTTON_WIDTH)
+            end
+
+            for i = startIndex, endIndex do
+                local sound = sounds[i]
+                addSoundSelectEntry(levelToUse, sound.id, sound.name, parentLabel)
+            end
+        end
+        local customHierarchy = {
+            ["BLU WoW Defaults"] = {},
+            ["BLU Other Game Sounds"] = {},
+            ["Shared Media"] = {},
+        }
+        if BLU.SoundRegistry and BLU.SoundRegistry.GetSoundsGroupedForUI then
+            customHierarchy = BLU.SoundRegistry:GetSoundsGroupedForUI(self.eventId) or customHierarchy
+        end
+
+        if level == 1 then
+            local specialOptions = {
+                {text = "|cff00ff00Random|r", value = "random"},
+                {text = "Default Sound", value = "default"},
+            }
+            for _, info in ipairs(specialOptions) do
+                local dInfo = UIDropDownMenu_CreateInfo()
+                dInfo.text = info.text
+                dInfo.value = info.value
+                dInfo.func = function() onSoundSelected(info.value, info.text) end
+                dInfo.checked = BLU.db.profile.selectedSounds[self.eventId] == info.value
+                UIDropDownMenu_AddButton(dInfo, level)
+                styleLastAddedButton(level, MENU_TITLE_TEXT_WIDTH, MENU_BUTTON_WIDTH)
+            end
+
+            local sep = UIDropDownMenu_CreateInfo()
+            sep.notClickable = true
+            sep.notCheckable = true
+            UIDropDownMenu_AddButton(sep, level)
+            styleLastAddedButton(level, MENU_TITLE_TEXT_WIDTH, MENU_BUTTON_WIDTH)
+
+            local sortedTopLevelKeys = {"BLU WoW Defaults", "BLU Other Game Sounds", "User Custom Sounds", "Shared Media"}
+
+            for _, groupKey in ipairs(sortedTopLevelKeys) do
+                if hasEntries(customHierarchy[groupKey]) then
+                    local count = 0
+                    if groupKey == "BLU WoW Defaults" then
+                        count = #customHierarchy[groupKey]
+                        -- Avoid duplicating "Default Sound" with a one-item defaults submenu.
+                        if count <= 1 then
+                            count = 0
+                        end
+                    elseif groupKey == "User Custom Sounds" then
+                        count = #customHierarchy[groupKey]
+                    else
+                        for _, packSounds in pairs(customHierarchy[groupKey]) do
+                            count = count + #packSounds
+                        end
+                    end
+
+                    if count > 0 then
+                        local info = UIDropDownMenu_CreateInfo()
+                        info.text = "|cffffff00" .. groupKey .. "|r (" .. count .. ")"
+                        info.value = groupKey
+                        info.hasArrow = true
+                        info.menuList = groupKey
+                        info.notCheckable = true
+                        UIDropDownMenu_AddButton(info, level)
+                        styleLastAddedButton(level, MENU_TITLE_TEXT_WIDTH, MENU_BUTTON_WIDTH)
+                    end
+                end
+            end
+        elseif level == 2 then
+            local groupKey = menuList
+            local subgroups = customHierarchy[groupKey]
+            if type(subgroups) ~= "table" then
+                return
+            end
+
+            if groupKey == "BLU WoW Defaults" or groupKey == "User Custom Sounds" then
+                table.sort(subgroups, function(a, b) return a.name < b.name end)
+                for _, sound in ipairs(subgroups) do
+                    addSoundSelectEntry(level, sound.id, sound.name)
+                end
+            else
+                local sortedSubKeys = {}
+                for subKey in pairs(subgroups) do
+                    table.insert(sortedSubKeys, subKey)
+                end
+                table.sort(sortedSubKeys)
+
+                for _, subKey in ipairs(sortedSubKeys) do
+                    local sounds = subgroups[subKey]
+                    local pageCount = math.max(1, math.ceil(#sounds / MAX_SOUNDS_PER_MENU_PAGE))
+                    local displaySubKey, subKeyTruncated = shortenLabel(subKey, 32)
+                    local info = UIDropDownMenu_CreateInfo()
+                    info.value = subKey
+                    info.notCheckable = true
+                    info.hasArrow = true
+                    if pageCount > 1 then
+                        info.menuList = {group = groupKey, sub = subKey, type = "pack_pages", pageCount = pageCount}
+                    else
+                        info.menuList = {group = groupKey, sub = subKey, type = "pack", page = 1}
+                    end
+                    info.text = displaySubKey .. " (" .. #sounds .. ")"
+                    if subKeyTruncated then
+                        info.tooltipTitle = subKey
+                    end
+                    UIDropDownMenu_AddButton(info, level)
+                    styleLastAddedButton(level, MENU_TITLE_TEXT_WIDTH, MENU_BUTTON_WIDTH)
+                end
+            end
+        elseif level == 3 then
+            if type(menuList) ~= "table" then
+                return
+            end
+
+            local groupKey = menuList.group
+            local subKey = menuList.sub
+            local groupData = customHierarchy[groupKey]
+            local soundsToDisplay = groupData and groupData[subKey]
+
+            if type(soundsToDisplay) == "table" then
+                if menuList.type == "pack_pages" then
+                    table.sort(soundsToDisplay, function(a, b) return a.name < b.name end)
+                    local pageCount = math.max(1, math.ceil(#soundsToDisplay / MAX_SOUNDS_PER_MENU_PAGE))
+                    for pageIndex = 1, pageCount do
+                        local firstEntry = ((pageIndex - 1) * MAX_SOUNDS_PER_MENU_PAGE) + 1
+                        local lastEntry = math.min(#soundsToDisplay, firstEntry + MAX_SOUNDS_PER_MENU_PAGE - 1)
+                        local pageInfo = UIDropDownMenu_CreateInfo()
+                        pageInfo.notCheckable = true
+                        pageInfo.hasArrow = true
+                        pageInfo.menuList = {group = groupKey, sub = subKey, type = "pack", page = pageIndex}
+                        pageInfo.text = string.format("Page %d (%d-%d)", pageIndex, firstEntry, lastEntry)
+                        UIDropDownMenu_AddButton(pageInfo, level)
+                        styleLastAddedButton(level, MENU_TITLE_TEXT_WIDTH, MENU_BUTTON_WIDTH)
+                    end
+                else
+                    renderPagedSoundList(level, soundsToDisplay, menuList.page or 1, subKey)
+                end
+            end
+        elseif level == 4 then
+            if type(menuList) ~= "table" or menuList.type ~= "pack" then
+                return
+            end
+
+            local groupKey = menuList.group
+            local subKey = menuList.sub
+            local groupData = customHierarchy[groupKey]
+            local soundsToDisplay = groupData and groupData[subKey]
+            if type(soundsToDisplay) == "table" then
+                renderPagedSoundList(level, soundsToDisplay, menuList.page or 1, subKey)
+            end
+        end
+    end)
+
+    local selectedValue = BLU.db and BLU.db.profile and BLU.db.profile.selectedSounds and BLU.db.profile.selectedSounds[actualEventType] or "default"
+    if selectedValue == "None" then
+        selectedValue = "default"
+        if BLU.db and BLU.db.profile and BLU.db.profile.selectedSounds then
+            BLU.db.profile.selectedSounds[actualEventType] = "default"
+        end
+    end
+
+    local selectedText = selectedValue
+    if selectedValue == "default" then
+        selectedText = "Default Sound"
+    elseif selectedValue == "random" then
+        selectedText = "Random"
+    else
+        local soundInfo = BLU.SoundRegistry and BLU.SoundRegistry.GetSound and BLU.SoundRegistry:GetSound(selectedValue)
+        if soundInfo then
+            selectedText = soundInfo.name
+        end
+    end
+    UIDropDownMenu_SetText(dropdown, selectedText)
+    dropdown.currentSound:SetText(selectedText)
+    updateSoundControlMode(selectedValue)
+
+    return container
+end
+
+function BLU.CreateEventSoundPanel(panel, eventType, eventName)
+    local content = CreateFrame("Frame", nil, panel)
+    content:SetPoint("TOPLEFT", 10, -10)
+    content:SetPoint("BOTTOMRIGHT", -10, 10)
+
+    local header = CreateFrame("Frame", nil, content)
+    header:SetHeight(44)
+    header:SetPoint("TOPLEFT", 0, 0)
+    header:SetPoint("RIGHT", 0, 0)
+
+    local icon = header:CreateTexture(nil, "ARTWORK")
+    icon:SetSize(32, 32)
+    icon:SetPoint("LEFT", 0, 0)
+    local icons = {
+        levelup = "Interface\\Icons\\Achievement_Level_100",
+        achievement = "Interface\\Icons\\Achievement_GuildPerk_MobileMailbox",
+        quest = "Interface\\Icons\\INV_Misc_Note_01",
+        reputation = "Interface\\Icons\\Achievement_Reputation_01",
+        battlepet = "Interface\\Icons\\INV_Pet_BattlePetTraining",
+        honorrank = "Interface\\Icons\\PVPCurrency-Honor-Horde",
+        renownrank = "Interface\\Icons\\UI_MajorFaction_Centaur",
+        tradingpost = "Interface\\Icons\\INV_Tradingpost_Currency",
+        delvecompanion = "Interface\\Icons\\UI_MajorFaction_Delve"
+    }
+    icon:SetTexture(icons[eventType] or "Interface\\Icons\\INV_Misc_QuestionMark")
+
+    local title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    title:SetPoint("LEFT", icon, "RIGHT", 10, 0)
+    title:SetText("|cff05dffa" .. eventName .. " Sounds|r")
+
+    local moduleSection = BLU.Modules.design:CreateSection(content, "Module Control", "Interface\\Icons\\INV_Misc_Gear_08")
+    moduleSection:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -8)
+    moduleSection:SetPoint("RIGHT", -10, 0)
+    moduleSection:SetHeight(86)
+
+    local toggleFrame = CreateFrame("Frame", nil, moduleSection.content)
+    toggleFrame:SetPoint("TOPLEFT", 0, 0)
+    toggleFrame:SetPoint("RIGHT", 0, 0)
+    toggleFrame:SetHeight(26)
+
+    local switchFrame = CreateFrame("Frame", nil, toggleFrame)
+    switchFrame:SetSize(44, 20)
+    switchFrame:SetPoint("LEFT", 0, 0)
+
+    local switchBg = switchFrame:CreateTexture(nil, "BACKGROUND")
+    switchBg:SetAllPoints()
+    switchBg:SetTexture("Interface\\Buttons\\WHITE8x8")
+
+    local toggle = CreateFrame("Button", nil, switchFrame)
+    toggle:SetSize(18, 18)
+    toggle:EnableMouse(true)
+
+    local toggleBg = toggle:CreateTexture(nil, "ARTWORK")
+    toggleBg:SetAllPoints()
+    toggleBg:SetTexture("Interface\\Buttons\\WHITE8x8")
+    toggleBg:SetVertexColor(1, 1, 1, 1)
+
+    local moduleText = toggleFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    moduleText:SetPoint("LEFT", switchFrame, "RIGHT", 10, 0)
+    moduleText:SetText("Enable " .. eventName .. " Module")
+
+    local status = toggleFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    status:SetPoint("RIGHT", toggleFrame, "RIGHT", -4, 0)
+
+    local function UpdateToggleState(enabled)
+        toggle:ClearAllPoints()
+        toggle.isEnabled = enabled
+        if enabled then
+            toggle:SetPoint("RIGHT", switchFrame, "RIGHT", -1, 0)
+            switchBg:SetVertexColor(unpack(BLU.Modules.design.Colors.Primary))
+            status:SetText("|cff00ff00ON|r")
+        else
+            toggle:SetPoint("LEFT", switchFrame, "LEFT", 1, 0)
+            switchBg:SetVertexColor(0.3, 0.3, 0.3, 1)
+            status:SetText("|cffff0000OFF|r")
+        end
+    end
+
+    local moduleToggleKey = eventType
+    local moduleLoadName = EVENT_MODULE_MAP[eventType] or eventType
+
+    local function IsModuleEnabled()
+        if not BLU.db or not BLU.db.profile then
+            return true
+        end
+
+        local modules = BLU.db.profile.modules
+        if not modules then
+            return true
+        end
+
+        if modules[moduleToggleKey] ~= nil then
+            return modules[moduleToggleKey] ~= false
+        end
+
+        if moduleLoadName ~= moduleToggleKey and modules[moduleLoadName] ~= nil then
+            return modules[moduleLoadName] ~= false
+        end
+
+        return true
+    end
+
+    local function SetModuleEnabledState(enabled)
+        BLU.db.profile.modules[moduleToggleKey] = enabled
+        if moduleLoadName ~= moduleToggleKey then
+            BLU.db.profile.modules[moduleLoadName] = enabled
+        end
+    end
+
+    local enabled = IsModuleEnabled()
+    UpdateToggleState(enabled)
+
+    toggle:SetScript("OnClick", function(self)
+        if not BLU.db or not BLU.db.profile then
+            BLU:PrintError("Database not ready. Please try again.")
+            return
+        end
+        BLU.db.profile.modules = BLU.db.profile.modules or {}
+        local currentlyEnabled = IsModuleEnabled()
+        local newState = not currentlyEnabled
+
+        SetModuleEnabledState(newState)
+        UpdateToggleState(newState)
+
+        if newState then
+            if BLU.LoadModule then
+                BLU:LoadModule("features", moduleLoadName)
+            end
+        else
+            if BLU.UnloadModule then
+                BLU:UnloadModule(moduleLoadName)
+            end
+        end
+
+        C_Timer.After(0, function()
+            if toggle and toggle:IsVisible() then
+                UpdateToggleState(IsModuleEnabled())
+            end
+        end)
+    end)
+
+    local soundSection = BLU.Modules.design:CreateSection(content, "Sound Selection", "Interface\\Icons\\INV_Misc_Bell_01")
+    soundSection:SetPoint("TOPLEFT", moduleSection, "BOTTOMLEFT", 0, -8)
+    soundSection:SetPoint("RIGHT", -10, 0)
+
+    -- Keep enough vertical room for one/two dropdown blocks plus control rows.
+    local sectionHeight = (eventType == "quest") and 252 or 152
+    soundSection:SetHeight(sectionHeight)
+
+    if eventType == "quest" then
+        CreateSoundDropdown(soundSection.content, "quest", "Quest Turn-In Sound", -5, "questturnin")
+        CreateSoundDropdown(soundSection.content, "quest", "Quest Accept Sound", -95, "questaccept")
+    else
+        CreateSoundDropdown(soundSection.content, eventType, eventName .. " Sound", -5)
+    end
+end
+
+function SoundPanel:Init()
+    BLU:PrintDebug("[SoundPanel] Sound panel module initialized")
+end
+
+if BLU.RegisterModule then
+    BLU:RegisterModule(SoundPanel, "sound_panel", "Sound Panel")
+end
+

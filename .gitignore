@@ -1,20 +1,26 @@
-# IDE files
-.vscode/
-.idea/
-
-# OS-generated files
-.DS_Store
-Thumbs.db
-
-# WoW-specific backup files
-*.lua.bak
-*.toc.bak
-
-# Release packaging
-.release/
-packages/
-*.zip
-
-# User-specific files
-.env
+wiki/
+nul
 .claude/
+.claude-code-router/
+*.bat
+*.ps1
+
+# Environment files - NEVER commit these!
+.env
+.env.local
+.env.production
+*.key
+*.pem
+
+# API keys and secrets
+config/secrets.json
+config/api_keys.json
+
+# Build artifacts
+*.zip
+*.tar.gz
+
+# User custom sound files (keep folder, ignore contents)
+/user/sounds/*.ogg
+/user/sounds/*.mp3
+/user/sounds/*.wav

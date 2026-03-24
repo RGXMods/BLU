@@ -3,7 +3,7 @@
 
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/donniedice/BLU/main/images/BLU_Logo.png" alt="BLU Logo" width="256">
+<img src="https://raw.githubusercontent.com/donniedice/BLU/main/media/Textures/logo.png" alt="BLU Logo" width="128" height="128">
 
 [![BLU Icon](https://img.shields.io/badge/BLU-Better%20Level%20Up!-05dffa?style=for-the-badge&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==&logoColor=white)](https://github.com/donniedice/BLU)
 
@@ -34,31 +34,12 @@
 [![WoWInterface Downloads](https://img.shields.io/badge/WoWInterface-Downloads-blue?style=flat-square&logo=worldofwarcraft)](https://www.wowinterface.com/downloads/info26465-BLU-BetterLevelUp.html)
 
 <!-- WoW Compatibility -->
-[![WoW Retail](https://img.shields.io/badge/WoW-The%20War%20Within-green?style=flat-square&logo=worldofwarcraft)](https://worldofwarcraft.com)
-[![WoW Cataclysm](https://img.shields.io/badge/WoW-Cataclysm%20Classic-green?style=flat-square&logo=worldofwarcraft)](https://worldofwarcraft.com)
-[![WoW Classic](https://img.shields.io/badge/WoW-Classic%20Era-green?style=flat-square&logo=worldofwarcraft)](https://worldofwarcraft.com)
+[![WoW Retail](https://img.shields.io/badge/WoW-Midnight%2012.0.1-green?style=flat-square&logo=worldofwarcraft)](https://worldofwarcraft.com)
+[![Version](https://img.shields.io/badge/Version-v6.0.0-blue?style=flat-square)](https://github.com/donniedice/BLU/releases)
 
 </div>
 
-## 🌟 Join the RGX Mods Community!
 
-<div align="center">
-
-### 💬 **RealmGX Discord - Your Gaming Home!**
-
-[![Join Discord](https://img.shields.io/badge/Join%20Our%20Discord-RealmGX%20Community-7289da?style=for-the-badge&logo=discord&logoColor=white&labelColor=5865F2)](https://discord.gg/N7kdKAHVVF)
-
-**🎮 <span style="color:#ff6b6b">R</span>ealm <span style="color:#4ecdc4">G</span>amers e<span style="color:#4ecdc4">X</span>treme - Where WoW Enthusiasts Unite!**
-
-✨ **What awaits you in our Discord:**
-- 🛠️  **Instant addon support** from the RGX Mods team
-- 🎯 **Feature requests** and direct dev communication
-- 🚀 **Beta testing** opportunities for new releases
-- 🤝 **Community of WoW players** sharing tips and experiences
-- 📢 **First to know** about new RGX Mods releases
-- 🎉 **Events, giveaways**, and community activities
-
-</div>
 
 ## 💖 Support RGX Mods
 
@@ -81,38 +62,32 @@
 
 **BLU | Better Level-Up!** transforms the repetitive sounds in World of Warcraft by letting you hear iconic sounds from your favorite games when you level-up, complete activities, gain reputation, or achieve milestones. With support for over 50 games and extensive customization options, BLU makes every achievement feel special.
 
-## 🎮 Supported Events Matrix
-
-<div align="center">
-
-| Event | Retail | Cata Classic | MoP Remix | Classic Era |
-|:------|:------:|:------------:|:---------:|:-----------:|
-| ⭐ **Level-Up** | ✅ | ✅ | ✅ | ✅ |
-| 📜 **Quest Accept** | ✅ | ✅ | ✅ | ✅ |
-| ✅ **Quest Complete** | ✅ | ✅ | ✅ | ✅ |
-| 📈 **Reputation Rank-Up** | ✅ | ✅ | ✅ | ✅ |
-| 🏆 **Achievement Earned** | ✅ | ✅ | ✅ | ❌ |
-| 🐾 **Battle Pet Level-Up** | ✅ | ❌ | ✅ | ❌ |
-| ⚔️ **Honor Level-Up** | ✅ | ❌ | ❌ | ❌ |
-| 👑 **Renown Rank-Up** | ✅ | ❌ | ❌ | ❌ |
-| 🛒 **Trading Post Complete** | ✅ | ❌ | ❌ | ❌ |
-| 🗡️ **Delve Companion Level-Up** | ✅ | ❌ | ❌ | ❌ |
-
-</div>
-
 ## ✨ Features
 
 <div align="center">
 
-| Feature | Description | Availability |
-|---------|-------------|--------------|
-| 🎵 **50+ Game Sounds** | Choose from iconic sounds from games like Final Fantasy, Zelda, Mario, and more | All Versions |
-| 🔊 **Volume Control** | Independent volume adjustment for each sound type (Off, Low, Medium, High) | All Versions |
-| ⚙️ **Smart Management** | Automatically mutes default WoW sounds when replacing | All Versions |
-| 💾 **Persistent Settings** | Your preferences are saved between sessions | All Versions |
-| 🎨 **Professional UI** | Clean options panel with intuitive controls | All Versions |
-| 🛡️ **Error-Free** | Comprehensive error handling and validation | All Versions |
-| 🔧 **Debug Mode** | Built-in debugging for troubleshooting | All Versions |
+| Feature | Description |
+|---------|-------------|
+| 🎵 **50+ Game Sounds** | Choose from iconic sounds from games like Final Fantasy, Zelda, Mario, and more |
+| 🎯 **Achievements** | Celebrate achievements with unique sounds |
+| 🐾 **Battle Pets** | Custom sounds when leveling battle pets |
+| ⚔️ **Delve Companion** | Sounds for Delve Companion level-ups |
+| 🏆 **Honor Ranks** | Audio feedback for honor rank gains |
+| ⭐ **Level-Up** | Replace default level-up sounds |
+| 👑 **Renown Ranks** | Sounds for renown reputation gains |
+| 📈 **Reputation** | Custom sounds for reputation increases |
+| 📜 **Quests** | Unique sounds for quest accept/turn-in |
+| 🛒 **Trading Post** | Sounds for Trading Post activities |
+| 🔊 **Volume Control** | 3-tier volume system for BLU sounds (low/med/high) |
+| 🎚️ **Sound Channels** | Choose which audio channel to use (Master, Sound, Music, etc.) |
+| 🎛️ **Per-Event Override** | Customize volume for specific events |
+| 📦 **Sound Pack Support** | Auto-discovers sounds from other addons — no dependencies required |
+| 🗂️ **User Custom Sounds** | Drop your own `.ogg`/`.mp3`/`.wav` files in `BLU\user\sounds\` and register them in `user_sounds.lua` |
+| 🔌 **Third-Party API** | Addon devs can register packs directly with `BLU:RegisterExternalSoundPack()` |
+| ⚙️ **Modular System** | Only load the features you need |
+| 💾 **Profile Support** | Save different configurations |
+| 🎨 **Modern UI** | Clean tabbed interface with inline sound previews |
+| 🔧 **Debug Mode** | Built-in debugging for troubleshooting |
 
 </div>
 
@@ -133,7 +108,12 @@
 | `/blu` | Open the options panel |
 | `/blu help` | Display help information |
 | `/blu debug` | Toggle debug mode on/off |
-| `/blu welcome` | Toggle welcome message on/off |
+| `/blu status` | Show addon status |
+| `/blu enable` | Enable addon |
+| `/blu disable` | Disable addon |
+| `/blu test` | Play test sound |
+| `/blu refresh` | Rebuild external and user custom sound pack registry |
+| `/blu rescan` | Rescan for newly registered media |
 
 </div>
 
@@ -177,17 +157,37 @@
 - **Quest Accept**: Custom sound when accepting quests
 - **Quest Complete**: Rewarding sounds for quest turn-ins
 - **Reputation Gains**: Audio feedback for reputation increases
-- **Battle Pet Level-Up**: Special sounds for pet leveling (Retail/MoP only)
+- **Battle Pet Level-Up**: Special sounds for pet leveling (Retail only)
 - **Trading Post**: Completion sounds for activities (Retail only)
 - **Honor Ranks**: Recognition for PvP progression (Retail only)
 - **Renown**: Sounds for renown reputation gains (Retail only)
 - **Delve Companion**: Level-up sounds for your companion (Retail only)
 
-### Volume Options:
-Each sound type has three volume levels:
-- **High**: Full volume for maximum impact
-- **Medium**: Balanced volume (default)
-- **Low**: Subtle volume for background play
+### Sound System:
+**BLU uses a 3-tier sound system:**
+
+1. **Default WoW Sounds**: Original game sounds (no volume control)
+2. **BLU Internal Sounds**: Custom sounds with 3 volume variants:
+   - **High**: Full volume for maximum impact
+   - **Medium**: Balanced volume (default)
+   - **Low**: Subtle volume for background play
+3. **External Sound Packs**: Auto-discovered from other loaded addons at startup. If `LibSharedMedia-3.0` is present, BLU also hooks into it. Devs can also register packs directly via `BLU:RegisterExternalSoundPack()`
+
+## 🎮 Compatibility
+
+<div align="center">
+
+### 🌍 **Supported WoW Versions**
+
+**BLU v6.0.0 supports World of Warcraft Retail only.**
+
+| WoW Version | Interface | Status |
+|-------------|-----------|---------|
+| Midnight 12.0.1 (Retail) | 120001 | ✅ Fully Supported |
+
+**Note**: For Classic support, please use [BLU Classic](https://github.com/donniedice/BLU_Classic).
+
+</div>
 
 ## 📥 Installation
 
@@ -198,11 +198,38 @@ Each sound type has three volume levels:
    - [GitHub](https://github.com/donniedice/BLU)
 
 2. **Extract** to your WoW AddOns directory:
-   - **Retail**: `World of Warcraft/_retail_/Interface/AddOns`
-   - **Cata Classic**: `World of Warcraft/_classic_/Interface/AddOns`
-   - **Classic Era**: `World of Warcraft/_classic_era_/Interface/AddOns`
+   - `World of Warcraft/_retail_/Interface/AddOns`
 
 3. **Restart** WoW and enable in AddOns menu
+
+## 🆕 What's New in v6.0.0
+
+### Major Updates:
+- **Complete Rewrite**: Clean modular architecture replacing the legacy monolithic structure
+- **Sound Pack Support**: BLU auto-discovers compatible audio files from other loaded addons at startup — no external libraries or manual setup required
+- **User Custom Sounds**: Drop your own `.ogg`, `.mp3`, or `.wav` files into `BLU\user\sounds\`, register them in `BLU\user\user_sounds.lua`, and they appear as a selectable "User Custom Sounds" pack in every module's dropdown
+- **Optional LSM Integration**: If `LibSharedMedia-3.0` is installed, BLU hooks into it automatically for even broader pack coverage
+- **Modern UI**: Tabbed interface with inline sound previews and per-module toggles
+- **Enhanced Volume Control**: Per-event volume overrides
+- **Better Performance**: Feature modules loaded on demand, combat-safe taint protection
+- **New Slash Commands**: `/blu refresh` and `/blu rescan` for live sound pack reloading without restarting
+
+### Sound Pack API (for addon developers):
+```lua
+-- Register your sound pack directly with BLU
+BLU:RegisterExternalSoundPack("My Pack Name", {
+    { name = "My Sound", path = "Interface\\AddOns\\MyAddon\\sounds\\mysound.ogg" },
+})
+```
+
+### Looking for Classic Support?
+<div align="center">
+
+[![BLU Classic](https://img.shields.io/badge/BLU%20Classic-Universal%20Version-FFD700?style=for-the-badge&logo=worldofwarcraft)](https://github.com/donniedice/BLU_Classic)
+
+**BLU Classic** supports ALL WoW versions (Retail, Classic Era, Cataclysm) with a single addon!
+
+</div>
 
 ## 🛠️ Configuration Tips
 
@@ -234,6 +261,18 @@ Contributions are welcome! Feel free to:
 
 <div align="center">
 
+<a href="https://github.com/donniedice/BLU">
+  <img align="center" src="https://github-readme-stats.vercel.app/api?username=donniedice&show_icons=true&include_all_commits=true&theme=radical&hide_border=true" alt="DonnieDice's GitHub Stats" />
+</a>
+
+<a href="https://github.com/donniedice/BLU">
+  <img align="center" src="https://github-readme-stats.vercel.app/api/top-langs/?username=donniedice&layout=compact&theme=radical&hide_border=true" alt="Top Languages" />
+</a>
+
+</div>
+
+<div align="center">
+
 [![GitHub Activity Graph](https://github-readme-activity-graph.vercel.app/graph?username=donniedice&theme=react-dark&hide_border=true)](https://github.com/donniedice/BLU)
 
 </div>
@@ -246,6 +285,7 @@ Contributions are welcome! Feel free to:
 
 | Metric | Value |
 |--------|-------|
+| **Total Lines of Code** | ![Lines of code](https://img.shields.io/tokei/lines/github/donniedice/BLU?style=flat-square) |
 | **Repository Size** | ![GitHub repo size](https://img.shields.io/github/repo-size/donniedice/BLU?style=flat-square) |
 | **Last Commit** | ![GitHub last commit](https://img.shields.io/github/last-commit/donniedice/BLU?style=flat-square) |
 | **Open Issues** | ![GitHub issues](https://img.shields.io/github/issues/donniedice/BLU?style=flat-square) |
@@ -273,6 +313,25 @@ Thanks to all the amazing people who have contributed to BLU! 🎉
 
 </div>
 
+---
+
+## 🏆 GitHub Achievements
+
+<div align="center">
+
+[![trophy](https://github-profile-trophy.vercel.app/?username=donniedice&theme=radical&no-frame=true&row=1&column=6)](https://github.com/donniedice/BLU)
+
+</div>
+
+---
+
+## 🔥 Streak Stats
+
+<div align="center">
+
+[![GitHub Streak](https://github-readme-streak-stats.herokuapp.com?user=donniedice&theme=radical&hide_border=true)](https://github.com/donniedice/BLU)
+
+</div>
 
 ---
 
@@ -281,10 +340,11 @@ Thanks to all the amazing people who have contributed to BLU! 🎉
 ## 🌟 **Thank you for choosing RGX Mods!** 🌟
 
 **Made with ❤️ by the RealmGX Community**
-
 **Lead Developer: [DonnieDice](https://github.com/donniedice)**
 
 *"Make every level count with sounds that matter!"*
+
+<div align="center">
 
 [![Join Discord](https://img.shields.io/badge/🎮%20Join%20RealmGX%20Discord-Realm%20Gamers%20eXtreme-7289da?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/N7kdKAHVVF)
 
@@ -292,5 +352,9 @@ Thanks to all the amazing people who have contributed to BLU! 🎉
 [![GitHub Stars](https://img.shields.io/github/stars/donniedice/BLU?style=for-the-badge&logo=github)](https://github.com/donniedice/BLU)
 
 **🎮 RGX Mods - Powered by RealmGX Community**
+
+</div>
+
+</div>
 
 </div>

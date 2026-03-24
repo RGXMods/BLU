@@ -164,6 +164,22 @@ local function ShouldIgnoreGlobal(name)
     return false
 end
 
+local function IsLikelySoundContainerName(name)
+    if type(name) ~= "string" or name == "" then
+        return false
+    end
+
+    local lower = string.lower(name)
+    return string.find(lower, "sound", 1, true)
+        or string.find(lower, "media", 1, true)
+        or string.find(lower, "pack", 1, true)
+        or string.find(lower, "audio", 1, true)
+        or string.find(lower, "voice", 1, true)
+        or string.find(lower, "music", 1, true)
+        or string.find(lower, "kitty", 1, true)
+        or string.find(lower, "dbm", 1, true)
+end
+
 local function AddAddonGlobalCandidate(candidateSet, candidateName)
     if type(candidateName) ~= "string" or candidateName == "" then
         return
@@ -462,22 +478,14 @@ function SharedMedia:ScanGenericBridgeSources()
         end
     end
 
-    -- Scan addon-owned globals derived from installed addon names.
-    if scanState.totalFound < MAX_BRIDGED_SOUNDS_PER_SCAN then
-        for _, addonRoot in ipairs(GetAddonGlobalCandidates()) do
-            scanState.sourceTableCount = 0
-            CollectPathsFromValue(addonRoot, foundPaths, {}, scanState, 0)
-
-            if scanState.totalFound >= MAX_BRIDGED_SOUNDS_PER_SCAN then
-                break
-            end
-        end
-    end
-
-    -- Final fallback: scan remaining global tables with strict ignore filters.
+    -- Conservative fallback: only scan globals whose names strongly suggest
+    -- they are media/sound pack containers. Broad _G crawling can hit WoW's
+    -- script execution limit on large addon stacks.
     if scanState.totalFound < MAX_BRIDGED_SOUNDS_PER_SCAN then
         ForEachTableEntrySafe(_G, function(globalName, globalValue)
-            if not ShouldIgnoreGlobal(globalName) and type(globalValue) == "table" then
+            if not ShouldIgnoreGlobal(globalName)
+                and IsLikelySoundContainerName(globalName)
+                and type(globalValue) == "table" then
                 scanState.sourceTableCount = 0
                 CollectPathsFromValue(globalValue, foundPaths, {}, scanState, 0)
 

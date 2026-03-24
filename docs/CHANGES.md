@@ -1,3 +1,10 @@
+## Version 6.0.1 (2026-03-24)
+
+### Patch Release
+
+- Fixed SharedMedia external sound rescans timing out with `script ran too long` by narrowing BLU's generic bridge fallback scan to likely media and sound pack containers instead of broadly crawling addon/global tables.
+- Reduced login and manual `/blu refresh` rescan errors when large addon stacks are loaded.
+
 ## Version 6.0.0 (2026-03-23)
 
 ### Complete Rewrite — Better Level-Up! v6

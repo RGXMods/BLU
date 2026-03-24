@@ -1,6 +1,7 @@
 wiki/
 nul
 .claude/
+.claude-code-router/
 *.bat
 *.ps1
 
@@ -14,3 +15,12 @@ nul
 # API keys and secrets
 config/secrets.json
 config/api_keys.json
+
+# Build artifacts
+*.zip
+*.tar.gz
+
+# User custom sound files (keep folder, ignore contents)
+/user/sounds/*.ogg
+/user/sounds/*.mp3
+/user/sounds/*.wav

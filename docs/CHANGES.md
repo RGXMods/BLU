@@ -1,103 +1,50 @@
-## Version 6.0.0-alpha.7 (2026-03-03)
+## Version 6.0.0 (2026-03-23)
 
-### Release Prep and Compatibility
+### Complete Rewrite — Better Level-Up! v6
 
-- **TOC Compatibility:**
-    - Updated `BLU.toc` interface to `120001` for WoW Midnight `12.0.1`.
-- **Versioning:**
-    - Updated addon version to `v6.0.0-alpha.7` in runtime and options metadata.
-- **SharedMedia / External Packs:**
-    - Added `LibSharedMedia-3.0` as an optional dependency.
-    - Added generic external sound bridging that scans loaded addon globals for `Interface\\AddOns\\...` audio paths and registers them in BLU.
-    - Added public bridge API `BLU:RegisterExternalSoundPack(packName, soundEntries)` for direct third-party pack integration.
-    - Improved discovery timing by rebinding and rescanning when media/addons register after startup.
-- **Runtime Stability:**
-    - Fixed forbidden-table iteration errors during external sound rescans (`core/sharedmedia.lua` guarded table walking).
-    - Added `/blu refresh` and `/blu rescan` commands to trigger a safe manual external media rebuild without restarting the game.
-- **Sounds UI and Flyouts:**
-    - Updated the Sounds tab to a multi-column layout sized for higher-density pack lists.
-    - Added spillover/paging for very large sound packs so long lists (for example 175+ entries) remain navigable.
-    - Replaced text preview rows with an inline play button and tightened flyout spacing/alignment.
-    - Enforced single-line sound labels with truncation + tooltip and removed repeated addon/pack prefixes in nested menus.
+v6.0.0 is a ground-up rewrite of BLU with a new modular architecture, a fully redesigned options UI, and expanded sound pack support.
 
----
+### Architecture
+- Rebuilt on a clean modular core (`core/`) replacing the legacy monolithic structure.
+- All feature modules (`Quest`, `LevelUp`, `Achievement`, `Reputation`, `BattlePet`, `Honor`, `Renown`, `TradingPost`, `Delve`) are independently loaded and toggleable.
+- New `combat_protection.lua` guards against taint during combat.
+- New `registry.lua` and `loader.lua` for safe dynamic module registration.
 
-## Version 6.0.0-alpha.6 (2026-03-02)
+### Sound System
+- New unified sound registry with per-module sound selection.
+- Auto-discovers compatible audio from other loaded addons at startup — no external libraries required.
+- Optional `LibSharedMedia-3.0` integration: if installed, BLU hooks in automatically for broader pack coverage.
+- Added public API `BLU:RegisterExternalSoundPack(packName, soundEntries)` for direct third-party pack registration.
+- Improved discovery timing — rebinds and rescans when media/addons register after startup.
+- Added `/blu refresh` and `/blu rescan` slash commands for safe manual media rebuild without reloading.
+- Fixed forbidden-table iteration errors during external sound rescans.
 
-### UI and Release Updates
+### User Custom Sounds
+- New "User Custom Sounds" pack: drop `.ogg`, `.mp3`, or `.wav` files into `BLU\user\sounds\` and register them in `BLU\user\user_sounds.lua`.
+- User sounds appear as a dedicated pack in the Sounds tab and are selectable in all module dropdowns.
+- Reference sounds from any path — not just the BLU folder.
+- Use `/blu refresh` or `/reload` to pick up changes without restarting the game.
 
-- **Options List Styling:**
-    - Styled the BLU entry in the Retail Settings list with the BLU icon and colorized v5-style title formatting.
-- **Options UI Polish:**
-    - Improved options panel section/header spacing and border rendering to reduce clipped frames.
-    - Added in-dropdown sound preview actions (`♪ Preview`) directly in nested sound menus.
-    - Removed `None` from sound selection options (module toggle now serves as disable control).
-- **About and Sounds Panels:**
-    - Updated About panel pack/count copy to use real BLU-loaded data instead of hardcoded `50+`.
-    - Simplified Sounds tab listing to show only:
-        - `wow default-blu`
-        - `other games-blu`
-- **Versioning:**
-    - Bumped addon version to `v6.0.0-alpha.6`.
+### Options UI
+- Fully redesigned settings panel integrated into the Retail Settings list with BLU icon and styled title.
+- New tab system: General, Sounds, Modules, About.
+- Sounds tab uses multi-column layout with spillover/paging for large pack lists (175+ entries).
+- Inline play button for sound previews; in-dropdown `♪ Preview` actions in nested sound menus.
+- Single-line sound labels with truncation and tooltip; removed repeated addon/pack prefixes.
+- Module toggle now serves as the disable control (removed redundant `None` option from dropdowns).
+- About panel displays real BLU-loaded pack/count data dynamically.
+- Improved section/header spacing and border rendering to reduce clipped frames.
 
----
+### Bug Fixes
+- Fixed Delve chat taint error.
+- Fixed burst-trigger freeze on rapid event firing.
+- Fixed syntax errors in sound and initialization modules preventing addon load.
+- Fixed `About` panel error on first open.
+- Fixed version display double-`v` in options panel.
+- Fixed BLU game sounds not correctly nested in dropdown menus.
+- Fixed SharedMedia sounds not appearing in sound selection dropdowns.
+- Fixed `Installed Packs` page error.
+- Fixed `Default Sound` option playing incorrect sounds.
 
-## Version 6.0.0-alpha.5 (2025-11-05)
-
-### 🚀 Features & Improvements
-
-- **Core:**
-    - Updated the `core/initialization.lua` file to dynamically load modules from the `modules` directory.
-    - Updated the `core/commands.lua` file to dynamically get the list of testable events from the `BLU.Modules` table.
-- **Documentation:**
-    - Updated the `gemini.md`, `CLAUDE.md`, and `agent.md` files to reflect the current state of the addon.
-    - Updated the `README.md` file to be more accurate and up-to-date.
-- **Build:**
-    - Updated the `.github/workflows/release.yml` file to upload the addon to Wago.io and WoWInterface.
-- **Other:**
-    - Updated the `BLU.toc` file to the correct version.
-    - Updated the `blu.xml` file to include the `widgets.lua` file and remove the old options files.
-
----
-
-## Version 6.0.0-alpha.4 (2025-10-31)
-
-### 🐞 Bug Fixes & Improvements
-
--   **Core:**
-    -   Fixed a syntax error in `core/internal_sounds.lua` that prevented the addon from loading correctly.
-    -   Added a safer check in `core/sounds.lua` to prevent errors if the database is not ready.
--   **UI:**
-    -   Fixed an error in the "About" panel that occurred when opening the options panel.
-    -   Fixed the version number display in the options panel to remove the double 'v'.
--   **Sounds:**
-    -   Fixed an issue where BLU game sounds were not correctly nested in the dropdown menus.
-
----
-
-## Version 6.0.0-alpha.3 (2025-10-28)
-
-### 🚀 Features & Improvements
-
--   **Sound System:**
-    -   Implemented muting/unmuting of default WoW sounds when the addon is enabled/disabled.
--   **UI:**
-    -   Added information about the BLU Classic addon to the "About" panel.
-    -   Removed the "None" option from the volume selection dropdown for BLU internal sounds.
-
----
-
-## Version 6.0.0-alpha.2 (2025-10-28)
-
-### 🐞 Bug Fixes & Improvements
-
--   **Dropdown Menus:**
-    -   Fixed an issue where SharedMedia sounds were not appearing in the sound selection dropdowns.
-    -   Fixed a bug that caused an error when the "Installed Packs" page was viewed.
-    -   Corrected the logic for the "Default Sound" option to play the intended BLU default sounds.
-    -   Fixed the nesting of the "BLU WoW Defaults" category in the dropdowns.
-    -   Fixed an issue with the volume dropdown visibility for BLU's internal sounds.
--   **Development:**
-    -   Added a `copy_to_wow.bat` script for manual testing.
-    -   Updated documentation to reflect the new manual testing process.
-    -   Refactored internal sound packs for better organization and to fix nesting issues in the options panel.
+### Compatibility
+- Updated `BLU.toc` interface version to `120001` for WoW Midnight `12.0.1`.

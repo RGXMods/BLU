@@ -443,7 +443,7 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
             UIDropDownMenu_AddButton(sep, level)
             styleLastAddedButton(level, MENU_TITLE_TEXT_WIDTH, MENU_BUTTON_WIDTH)
 
-            local sortedTopLevelKeys = {"BLU WoW Defaults", "BLU Other Game Sounds", "Shared Media"}
+            local sortedTopLevelKeys = {"BLU WoW Defaults", "BLU Other Game Sounds", "User Custom Sounds", "Shared Media"}
 
             for _, groupKey in ipairs(sortedTopLevelKeys) do
                 if hasEntries(customHierarchy[groupKey]) then
@@ -454,6 +454,8 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
                         if count <= 1 then
                             count = 0
                         end
+                    elseif groupKey == "User Custom Sounds" then
+                        count = #customHierarchy[groupKey]
                     else
                         for _, packSounds in pairs(customHierarchy[groupKey]) do
                             count = count + #packSounds
@@ -479,7 +481,7 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
                 return
             end
 
-            if groupKey == "BLU WoW Defaults" then
+            if groupKey == "BLU WoW Defaults" or groupKey == "User Custom Sounds" then
                 table.sort(subgroups, function(a, b) return a.name < b.name end)
                 for _, sound in ipairs(subgroups) do
                     addSoundSelectEntry(level, sound.id, sound.name)

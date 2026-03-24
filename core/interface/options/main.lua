@@ -109,7 +109,7 @@ function Options:CreateOptionsPanel()
     local metadataVersion = (C_AddOns and C_AddOns.GetAddOnMetadata and C_AddOns.GetAddOnMetadata("BLU", "Version"))
         or (GetAddOnMetadata and GetAddOnMetadata("BLU", "Version"))
         or BLU.version
-        or "v6.0.0-alpha.7"
+        or "v6.0.0"
     version:SetText(metadataVersion)
     version:SetTextColor(unpack(BLU.Modules.design.Colors.Primary))
 

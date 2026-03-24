@@ -106,15 +106,22 @@ function BLU.CreateSoundsPanel(panel)
         {
             id = "wow_default_blu",
             name = "wow default-blu",
-            icon = "Interface\\Icons\\Achievement_General",
+            icon = "Interface\\AddOns\\BLU\\media\\textures\\icon.tga",
             status = "|cff05dffaBLU defaults|r",
             soundCount = 0,
         },
         {
             id = "other_games_blu",
             name = "other games-blu",
-            icon = "Interface\\Icons\\INV_Misc_Bag_33",
+            icon = "Interface\\AddOns\\BLU\\media\\textures\\icon.tga",
             status = "|cff05dffaBLU game library|r",
+            soundCount = 0,
+        },
+        {
+            id = "user_custom_sounds",
+            name = "user custom sounds",
+            icon = "Interface\\Icons\\INV_Misc_Coin_18",
+            status = "|cffffaa00Edit user/user_sounds.lua to add sounds|r",
             soundCount = 0,
         },
     }
@@ -131,6 +138,9 @@ function BLU.CreateSoundsPanel(panel)
                 else
                     packRows[2].soundCount = packRows[2].soundCount + 1
                 end
+            elseif soundData and soundData.source == "UserCustom" then
+                packRows[3].soundCount = packRows[3].soundCount + 1
+                packRows[3].status = "|cff00ff00Loaded|r"
             elseif soundData and soundData.source == "SharedMedia" then
                 local packId = soundData.packId or soundData.packName or "SharedMedia"
                 local packName = soundData.packName or soundData.packId or "SharedMedia"

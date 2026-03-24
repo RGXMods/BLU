@@ -198,6 +198,7 @@ function SoundRegistry:GetSoundsGroupedForUI(targetEvent)
     local hierarchy = {
         ["BLU WoW Defaults"] = {},
         ["BLU Other Game Sounds"] = {},
+        ["User Custom Sounds"] = {},
         ["Shared Media"] = {},
     }
 
@@ -206,6 +207,8 @@ function SoundRegistry:GetSoundsGroupedForUI(targetEvent)
             local packId = soundData.packId or "Unidentified Pack"
             hierarchy["Shared Media"][packId] = hierarchy["Shared Media"][packId] or {}
             table.insert(hierarchy["Shared Media"][packId], {id = soundId, name = soundData.name})
+        elseif soundData.source == "UserCustom" then
+            table.insert(hierarchy["User Custom Sounds"], {id = soundId, name = soundData.name})
         elseif soundData.category == targetEvent or soundData.category == "all" then
             if soundData.source == "BLU" or soundData.source == "BLU Built-in" then
                 local packName = soundData.packName or "BLU Defaults"

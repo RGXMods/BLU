@@ -127,15 +127,15 @@ function Tabs:Init()
         {text = "General", create = BLU.CreateGeneralPanel, row = 1, col = 1, icon = "Interface\\Icons\\INV_Misc_Gear_08"},
         {text = "Sounds", create = BLU.CreateSoundsPanel, row = 1, col = 2, icon = "Interface\\Icons\\INV_Misc_Bell_01"},
         {text = "Level Up", eventType = "levelup", row = 1, col = 3, icon = "Interface\\Icons\\Achievement_Level_100"},
-        {text = "Achievement", eventType = "achievement", row = 1, col = 4, icon = "Interface\\Icons\\Achievement_GuildPerk_MobileMailbox"},
+        {text = "Achievement", eventType = "achievement", row = 1, col = 4, icon = "Interface\\Icons\\Achievement_General"},
         {text = "Quest", eventType = "quest", row = 1, col = 5, icon = "Interface\\Icons\\INV_Misc_Note_01"},
         {text = "Reputation", eventType = "reputation", row = 1, col = 6, icon = "Interface\\Icons\\Achievement_Reputation_01"},
         -- Row 2
         {text = "Battle Pets", eventType = "battlepet", row = 2, col = 1, icon = "Interface\\Icons\\INV_Pet_BattlePetTraining"},
         {text = "Honor", eventType = "honorrank", row = 2, col = 2, icon = "Interface\\Icons\\PVPCurrency-Honor-Horde"},
         {text = "Renown", eventType = "renownrank", row = 2, col = 3, icon = "Interface\\Icons\\UI_MajorFaction_Centaur"},
-        {text = "Trading Post", eventType = "tradingpost", row = 2, col = 4, icon = "Interface\\Icons\\INV_Tradingpost_Currency"},
-        {text = "Delve", eventType = "delvecompanion", row = 2, col = 5, icon = "Interface\\Icons\\UI_MajorFaction_Delve"},
+        {text = "Trading Post", eventType = "tradingpost", row = 2, col = 4, icon = "Interface\\Icons\\MajorFaction_TradingPost_30"},
+        {text = "Delve", eventType = "delvecompanion", row = 2, col = 5, icon = "Interface\\Icons\\Ability_Excavator"},
         {text = "About", create = BLU.CreateAboutPanel, row = 2, col = 6, icon = "Interface\\Icons\\INV_Misc_Book_09"}
     }
     

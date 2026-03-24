@@ -12,7 +12,11 @@
     <Script file="core/sharedmedia.lua"/>
 
     <Script file="core/internal_sounds.lua"/>
-    
+
+    <!-- User Custom Sounds manifest (user-editable) -->
+    <Script file="user/user_sounds.lua"/>
+    <Script file="core/usersounds.lua"/>
+
     <!-- Localization -->
     <Script file="Localization/enUS.lua"/>
     

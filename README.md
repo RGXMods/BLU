@@ -34,8 +34,8 @@
 [![WoWInterface Downloads](https://img.shields.io/badge/WoWInterface-Downloads-blue?style=flat-square&logo=worldofwarcraft)](https://www.wowinterface.com/downloads/info26465-BLU-BetterLevelUp.html)
 
 <!-- WoW Compatibility -->
-[![WoW Retail](https://img.shields.io/badge/WoW-The%20War%20Within-green?style=flat-square&logo=worldofwarcraft)](https://worldofwarcraft.com)
-[![Version](https://img.shields.io/badge/Version-v6.0.0--alpha.7-red?style=flat-square)](https://github.com/donniedice/BLU/releases)
+[![WoW Retail](https://img.shields.io/badge/WoW-Midnight%2012.0.1-green?style=flat-square&logo=worldofwarcraft)](https://worldofwarcraft.com)
+[![Version](https://img.shields.io/badge/Version-v6.0.0-blue?style=flat-square)](https://github.com/donniedice/BLU/releases)
 
 </div>
 
@@ -81,11 +81,12 @@
 | 🔊 **Volume Control** | 3-tier volume system for BLU sounds (low/med/high) |
 | 🎚️ **Sound Channels** | Choose which audio channel to use (Master, Sound, Music, etc.) |
 | 🎛️ **Per-Event Override** | Customize volume for specific events |
-| 📦 **SharedMedia Support** | Compatible with external sound packs |
+| 📦 **Sound Pack Support** | Auto-discovers sounds from other addons — no dependencies required |
+| 🗂️ **User Custom Sounds** | Drop your own `.ogg`/`.mp3`/`.wav` files in `BLU\user\sounds\` and register them in `user_sounds.lua` |
+| 🔌 **Third-Party API** | Addon devs can register packs directly with `BLU:RegisterExternalSoundPack()` |
 | ⚙️ **Modular System** | Only load the features you need |
 | 💾 **Profile Support** | Save different configurations |
-| 🎨 **Modern UI** | Clean tabbed interface with dropdown menus |
-| 🛡️ **No Dependencies** | Standalone addon with no external libraries |
+| 🎨 **Modern UI** | Clean tabbed interface with inline sound previews |
 | 🔧 **Debug Mode** | Built-in debugging for troubleshooting |
 
 </div>
@@ -111,6 +112,8 @@
 | `/blu enable` | Enable addon |
 | `/blu disable` | Disable addon |
 | `/blu test` | Play test sound |
+| `/blu refresh` | Rebuild external and user custom sound pack registry |
+| `/blu rescan` | Rescan for newly registered media |
 
 </div>
 
@@ -168,7 +171,7 @@
    - **High**: Full volume for maximum impact
    - **Medium**: Balanced volume (default)
    - **Low**: Subtle volume for background play
-3. **External Sounds**: SharedMedia/SoundPak integration (plays at full volume)
+3. **External Sound Packs**: Auto-discovered from other loaded addons at startup. If `LibSharedMedia-3.0` is present, BLU also hooks into it. Devs can also register packs directly via `BLU:RegisterExternalSoundPack()`
 
 ## 🎮 Compatibility
 
@@ -176,11 +179,11 @@
 
 ### 🌍 **Supported WoW Versions**
 
-**BLU v6.0.0-alpha.7 supports World of Warcraft Retail only.**
+**BLU v6.0.0 supports World of Warcraft Retail only.**
 
 | WoW Version | Interface | Status |
 |-------------|-----------|---------|
-| The War Within (Retail) | 110005 | ✅ Fully Supported |
+| Midnight 12.0.1 (Retail) | 120001 | ✅ Fully Supported |
 
 **Note**: For Classic support, please use [BLU Classic](https://github.com/donniedice/BLU_Classic).
 
@@ -199,16 +202,25 @@
 
 3. **Restart** WoW and enable in AddOns menu
 
-## 🆕 What's New in v6.0.0-alpha.7
+## 🆕 What's New in v6.0.0
 
 ### Major Updates:
-- **Complete Rewrite**: No external dependencies (removed Ace3)
-- **Modern UI**: Tabbed interface with dropdown menus
+- **Complete Rewrite**: Clean modular architecture replacing the legacy monolithic structure
+- **Sound Pack Support**: BLU auto-discovers compatible audio files from other loaded addons at startup — no external libraries or manual setup required
+- **User Custom Sounds**: Drop your own `.ogg`, `.mp3`, or `.wav` files into `BLU\user\sounds\`, register them in `BLU\user\user_sounds.lua`, and they appear as a selectable "User Custom Sounds" pack in every module's dropdown
+- **Optional LSM Integration**: If `LibSharedMedia-3.0` is installed, BLU hooks into it automatically for even broader pack coverage
+- **Modern UI**: Tabbed interface with inline sound previews and per-module toggles
 - **Enhanced Volume Control**: Per-event volume overrides
-- **Better Performance**: Modular loading system
-- **RGXMods Integration**: Community features and support
-- **Dynamic Module Loading**: Modules are now loaded dynamically from the modules folder.
-- **Dynamic Testable Events**: Testable events are now dynamically populated.
+- **Better Performance**: Feature modules loaded on demand, combat-safe taint protection
+- **New Slash Commands**: `/blu refresh` and `/blu rescan` for live sound pack reloading without restarting
+
+### Sound Pack API (for addon developers):
+```lua
+-- Register your sound pack directly with BLU
+BLU:RegisterExternalSoundPack("My Pack Name", {
+    { name = "My Sound", path = "Interface\\AddOns\\MyAddon\\sounds\\mysound.ogg" },
+})
+```
 
 ### Looking for Classic Support?
 <div align="center">

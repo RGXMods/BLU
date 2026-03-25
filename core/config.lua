@@ -29,6 +29,7 @@ Config.defaults = {
         enableHonorRank = true,
         enableRenownRank = true,
         enableTradingPost = true,
+        enableHousing = true,
 
         modules = {
             levelup = true,
@@ -40,6 +41,7 @@ Config.defaults = {
             renownrank = true,
             tradingpost = true,
             delvecompanion = true,
+            housing = true,
         },
         
         -- Sound selections (will be populated dynamically)
@@ -60,14 +62,23 @@ Config.defaults = {
         soundVolumes = {
             levelup = "medium",
             achievement = "medium",
+            achievementprogress = "medium",
             reputation = "medium",
             questturnin = "medium",
             questaccept = "medium",
+            questprogress = "medium",
             battlepet = "medium",
+            petcapture = "medium",
             delvecompanion = "medium",
+            delvelifelost = "medium",
+            delvelifegained = "medium",
             honorrank = "medium",
             renownrank = "medium",
             tradingpost = "medium",
+            housingxpgained = "medium",
+            housingleveledup = "medium",
+            housingrewardsreceived = "medium",
+            housingdecorcollected = "medium",
         },
         
         -- Advanced settings

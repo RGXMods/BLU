@@ -13,8 +13,7 @@
 
     <Script file="core/internal_sounds.lua"/>
 
-    <!-- User Custom Sounds manifest (user-editable) -->
-    <Script file="user/user_sounds.lua"/>
+    <!-- User Custom Sounds -->
     <Script file="core/usersounds.lua"/>
 
     <!-- Localization -->
@@ -41,6 +40,7 @@
     <Script file="modules/Renown/Renown.lua"/>
     <Script file="modules/TradingPost/TradingPost.lua"/>
     <Script file="modules/Delve/Delve.lua"/>
+    <Script file="modules/Housing/Housing.lua"/>
     
     <!-- Commands MUST load after options module is registered -->
     <Script file="core/commands.lua"/>

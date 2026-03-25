@@ -11,20 +11,34 @@ local SoundRegistry = {}
 local defaultBluSounds = {
     levelup = "level_default",
     achievement = "achievement_default",
+    achievementprogress = "achievement_progress_default",
     quest = "quest_default",
     questaccept = "quest_accept_default",
     questturnin = "quest_turnin_default",
+    questprogress = "quest_progress_default",
     reputation = "rep_default",
     battlepet = "battle_pet_level_default",
+    petcapture = "pet_capture_default",
     honorrank = "honor_default",
     renownrank = "renown_default",
     tradingpost = "post_default",
     delvecompanion = "delve_default",
+    delvelifelost = "delve_life_lost_default",
+    delvelifegained = "delve_life_gained_default",
+    housingxpgained = "housing_xp_default",
+    housingleveledup = "housing_level_default",
+    housingrewardsreceived = "housing_rewards_default",
+    housingdecorcollected = "housing_decor_default",
 }
 
 local moduleCategoryMap = {
     questaccept = "quest",
     questturnin = "quest",
+    questprogress = "quest",
+    achievementprogress = "achievement",
+    petcapture = "battlepet",
+    delvelifelost = "delvecompanion",
+    delvelifegained = "delvecompanion",
 }
 
 local CATEGORY_SOUND_COOLDOWN_SECONDS = 0.20
@@ -230,14 +244,23 @@ function SoundRegistry:GetAllPlayableSoundIds()
     local grouped = {
         self:GetSoundsGroupedForUI("levelup"),
         self:GetSoundsGroupedForUI("achievement"),
+        self:GetSoundsGroupedForUI("achievementprogress"),
         self:GetSoundsGroupedForUI("questaccept"),
         self:GetSoundsGroupedForUI("questturnin"),
+        self:GetSoundsGroupedForUI("questprogress"),
         self:GetSoundsGroupedForUI("reputation"),
         self:GetSoundsGroupedForUI("battlepet"),
+        self:GetSoundsGroupedForUI("petcapture"),
         self:GetSoundsGroupedForUI("honorrank"),
         self:GetSoundsGroupedForUI("renownrank"),
         self:GetSoundsGroupedForUI("tradingpost"),
         self:GetSoundsGroupedForUI("delvecompanion"),
+        self:GetSoundsGroupedForUI("delvelifelost"),
+        self:GetSoundsGroupedForUI("delvelifegained"),
+        self:GetSoundsGroupedForUI("housingxpgained"),
+        self:GetSoundsGroupedForUI("housingleveledup"),
+        self:GetSoundsGroupedForUI("housingrewardsreceived"),
+        self:GetSoundsGroupedForUI("housingdecorcollected"),
     }
     local soundIds = {}
     local seen = {}

@@ -39,16 +39,25 @@ function InternalSounds:RegisterSoundPacks()
         name = "BLU Defaults",
         sounds = {
             achievement_default = { name = "Default Achievement", file = "Interface\\AddOns\\BLU\\media\\sounds\\achievement_default.ogg", duration = 2.0, category = "achievement", source = "BLU", isInternal = true },
+            achievement_progress_default = { name = "Default Achievement Progress", file = "Interface\\AddOns\\BLU\\media\\sounds\\achievement_default.ogg", duration = 2.0, category = "achievementprogress", source = "BLU", isInternal = true },
             battle_pet_level_default = { name = "Default Battle Pet Level", file = "Interface\\AddOns\\BLU\\media\\sounds\\battle_pet_level_default.ogg", duration = 2.0, category = "battlepet", source = "BLU", isInternal = true },
+            pet_capture_default = { name = "Default Pet Capture", file = "Interface\\AddOns\\BLU\\media\\sounds\\quest_default.ogg", duration = 2.0, category = "petcapture", source = "BLU", isInternal = true },
             honor_default = { name = "Default Honor", file = "Interface\\AddOns\\BLU\\media\\sounds\\honor_default.ogg", duration = 2.0, category = "honorrank", source = "BLU", isInternal = true },
             level_default = { name = "Default Level Up", file = "Interface\\AddOns\\BLU\\media\\sounds\\level_default.ogg", duration = 2.0, category = "levelup", source = "BLU", isInternal = true },
             post_default = { name = "Default Trading Post", file = "Interface\\AddOns\\BLU\\media\\sounds\\post_default.ogg", duration = 2.0, category = "tradingpost", source = "BLU", isInternal = true },
             quest_accept_default = { name = "Default Quest Accept", file = "Interface\\AddOns\\BLU\\media\\sounds\\quest_accept_default.ogg", duration = 2.0, category = "questaccept", source = "BLU", isInternal = true },
             quest_default = { name = "Default Quest Complete", file = "Interface\\AddOns\\BLU\\media\\sounds\\quest_default.ogg", duration = 2.0, category = "quest", source = "BLU", isInternal = true },
+            quest_progress_default = { name = "Default Quest Progress", file = "Interface\\AddOns\\BLU\\media\\sounds\\quest_accept_default.ogg", duration = 2.0, category = "questprogress", source = "BLU", isInternal = true },
             quest_turnin_default = { name = "Default Quest Turn-In", file = "Interface\\AddOns\\BLU\\media\\sounds\\quest_default.ogg", duration = 2.0, category = "questturnin", source = "BLU", isInternal = true },
             renown_default = { name = "Default Renown", file = "Interface\\AddOns\\BLU\\media\\sounds\\renown_default.ogg", duration = 2.0, category = "renownrank", source = "BLU", isInternal = true },
             rep_default = { name = "Default Reputation", file = "Interface\\AddOns\\BLU\\media\\sounds\\rep_default.ogg", duration = 2.0, category = "reputation", source = "BLU", isInternal = true },
             delve_default = { name = "Default Delve Companion", file = "Interface\\AddOns\\BLU\\media\\sounds\\level_default.ogg", duration = 2.0, category = "delvecompanion", source = "BLU", isInternal = true },
+            delve_life_lost_default = { name = "Default Delve Life Lost", file = "Interface\\AddOns\\BLU\\media\\sounds\\honor_default.ogg", duration = 2.0, category = "delvelifelost", source = "BLU", isInternal = true },
+            delve_life_gained_default = { name = "Default Delve Life Gained", file = "Interface\\AddOns\\BLU\\media\\sounds\\level_default.ogg", duration = 2.0, category = "delvelifegained", source = "BLU", isInternal = true },
+            housing_xp_default = { name = "Default House XP", file = "Interface\\AddOns\\BLU\\media\\sounds\\rep_default.ogg", duration = 2.0, category = "housingxpgained", source = "BLU", isInternal = true },
+            housing_level_default = { name = "Default House Level", file = "Interface\\AddOns\\BLU\\media\\sounds\\level_default.ogg", duration = 2.0, category = "housingleveledup", source = "BLU", isInternal = true },
+            housing_rewards_default = { name = "Default House Rewards", file = "Interface\\AddOns\\BLU\\media\\sounds\\achievement_default.ogg", duration = 2.0, category = "housingrewardsreceived", source = "BLU", isInternal = true },
+            housing_decor_default = { name = "Default New Decor", file = "Interface\\AddOns\\BLU\\media\\sounds\\quest_default.ogg", duration = 2.0, category = "housingdecorcollected", source = "BLU", isInternal = true },
         }
     }
     if BLU.RegisterSoundPack then

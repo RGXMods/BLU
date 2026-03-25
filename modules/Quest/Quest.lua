@@ -10,6 +10,9 @@ local Quest = {}
 local QUEST_EVENT_ID_ACCEPTED = "quest_accepted"
 local QUEST_EVENT_ID_TURNED_IN = "quest_turned_in"
 local QUEST_EVENT_ID_COMPLETE = "quest_complete"
+local QUEST_EVENT_ID_PROGRESS = "quest_watch_update"
+
+Quest.progressCooldowns = Quest.progressCooldowns or {}
 
 -- Module initialization
 function Quest:Init()
@@ -17,6 +20,7 @@ function Quest:Init()
     BLU:RegisterEvent("QUEST_ACCEPTED", function(...) self:OnQuestAccepted(...) end, QUEST_EVENT_ID_ACCEPTED)
     BLU:RegisterEvent("QUEST_TURNED_IN", function(...) self:OnQuestTurnedIn(...) end, QUEST_EVENT_ID_TURNED_IN)
     BLU:RegisterEvent("QUEST_COMPLETE", function(...) self:OnQuestComplete(...) end, QUEST_EVENT_ID_COMPLETE)
+    BLU:RegisterEvent("QUEST_WATCH_UPDATE", function(...) self:OnQuestWatchUpdate(...) end, QUEST_EVENT_ID_PROGRESS)
     
     -- Track if we're at a quest giver
     self.atQuestGiver = false
@@ -29,6 +33,7 @@ function Quest:Cleanup()
     BLU:UnregisterEvent("QUEST_ACCEPTED", QUEST_EVENT_ID_ACCEPTED)
     BLU:UnregisterEvent("QUEST_TURNED_IN", QUEST_EVENT_ID_TURNED_IN)
     BLU:UnregisterEvent("QUEST_COMPLETE", QUEST_EVENT_ID_COMPLETE)
+    BLU:UnregisterEvent("QUEST_WATCH_UPDATE", QUEST_EVENT_ID_PROGRESS)
     BLU:PrintDebug("Quest module cleaned up")
 end
 
@@ -71,6 +76,27 @@ function Quest:OnQuestComplete(event)
     C_Timer.After(1, function()
         self.atQuestGiver = false
     end)
+end
+
+function Quest:OnQuestWatchUpdate(event, questID)
+    if not BLU.db or not BLU.db.profile then return end
+    if not BLU.db.profile.enabled then return end
+    if BLU.db.profile.modules and BLU.db.profile.modules.quest == false then return end
+    if type(questID) ~= "number" or questID <= 0 then return end
+
+    local now = GetTime and GetTime() or 0
+    local lastAt = self.progressCooldowns[questID]
+    if lastAt and (now - lastAt) < 0.25 then
+        return
+    end
+    self.progressCooldowns[questID] = now
+
+    BLU:PlayCategorySound("questprogress")
+
+    if BLU.db.profile.debugMode then
+        local questTitle = C_QuestLog.GetTitleForQuestID and C_QuestLog.GetTitleForQuestID(questID) or "Unknown Quest"
+        BLU:Print(string.format("Quest progress: %s", questTitle))
+    end
 end
 
 -- Register module

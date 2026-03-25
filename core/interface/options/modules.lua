@@ -13,6 +13,7 @@ local MODULE_LOAD_MAP = {
     honorrank = "honor",
     renownrank = "renown",
     delvecompanion = "delve",
+    housing = "housing",
 }
 
 function BLU.CreateModulesPanel(panel)
@@ -134,6 +135,13 @@ function BLU.CreateModulesPanel(panel)
                     name = "Delve Companion",
                     desc = "Play sounds for delve companion events",
                     icon = "Interface\\Icons\\UI_MajorFaction_Delve",
+                    default = false
+                },
+                {
+                    id = "housing",
+                    name = "Housing",
+                    desc = "Play sounds for house progression and decor collection",
+                    icon = "Interface\\Icons\\INV_11_Housing_Gold_Candelabra",
                     default = false
                 }
             }

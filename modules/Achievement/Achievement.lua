@@ -7,16 +7,19 @@ local addonName = ...
 local BLU = _G["BLU"]
 local Achievement = {}
 local ACHIEVEMENT_EVENT_ID = "achievement_earned"
+local ACHIEVEMENT_PROGRESS_EVENT_ID = "achievement_criteria_earned"
 
 -- Module initialization
 function Achievement:Init()
     BLU:RegisterEvent("ACHIEVEMENT_EARNED", function(...) self:OnAchievementEarned(...) end, ACHIEVEMENT_EVENT_ID)
+    BLU:RegisterEvent("CRITERIA_EARNED", function(...) self:OnCriteriaEarned(...) end, ACHIEVEMENT_PROGRESS_EVENT_ID)
     BLU:PrintDebug(BLU:Loc("MODULE_LOADED", "Achievement"))
 end
 
 -- Cleanup function
 function Achievement:Cleanup()
     BLU:UnregisterEvent("ACHIEVEMENT_EARNED", ACHIEVEMENT_EVENT_ID)
+    BLU:UnregisterEvent("CRITERIA_EARNED", ACHIEVEMENT_PROGRESS_EVENT_ID)
     BLU:PrintDebug(BLU:Loc("MODULE_CLEANED_UP", "Achievement"))
 end
 
@@ -33,6 +36,20 @@ function Achievement:OnAchievementEarned(event, achievementID, alreadyEarned)
     if BLU.db.profile.debugMode then
         local _, name = GetAchievementInfo(achievementID)
         BLU:Print(string.format("%s: %s", BLU:Loc("ACHIEVEMENT_EARNED"), name or BLU:Loc("UNKNOWN")))
+    end
+end
+
+function Achievement:OnCriteriaEarned(event, achievementID, description, achievementAlreadyEarnedOnAccount)
+    if not BLU.db or not BLU.db.profile then return end
+    if not BLU.db.profile.enabled then return end
+    if BLU.db.profile.modules and BLU.db.profile.modules.achievement == false then return end
+    if achievementAlreadyEarnedOnAccount then return end
+
+    BLU:PlayCategorySound("achievementprogress")
+
+    if BLU.db.profile.debugMode then
+        local _, name = GetAchievementInfo(achievementID)
+        BLU:Print(string.format("Achievement progress: %s - %s", name or BLU:Loc("UNKNOWN"), description or "Criteria earned"))
     end
 end
 

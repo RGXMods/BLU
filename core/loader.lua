@@ -42,6 +42,7 @@ local moduleRegistry = {
         renown = "renown",
         tradingpost = "tradingpost",
         delve = "delve",
+        housing = "housing",
 
         -- UI/event aliases mapped to concrete module ids.
         honorrank = "honor",
@@ -67,6 +68,7 @@ local moduleSettingKeyMap = {
     honor = "honorrank",
     renown = "renownrank",
     delve = "delvecompanion",
+    housing = "housing",
 }
 
 local moduleLegacyToggleMap = {
@@ -79,6 +81,7 @@ local moduleLegacyToggleMap = {
     renown = "enableRenownRank",
     tradingpost = "enableTradingPost",
     delve = "enableDelveCompanion",
+    housing = "enableHousing",
 }
 
 local function IsFeatureEnabled(db, moduleName)
@@ -185,6 +188,7 @@ function BLU:LoadModulesFromSettings()
             "honor",
             "renown",
             "tradingpost",
+            "housing",
         }
 
         for _, moduleName in ipairs(featureModules) do

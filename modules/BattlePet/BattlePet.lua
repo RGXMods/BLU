@@ -9,6 +9,7 @@ local BattlePet = {}
 
 local PET_EVENT_ID_LEVEL = "battlepet_level_changed"
 local PET_EVENT_ID_CHANGED = "battlepet_pet_changed"
+local PET_EVENT_ID_CAPTURED = "battlepet_captured"
 
 -- Module variables
 BattlePet.lastPetLevel = {}
@@ -20,6 +21,7 @@ function BattlePet:Init()
     -- Battle pet events
     BLU:RegisterEvent("PET_BATTLE_LEVEL_CHANGED", function(...) self:OnPetLevelChanged(...) end, PET_EVENT_ID_LEVEL)
     BLU:RegisterEvent("PET_BATTLE_PET_CHANGED", function(...) self:OnPetChanged(...) end, PET_EVENT_ID_CHANGED)
+    BLU:RegisterEvent("PET_BATTLE_CAPTURED", function(...) self:OnPetCaptured(...) end, PET_EVENT_ID_CAPTURED)
     
     -- Initialize pet levels
     self:ScanPetLevels()
@@ -31,6 +33,7 @@ end
 function BattlePet:Cleanup()
     BLU:UnregisterEvent("PET_BATTLE_LEVEL_CHANGED", PET_EVENT_ID_LEVEL)
     BLU:UnregisterEvent("PET_BATTLE_PET_CHANGED", PET_EVENT_ID_CHANGED)
+    BLU:UnregisterEvent("PET_BATTLE_CAPTURED", PET_EVENT_ID_CAPTURED)
     self.pendingLevelScan = false
     BLU:PrintDebug("BattlePet module cleaned up")
 end
@@ -86,6 +89,20 @@ function BattlePet:OnPetChanged(event)
     if not BLU.db.profile.enableBattlePet then return end
     if BLU.db.profile.modules and BLU.db.profile.modules.battlepet == false then return end
     self:SchedulePetLevelScan(0.2)
+end
+
+function BattlePet:OnPetCaptured(event, owner, petIndex)
+    if not BLU.db or not BLU.db.profile then return end
+    if not BLU.db.profile.enabled then return end
+    if not BLU.db.profile.enableBattlePet then return end
+    if BLU.db.profile.modules and BLU.db.profile.modules.battlepet == false then return end
+    if owner ~= Enum.BattlePetOwner.Ally then return end
+
+    BLU:PlayCategorySound("petcapture")
+
+    if BLU.debugMode then
+        BLU:Print(string.format("Battle pet captured! Index %s", tostring(petIndex)))
+    end
 end
 
 -- Check for pet level changes

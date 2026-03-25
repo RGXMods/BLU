@@ -15,6 +15,7 @@ local moduleSettingKeyMap = {
     honor = "honorrank",
     renown = "renownrank",
     delve = "delvecompanion",
+    housing = "housing",
 }
 
 local moduleLegacyToggleMap = {
@@ -27,6 +28,7 @@ local moduleLegacyToggleMap = {
     renown = "enableRenownRank",
     tradingpost = "enableTradingPost",
     delve = "enableDelveCompanion",
+    housing = "enableHousing",
 }
 
 function BLU:IsFeatureModuleEnabled(moduleName)
@@ -109,7 +111,8 @@ function BLU:Initialize()
         "honor",
         "renown",
         "tradingpost",
-        "delve"
+        "delve",
+        "housing"
     })
     
     BLU:PrintDebug("[Init] BLU.db after Phase 4: " .. tostring(BLU.db))

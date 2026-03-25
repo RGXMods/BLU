@@ -1,7 +1,7 @@
 --=====================================================================================
 -- BLU - usersounds.lua
 -- User Custom Sounds pack
--- Supports both explicit manifest entries and auto-detected custom sound slots.
+-- Auto-detects custom sound slots from shared AddOns folders.
 --=====================================================================================
 
 local addonName = ...
@@ -82,34 +82,6 @@ local function CollectAutoDetectedEntries()
     return entries
 end
 
-local function CollectAllEntries()
-    local combined = {}
-    local seenPaths = {}
-
-    local manifestEntries = _G["BLU_USER_SOUNDS"]
-    if type(manifestEntries) == "table" then
-        for _, entry in ipairs(manifestEntries) do
-            if type(entry) == "table" and type(entry.file) == "string" and entry.file ~= "" and not seenPaths[entry.file] then
-                combined[#combined + 1] = {
-                    name = entry.name,
-                    file = entry.file,
-                }
-                seenPaths[entry.file] = true
-            end
-        end
-    end
-
-    local autoEntries = CollectAutoDetectedEntries()
-    for _, entry in ipairs(autoEntries) do
-        if not seenPaths[entry.file] then
-            combined[#combined + 1] = entry
-            seenPaths[entry.file] = true
-        end
-    end
-
-    return combined
-end
-
 -- Clear all previously registered user custom sounds from the registry
 local function ClearRegisteredSounds()
     if not (BLU.SoundRegistry and BLU.SoundRegistry.UnregisterSound and BLU.SoundRegistry.GetAllSounds) then
@@ -127,11 +99,11 @@ local function ClearRegisteredSounds()
     end
 end
 
--- Read BLU_USER_SOUNDS and auto-detected custom sound slots, then register valid entries
+-- Read auto-detected custom sound slots and register valid entries
 function UserSounds:Register()
     ClearRegisteredSounds()
 
-    local entries = CollectAllEntries()
+    local entries = CollectAutoDetectedEntries()
     if #entries == 0 then
         BLU:PrintDebug("[UserSounds] No user custom sounds found.")
         return 0

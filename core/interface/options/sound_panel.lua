@@ -15,6 +15,15 @@ local EVENT_MODULE_MAP = {
     delvecompanion = "delve",
     questaccept = "quest",
     questturnin = "quest",
+    questprogress = "quest",
+    achievementprogress = "achievement",
+    petcapture = "battlepet",
+    delvelifelost = "delve",
+    delvelifegained = "delve",
+    housingxpgained = "housing",
+    housingleveledup = "housing",
+    housingrewardsreceived = "housing",
+    housingdecorcollected = "housing",
 }
 
 local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
@@ -606,7 +615,13 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
         honorrank = "Interface\\Icons\\PVPCurrency-Honor-Horde",
         renownrank = "Interface\\Icons\\UI_MajorFaction_Centaur",
         tradingpost = "Interface\\Icons\\INV_Tradingpost_Currency",
-        delvecompanion = "Interface\\Icons\\UI_MajorFaction_Delve"
+        delvecompanion = "Interface\\Icons\\UI_MajorFaction_Delve",
+        delvelifelost = "Interface\\Icons\\Spell_Shadow_SoulGem",
+        delvelifegained = "Interface\\Icons\\Spell_Holy_Resurrection",
+        housingxpgained = "Interface\\Icons\\INV_11_Housing_Gold_Candelabra",
+        housingleveledup = "Interface\\Icons\\INV_11_Housing_Gold_Candelabra",
+        housingrewardsreceived = "Interface\\Icons\\INV_11_Housing_Gold_Candelabra",
+        housingdecorcollected = "Interface\\Icons\\INV_11_Housing_Gold_Candelabra",
     }
     icon:SetTexture(icons[eventType] or "Interface\\Icons\\INV_Misc_QuestionMark")
 
@@ -729,16 +744,166 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     soundSection:SetPoint("TOPLEFT", moduleSection, "BOTTOMLEFT", 0, -8)
     soundSection:SetPoint("RIGHT", -10, 0)
 
-    -- Keep enough vertical room for one/two dropdown blocks plus control rows.
-    local sectionHeight = (eventType == "quest") and 252 or 152
+    -- Keep enough vertical room for event panels with one or more trigger selectors.
+    local sectionHeight = 152
+    if eventType == "quest" or eventType == "delvecompanion" then
+        sectionHeight = 342
+    elseif eventType == "achievement" or eventType == "battlepet" then
+        sectionHeight = 252
+    end
     soundSection:SetHeight(sectionHeight)
 
     if eventType == "quest" then
         CreateSoundDropdown(soundSection.content, "quest", "Quest Turn-In Sound", -5, "questturnin")
         CreateSoundDropdown(soundSection.content, "quest", "Quest Accept Sound", -95, "questaccept")
+        CreateSoundDropdown(soundSection.content, "quest", "Quest Progress Sound", -185, "questprogress")
+    elseif eventType == "delvecompanion" then
+        CreateSoundDropdown(soundSection.content, eventType, "Companion Level-Up Sound", -5)
+        CreateSoundDropdown(soundSection.content, eventType, "Delve Life Lost Sound", -95, "delvelifelost")
+        CreateSoundDropdown(soundSection.content, eventType, "Delve Life Gained Sound", -185, "delvelifegained")
+    elseif eventType == "achievement" then
+        CreateSoundDropdown(soundSection.content, eventType, eventName .. " Sound", -5)
+        CreateSoundDropdown(soundSection.content, eventType, "Achievement Progress Sound", -95, "achievementprogress")
+    elseif eventType == "battlepet" then
+        CreateSoundDropdown(soundSection.content, eventType, eventName .. " Level-Up Sound", -5)
+        CreateSoundDropdown(soundSection.content, eventType, "Pet Capture Sound", -95, "petcapture")
     else
         CreateSoundDropdown(soundSection.content, eventType, eventName .. " Sound", -5)
     end
+end
+
+function BLU.CreateHousingPanel(panel)
+    local content = CreateFrame("Frame", nil, panel)
+    content:SetPoint("TOPLEFT", 10, -10)
+    content:SetPoint("BOTTOMRIGHT", -10, 10)
+
+    local header = CreateFrame("Frame", nil, content)
+    header:SetHeight(44)
+    header:SetPoint("TOPLEFT", 0, 0)
+    header:SetPoint("RIGHT", 0, 0)
+
+    local icon = header:CreateTexture(nil, "ARTWORK")
+    icon:SetSize(32, 32)
+    icon:SetPoint("LEFT", 0, 0)
+    icon:SetTexture("Interface\\Icons\\INV_11_Housing_Gold_Candelabra")
+
+    local title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    title:SetPoint("LEFT", icon, "RIGHT", 10, 0)
+    title:SetText("|cff05dffaHousing Sounds|r")
+
+    local subtitle = header:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    subtitle:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -2)
+    subtitle:SetText("Configure sounds for house progression, rewards, and decor collection")
+
+    local moduleSection = BLU.Modules.design:CreateSection(content, "Module Control", "Interface\\Icons\\INV_Misc_Gear_08")
+    moduleSection:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -8)
+    moduleSection:SetPoint("RIGHT", -10, 0)
+    moduleSection:SetHeight(86)
+
+    local toggleFrame = CreateFrame("Frame", nil, moduleSection.content)
+    toggleFrame:SetPoint("TOPLEFT", 0, 0)
+    toggleFrame:SetPoint("RIGHT", 0, 0)
+    toggleFrame:SetHeight(26)
+
+    local switchFrame = CreateFrame("Frame", nil, toggleFrame)
+    switchFrame:SetSize(44, 20)
+    switchFrame:SetPoint("LEFT", 0, 0)
+
+    local switchBg = switchFrame:CreateTexture(nil, "BACKGROUND")
+    switchBg:SetAllPoints()
+    switchBg:SetTexture("Interface\\Buttons\\WHITE8x8")
+
+    local toggle = CreateFrame("Button", nil, switchFrame)
+    toggle:SetSize(18, 18)
+    toggle:EnableMouse(true)
+
+    local toggleBg = toggle:CreateTexture(nil, "ARTWORK")
+    toggleBg:SetAllPoints()
+    toggleBg:SetTexture("Interface\\Buttons\\WHITE8x8")
+    toggleBg:SetVertexColor(1, 1, 1, 1)
+
+    local moduleText = toggleFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    moduleText:SetPoint("LEFT", switchFrame, "RIGHT", 10, 0)
+    moduleText:SetText("Enable Housing Module")
+
+    local status = toggleFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    status:SetPoint("RIGHT", toggleFrame, "RIGHT", -4, 0)
+
+    local function UpdateToggleState(enabled)
+        toggle:ClearAllPoints()
+        toggle.isEnabled = enabled
+        if enabled then
+            toggle:SetPoint("RIGHT", switchFrame, "RIGHT", -1, 0)
+            switchBg:SetVertexColor(unpack(BLU.Modules.design.Colors.Primary))
+            status:SetText("|cff00ff00ON|r")
+        else
+            toggle:SetPoint("LEFT", switchFrame, "LEFT", 1, 0)
+            switchBg:SetVertexColor(0.3, 0.3, 0.3, 1)
+            status:SetText("|cffff0000OFF|r")
+        end
+    end
+
+    local function IsModuleEnabled()
+        if not (BLU.db and BLU.db.profile) then
+            return true
+        end
+
+        local modules = BLU.db.profile.modules
+        if modules and modules.housing ~= nil then
+            return modules.housing ~= false
+        end
+
+        if BLU.db.profile.enableHousing ~= nil then
+            return BLU.db.profile.enableHousing ~= false
+        end
+
+        return true
+    end
+
+    local function SetModuleEnabledState(enabled)
+        BLU.db.profile.modules = BLU.db.profile.modules or {}
+        BLU.db.profile.modules.housing = enabled
+        BLU.db.profile.enableHousing = enabled
+    end
+
+    UpdateToggleState(IsModuleEnabled())
+
+    toggle:SetScript("OnClick", function()
+        if not (BLU.db and BLU.db.profile) then
+            BLU:PrintError("Database not ready. Please try again.")
+            return
+        end
+
+        local newState = not IsModuleEnabled()
+        SetModuleEnabledState(newState)
+        UpdateToggleState(newState)
+
+        if newState then
+            if BLU.LoadModule then
+                BLU:LoadModule("features", "housing")
+            end
+        else
+            if BLU.UnloadModule then
+                BLU:UnloadModule("housing")
+            end
+        end
+
+        C_Timer.After(0, function()
+            if toggle and toggle:IsVisible() then
+                UpdateToggleState(IsModuleEnabled())
+            end
+        end)
+    end)
+
+    local soundSection = BLU.Modules.design:CreateSection(content, "Sound Selection", "Interface\\Icons\\INV_Misc_Bell_01")
+    soundSection:SetPoint("TOPLEFT", moduleSection, "BOTTOMLEFT", 0, -8)
+    soundSection:SetPoint("RIGHT", -10, 0)
+    soundSection:SetHeight(420)
+
+    CreateSoundDropdown(soundSection.content, "housing", "House XP Gained Sound", -5, "housingxpgained")
+    CreateSoundDropdown(soundSection.content, "housing", "House Leveled Up Sound", -95, "housingleveledup")
+    CreateSoundDropdown(soundSection.content, "housing", "House Rewards Received Sound", -185, "housingrewardsreceived")
+    CreateSoundDropdown(soundSection.content, "housing", "New Decor Collected Sound", -275, "housingdecorcollected")
 end
 
 function SoundPanel:Init()

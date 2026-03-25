@@ -9,6 +9,10 @@ local DelveCompanion = {}
 
 local DELVE_EVENT_ID_FACTION = "delve_faction_standing_changed"
 local DELVE_EVENT_ID_RENOWN = "delve_renown_changed"
+local DELVE_EVENT_ID_LIVES = "delve_lives_update"
+
+-- Spell ID for the "Lives Remaining" delve aura (added patch 11.0.0 TWW)
+local DELVE_LIVES_SPELL_ID = 458103
 
 local function IsRetailClient()
     local _, _, _, interfaceVersion = GetBuildInfo()
@@ -20,6 +24,9 @@ function DelveCompanion:Init()
     self.cachedCompanionFactionID = nil
     self.lastCompanionLevel = nil
     self.lastPlayedCompanionLevel = nil
+    self.cachedLivesRemaining = nil
+    self.lastLifeLostTime = 0
+    self.lastLifeGainedTime = 0
 
     if not IsRetailClient() then
         BLU:PrintDebug("DelveCompanion skipped (non-retail client)")
@@ -28,8 +35,10 @@ function DelveCompanion:Init()
 
     BLU:RegisterEvent("FACTION_STANDING_CHANGED", function(...) self:OnFactionStandingChanged(...) end, DELVE_EVENT_ID_FACTION)
     BLU:RegisterEvent("MAJOR_FACTION_RENOWN_LEVEL_CHANGED", function(...) self:OnMajorFactionRenownLevelChanged(...) end, DELVE_EVENT_ID_RENOWN)
+    BLU:RegisterEvent("UNIT_AURA", function(...) self:OnUnitAura(...) end, DELVE_EVENT_ID_LIVES)
 
     self:UpdateCompanionLevelCache()
+    self:UpdateLivesCache()
     BLU:PrintDebug("DelveCompanion module initialized")
 end
 
@@ -37,6 +46,7 @@ end
 function DelveCompanion:Cleanup()
     BLU:UnregisterEvent("FACTION_STANDING_CHANGED", DELVE_EVENT_ID_FACTION)
     BLU:UnregisterEvent("MAJOR_FACTION_RENOWN_LEVEL_CHANGED", DELVE_EVENT_ID_RENOWN)
+    BLU:UnregisterEvent("UNIT_AURA", DELVE_EVENT_ID_LIVES)
     BLU:PrintDebug("DelveCompanion module cleaned up")
 end
 
@@ -178,6 +188,60 @@ function DelveCompanion:OnMajorFactionRenownLevelChanged(event, factionID, newLe
     end
 
     self:CheckForLevelIncrease(factionID)
+end
+
+-- Get remaining lives from the "Lives Remaining" delve aura (spell 458103, added TWW patch 11.0.0)
+function DelveCompanion:GetDelveLivesRemaining()
+    if not C_UnitAuras or not C_UnitAuras.GetPlayerAuraBySpellID then return nil end
+    local aura = C_UnitAuras.GetPlayerAuraBySpellID(DELVE_LIVES_SPELL_ID)
+    if aura then
+        return aura.applications or 0
+    end
+    return nil
+end
+
+function DelveCompanion:UpdateLivesCache()
+    self.cachedLivesRemaining = self:GetDelveLivesRemaining()
+end
+
+-- UNIT_AURA handler — tracks the "Lives Remaining" aura stack count
+function DelveCompanion:OnUnitAura(event, unitToken)
+    if unitToken ~= "player" then return end
+    if not self:IsEnabled() then return end
+
+    local current = self:GetDelveLivesRemaining()
+    local previous = self.cachedLivesRemaining
+
+    if current == nil then
+        -- Aura gone (left delve or no aura active)
+        self.cachedLivesRemaining = nil
+        return
+    end
+
+    if previous ~= nil then
+        local now = GetTime()
+        if current < previous then
+            -- Life lost (died in delve, Brann used a revive)
+            if (now - self.lastLifeLostTime) >= 1.0 then
+                self.lastLifeLostTime = now
+                BLU:PlayCategorySound("delvelifelost")
+                if BLU.debugMode then
+                    BLU:Print(string.format("Delve life lost! %d → %d remaining", previous, current))
+                end
+            end
+        elseif current > previous then
+            -- Life gained (+1 life mechanic)
+            if (now - self.lastLifeGainedTime) >= 1.0 then
+                self.lastLifeGainedTime = now
+                BLU:PlayCategorySound("delvelifegained")
+                if BLU.debugMode then
+                    BLU:Print(string.format("Delve life gained! %d → %d remaining", previous, current))
+                end
+            end
+        end
+    end
+
+    self.cachedLivesRemaining = current
 end
 
 -- Play Delve Companion sound

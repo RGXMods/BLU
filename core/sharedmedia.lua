@@ -20,6 +20,7 @@ SharedMedia.eventsRegistered = false
 SharedMedia.pendingRescan = false
 SharedMedia.kittyHookInstalled = false
 SharedMedia._invokedDBMPackFunctions = {}
+SharedMedia.enableGenericFallbackScan = false
 
 local SHARED_MEDIA_ADDON_EVENT_ID = "sharedmedia_addon_loaded"
 local SHARED_MEDIA_LOGIN_EVENT_ID = "sharedmedia_player_login"
@@ -178,6 +179,23 @@ local function IsLikelySoundContainerName(name)
         or string.find(lower, "music", 1, true)
         or string.find(lower, "kitty", 1, true)
         or string.find(lower, "dbm", 1, true)
+end
+
+local function IsLikelyMediaProviderName(name)
+    if type(name) ~= "string" or name == "" then
+        return false
+    end
+
+    local lower = string.lower(name)
+    return string.find(lower, "sharedmedia", 1, true)
+        or string.find(lower, "sound", 1, true)
+        or string.find(lower, "audio", 1, true)
+        or string.find(lower, "voice", 1, true)
+        or string.find(lower, "music", 1, true)
+        or string.find(lower, "kitty", 1, true)
+        or string.find(lower, "dbm", 1, true)
+        or string.find(lower, "media", 1, true)
+        or string.find(lower, "pack", 1, true)
 end
 
 local function AddAddonGlobalCandidate(candidateSet, candidateName)
@@ -480,8 +498,9 @@ function SharedMedia:ScanGenericBridgeSources()
 
     -- Conservative fallback: only scan globals whose names strongly suggest
     -- they are media/sound pack containers. Broad _G crawling can hit WoW's
-    -- script execution limit on large addon stacks.
-    if scanState.totalFound < MAX_BRIDGED_SOUNDS_PER_SCAN then
+    -- script execution limit on large addon stacks, so keep this disabled
+    -- for normal startup unless explicitly enabled.
+    if self.enableGenericFallbackScan and scanState.totalFound < MAX_BRIDGED_SOUNDS_PER_SCAN then
         ForEachTableEntrySafe(_G, function(globalName, globalValue)
             if not ShouldIgnoreGlobal(globalName)
                 and IsLikelySoundContainerName(globalName)
@@ -793,16 +812,21 @@ function SharedMedia:PlayExternalSound(name)
 end
 
 function SharedMedia:OnAddonLoaded(loadedAddonName)
-    -- Rescan after addon loads so non-LSM and late registrations are captured.
+    if not IsLikelyMediaProviderName(loadedAddonName) then
+        return
+    end
+
+    -- Rescan after likely media-provider addons load so non-LSM and late
+    -- registrations are captured without hammering startup.
     self:EnsureKittyBridgeHook()
     if self:TryBindLSM() then
         BLU:PrintDebug("SharedMedia addon load update: " .. tostring(loadedAddonName))
     end
-    self:QueueRescan(0.1)
+    self:QueueRescan(0.25)
 end
 
 function SharedMedia:OnPlayerLogin()
-    self:QueueRescan(0)
+    self:QueueRescan(1.0)
 end
 
 function SharedMedia:OnMediaRegistered(event, mediatype, key)

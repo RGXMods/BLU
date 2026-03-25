@@ -106,14 +106,14 @@ function BLU.CreateSoundsPanel(panel)
         {
             id = "wow_default_blu",
             name = "wow default-blu",
-            icon = "Interface\\AddOns\\BLU\\media\\textures\\icon.tga",
+            icon = "Interface\\AddOns\\BLU\\media\\Textures\\icon.tga",
             status = "|cff05dffaBLU defaults|r",
             soundCount = 0,
         },
         {
             id = "other_games_blu",
             name = "other games-blu",
-            icon = "Interface\\AddOns\\BLU\\media\\textures\\icon.tga",
+            icon = "Interface\\AddOns\\BLU\\media\\Textures\\icon.tga",
             status = "|cff05dffaBLU game library|r",
             soundCount = 0,
         },
@@ -121,7 +121,7 @@ function BLU.CreateSoundsPanel(panel)
             id = "user_custom_sounds",
             name = "user custom sounds",
             icon = "Interface\\Icons\\INV_Misc_Coin_18",
-            status = "|cffffaa00Edit user/user_sounds.lua to add sounds|r",
+            status = "|cffffaa00Drop custom01-custom24 into BLU or BLU\\sounds|r",
             soundCount = 0,
         },
     }

@@ -1,3 +1,14 @@
+## Version 6.0.2 (2026-03-24)
+
+### Patch Release
+
+- Fixed BLU startup slowdowns by limiting expensive external media rescans during load and narrowing late addon rescans to likely media providers.
+- Fixed honor rank detection by sampling the player's actual honor level across the current event set instead of relying on a single payload path.
+- Fixed BLU chat and welcome-message icon rendering by standardizing all chat prefixes to the shipped addon icon texture.
+- Replaced the old About tab with a Housing planning tab and added Discord info directly to the options header.
+- Fixed Trading Post and Delve tab icon assignments to use working Retail icon paths.
+- Added no-edit custom sound auto-detection for `custom01` through `custom24` in the BLU root, `BLU\sounds\`, and `BLU\user\sounds\`, while keeping `user_sounds.lua` support for manual entries.
+
 ## Version 6.0.1 (2026-03-24)
 
 ### Patch Release

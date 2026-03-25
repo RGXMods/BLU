@@ -1,37 +1,26 @@
 --=====================================================================================
 -- BLU - interface/options/about.lua
--- About panel
+-- Housing panel
 --=====================================================================================
 
 local BLU = _G["BLU"]
 
-local About = {}
+local Housing = {}
 BLU.Modules = BLU.Modules or {}
-BLU.Modules["about"] = About
+BLU.Modules["about"] = Housing
+BLU.Modules["housing"] = Housing
 
-local function GetBLUSoundStats()
-    local packMap = {}
-    local soundCount = 0
-
-    if BLU.SoundRegistry and BLU.SoundRegistry.GetAllSounds then
-        local allSounds = BLU.SoundRegistry:GetAllSounds()
-        for _, soundData in pairs(allSounds) do
-            local isBluSound = soundData and (soundData.source == "BLU" or soundData.source == "BLU Built-in" or soundData.isInternal)
-            if isBluSound then
-                soundCount = soundCount + 1
-                if soundData.packId and soundData.packId ~= "" then
-                    packMap[soundData.packId] = true
-                end
-            end
-        end
+local function CreateBulletList(parent, items, startY)
+    local yOffset = startY or -10
+    for _, item in ipairs(items) do
+        local text = parent:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        text:SetPoint("TOPLEFT", 20, yOffset)
+        text:SetPoint("RIGHT", -20, 0)
+        text:SetJustifyH("LEFT")
+        text:SetText("* " .. item)
+        yOffset = yOffset - 24
     end
-
-    local packCount = 0
-    for _ in pairs(packMap) do
-        packCount = packCount + 1
-    end
-
-    return packCount, soundCount
+    return yOffset
 end
 
 function BLU.CreateAboutPanel(panel)
@@ -42,199 +31,102 @@ function BLU.CreateAboutPanel(panel)
     local content = CreateFrame("Frame", nil, scrollFrame)
     content:SetPoint("TOPLEFT", 0, 0)
     content:SetPoint("TOPRIGHT", -8, 0)
-    content:SetHeight(900)
+    content:SetHeight(980)
     scrollFrame:SetScrollChild(content)
 
     local contentBg = content:CreateTexture(nil, "BACKGROUND")
     contentBg:SetAllPoints()
     contentBg:SetColorTexture(0.05, 0.05, 0.05, 0.3)
 
-    -- BLU Logo/Header
-    local logoFrame = CreateFrame("Frame", nil, content)
-    logoFrame:SetPoint("TOPLEFT", 0, 0)
-    logoFrame:SetPoint("RIGHT", 0, 0)
-    logoFrame:SetHeight(120)
+    local hero = CreateFrame("Frame", nil, content)
+    hero:SetPoint("TOPLEFT", 0, 0)
+    hero:SetPoint("RIGHT", 0, 0)
+    hero:SetHeight(120)
 
-    -- Logo background
-    local logoBg = logoFrame:CreateTexture(nil, "BACKGROUND")
-    logoBg:SetAllPoints()
-    logoBg:SetColorTexture(0.02, 0.37, 1, 0.1)
+    local heroBg = hero:CreateTexture(nil, "BACKGROUND")
+    heroBg:SetAllPoints()
+    heroBg:SetColorTexture(0.02, 0.37, 1, 0.1)
 
-    -- Logo icon
-    local logoIcon = logoFrame:CreateTexture(nil, "ARTWORK")
-    logoIcon:SetSize(80, 80)
-    logoIcon:SetPoint("LEFT", 20, 0)
-    logoIcon:SetTexture("Interface\\AddOns\\BLU\\media\\Textures\\icon.tga")
+    local heroIcon = hero:CreateTexture(nil, "ARTWORK")
+    heroIcon:SetSize(80, 80)
+    heroIcon:SetPoint("LEFT", 20, 0)
+    heroIcon:SetTexture("Interface\\Icons\\INV_11_Housing_Gold_Candelabra")
 
-    -- Title
-    local title = logoFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalHuge")
-    title:SetPoint("LEFT", logoIcon, "RIGHT", 20, 15)
-    title:SetText("|cff05dffaBLU - Better Level Up!|r")
+    local title = hero:CreateFontString(nil, "OVERLAY", "GameFontNormalHuge")
+    title:SetPoint("LEFT", heroIcon, "RIGHT", 20, 15)
+    title:SetText("|cff05dffaHousing|r")
     title:SetFont(title:GetFont(), 24)
 
-    -- Version and tagline
-    local version = logoFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    version:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -5)
-    version:SetText("Version " .. (BLU.version or "Unknown") .. " - RGX Mods")
-    version:SetTextColor(0.8, 0.8, 0.8)
+    local subtitle = hero:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    subtitle:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -5)
+    subtitle:SetText("Future support for housing-related progression and event sound triggers")
+    subtitle:SetTextColor(0.8, 0.8, 0.8)
 
-    local bluPackCount = GetBLUSoundStats()
+    local status = hero:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    status:SetPoint("TOPLEFT", subtitle, "BOTTOMLEFT", 0, -6)
+    status:SetText("|cffffd700Planning phase|r - trigger design and event mapping in progress")
+    status:SetTextColor(0.9, 0.9, 0.9)
 
-    local tagline = logoFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    tagline:SetPoint("TOPLEFT", version, "BOTTOMLEFT", 0, -5)
-    if bluPackCount > 0 then
-        tagline:SetText(string.format("Replace default sounds with iconic audio from %d BLU packs", bluPackCount))
-    else
-        tagline:SetText("Replace default sounds with iconic audio from curated BLU packs")
-    end
+    local overviewSection = BLU.Modules.design:CreateSection(content, "Housing Direction", "Interface\\Icons\\INV_11_Housing_Gold_Candelabra")
+    overviewSection:SetPoint("TOPLEFT", hero, "BOTTOMLEFT", 0, -BLU.Modules.design.Layout.Spacing)
+    overviewSection:SetPoint("RIGHT", -BLU.Modules.design.Layout.Spacing, 0)
+    overviewSection:SetHeight(170)
 
-    -- Info Section
-    local infoSection = BLU.Modules.design:CreateSection(content, "Information", "Interface\\Icons\\INV_Misc_Book_09")
-    infoSection:SetPoint("TOPLEFT", logoFrame, "BOTTOMLEFT", 0, -BLU.Modules.design.Layout.Spacing)
-    infoSection:SetPoint("RIGHT", -BLU.Modules.design.Layout.Spacing, 0)
-    infoSection:SetHeight(180)
-
-    -- Create info grid
-    local infoGrid = CreateFrame("Frame", nil, infoSection.content)
-    infoGrid:SetPoint("TOPLEFT", 0, -10)
-    infoGrid:SetPoint("RIGHT", 0, 0)
-
-    local function CreateInfoRow(parent, icon, label, value, yOffset)
-        local row = CreateFrame("Frame", nil, parent)
-        row:SetPoint("TOPLEFT", 0, yOffset)
-        row:SetPoint("RIGHT", 0, 0)
-        row:SetHeight(24)
-
-        local iconTex = row:CreateTexture(nil, "ARTWORK")
-        iconTex:SetSize(20, 20)
-        iconTex:SetPoint("LEFT", 10, 0)
-        iconTex:SetTexture(icon)
-
-        local labelText = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        labelText:SetPoint("LEFT", iconTex, "RIGHT", 10, 0)
-        labelText:SetText(label .. ":")
-        labelText:SetWidth(100)
-        labelText:SetJustifyH("LEFT")
-
-        local valueText = row:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-        valueText:SetPoint("LEFT", labelText, "RIGHT", 10, 0)
-        valueText:SetText(value)
-
-        return row
-    end
-
-    CreateInfoRow(infoGrid, "Interface\\Icons\\INV_Misc_Note_05", "Author", "|cffffd700donniedice|r", 0)
-    CreateInfoRow(infoGrid, "Interface\\Icons\\INV_Misc_GroupNeedMore", "Discord", "|cffffd700discord.gg/rgxmods|r", -30)
-    CreateInfoRow(infoGrid, "Interface\\Icons\\INV_Misc_Web_01", "Website", "|cffffd700rgxmods.com|r", -60)
-    CreateInfoRow(infoGrid, "Interface\\Icons\\Trade_Engineering", "GitHub", "|cffffd700github.com/donniedice/BLU|r", -90)
-    CreateInfoRow(infoGrid, "Interface\\Icons\\INV_Misc_GroupLooking", "Support", "|cff00ff00/help|r for assistance", -120)
-
-    -- Features Section
-    local featuresSection = BLU.Modules.design:CreateSection(content, "Features", "Interface\\Icons\\Achievement_General")
-    featuresSection:SetPoint("TOPLEFT", infoSection, "BOTTOMLEFT", 0, -BLU.Modules.design.Layout.Spacing)
-    featuresSection:SetPoint("RIGHT", -BLU.Modules.design.Layout.Spacing, 0)
-    featuresSection:SetHeight(200)
-
-    local packFeatureText = "|cff05dffaCurated BLU Sound Packs|r - Curated sounds from your favorite games"
-    if bluPackCount > 0 then
-        packFeatureText = string.format("|cff05dffa%d BLU Sound Packs|r - Curated sounds from your favorite games", bluPackCount)
-    end
-
-    local features = {
-        packFeatureText,
-        "|cff05dffaSharedMedia Support|r - Use sounds from other addons",
-        "|cff05dffaVolume Control|r - Adjust sound levels to your preference",
-        "|cff05dffaPer-Event Customization|r - Different sounds for each event type",
-        "|cff05dffaLightweight Design|r - No external library dependencies",
-        "|cff05dffaModular Architecture|r - Load only what you need",
-        "|cff05dffaFull Retail Support|r - Optimized for the latest WoW version"
-    }
-
-    local yOffset = -10
-    for _, feature in ipairs(features) do
-        local featureText = featuresSection.content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-        featureText:SetPoint("TOPLEFT", 20, yOffset)
-        featureText:SetPoint("RIGHT", -20, 0)
-        featureText:SetText("* " .. feature)
-        featureText:SetJustifyH("LEFT")
-        yOffset = yOffset - 25
-    end
-
-    -- Classic Addon Section
-    local classicSection = BLU.Modules.design:CreateSection(content, "Classic Version", "Interface\\Icons\\INV_Misc_Book_08")
-    classicSection:SetPoint("TOPLEFT", featuresSection, "BOTTOMLEFT", 0, -BLU.Modules.design.Layout.Spacing)
-    classicSection:SetPoint("RIGHT", -BLU.Modules.design.Layout.Spacing, 0)
-    classicSection:SetHeight(80)
-
-    local classicText = classicSection.content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    classicText:SetPoint("TOPLEFT", 20, -10)
-    classicText:SetPoint("RIGHT", -20, 0)
-    classicText:SetJustifyH("LEFT")
-    classicText:SetText("The original Ace3 version with the original UI is still maintained as |cff05dffaBLU Classic RGX | Better Level-Up! (Classic)|r.")
-
-    -- Statistics Section
-    local statsSection = BLU.Modules.design:CreateSection(content, "Statistics", "Interface\\Icons\\Achievement_GuildPerk_CashFlow_Rank2")
-    statsSection:SetPoint("TOPLEFT", classicSection, "BOTTOMLEFT", 0, -BLU.Modules.design.Layout.Spacing)
-    statsSection:SetPoint("RIGHT", -BLU.Modules.design.Layout.Spacing, 0)
-    statsSection:SetHeight(120)
-
-    -- Create stats display
-    local function CreateStatDisplay(parent, x, y, label, value, color)
-        local frame = CreateFrame("Frame", nil, parent)
-        frame:SetPoint("TOPLEFT", x, y)
-        frame:SetSize(150, 60)
-
-        local bg = frame:CreateTexture(nil, "BACKGROUND")
-        bg:SetAllPoints()
-        bg:SetColorTexture(0.1, 0.1, 0.1, 0.5)
-
-        local valueText = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalHuge")
-        valueText:SetPoint("TOP", 0, -10)
-        valueText:SetText(value)
-        valueText:SetTextColor(color.r, color.g, color.b)
-
-        local labelText = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        labelText:SetPoint("TOP", valueText, "BOTTOM", 0, -5)
-        labelText:SetText(label)
-        labelText:SetTextColor(0.7, 0.7, 0.7)
-
-        return frame
-    end
-
-    -- Calculate some stats
-    local enabledModules = 0
-    if BLU.db and BLU.db.profile and BLU.db.profile.modules then
-        for _, enabled in pairs(BLU.db.profile.modules) do
-            if enabled then enabledModules = enabledModules + 1 end
-        end
-    end
-
-    CreateStatDisplay(statsSection.content, 20, -10, "Modules Active", tostring(enabledModules), {r=0.02, g=0.87, b=0.98})
-    CreateStatDisplay(statsSection.content, 180, -10, "BLU Packs", tostring(bluPackCount), {r=0.02, g=0.87, b=0.98})
-    CreateStatDisplay(statsSection.content, 340, -10, "Version", BLU.version or "?", {r=0.02, g=0.87, b=0.98})
-
-    -- Credits Section
-    local creditsSection = BLU.Modules.design:CreateSection(content, "Credits & Thanks", "Interface\\Icons\\ACHIEVEMENT_GUILDPERK_HONORABLEMENTION")
-    creditsSection:SetPoint("TOPLEFT", statsSection, "BOTTOMLEFT", 0, -BLU.Modules.design.Layout.Spacing)
-    creditsSection:SetPoint("RIGHT", -BLU.Modules.design.Layout.Spacing, 0)
-    creditsSection:SetHeight(100)
-
-    local creditsText = creditsSection.content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    creditsText:SetPoint("TOPLEFT", 20, -10)
-    creditsText:SetPoint("RIGHT", -20, 0)
-    creditsText:SetJustifyH("LEFT")
-    creditsText:SetText(
-        "All game sounds are property of their respective owners and are used under fair use.\n" ..
-        "Special thanks to the RGX Mods community for their support and feedback.\n" ..
-        "Thanks to the WoW addon development community for inspiration and guidance."
+    local overviewText = overviewSection.content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    overviewText:SetPoint("TOPLEFT", 10, -4)
+    overviewText:SetPoint("RIGHT", -10, 0)
+    overviewText:SetJustifyH("LEFT")
+    overviewText:SetText(
+        "BLU's Housing tab is reserved for the upcoming player-housing trigger set. " ..
+        "The goal is to support meaningful home-related moments with the same per-event sound customization " ..
+        "used across Level Up, Achievement, Reputation, and the other BLU modules."
     )
 
+    local triggerSection = BLU.Modules.design:CreateSection(content, "Planned Trigger Types", "Interface\\Icons\\Ability_Repair")
+    triggerSection:SetPoint("TOPLEFT", overviewSection, "BOTTOMLEFT", 0, -BLU.Modules.design.Layout.Spacing)
+    triggerSection:SetPoint("RIGHT", -BLU.Modules.design.Layout.Spacing, 0)
+    triggerSection:SetHeight(220)
+
+    CreateBulletList(triggerSection.content, {
+        "|cff05dffaPlot unlocks and first-time access|r",
+        "|cff05dffaRoom, wing, or feature upgrades|r",
+        "|cff05dffaMajor decoration, trophy, or collectible placement milestones|r",
+        "|cff05dffaVisitor, companion, or housing NPC progression moments|r",
+        "|cff05dffaProfession and utility station unlocks tied to housing|r",
+        "|cff05dffaSpecial housing achievements or prestige-style progress events|r",
+    }, -10)
+
+    local designSection = BLU.Modules.design:CreateSection(content, "Implementation Notes", "Interface\\Icons\\INV_Misc_Note_05")
+    designSection:SetPoint("TOPLEFT", triggerSection, "BOTTOMLEFT", 0, -BLU.Modules.design.Layout.Spacing)
+    designSection:SetPoint("RIGHT", -BLU.Modules.design.Layout.Spacing, 0)
+    designSection:SetHeight(180)
+
+    CreateBulletList(designSection.content, {
+        "Confirm Blizzard housing APIs and event names once they are stable on live/beta clients.",
+        "Map housing triggers into BLU's existing registry so the Sounds tab can reuse the same pack picker flow.",
+        "Keep housing event sounds isolated by trigger type instead of collapsing everything into one generic event.",
+        "Add safe fallback handling for clients/builds where housing systems are unavailable.",
+    }, -10)
+
+    local communitySection = BLU.Modules.design:CreateSection(content, "Feedback & Community", "Interface\\Icons\\INV_Misc_GroupNeedMore")
+    communitySection:SetPoint("TOPLEFT", designSection, "BOTTOMLEFT", 0, -BLU.Modules.design.Layout.Spacing)
+    communitySection:SetPoint("RIGHT", -BLU.Modules.design.Layout.Spacing, 0)
+    communitySection:SetHeight(120)
+
+    local communityText = communitySection.content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    communityText:SetPoint("TOPLEFT", 10, -4)
+    communityText:SetPoint("RIGHT", -10, 0)
+    communityText:SetJustifyH("LEFT")
+    communityText:SetText(
+        "Want a specific housing trigger in BLU? Share it in |cffffd700discord.gg/rgxmods|r " ..
+        "so we can prioritize the events that will feel best in regular play."
+    )
 end
 
-function About:Init()
-    BLU:PrintDebug("[About] About panel module initialized")
+function Housing:Init()
+    BLU:PrintDebug("[Housing] Housing panel module initialized")
 end
 
 if BLU.RegisterModule then
-    BLU:RegisterModule(About, "about", "About Panel")
+    BLU:RegisterModule(Housing, "about", "Housing Panel")
 end

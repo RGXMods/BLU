@@ -7,13 +7,17 @@
 
 local addonName, addonTable = ...
 local CORE_EVENT_ID_LOGOUT = "core_player_logout"
+local CHAT_ICON = "|TInterface\\AddOns\\BLU\\media\\Textures\\icon.tga:16:16:0:0|t"
+local CHAT_PREFIX = CHAT_ICON .. " |cff05dffa[BLU]|r"
+local CHAT_DEBUG_PREFIX = CHAT_PREFIX .. " |cff808080[DEBUG]|r"
+local CHAT_ERROR_PREFIX = CHAT_PREFIX .. " |cffff0000[ERROR]|r"
 
 print("BLU: Core loading started.")
 
 -- Create the main addon object (global)
 BLU = {
     name = addonName,
-    version = "v6.0.1",
+    version = "v6.0.2",
     author = C_AddOns.GetAddOnMetadata(addonName, "Author"),
     
     -- Core tables
@@ -30,22 +34,19 @@ BLU = {
 
 -- Print message
 function BLU:Print(message)
-    local prefix = "|TInterface\\AddOns\\BLU\\media\\Textures\\icon:16:16|t |cff05dffa[BLU]|r"
-    print(prefix .. " " .. message)
+    print(CHAT_PREFIX .. " " .. message)
 end
 
 -- Print debug message
 function BLU:PrintDebug(message)
     if self.debugMode then
-        local prefix = "|TInterface\\AddOns\\BLU\\media\\textures\\icon.tga:16:16|t|cff05dffa[BLU]|r |cff808080[DEBUG]|r"
-        print(prefix .. " " .. message)
+        print(CHAT_DEBUG_PREFIX .. " " .. message)
     end
 end
 
 -- Print error message
 function BLU:PrintError(message)
-    local prefix = "|cff05dffa[BLU]|r |cffff0000[ERROR]|r"
-    print(prefix .. " " .. message)
+    print(CHAT_ERROR_PREFIX .. " " .. message)
 end
 
 -- Create event frame (early definition)
@@ -233,22 +234,19 @@ end
 
 -- Print message
 function BLU:Print(message)
-    local prefix = "|TInterface\\AddOns\\BLU\\media\\Textures\\icon:16:16|t |cff05dffa[BLU]|r"
-    print(prefix .. " " .. message)
+    print(CHAT_PREFIX .. " " .. message)
 end
 
 -- Print debug message
 function BLU:PrintDebug(message)
     if self.debugMode then
-        local prefix = "|TInterface\\AddOns\\BLU\\media\\textures\\icon.tga:16:16|t|cff05dffa[BLU]|r |cff808080[DEBUG]|r"
-        print(prefix .. " " .. message)
+        print(CHAT_DEBUG_PREFIX .. " " .. message)
     end
 end
 
 -- Print error message
 function BLU:PrintError(message)
-    local prefix = "|cff05dffa[BLU]|r |cffff0000[ERROR]|r"
-    print(prefix .. " " .. message)
+    print(CHAT_ERROR_PREFIX .. " " .. message)
 end
 
 -- Show welcome message
@@ -264,9 +262,8 @@ function BLU:ShowWelcomeMessage()
         version = GetAddOnMetadata("BLU", "Version") or version
     end
 
-    local legacyPrefix = "|TInterface\\AddOns\\BLU\\images\\icon.tga:16:16:0:0|t - [|cff05dffaBLU|r] "
-    print(legacyPrefix .. "Welcome! Use |cff05dffa/blu|r to open the options panel or |cff05dffa/blu help|r for more commands.")
-    print(legacyPrefix .. "|cffffff00Version:|r |cff8080ff" .. version .. "|r")
+    print(CHAT_PREFIX .. " Welcome! Use |cff05dffa/blu|r to open the options panel or |cff05dffa/blu help|r for more commands.")
+    print(CHAT_PREFIX .. " |cffffff00Version:|r |cff8080ff" .. version .. "|r")
 end
 
 --=====================================================================================

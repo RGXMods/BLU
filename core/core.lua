@@ -6,8 +6,9 @@
 -- Removed redundant BluPrint function - using BLU:Print() instead
 
 local addonName, addonTable = ...
+local ADDON_PATH = "Interface\\AddOns\\" .. addonName .. "\\"
 local CORE_EVENT_ID_LOGOUT = "core_player_logout"
-local CHAT_ICON = "|TInterface\\AddOns\\BLU\\media\\Textures\\icon.tga:16:16:0:0|t"
+local CHAT_ICON = "|T" .. ADDON_PATH .. "media\\Textures\\icon.tga:16:16:0:0|t"
 local CHAT_PREFIX = CHAT_ICON .. " |cff05dffa[BLU]|r"
 local CHAT_DEBUG_PREFIX = CHAT_PREFIX .. " |cff808080[DEBUG]|r"
 local CHAT_ERROR_PREFIX = CHAT_PREFIX .. " |cffff0000[ERROR]|r"
@@ -470,9 +471,9 @@ end
 function BLU:PlayTestSound(category, volume)
     if self.Modules.registry then
         local testSounds = {
-            levelup = "Interface\\AddOns\\BLU\\media\\sounds\\level_default.ogg",
-            achievement = "Interface\\AddOns\\BLU\\media\\sounds\\achievement_default.ogg",
-            quest = "Interface\\AddOns\\BLU\\media\\sounds\\quest_default.ogg"
+            levelup = ADDON_PATH .. "media\\sounds\\level_default.ogg",
+            achievement = ADDON_PATH .. "media\\sounds\\achievement_default.ogg",
+            quest = ADDON_PATH .. "media\\sounds\\quest_default.ogg"
         }
         
         local soundFile = testSounds[category] or testSounds.levelup

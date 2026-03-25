@@ -43,40 +43,18 @@ function BLU.CreateGeneralPanel(panel)
     contentBg:SetAllPoints()
     contentBg:SetColorTexture(0.04, 0.06, 0.08, 0.35)
 
-    local hero = CreateFrame("Frame", nil, content, "BackdropTemplate")
-    hero:SetPoint("TOPLEFT", 0, 0)
-    hero:SetPoint("RIGHT", 0, 0)
-    hero:SetHeight(74)
-    hero:SetBackdrop(BLU.Modules.design.Backdrops.Solid)
-    hero:SetBackdropColor(0.06, 0.11, 0.16, 0.95)
-    hero:SetBackdropBorderColor(0.10, 0.22, 0.30, 1)
-
-    local heroIcon = hero:CreateTexture(nil, "ARTWORK")
-    heroIcon:SetSize(32, 32)
-    heroIcon:SetPoint("LEFT", 12, 0)
-    heroIcon:SetTexture("Interface\\AddOns\\BLU\\media\\Textures\\icon.tga")
-
-    local heroTitle = hero:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    heroTitle:SetPoint("TOPLEFT", heroIcon, "TOPRIGHT", 12, 2)
-    heroTitle:SetText("|cff05dffaBLU General Settings|r")
-
-    local heroSubtitle = hero:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    heroSubtitle:SetPoint("TOPLEFT", heroTitle, "BOTTOMLEFT", 0, -4)
-    heroSubtitle:SetText("Core behavior and addon controls")
-    heroSubtitle:SetTextColor(0.74, 0.82, 0.90)
-
     if not EnsureProfileDefaults() then
         local unavailable = content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-        unavailable:SetPoint("TOPLEFT", hero, "BOTTOMLEFT", 0, -12)
+        unavailable:SetPoint("TOPLEFT", 0, -12)
         unavailable:SetText("|cffff6666Database not ready. Reopen this tab in a moment.|r")
-        content:SetHeight(140)
+        content:SetHeight(60)
         return
     end
 
     local profile = BLU.db.profile
 
     local coreSection = BLU.Modules.design:CreateSection(content, "Core", "Interface\\Icons\\Achievement_General")
-    coreSection:SetPoint("TOPLEFT", hero, "BOTTOMLEFT", 0, -12)
+    coreSection:SetPoint("TOPLEFT", 0, 0)
     coreSection:SetPoint("RIGHT", 0, 0)
     coreSection:SetHeight(146)
 
@@ -123,28 +101,8 @@ function BLU.CreateGeneralPanel(panel)
     actionsSection:SetPoint("RIGHT", 0, 0)
     actionsSection:SetHeight(84)
 
-    local testBtn = BLU.Modules.design:CreateButton(actionsSection.content, "Test Level Up", 120, 24)
-    testBtn:SetPoint("TOPLEFT", 4, -8)
-    testBtn:SetScript("OnClick", function()
-        BLU:PlayCategorySound("levelup")
-    end)
-
-    local rebuildBtn = BLU.Modules.design:CreateButton(actionsSection.content, "Reload Modules", 120, 24)
-    rebuildBtn:SetPoint("LEFT", testBtn, "RIGHT", 10, 0)
-    rebuildBtn:SetScript("OnClick", function()
-        if BLU.ReloadModules then
-            BLU:ReloadModules()
-        end
-    end)
-
-    local reloadUiBtn = BLU.Modules.design:CreateButton(actionsSection.content, "Reload UI", 90, 24)
-    reloadUiBtn:SetPoint("LEFT", rebuildBtn, "RIGHT", 10, 0)
-    reloadUiBtn:SetScript("OnClick", function()
-        ReloadUI()
-    end)
-
     local resetBtn = BLU.Modules.design:CreateButton(actionsSection.content, "Reset Profile", 110, 24)
-    resetBtn:SetPoint("LEFT", reloadUiBtn, "RIGHT", 10, 0)
+    resetBtn:SetPoint("TOPLEFT", 4, -8)
     resetBtn:SetScript("OnClick", function()
         StaticPopup_Show("BLU_CONFIRM_RESET_PROFILE")
     end)
@@ -168,5 +126,5 @@ function BLU.CreateGeneralPanel(panel)
         preferredIndex = 3,
     }
 
-    content:SetHeight(470)
+    content:SetHeight(384)
 end

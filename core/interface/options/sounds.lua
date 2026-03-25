@@ -3,6 +3,8 @@
 -- Sound options panel
 --=====================================================================================
 
+local addonName = ...
+local ADDON_PATH = "Interface\\AddOns\\" .. addonName .. "\\"
 local BLU = _G["BLU"]
 
 local Sounds = {}
@@ -106,14 +108,14 @@ function BLU.CreateSoundsPanel(panel)
         {
             id = "wow_default_blu",
             name = "wow default-blu",
-            icon = "Interface\\AddOns\\BLU\\media\\Textures\\icon.tga",
+            icon = ADDON_PATH .. "media\\Textures\\icon.tga",
             status = "|cff05dffaBLU defaults|r",
             soundCount = 0,
         },
         {
             id = "other_games_blu",
             name = "other games-blu",
-            icon = "Interface\\AddOns\\BLU\\media\\Textures\\icon.tga",
+            icon = ADDON_PATH .. "media\\Textures\\icon.tga",
             status = "|cff05dffaBLU game library|r",
             soundCount = 0,
         },

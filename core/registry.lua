@@ -15,7 +15,6 @@ local defaultBluSounds = {
     quest = "quest_default",
     questaccept = "quest_accept_default",
     questturnin = "quest_turnin_default",
-    questprogress = "quest_progress_default",
     reputation = "rep_default",
     battlepet = "battle_pet_level_default",
     petcapture = "pet_capture_default",

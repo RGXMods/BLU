@@ -4,6 +4,7 @@
 --=====================================================================================
 
 local addonName = ...
+local ADDON_PATH = "Interface\\AddOns\\" .. addonName .. "\\"
 local BLU = _G["BLU"]
 
 -- Create options module
@@ -12,7 +13,7 @@ BLU.Modules = BLU.Modules or {}
 BLU.Modules["options"] = Options
 
 local OPTIONS_PANEL_NAME = "Better Level-Up!"
-local OPTIONS_LIST_STYLED_NAME = "|TInterface\\AddOns\\BLU\\media\\Textures\\icon:16:16:0:0|t |cff05dffaB|r|cffffffffetter |cff05dffaL|r|cffffffffevel-|cff05dffaU|r|cffffffffp|cff05dffa!|r"
+local OPTIONS_LIST_STYLED_NAME = "|T" .. ADDON_PATH .. "media\\Textures\\icon:16:16:0:0|t |cff05dffaB|r|cffffffffetter |cff05dffaL|r|cffffffffevel-|cff05dffaU|r|cffffffffp|cff05dffa!|r"
 
 function Options:ResolveOptionsCategoryID()
     if type(BLU.OptionsCategoryID) == "number" then
@@ -93,7 +94,7 @@ function Options:CreateOptionsPanel()
     local logo = header:CreateTexture(nil, "ARTWORK")
     logo:SetSize(40, 40)
     logo:SetPoint("LEFT", 10, 0)
-    logo:SetTexture("Interface\\AddOns\\BLU\\media\\Textures\\icon.tga")
+    logo:SetTexture(ADDON_PATH .. "media\\Textures\\icon.tga")
 
     local title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     title:SetPoint("LEFT", logo, "RIGHT", 10, 5)
@@ -110,7 +111,7 @@ function Options:CreateOptionsPanel()
     discord:SetTextColor(0.85, 0.85, 0.85)
 
     local version = header:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    version:SetPoint("TOPRIGHT", -15, -15)
+    version:SetPoint("TOPRIGHT", -30, -15)
     local metadataVersion = (C_AddOns and C_AddOns.GetAddOnMetadata and C_AddOns.GetAddOnMetadata("BLU", "Version"))
         or (GetAddOnMetadata and GetAddOnMetadata("BLU", "Version"))
         or BLU.version

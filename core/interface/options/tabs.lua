@@ -123,20 +123,20 @@ function Tabs:Init()
     
     -- Tab configuration - defined here so panel creation functions are available
     BLU.OptionsTabs = {
-        -- Row 1
-        {text = "General", create = BLU.CreateGeneralPanel, row = 1, col = 1, icon = "Interface\\Icons\\INV_Misc_Gear_08"},
-        {text = "Sounds", create = BLU.CreateSoundsPanel, row = 1, col = 2, icon = "Interface\\Icons\\INV_Misc_Bell_01"},
-        {text = "Level Up", eventType = "levelup", row = 1, col = 3, icon = "Interface\\Icons\\Achievement_Level_100"},
-        {text = "Achievement", eventType = "achievement", row = 1, col = 4, icon = "Interface\\Icons\\Achievement_General"},
-        {text = "Quest", eventType = "quest", row = 1, col = 5, icon = "Interface\\Icons\\INV_Misc_Note_01"},
-        {text = "Reputation", eventType = "reputation", row = 1, col = 6, icon = "Interface\\Icons\\Achievement_Reputation_01"},
-        -- Row 2
-        {text = "Battle Pets", eventType = "battlepet", row = 2, col = 1, icon = "Interface\\Icons\\INV_Pet_BattlePetTraining"},
-        {text = "Honor", eventType = "honorrank", row = 2, col = 2, icon = "Interface\\Icons\\PVPCurrency-Honor-Horde"},
-        {text = "Renown", eventType = "renownrank", row = 2, col = 3, icon = "Interface\\Icons\\UI_MajorFaction_Centaur"},
-        {text = "Trading Post", eventType = "tradingpost", row = 2, col = 4, icon = "Interface\\Icons\\INV_Misc_Coin_02"},
-        {text = "Delve", create = BLU.CreateDelvePanel, row = 2, col = 5, icon = "Interface\\Icons\\Ability_DungeonFinder"},
-        {text = "Housing", create = BLU.CreateHousingPanel, row = 2, col = 6, icon = "Interface\\Icons\\Achievement_Guild_FullWorkshop"}
+        -- Row 1: General first, then A-Z
+        {text = "General",      create = BLU.CreateGeneralPanel, row = 1, col = 1, icon = "Interface\\Icons\\INV_Misc_Gear_08"},
+        {text = "Achievement",  eventType = "achievement",       row = 1, col = 2, icon = "Interface\\Icons\\Achievement_General"},
+        {text = "Battle Pets",  eventType = "battlepet",         row = 1, col = 3, icon = "Interface\\Icons\\INV_Pet_BattlePetTraining"},
+        {text = "Delve",        eventType = "delvecompanion",    row = 1, col = 4, icon = "Interface\\Icons\\Achievement_Zone_Deepholm"},
+        {text = "Honor",        eventType = "honorrank",         row = 1, col = 5, icon = "Interface\\Icons\\PVPCurrency-Honor-Horde"},
+        {text = "Housing",      create = BLU.CreateHousingPanel, row = 1, col = 6, icon = "Interface\\Icons\\Trade_Blacksmithing"},
+        -- Row 2: A-Z continued, Sounds last
+        {text = "Level Up",     eventType = "levelup",           row = 2, col = 1, icon = "Interface\\Icons\\Achievement_Level_100"},
+        {text = "Quest",        eventType = "quest",             row = 2, col = 2, icon = "Interface\\Icons\\INV_Misc_Note_01"},
+        {text = "Renown",       eventType = "renownrank",        row = 2, col = 3, icon = "Interface\\Icons\\UI_MajorFaction_Centaur"},
+        {text = "Reputation",   eventType = "reputation",        row = 2, col = 4, icon = "Interface\\Icons\\Achievement_Reputation_01"},
+        {text = "Trading Post", eventType = "tradingpost",       row = 2, col = 5, icon = "Interface\\Icons\\INV_Misc_Coin_02"},
+        {text = "Sounds",       create = BLU.CreateSoundsPanel,  row = 2, col = 6, icon = "Interface\\Icons\\INV_Misc_Bell_01"},
     }
     
     BLU:PrintDebug("[Tabs] Registered " .. #BLU.OptionsTabs .. " tabs")

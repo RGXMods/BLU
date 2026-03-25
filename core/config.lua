@@ -57,7 +57,9 @@ Config.defaults = {
         tradingPostSound = "None",
         
         tradingPostVolume = 0.8,
-        selectedSounds = {},
+        selectedSounds = {
+            questprogress = "None",
+        },
         
         soundVolumes = {
             levelup = "medium",

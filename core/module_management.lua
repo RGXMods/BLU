@@ -5,6 +5,7 @@
 --=====================================================================================
 
 local addonName = ...
+local ADDON_PATH = "Interface\\AddOns\\" .. addonName .. "\\"
 local BLU = _G["BLU"]
 
 -- Enable a specific module
@@ -171,15 +172,15 @@ function BLU:PlayTestSound(soundType, volume)
     
     -- Get a sample sound for the type
     local testSounds = {
-        levelup = "Interface\\AddOns\\BLU\\media\\sounds\\final_fantasy.ogg",
-        achievement = "Interface\\AddOns\\BLU\\media\\sounds\\pokemon.ogg",
-        quest = "Interface\\AddOns\\BLU\\media\\sounds\\quest_default.ogg",
-        reputation = "Interface\\AddOns\\BLU\\media\\sounds\\rep_default.ogg",
-        honor = "Interface\\AddOns\\BLU\\media\\sounds\\honor_default.ogg",
-        battlepet = "Interface\\AddOns\\BLU\\media\\sounds\\battle_pet_level_default.ogg",
-        renown = "Interface\\AddOns\\BLU\\media\\sounds\\renown_default.ogg",
-        tradingpost = "Interface\\AddOns\\BLU\\media\\sounds\\post_default.ogg",
-        delve = "Interface\\AddOns\\BLU\\media\\sounds\\quest_default.ogg"
+        levelup = ADDON_PATH .. "media\\sounds\\final_fantasy.ogg",
+        achievement = ADDON_PATH .. "media\\sounds\\pokemon.ogg",
+        quest = ADDON_PATH .. "media\\sounds\\quest_default.ogg",
+        reputation = ADDON_PATH .. "media\\sounds\\rep_default.ogg",
+        honor = ADDON_PATH .. "media\\sounds\\honor_default.ogg",
+        battlepet = ADDON_PATH .. "media\\sounds\\battle_pet_level_default.ogg",
+        renown = ADDON_PATH .. "media\\sounds\\renown_default.ogg",
+        tradingpost = ADDON_PATH .. "media\\sounds\\post_default.ogg",
+        delve = ADDON_PATH .. "media\\sounds\\quest_default.ogg"
     }
     
     local soundFile = testSounds[soundType]
@@ -201,15 +202,15 @@ function BLU:PlayDefaultSound(eventType, volume)
     volume = volume or (self.db and self.db.volume or 100)
     
     local defaultSounds = {
-        levelup = "Interface\\AddOns\\BLU\\media\\sounds\\level_default.ogg",
-        achievement = "Interface\\AddOns\\BLU\\media\\sounds\\achievement_default.ogg",
-        quest = "Interface\\AddOns\\BLU\\media\\sounds\\quest_default.ogg",
-        quest_accept = "Interface\\AddOns\\BLU\\media\\sounds\\quest_accept_default.ogg",
-        reputation = "Interface\\AddOns\\BLU\\media\\sounds\\rep_default.ogg",
-        honor = "Interface\\AddOns\\BLU\\media\\sounds\\honor_default.ogg",
-        battlepet = "Interface\\AddOns\\BLU\\media\\sounds\\battle_pet_level_default.ogg",
-        renown = "Interface\\AddOns\\BLU\\media\\sounds\\renown_default.ogg",
-        tradingpost = "Interface\\AddOns\\BLU\\media\\sounds\\post_default.ogg"
+        levelup = ADDON_PATH .. "media\\sounds\\level_default.ogg",
+        achievement = ADDON_PATH .. "media\\sounds\\achievement_default.ogg",
+        quest = ADDON_PATH .. "media\\sounds\\quest_default.ogg",
+        quest_accept = ADDON_PATH .. "media\\sounds\\quest_accept_default.ogg",
+        reputation = ADDON_PATH .. "media\\sounds\\rep_default.ogg",
+        honor = ADDON_PATH .. "media\\sounds\\honor_default.ogg",
+        battlepet = ADDON_PATH .. "media\\sounds\\battle_pet_level_default.ogg",
+        renown = ADDON_PATH .. "media\\sounds\\renown_default.ogg",
+        tradingpost = ADDON_PATH .. "media\\sounds\\post_default.ogg"
     }
     
     local soundFile = defaultSounds[eventType]

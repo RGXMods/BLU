@@ -16,9 +16,8 @@ local PACK_NAME = "User Custom Sounds"
 local AUTO_SLOT_COUNT = 24
 local AUTO_SLOT_EXTENSIONS = {"ogg", "mp3", "wav"}
 local AUTO_SLOT_PATHS = {
-    "Interface\\AddOns\\BLU\\custom%02d.%s",
-    "Interface\\AddOns\\BLU\\sounds\\custom%02d.%s",
-    "Interface\\AddOns\\BLU\\user\\sounds\\custom%02d.%s",
+    "Interface\\AddOns\\custom%02d.%s",
+    "Interface\\AddOns\\sounds\\custom%02d.%s",
 }
 
 local function BuildDisplayNameFromPath(filePath, fallbackName)

@@ -226,13 +226,64 @@ function SoundRegistry:GetSoundsGroupedForUI(targetEvent)
     return hierarchy
 end
 
+function SoundRegistry:GetAllPlayableSoundIds()
+    local grouped = {
+        self:GetSoundsGroupedForUI("levelup"),
+        self:GetSoundsGroupedForUI("achievement"),
+        self:GetSoundsGroupedForUI("questaccept"),
+        self:GetSoundsGroupedForUI("questturnin"),
+        self:GetSoundsGroupedForUI("reputation"),
+        self:GetSoundsGroupedForUI("battlepet"),
+        self:GetSoundsGroupedForUI("honorrank"),
+        self:GetSoundsGroupedForUI("renownrank"),
+        self:GetSoundsGroupedForUI("tradingpost"),
+        self:GetSoundsGroupedForUI("delvecompanion"),
+    }
+    local soundIds = {}
+    local seen = {}
+
+    local function addSoundId(soundId)
+        if soundId and not seen[soundId] then
+            seen[soundId] = true
+            table.insert(soundIds, soundId)
+        end
+    end
+
+    local function walk(node)
+        if type(node) ~= "table" then
+            return
+        end
+
+        if node.id then
+            addSoundId(node.id)
+            return
+        end
+
+        for _, value in pairs(node) do
+            walk(value)
+        end
+    end
+
+    for _, group in ipairs(grouped) do
+        walk(group)
+    end
+
+    for _, defaultSoundId in pairs(defaultBluSounds) do
+        addSoundId(defaultSoundId)
+    end
+
+    return soundIds
+end
+
 -- Play a sound
-function SoundRegistry:PlaySound(soundId, volume)
+function SoundRegistry:PlaySound(soundId, volume, options)
     local sound = self.sounds[soundId]
     if not sound then
         BLU:PrintDebug("Sound not found: " .. tostring(soundId))
         return false
     end
+
+    options = options or {}
     
     -- Get volume settings from profile
     local profileVolume = 1.0
@@ -268,9 +319,9 @@ function SoundRegistry:PlaySound(soundId, volume)
         -- Check if this is a BLU internal sound (should have volume variants)
         if sound.source == "BLU" or sound.isInternal then
             -- BLU internal sounds SHOULD have _low, _med, _high variants
-            local category = sound.category
-            local volumeSetting = "medium"
-            if BLU.db and BLU.db.profile and BLU.db.profile.soundVolumes and BLU.db.profile.soundVolumes[category] then
+            local category = options.categoryOverride or sound.category
+            local volumeSetting = options.volumeSettingOverride or "medium"
+            if not options.volumeSettingOverride and BLU.db and BLU.db.profile and BLU.db.profile.soundVolumes and BLU.db.profile.soundVolumes[category] then
                 volumeSetting = BLU.db.profile.soundVolumes[category]
             end
 
@@ -393,15 +444,14 @@ function SoundRegistry:PlayCategorySound(category, forceSound)
     end
 
     if selectedSound == "random" then
-        local sounds = self:GetSoundsByCategory(category)
-        local soundIds = {}
-        for id, _ in pairs(sounds) do
-            table.insert(soundIds, id)
-        end
+        local soundIds = self:GetAllPlayableSoundIds()
         if #soundIds > 0 then
             local randomIndex = math.random(1, #soundIds)
             local randomSoundId = soundIds[randomIndex]
-            local played = self:PlaySound(randomSoundId)
+            local played = self:PlaySound(randomSoundId, nil, {
+                categoryOverride = category,
+                volumeSettingOverride = "medium",
+            })
             if played then
                 self.lastCategoryPlayAt[category] = now
                 self.lastAnyPlayAt = now

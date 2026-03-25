@@ -121,7 +121,7 @@ function BLU.CreateSoundsPanel(panel)
             id = "user_custom_sounds",
             name = "user custom sounds",
             icon = "Interface\\Icons\\INV_Misc_Coin_18",
-            status = "|cffffaa00Drop custom01-custom24 into BLU or BLU\\sounds|r",
+            status = "|cffffaa00Drop custom01-custom24 into AddOns or AddOns\\sounds|r",
             soundCount = 0,
         },
     }

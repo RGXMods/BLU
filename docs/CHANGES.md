@@ -1,3 +1,11 @@
+## Version 6.0.3 (2026-03-24)
+
+### Patch Release
+
+- Fixed `Random` sound selection to pull from all registered playable sounds instead of only the current event pool.
+- Forced BLU internal sounds chosen by `Random` to use the medium variant by default when low/medium/high versions exist.
+- Corrected no-edit custom sound auto-detection to look in `Interface\AddOns\` and `Interface\AddOns\sounds\`.
+
 ## Version 6.0.2 (2026-03-24)
 
 ### Patch Release
@@ -7,7 +15,7 @@
 - Fixed BLU chat and welcome-message icon rendering by standardizing all chat prefixes to the shipped addon icon texture.
 - Replaced the old About tab with a Housing planning tab and added Discord info directly to the options header.
 - Fixed Trading Post and Delve tab icon assignments to use working Retail icon paths.
-- Added no-edit custom sound auto-detection for `custom01` through `custom24` in the BLU root, `BLU\sounds\`, and `BLU\user\sounds\`, while keeping `user_sounds.lua` support for manual entries.
+- Added no-edit custom sound auto-detection for `custom01` through `custom24` in `Interface\AddOns\` and `Interface\AddOns\sounds\`, while keeping `user_sounds.lua` support for manual entries.
 
 ## Version 6.0.1 (2026-03-24)
 

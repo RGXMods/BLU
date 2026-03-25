@@ -327,7 +327,7 @@ function SoundRegistry:PlaySound(soundId, volume, options)
     end
     
     -- Get sound channel from profile
-    local channel = "Master"
+    local channel = "SFX"
     
     -- Play the sound based on type
     local willPlay, handle

@@ -134,9 +134,9 @@ function Tabs:Init()
         {text = "Battle Pets", eventType = "battlepet", row = 2, col = 1, icon = "Interface\\Icons\\INV_Pet_BattlePetTraining"},
         {text = "Honor", eventType = "honorrank", row = 2, col = 2, icon = "Interface\\Icons\\PVPCurrency-Honor-Horde"},
         {text = "Renown", eventType = "renownrank", row = 2, col = 3, icon = "Interface\\Icons\\UI_MajorFaction_Centaur"},
-        {text = "Trading Post", eventType = "tradingpost", row = 2, col = 4, icon = "Interface\\Icons\\INV_Tradingpost_Currency"},
-        {text = "Delve", eventType = "delvecompanion", row = 2, col = 5, icon = "Interface\\Icons\\UI_MajorFaction_Delve"},
-        {text = "Housing", create = BLU.CreateHousingPanel, row = 2, col = 6, icon = "Interface\\Icons\\INV_11_Housing_Gold_Candelabra"}
+        {text = "Trading Post", eventType = "tradingpost", row = 2, col = 4, icon = "Interface\\Icons\\INV_Misc_Coin_02"},
+        {text = "Delve", create = BLU.CreateDelvePanel, row = 2, col = 5, icon = "Interface\\Icons\\Ability_DungeonFinder"},
+        {text = "Housing", create = BLU.CreateHousingPanel, row = 2, col = 6, icon = "Interface\\Icons\\Achievement_Guild_FullWorkshop"}
     }
     
     BLU:PrintDebug("[Tabs] Registered " .. #BLU.OptionsTabs .. " tabs")

@@ -1,3 +1,15 @@
+## Version 6.1.1 (2026-03-25)
+
+### Patch Release
+
+#### UI Fixes
+- Added scroll frame to Housing tab — 4 sound pickers now scroll within the panel instead of overflowing.
+- Added scroll frame to Delve tab — now shows all 3 Delve triggers (Companion Level Up, Life Lost, Life Gained) in a single scrollable panel.
+- Fixed tab icons for Trading Post, Delve, and Housing — previous icon paths did not exist in the WoW client.
+- Fixed `PlaySoundFile` audio channel from `"Master"` to `"SFX"` — resolves sounds not playing for some users.
+
+---
+
 ## Version 6.1.0 (2026-03-24)
 
 ### Minor Release

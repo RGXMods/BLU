@@ -65,11 +65,11 @@ function HonorRank:EvaluateHonorLevelChange(triggerName)
     if newLevel > oldLevel then
         self:PlayHonorSound()
 
-        if BLU.debugMode then
-            BLU:Print(string.format("Honor level increased: %d -> %d (%s)", oldLevel, newLevel, tostring(triggerName or "unknown")))
+        if BLU.db and BLU.db.profile and BLU.db.profile.debugMode then
+            BLU:Print(BLU:Loc("DEBUG_HONOR_LEVEL_INCREASED", oldLevel, newLevel, tostring(triggerName or "unknown")))
         end
-    elseif BLU.debugMode and newLevel < oldLevel then
-        BLU:Print(string.format("Honor level resynced downward: %d -> %d (%s)", oldLevel, newLevel, tostring(triggerName or "unknown")))
+    elseif BLU.db and BLU.db.profile and BLU.db.profile.debugMode and newLevel < oldLevel then
+        BLU:Print(BLU:Loc("DEBUG_HONOR_LEVEL_RESYNC", oldLevel, newLevel, tostring(triggerName or "unknown")))
     end
 
     self.currentHonorLevel = newLevel
@@ -103,7 +103,7 @@ function HonorRank:Init()
 
     self:UpdateCurrentHonorLevel()
 
-    BLU:PrintDebug("HonorRank module initialized")
+    BLU:PrintDebug(BLU:Loc("MODULE_LOADED", "HonorRank"))
 end
 
 function HonorRank:Cleanup()
@@ -112,7 +112,7 @@ function HonorRank:Cleanup()
     BLU:UnregisterEvent("HONOR_XP_UPDATE", HONOR_EVENT_ID_XP)
     BLU:UnregisterEvent("PLAYER_ENTERING_WORLD", HONOR_EVENT_ID_ENTERING_WORLD)
 
-    BLU:PrintDebug("HonorRank module cleaned up")
+    BLU:PrintDebug(BLU:Loc("MODULE_CLEANED_UP", "HonorRank"))
 end
 
 function HonorRank:OnHonorLevelUpdate(event, ...)

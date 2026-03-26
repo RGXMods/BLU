@@ -40,6 +40,7 @@ end
 
 -- Apply default settings
 function Database:ApplyDefaults()
+    BLU:PrintDebug("[Database] ApplyDefaults called")
     if not BLU.Modules.config or not BLU.Modules.config.defaults then
         BLU:PrintError("Database:ApplyDefaults - Config defaults not found!")
         return
@@ -56,6 +57,7 @@ end
 
 -- Local implementation of MergeDefaults (don't depend on BLU.MergeDefaults)
 function Database:MergeDefaults(target, defaults)
+    BLU:PrintDebug("[Database] MergeDefaults called")
     for key, value in pairs(defaults) do
         if target[key] == nil then
             if type(value) == "table" then
@@ -85,6 +87,7 @@ end
 
 -- Safe getter for database values
 function Database:GetDB(path, default)
+    BLU:PrintDebug("[Database] GetDB called for path '" .. tostring(path) .. "'")
     if not BLU.db then
         self:InitializeDatabase()
     end
@@ -126,6 +129,7 @@ end
 
 -- Safe setter for database values
 function Database:SetDB(path, value)
+    BLU:PrintDebug("[Database] SetDB called for path '" .. tostring(path) .. "' => " .. tostring(value))
     if not BLU.db then
         self:InitializeDatabase()
     end
@@ -174,6 +178,7 @@ end
 
 -- Save settings
 function Database:SaveSettings()
+    BLU:PrintDebug("[Database] SaveSettings called")
     -- Trigger SavedVariables write
     if BLU.db then
         BLU.db.lastSaved = time()
@@ -187,6 +192,7 @@ end
 
 -- Profile management
 function Database:CreateProfile(name)
+    BLU:PrintDebug("[Database] CreateProfile called for '" .. tostring(name) .. "'")
     if not name or name == "" then
         return false
     end
@@ -207,6 +213,7 @@ function Database:CreateProfile(name)
 end
 
 function Database:LoadProfile(name)
+    BLU:PrintDebug("[Database] LoadProfile called for '" .. tostring(name) .. "'")
     if not name or not BLUDB.profiles[name] then
         return false
     end
@@ -228,6 +235,7 @@ function Database:LoadProfile(name)
 end
 
 function Database:DeleteProfile(name)
+    BLU:PrintDebug("[Database] DeleteProfile called for '" .. tostring(name) .. "'")
     if not name or name == "Default" then
         return false
     end
@@ -247,6 +255,7 @@ function Database:DeleteProfile(name)
 end
 
 function Database:RenameProfile(oldName, newName)
+    BLU:PrintDebug("[Database] RenameProfile called from '" .. tostring(oldName) .. "' to '" .. tostring(newName) .. "'")
     if not oldName or not newName or oldName == "Default" then
         return false
     end
@@ -268,6 +277,7 @@ end
 
 -- Profile serialization for import/export
 function Database:SerializeProfile(name)
+    BLU:PrintDebug("[Database] SerializeProfile called for '" .. tostring(name) .. "'")
     local profile = BLUDB.profiles[name or self:GetDB("currentProfile")]
     if not profile then
         return ""
@@ -285,6 +295,7 @@ function Database:SerializeProfile(name)
 end
 
 function Database:DeserializeProfile(str)
+    BLU:PrintDebug("[Database] DeserializeProfile called")
     if not str or not string.find(str, "^BLU_PROFILE_v1:") then
         return nil
     end
@@ -313,6 +324,7 @@ end
 
 -- Export/Import dialogs
 function Database:ShowExportDialog(data)
+    BLU:PrintDebug("[Database] ShowExportDialog called")
     -- Create export dialog with copyable text
     StaticPopupDialogs["BLU_EXPORT_PROFILE"] = {
         text = "Copy this profile data:",
@@ -331,6 +343,7 @@ function Database:ShowExportDialog(data)
 end
 
 function Database:ShowImportDialog()
+    BLU:PrintDebug("[Database] ShowImportDialog called")
     StaticPopupDialogs["BLU_IMPORT_PROFILE"] = {
         text = "Paste profile data to import:",
         button1 = "Import",
@@ -338,6 +351,7 @@ function Database:ShowImportDialog()
         hasEditBox = true,
         editBoxWidth = 350,
         OnAccept = function(self)
+            BLU:PrintDebug("[Database] Import dialog accepted")
             local data = self.editBox:GetText()
             local profile = Database:DeserializeProfile(data)
             if profile then

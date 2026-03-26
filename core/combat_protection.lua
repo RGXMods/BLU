@@ -14,6 +14,7 @@ BLU.CombatQueue = {}
 
 -- Register combat events
 function BLU:InitializeCombatProtection()
+    self:PrintDebug("[Combat] InitializeCombatProtection called")
     _G.BLU:RegisterEvent("PLAYER_REGEN_DISABLED", function(...) BLU:OnEnterCombat(...) end, COMBAT_EVENT_ID_ENTER)
     _G.BLU:RegisterEvent("PLAYER_REGEN_ENABLED", function(...) BLU:OnLeaveCombat(...) end, COMBAT_EVENT_ID_LEAVE)
     
@@ -35,8 +36,10 @@ end
 
 -- Add operation to combat queue
 function BLU:QueueForCombat(func, ...)
+    self:PrintDebug("[Combat] QueueForCombat called for function '" .. tostring(func) .. "'")
     if not InCombatLockdown() then
         -- Execute immediately if not in combat
+        self:PrintDebug("[Combat] Executing immediately; not in combat")
         return func(...)
     end
     
@@ -54,6 +57,7 @@ end
 
 -- Process queued operations
 function BLU:ProcessCombatQueue()
+    self:PrintDebug("[Combat] ProcessCombatQueue called with " .. tostring(#self.CombatQueue) .. " queued operations")
     if InCombatLockdown() then
         return -- Still in combat, wait
     end
@@ -79,6 +83,7 @@ end
 
 -- Protected frame operations
 function BLU:SafeShow(frame)
+    self:PrintDebug("[Combat] SafeShow called for frame '" .. tostring(frame and frame.GetName and frame:GetName() or frame) .. "'")
     if not frame then return false end
     
     return self:QueueForCombat(function()
@@ -88,6 +93,7 @@ function BLU:SafeShow(frame)
 end
 
 function BLU:SafeHide(frame)
+    self:PrintDebug("[Combat] SafeHide called for frame '" .. tostring(frame and frame.GetName and frame:GetName() or frame) .. "'")
     if not frame then return false end
     
     return self:QueueForCombat(function()
@@ -97,6 +103,7 @@ function BLU:SafeHide(frame)
 end
 
 function BLU:SafeSetPoint(frame, ...)
+    self:PrintDebug("[Combat] SafeSetPoint called for frame '" .. tostring(frame and frame.GetName and frame:GetName() or frame) .. "'")
     if not frame then return false end
     
     local args = {...}
@@ -108,6 +115,7 @@ function BLU:SafeSetPoint(frame, ...)
 end
 
 function BLU:SafeSetSize(frame, width, height)
+    self:PrintDebug("[Combat] SafeSetSize called for frame '" .. tostring(frame and frame.GetName and frame:GetName() or frame) .. "' => " .. tostring(width) .. "x" .. tostring(height))
     if not frame then return false end
     
     return self:QueueForCombat(function()
@@ -118,6 +126,7 @@ end
 
 -- Protected button operations
 function BLU:SafeSetText(button, text)
+    self:PrintDebug("[Combat] SafeSetText called for button '" .. tostring(button and button.GetName and button:GetName() or button) .. "'")
     if not button then return false end
     
     return self:QueueForCombat(function()
@@ -127,6 +136,7 @@ function BLU:SafeSetText(button, text)
 end
 
 function BLU:SafeEnable(button)
+    self:PrintDebug("[Combat] SafeEnable called for button '" .. tostring(button and button.GetName and button:GetName() or button) .. "'")
     if not button then return false end
     
     return self:QueueForCombat(function()
@@ -136,6 +146,7 @@ function BLU:SafeEnable(button)
 end
 
 function BLU:SafeDisable(button)
+    self:PrintDebug("[Combat] SafeDisable called for button '" .. tostring(button and button.GetName and button:GetName() or button) .. "'")
     if not button then return false end
     
     return self:QueueForCombat(function()
@@ -146,6 +157,7 @@ end
 
 -- Protected dropdown operations
 function BLU:SafeUIDropDownMenu_SetText(dropdown, text)
+    self:PrintDebug("[Combat] SafeUIDropDownMenu_SetText called for dropdown '" .. tostring(dropdown and dropdown.GetName and dropdown:GetName() or dropdown) .. "'")
     if not dropdown then return false end
     
     return self:QueueForCombat(function()
@@ -155,6 +167,7 @@ function BLU:SafeUIDropDownMenu_SetText(dropdown, text)
 end
 
 function BLU:SafeUIDropDownMenu_Initialize(dropdown, func)
+    self:PrintDebug("[Combat] SafeUIDropDownMenu_Initialize called for dropdown '" .. tostring(dropdown and dropdown.GetName and dropdown:GetName() or dropdown) .. "'")
     if not dropdown or not func then return false end
     
     return self:QueueForCombat(function()
@@ -165,6 +178,7 @@ end
 
 -- Protected slider operations
 function BLU:SafeSetValue(slider, value)
+    self:PrintDebug("[Combat] SafeSetValue called for slider '" .. tostring(slider and slider.GetName and slider:GetName() or slider) .. "' => " .. tostring(value))
     if not slider then return false end
     
     return self:QueueForCombat(function()
@@ -174,6 +188,7 @@ function BLU:SafeSetValue(slider, value)
 end
 
 function BLU:SafeSetMinMaxValues(slider, min, max)
+    self:PrintDebug("[Combat] SafeSetMinMaxValues called for slider '" .. tostring(slider and slider.GetName and slider:GetName() or slider) .. "' => [" .. tostring(min) .. ", " .. tostring(max) .. "]")
     if not slider then return false end
     
     return self:QueueForCombat(function()
@@ -184,6 +199,7 @@ end
 
 -- Protected checkbox operations
 function BLU:SafeSetChecked(checkbox, checked)
+    self:PrintDebug("[Combat] SafeSetChecked called for checkbox '" .. tostring(checkbox and checkbox.GetName and checkbox:GetName() or checkbox) .. "' => " .. tostring(checked))
     if not checkbox then return false end
     
     return self:QueueForCombat(function()
@@ -194,6 +210,7 @@ end
 
 -- Protected options panel operations
 function BLU:SafeShowOptions()
+    self:PrintDebug("[Combat] SafeShowOptions called")
     return self:QueueForCombat(function()
         if BLU.Settings then
             BLU.Settings:Show()
@@ -203,6 +220,7 @@ function BLU:SafeShowOptions()
 end
 
 function BLU:SafeHideOptions()
+    self:PrintDebug("[Combat] SafeHideOptions called")
     return self:QueueForCombat(function()
         if BLU.Settings then
             BLU.Settings:Hide()
@@ -212,6 +230,7 @@ function BLU:SafeHideOptions()
 end
 
 function BLU:SafeRefreshOptions()
+    self:PrintDebug("[Combat] SafeRefreshOptions called")
     return self:QueueForCombat(function()
         if BLU.RefreshOptions then
             BLU:RefreshOptions()
@@ -222,18 +241,21 @@ end
 
 -- Module loading protection
 function BLU:SafeLoadModule(moduleName)
+    self:PrintDebug("[Combat] SafeLoadModule called for '" .. tostring(moduleName) .. "'")
     return self:QueueForCombat(function()
         return self:LoadModule(moduleName)
     end)
 end
 
 function BLU:SafeUnloadModule(moduleName)
+    self:PrintDebug("[Combat] SafeUnloadModule called for '" .. tostring(moduleName) .. "'")
     return self:QueueForCombat(function()
         return self:UnloadModule(moduleName)
     end)
 end
 
 function BLU:SafeReloadModules()
+    self:PrintDebug("[Combat] SafeReloadModules called")
     return self:QueueForCombat(function()
         return self:ReloadModules()
     end)
@@ -241,18 +263,21 @@ end
 
 -- Profile operations protection
 function BLU:SafeLoadProfile(profileName)
+    self:PrintDebug("[Combat] SafeLoadProfile called for '" .. tostring(profileName) .. "'")
     return self:QueueForCombat(function()
         return self:LoadProfile(profileName)
     end)
 end
 
 function BLU:SafeCreateProfile(profileName)
+    self:PrintDebug("[Combat] SafeCreateProfile called for '" .. tostring(profileName) .. "'")
     return self:QueueForCombat(function()
         return self:CreateProfile(profileName)
     end)
 end
 
 function BLU:SafeDeleteProfile(profileName)
+    self:PrintDebug("[Combat] SafeDeleteProfile called for '" .. tostring(profileName) .. "'")
     return self:QueueForCombat(function()
         return self:DeleteProfile(profileName)
     end)
@@ -260,6 +285,7 @@ end
 
 -- Test mode protection
 function BLU:SafeToggleTestMode()
+    self:PrintDebug("[Combat] SafeToggleTestMode called")
     return self:QueueForCombat(function()
         if BLU.Settings then
             BLU.Settings:ToggleTestMode()
@@ -270,6 +296,7 @@ end
 
 -- Sound test protection (sounds can play in combat, but UI updates are protected)
 function BLU:SafePlayTestSound(soundType, volume)
+    self:PrintDebug("[Combat] SafePlayTestSound called for '" .. tostring(soundType) .. "'")
     -- Sound playback is allowed in combat
     self:PlayTestSound(soundType, volume)
     
@@ -288,11 +315,13 @@ end
 
 -- Utility function to check if operation should be queued
 function BLU:ShouldQueueOperation()
+    self:PrintDebug("[Combat] ShouldQueueOperation called")
     return InCombatLockdown()
 end
 
 -- Clear expired operations from queue (cleanup)
 function BLU:CleanCombatQueue()
+    self:PrintDebug("[Combat] CleanCombatQueue called")
     local currentTime = GetTime()
     local expireTime = 300 -- 5 minutes
     

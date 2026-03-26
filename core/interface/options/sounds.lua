@@ -32,6 +32,7 @@ local function GetAddonIconTexture(addonName)
 end
 
 function BLU.RefreshSoundPackUI()
+    BLU:PrintDebug("[Options/Sounds] RefreshSoundPackUI called")
     if not BLU.OptionsPanel or not BLU.OptionsPanel.contents then
         return false
     end
@@ -55,6 +56,7 @@ function BLU.RefreshSoundPackUI()
 end
 
 function BLU.CreateSoundsPanel(panel)
+    BLU:PrintDebug("[Options/Sounds] Creating Sounds panel")
     -- Wipe existing content
     for _, child in ipairs({panel:GetChildren()}) do
         child:Hide()
@@ -203,6 +205,7 @@ function BLU.CreateSoundsPanel(panel)
     local blockCount = math.max(1, math.ceil(#packRows / entriesPerBlock))
     local totalHeight = math.abs(startY) + (blockCount * (rowsPerColumn * rowStep)) + ((blockCount - 1) * blockSpacing) + 50
     content:SetHeight(totalHeight)
+    BLU:PrintDebug("[Options/Sounds] Rendered " .. tostring(#packRows) .. " sound pack entries")
 end
 
 function Sounds:Init()

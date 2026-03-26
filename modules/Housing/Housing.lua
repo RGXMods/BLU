@@ -64,7 +64,7 @@ function Housing:Init()
     BLU:RegisterEvent("CURRENT_HOUSE_INFO_RECIEVED", function(...) self:OnCurrentHouseInfo(...) end, HOUSING_EVENT_ID_INFO_RECEIVED)
     BLU:RegisterEvent("CURRENT_HOUSE_INFO_UPDATED", function(...) self:OnCurrentHouseInfo(...) end, HOUSING_EVENT_ID_INFO_UPDATED)
 
-    BLU:PrintDebug("[Housing] Housing module initialized")
+    BLU:PrintDebug(BLU:Loc("MODULE_LOADED", "Housing"))
 end
 
 function Housing:Cleanup()
@@ -75,7 +75,7 @@ function Housing:Cleanup()
     BLU:UnregisterEvent("CURRENT_HOUSE_INFO_RECIEVED", HOUSING_EVENT_ID_INFO_RECEIVED)
     BLU:UnregisterEvent("CURRENT_HOUSE_INFO_UPDATED", HOUSING_EVENT_ID_INFO_UPDATED)
 
-    BLU:PrintDebug("[Housing] Housing module cleaned up")
+    BLU:PrintDebug(BLU:Loc("MODULE_CLEANED_UP", "Housing"))
 end
 
 function Housing:OnCurrentHouseInfo(event, houseInfo)
@@ -110,6 +110,9 @@ function Housing:OnHouseFavorUpdated(event, houseLevelFavor)
 
     if lastFavor ~= nil and newFavor > lastFavor then
         BLU:PlayCategorySound("housingxpgained")
+        if BLU.db and BLU.db.profile and BLU.db.profile.debugMode then
+            BLU:Print(BLU:Loc("DEBUG_HOUSING_FAVOR_GAINED", lastFavor, newFavor))
+        end
     end
 end
 
@@ -125,6 +128,9 @@ function Housing:OnHouseLevelChanged(event, newHouseLevelInfo)
 
     if lastLevel ~= nil and newLevel > lastLevel then
         BLU:PlayCategorySound("housingleveledup")
+        if BLU.db and BLU.db.profile and BLU.db.profile.debugMode then
+            BLU:Print(BLU:Loc("DEBUG_HOUSING_LEVEL_UP", lastLevel, newLevel))
+        end
     end
 end
 
@@ -134,6 +140,9 @@ function Housing:OnHouseRewardsReceived(event, level, rewards)
     end
 
     BLU:PlayCategorySound("housingrewardsreceived")
+    if BLU.db and BLU.db.profile and BLU.db.profile.debugMode then
+        BLU:Print(BLU:Loc("DEBUG_HOUSING_REWARDS_RECEIVED", tonumber(level) or 0))
+    end
 end
 
 function Housing:MarkDecorCollected()
@@ -156,6 +165,9 @@ function Housing:OnNewHousingItemAcquired(event, itemType, itemName, icon)
     end
 
     self:MarkDecorCollected()
+    if BLU.db and BLU.db.profile and BLU.db.profile.debugMode then
+        BLU:Print(BLU:Loc("DEBUG_HOUSING_DECOR_COLLECTED", tostring(itemName or BLU:Loc("UNKNOWN"))))
+    end
 end
 
 BLU.Modules = BLU.Modules or {}

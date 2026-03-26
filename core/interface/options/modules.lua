@@ -17,6 +17,7 @@ local MODULE_LOAD_MAP = {
 }
 
 function BLU.CreateModulesPanel(panel)
+    BLU:PrintDebug("[Options/Modules] Creating Modules panel")
     for _, child in ipairs({panel:GetChildren()}) do
         child:Hide()
         child:SetParent(nil)
@@ -269,6 +270,7 @@ function BLU.CreateModulesPanel(panel)
                 local enabled = BLU.db.profile.modules[self.moduleId] ~= false
                 enabled = not enabled
                 BLU.db.profile.modules[self.moduleId] = enabled
+                BLU:PrintDebug("[Options/Modules] Toggled module '" .. tostring(self.moduleId) .. "' to " .. tostring(enabled))
 
                 UpdateToggleState(self, enabled)
 
@@ -314,6 +316,7 @@ function BLU.CreateModulesPanel(panel)
             BLU:Print("Database not ready. Please try again.")
             return
         end
+        BLU:PrintDebug("[Options/Modules] Enable All clicked")
         BLU.db.profile.modules = BLU.db.profile.modules or {}
         for _, category in ipairs(categories) do
             for _, module in ipairs(category.modules) do
@@ -335,6 +338,7 @@ function BLU.CreateModulesPanel(panel)
             BLU:Print("Database not ready. Please try again.")
             return
         end
+        BLU:PrintDebug("[Options/Modules] Disable All clicked")
         BLU.db.profile.modules = BLU.db.profile.modules or {}
         for _, category in ipairs(categories) do
             for _, module in ipairs(category.modules) do
@@ -356,6 +360,7 @@ function BLU.CreateModulesPanel(panel)
             BLU:Print("Database not ready. Please try again.")
             return
         end
+        BLU:PrintDebug("[Options/Modules] Default Setup clicked")
         BLU.db.profile.modules = BLU.db.profile.modules or {}
         for _, category in ipairs(categories) do
             for _, module in ipairs(category.modules) do

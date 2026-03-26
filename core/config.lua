@@ -12,6 +12,7 @@ BLU.Modules["config"] = Config
 Config.defaults = {
     profile = {
         -- General settings
+        enabled = true,
         showWelcomeMessage = true,
         masterVolume = 0.5,
         soundVolume = 100,
@@ -82,7 +83,32 @@ Config.defaults = {
             housingrewardsreceived = "medium",
             housingdecorcollected = "medium",
         },
-        
+
+        -- Per-event sound channel (Master / SFX / Music / Ambience).
+        -- Applies to all sound types including BLU defaults and game soundpacks.
+        -- Defaults to Master so BLU default sounds and random picks behave as before.
+        soundChannels = {
+            levelup = "Master",
+            achievement = "Master",
+            achievementprogress = "Master",
+            reputation = "Master",
+            questturnin = "Master",
+            questaccept = "Master",
+            questprogress = "Master",
+            battlepet = "Master",
+            petcapture = "Master",
+            delvecompanion = "Master",
+            delvelifelost = "Master",
+            delvelifegained = "Master",
+            honorrank = "Master",
+            renownrank = "Master",
+            tradingpost = "Master",
+            housingxpgained = "Master",
+            housingleveledup = "Master",
+            housingrewardsreceived = "Master",
+            housingdecorcollected = "Master",
+        },
+
         -- Advanced settings
         soundChannel = "Master",
         interruptMusic = false,
@@ -93,6 +119,7 @@ Config.defaults = {
 
 -- Profile changed handler
 function Config:ApplySettings()
+    BLU:PrintDebug("[Config] ApplySettings called")
     if not BLU.db or not BLU.db.profile then return end
 
     BLU.debugMode = BLU.db.profile.debugMode
@@ -103,11 +130,13 @@ end
 
 -- Get setting value
 function Config:Get(key)
+    BLU:PrintDebug("[Config] Get called for key '" .. tostring(key) .. "'")
     return BLU.db.profile[key]
 end
 
 -- Set setting value
 function Config:Set(key, value)
+    BLU:PrintDebug("[Config] Set called for key '" .. tostring(key) .. "' => " .. tostring(value))
     BLU.db.profile[key] = value
     
     -- Handle special cases
@@ -123,6 +152,7 @@ end
 
 -- Get all available sounds for a category
 function Config:GetAvailableSounds(category)
+    BLU:PrintDebug("[Config] GetAvailableSounds called for category '" .. tostring(category) .. "'")
     local sounds = {
         {value = "None", text = "None"}
     }
@@ -149,11 +179,13 @@ end
 
 -- Reset to defaults
 function Config:ResetToDefaults()
+    BLU:PrintDebug("[Config] ResetToDefaults called")
     BLU.db:ResetProfile()
 end
 
 -- Export/Import functionality
 function Config:ExportSettings()
+    BLU:PrintDebug("[Config] ExportSettings called")
     -- Simple export without compression for now
     local settings = BLU.db.profile
     -- Convert to string representation
@@ -167,6 +199,7 @@ function Config:ExportSettings()
 end
 
 function Config:ImportSettings(importString)
+    BLU:PrintDebug("[Config] ImportSettings called")
     -- Simple import for now
     if not importString:match("^BLU_SETTINGS:") then
         return false, "Invalid import string"
@@ -200,6 +233,7 @@ function Config:ImportSettings(importString)
 end
 
 function Config:MigrateVolumeSettings()
+    BLU:PrintDebug("[Config] MigrateVolumeSettings called")
     if not BLU.db or not BLU.db.profile or not BLU.db.profile.soundVolumes then return end
 
     local volumes = BLU.db.profile.soundVolumes

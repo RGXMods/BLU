@@ -25,13 +25,27 @@ end
 
 -- Achievement earned event handler
 function Achievement:OnAchievementEarned(event, achievementID, alreadyEarned)
-    if not BLU.db or not BLU.db.profile then return end
-    if not BLU.db.profile.enabled then return end
-    if BLU.db.profile.modules and BLU.db.profile.modules.achievement == false then return end
-    if alreadyEarned then return end
+    BLU:Trace("Achievement", "OnAchievementEarned called for achievementID=" .. tostring(achievementID))
+    if not BLU.db or not BLU.db.profile then
+        BLU:Trace("Achievement", "Skipped achievement handling; profile not ready")
+        return
+    end
+    if not BLU.db.profile.enabled then
+        BLU:Trace("Achievement", "Skipped achievement handling; addon disabled")
+        return
+    end
+    if BLU.db.profile.modules and BLU.db.profile.modules.achievement == false then
+        BLU:Trace("Achievement", "Skipped achievement handling; module disabled")
+        return
+    end
+    if alreadyEarned then
+        BLU:Trace("Achievement", "Skipped achievement handling; achievement already earned")
+        return
+    end
     
     -- Play achievement sound for this category
     BLU:PlayCategorySound("achievement")
+    BLU:Trace("Achievement", "Triggered achievement sound playback")
     
     if BLU.db.profile.debugMode then
         local _, name = GetAchievementInfo(achievementID)
@@ -40,16 +54,30 @@ function Achievement:OnAchievementEarned(event, achievementID, alreadyEarned)
 end
 
 function Achievement:OnCriteriaEarned(event, achievementID, description, achievementAlreadyEarnedOnAccount)
-    if not BLU.db or not BLU.db.profile then return end
-    if not BLU.db.profile.enabled then return end
-    if BLU.db.profile.modules and BLU.db.profile.modules.achievement == false then return end
-    if achievementAlreadyEarnedOnAccount then return end
+    BLU:Trace("Achievement", "OnCriteriaEarned called for achievementID=" .. tostring(achievementID))
+    if not BLU.db or not BLU.db.profile then
+        BLU:Trace("Achievement", "Skipped criteria handling; profile not ready")
+        return
+    end
+    if not BLU.db.profile.enabled then
+        BLU:Trace("Achievement", "Skipped criteria handling; addon disabled")
+        return
+    end
+    if BLU.db.profile.modules and BLU.db.profile.modules.achievement == false then
+        BLU:Trace("Achievement", "Skipped criteria handling; module disabled")
+        return
+    end
+    if achievementAlreadyEarnedOnAccount then
+        BLU:Trace("Achievement", "Skipped criteria handling; achievement already earned on account")
+        return
+    end
 
     BLU:PlayCategorySound("achievementprogress")
+    BLU:Trace("Achievement", "Triggered achievement progress sound playback")
 
     if BLU.db.profile.debugMode then
         local _, name = GetAchievementInfo(achievementID)
-        BLU:Print(string.format("Achievement progress: %s - %s", name or BLU:Loc("UNKNOWN"), description or "Criteria earned"))
+        BLU:Print(BLU:Loc("DEBUG_ACHIEVEMENT_PROGRESS", name or BLU:Loc("UNKNOWN"), description or BLU:Loc("UNKNOWN")))
     end
 end
 

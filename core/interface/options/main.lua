@@ -16,6 +16,7 @@ local OPTIONS_PANEL_NAME = "Better Level-Up!"
 local OPTIONS_LIST_STYLED_NAME = "|T" .. ADDON_PATH .. "media\\Textures\\icon:16:16:0:0|t |cff05dffaB|r|cffffffffetter |cff05dffaL|r|cffffffffevel-|cff05dffaU|r|cffffffffp|cff05dffa!|r"
 
 function Options:ResolveOptionsCategoryID()
+    BLU:PrintDebug("[Options] ResolveOptionsCategoryID called")
     if type(BLU.OptionsCategoryID) == "number" then
         return BLU.OptionsCategoryID
     end
@@ -105,11 +106,6 @@ function Options:CreateOptionsPanel()
     subtitle:SetText("Iconic game sounds for World of Warcraft events")
     subtitle:SetTextColor(0.7, 0.7, 0.7)
 
-    local discord = header:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    discord:SetPoint("TOPLEFT", subtitle, "BOTTOMLEFT", 0, -4)
-    discord:SetText("|cff7289daDiscord:|r |cffffd700discord.gg/rgxmods|r")
-    discord:SetTextColor(0.85, 0.85, 0.85)
-
     local version = header:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     version:SetPoint("TOPRIGHT", -30, -15)
     local metadataVersion = (C_AddOns and C_AddOns.GetAddOnMetadata and C_AddOns.GetAddOnMetadata(addonName, "Version"))
@@ -125,8 +121,13 @@ function Options:CreateOptionsPanel()
     author:SetTextColor(0.7, 0.7, 0.7)
 
     local branding = header:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    branding:SetPoint("BOTTOMRIGHT", -15, 12)
-    branding:SetText("|cffffd700RGX Mods|r")
+    branding:SetPoint("BOTTOMRIGHT", -15, 22)
+    branding:SetText("|cff8b4b5cRGX|r |cffffd700Mods|r")
+
+    local discord = header:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    discord:SetPoint("TOPLEFT", subtitle, "BOTTOMLEFT", 0, -4)
+    discord:SetText("|cff7289daDiscord:|r |cffffd700discord.gg/N7kdKAHVVF|r")
+    discord:SetTextColor(0.85, 0.85, 0.85)
 
     local tabContainer = CreateFrame("Frame", nil, container)
     tabContainer:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -4)
@@ -147,6 +148,7 @@ function Options:CreateOptionsPanel()
     end
 
     for i, tabInfo in ipairs(tabs) do
+        BLU:PrintDebug("[Options] Creating tab content for '" .. tostring(tabInfo.text) .. "'")
         local tab = BLU.CreateTabButton(tabContainer, tabInfo.text, i, tabInfo.row, tabInfo.col, panel, tabInfo.icon)
         panel.tabs[i] = tab
 
@@ -169,6 +171,7 @@ function Options:CreateOptionsPanel()
     end
 
     function panel:SelectTab(index)
+        BLU:PrintDebug("[Options] Selecting tab index " .. tostring(index))
         for i, tab in ipairs(self.tabs) do
             if self.tabs[i] and self.contents[i] then
                 self.tabs[i]:SetActive(i == index)
@@ -198,12 +201,14 @@ end
 
 -- Open options
 function Options:OpenOptions()
+    BLU:PrintDebug("[Options] OpenOptions called")
     if not BLU.db or not BLU.db.profile then
         BLU:Print("Database not ready. Please wait a moment and try again.")
         return
     end
 
     if not BLU.OptionsPanel then
+        BLU:PrintDebug("[Options] Options panel missing, creating now")
         self:CreateOptionsPanel()
     end
 
@@ -256,6 +261,8 @@ function Options:OpenOptions()
 
     if not opened then
         BLU:Print("Unable to open options panel")
+    else
+        BLU:PrintDebug("[Options] Options panel opened successfully")
     end
 end
 
@@ -270,6 +277,7 @@ function Options:Init()
 end
 
 function Options:Cleanup()
+    BLU:PrintDebug("[Options] Cleanup called")
 end
 
 if BLU.RegisterModule then

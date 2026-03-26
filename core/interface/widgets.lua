@@ -14,11 +14,12 @@ BLU.Widgets = Widgets
 -- Initialize widgets
 function Widgets:Init()
     -- Widget system is ready
-    BLU:PrintDebug("Widgets initialized")
+    BLU:PrintDebug("[Widgets] Widgets initialized")
 end
 
 -- Create a checkbox
 function Widgets:CreateCheckbox(parent, label, tooltip)
+    BLU:PrintDebug("[Widgets] CreateCheckbox called for '" .. tostring(label) .. "'")
     local check = CreateFrame("CheckButton", nil, parent, "UICheckButtonTemplate")
     check.text = check:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     check.text:SetPoint("LEFT", check, "RIGHT", 5, 0)
@@ -38,6 +39,7 @@ end
 
 -- Create a slider
 function Widgets:CreateSlider(parent, label, min, max, step, tooltip)
+    BLU:PrintDebug("[Widgets] CreateSlider called for '" .. tostring(label) .. "' with range [" .. tostring(min) .. ", " .. tostring(max) .. "]")
     local slider = CreateFrame("Slider", nil, parent, "OptionsSliderTemplate")
     slider:SetMinMaxValues(min, max)
     slider:SetValueStep(step)
@@ -64,6 +66,7 @@ end
 
 -- Create a dropdown
 function Widgets:CreateDropdown(parent, label, width, items, tooltip)
+    BLU:PrintDebug("[Widgets] CreateDropdown called for '" .. tostring(label) .. "' with " .. tostring(items and #items or 0) .. " items")
     local dropdown = CreateFrame("Frame", nil, parent, "UIDropDownMenuTemplate")
     UIDropDownMenu_SetWidth(dropdown, width or 200)
     
@@ -87,6 +90,7 @@ end
 
 -- Create a button
 function Widgets:CreateButton(parent, text, width, height, tooltip)
+    BLU:PrintDebug("[Widgets] CreateButton called for '" .. tostring(text) .. "'")
     local button = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
     button:SetSize(width or 100, height or 22)
     button:SetText(text)
@@ -105,6 +109,7 @@ end
 
 -- Create a color picker
 function Widgets:CreateColorPicker(parent, label, r, g, b, callback)
+    BLU:PrintDebug("[Widgets] CreateColorPicker called for '" .. tostring(label) .. "'")
     local frame = CreateFrame("Frame", nil, parent)
     frame:SetSize(150, 22)
     
@@ -131,6 +136,7 @@ function Widgets:CreateColorPicker(parent, label, r, g, b, callback)
     swatch.callback = callback
     
     swatch:SetScript("OnClick", function(self)
+        BLU:PrintDebug("[Widgets] Color picker opened for '" .. tostring(label) .. "'")
         local function ColorCallback(restore)
             local newR, newG, newB
             if restore then
@@ -141,6 +147,7 @@ function Widgets:CreateColorPicker(parent, label, r, g, b, callback)
             
             self.tex:SetColorTexture(newR, newG, newB)
             self.r, self.g, self.b = newR, newG, newB
+            BLU:PrintDebug("[Widgets] Color picker updated '" .. tostring(label) .. "' to (" .. tostring(newR) .. ", " .. tostring(newG) .. ", " .. tostring(newB) .. ")")
             
             if self.callback then
                 self.callback(newR, newG, newB)
@@ -159,6 +166,7 @@ end
 
 -- Create section header
 function Widgets:CreateHeader(parent, text)
+    BLU:PrintDebug("[Widgets] CreateHeader called for '" .. tostring(text) .. "'")
     local header = parent:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     header:SetText(text)
     return header
@@ -166,6 +174,7 @@ end
 
 -- Create divider line
 function Widgets:CreateDivider(parent, width)
+    BLU:PrintDebug("[Widgets] CreateDivider called with width " .. tostring(width or 550))
     local divider = parent:CreateTexture(nil, "OVERLAY")
     divider:SetHeight(1)
     divider:SetWidth(width or 550)

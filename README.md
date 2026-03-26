@@ -37,7 +37,7 @@
 
 <!-- WoW Compatibility -->
 [![WoW Retail](https://img.shields.io/badge/WoW-Retail%20Midnight-05dffa?style=flat-square&logo=worldofwarcraft)](https://worldofwarcraft.com)
-[![Version](https://img.shields.io/badge/Version-v6.0.0-blue?style=flat-square)](https://github.com/donniedice/BLU/releases)
+[![Version](https://img.shields.io/badge/Version-v6.2.0-blue?style=flat-square)](https://github.com/donniedice/BLU/releases)
 
 [Features](#features) • [Quick Start](#quick-start) • [Commands](#command-reference) • [Compatibility](#compatibility) • [Installation](#installation) • [Support](#support)
 
@@ -264,20 +264,15 @@ BLU:RegisterExternalSoundPack("My Pack Name", {
 
 ---
 
-## <span style="color:#05dffa">🆕 What's New in v6.0.0</span>
+## <span style="color:#05dffa">🆕 What's New in v6.2.0</span>
 
 <details>
 <summary><strong><span style="color:#05dffa">🎉 Click to see the latest updates!</span></strong></summary>
 
-### <span style="color:#4ecdc4">🆕 Major Updates</span>
-- <span style="color:#2dc26b">✅ **Complete Rewrite**</span> <span style="color:#e67e23">— clean modular architecture replacing the legacy monolithic structure</span>
-- <span style="color:#05dffa">✅ **Sound Pack Support**</span> <span style="color:#e67e23">— BLU auto-discovers compatible audio files from other loaded addons at startup</span>
-- <span style="color:#ff6b6b">✅ **User Custom Sounds**</span> <span style="color:#e67e23">— drop your own `.ogg`, `.mp3`, or `.wav` files into `BLU\user\sounds\`</span>
-- <span style="color:#b96ad9">✅ **Optional LSM Integration**</span> <span style="color:#e67e23">— if `LibSharedMedia-3.0` is installed, BLU hooks into it automatically</span>
-- <span style="color:#4ecdc4">✅ **Modern UI**</span> <span style="color:#e67e23">— tabbed interface with inline sound previews and per-module toggles</span>
-- <span style="color:#2dc26b">✅ **Enhanced Volume Control**</span> <span style="color:#e67e23">— per-event volume overrides</span>
-- <span style="color:#05dffa">✅ **Better Performance**</span> <span style="color:#e67e23">— feature modules loaded on demand, combat-safe taint protection</span>
-- <span style="color:#ff6b6b">✅ **New Slash Commands**</span> <span style="color:#e67e23">— `/blu refresh` and `/blu rescan` for live sound pack reloading</span>
+### <span style="color:#4ecdc4">🆕 Latest Updates</span>
+- <span style="color:#2dc26b">✅ **Expanded localization coverage**</span> <span style="color:#e67e23">— added new localized strings for module lifecycle messages and event debug output</span>
+- <span style="color:#05dffa">✅ **Module debug cleanup**</span> <span style="color:#e67e23">— standardized debug messaging across Quest, Reputation, Battle Pet, Honor, Renown, Trading Post, Delve, and Housing</span>
+- <span style="color:#ff6b6b">✅ **Improved debug consistency**</span> <span style="color:#e67e23">— aligned updated modules around profile-backed debug checks for more predictable in-game logging</span>
 
 </details>
 

@@ -78,6 +78,7 @@ function BLU:Initialize()
     self:InitializePhase("registry", {
         "registry",
         "internal_sounds",  -- Must come after registry
+        "usersounds",       -- Must come after registry
         "loader",
         "sharedmedia"
     })

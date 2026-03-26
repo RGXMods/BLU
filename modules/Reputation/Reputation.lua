@@ -32,7 +32,7 @@ function Reputation:Init()
     BLU:RegisterEvent("PLAYER_ENTERING_WORLD", function(...) self:OnPlayerEnteringWorld(...) end, REPUTATION_EVENT_ID_LOGIN)
 
     self:ScanReputation()
-    BLU:PrintDebug("Reputation module initialized")
+    BLU:PrintDebug(BLU:Loc("MODULE_LOADED", "Reputation"))
 end
 
 -- Cleanup function
@@ -40,7 +40,7 @@ function Reputation:Cleanup()
     BLU:UnregisterEvent("UPDATE_FACTION", REPUTATION_EVENT_ID_UPDATE)
     BLU:UnregisterEvent("PLAYER_ENTERING_WORLD", REPUTATION_EVENT_ID_LOGIN)
     self.pendingScan = false
-    BLU:PrintDebug("Reputation module cleaned up")
+    BLU:PrintDebug(BLU:Loc("MODULE_CLEANED_UP", "Reputation"))
 end
 
 -- Scan current reputation standings
@@ -99,11 +99,11 @@ function Reputation:CheckReputationChanges()
             if oldData and factionData.reaction > oldData.standing then
                 playSound = true
                 
-                if BLU.debugMode then
-                    BLU:Print(string.format("Reputation increased with %s: %s -> %s", 
-                        factionData.name, 
-                        REPUTATION_RANKS[oldData.standing] or "Unknown",
-                        REPUTATION_RANKS[factionData.reaction] or "Unknown"))
+                if BLU.db and BLU.db.profile and BLU.db.profile.debugMode then
+                    BLU:Print(BLU:Loc("DEBUG_REPUTATION_INCREASED",
+                        factionData.name,
+                        REPUTATION_RANKS[oldData.standing] or BLU:Loc("UNKNOWN"),
+                        REPUTATION_RANKS[factionData.reaction] or BLU:Loc("UNKNOWN")))
                 end
             end
             

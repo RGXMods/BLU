@@ -26,7 +26,7 @@ function BattlePet:Init()
     -- Initialize pet levels
     self:ScanPetLevels()
     
-    BLU:PrintDebug("BattlePet module initialized")
+    BLU:PrintDebug(BLU:Loc("MODULE_LOADED", "BattlePet"))
 end
 
 -- Cleanup function
@@ -35,7 +35,7 @@ function BattlePet:Cleanup()
     BLU:UnregisterEvent("PET_BATTLE_PET_CHANGED", PET_EVENT_ID_CHANGED)
     BLU:UnregisterEvent("PET_BATTLE_CAPTURED", PET_EVENT_ID_CAPTURED)
     self.pendingLevelScan = false
-    BLU:PrintDebug("BattlePet module cleaned up")
+    BLU:PrintDebug(BLU:Loc("MODULE_CLEANED_UP", "BattlePet"))
 end
 
 -- Scan current pet levels
@@ -77,8 +77,8 @@ function BattlePet:OnPetLevelChanged(event, owner, petSlot, newLevel, oldLevel)
     
     BLU:PlayCategorySound("battlepet")
     
-    if BLU.debugMode then
-        BLU:Print(string.format("Battle pet leveled up! Slot %d: %d -> %d", petSlot, oldLevel, newLevel))
+    if BLU.db.profile.debugMode then
+        BLU:Print(BLU:Loc("DEBUG_BATTLE_PET_LEVEL_SLOT", petSlot, oldLevel, newLevel))
     end
 end
 
@@ -100,8 +100,8 @@ function BattlePet:OnPetCaptured(event, owner, petIndex)
 
     BLU:PlayCategorySound("petcapture")
 
-    if BLU.debugMode then
-        BLU:Print(string.format("Battle pet captured! Index %s", tostring(petIndex)))
+    if BLU.db.profile.debugMode then
+        BLU:Print(BLU:Loc("DEBUG_BATTLE_PET_CAPTURED", tostring(petIndex)))
     end
 end
 
@@ -136,8 +136,8 @@ function BattlePet:CheckPetLevels()
                     -- Pet leveled up!
                     BLU:PlayCategorySound("battlepet")
                     
-                    if BLU.debugMode then
-                        BLU:Print(string.format("Battle pet '%s' leveled up to %d!", name or "Unknown", level))
+                    if BLU.db.profile.debugMode then
+                        BLU:Print(BLU:Loc("DEBUG_BATTLE_PET_LEVEL_NAME", name or BLU:Loc("UNKNOWN"), level))
                     end
                     
                     self.lastPetLevel[petID] = level

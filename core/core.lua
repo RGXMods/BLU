@@ -18,7 +18,7 @@ print("BLU: Core loading started.")
 -- Create the main addon object (global)
 BLU = {
     name = addonName,
-    version = "v6.0.3",
+    version = "v6.2.0",
     author = C_AddOns.GetAddOnMetadata(addonName, "Author"),
     
     -- Core tables
@@ -45,6 +45,10 @@ function BLU:PrintDebug(message)
     end
 end
 
+function BLU:Trace(scope, message)
+    self:PrintDebug("[" .. tostring(scope) .. "] " .. tostring(message))
+end
+
 -- Print error message
 function BLU:PrintError(message)
     print(CHAT_ERROR_PREFIX .. " " .. message)
@@ -66,6 +70,7 @@ local function RegisterEvent(self, event, callback, id)
     end
     
     self.events[event][id] = callback
+    self:PrintDebug("[Events] Registered event '" .. tostring(event) .. "' with id '" .. tostring(id) .. "'")
 end
 BLU.RegisterEvent = RegisterEvent
 
@@ -90,6 +95,7 @@ local function UnregisterEvent(self, event, id)
             self.eventFrame:UnregisterEvent(event)
             self.events[event] = nil
         end
+        self:PrintDebug("[Events] Unregistered event '" .. tostring(event) .. "' with id '" .. tostring(id) .. "'")
     end
 end
 BLU.UnregisterEvent = UnregisterEvent
@@ -121,6 +127,7 @@ BLU.FireEvent = FireEvent
 
 -- Create timer
 function BLU:CreateTimer(duration, callback, repeating)
+    self:Trace("Timer", "Creating timer (duration=" .. tostring(duration) .. ", repeating=" .. tostring(repeating == true) .. ")")
     local timer = {
         duration = duration,
         callback = callback,
@@ -177,6 +184,7 @@ end
 function BLU:CancelTimer(timer)
     if timer then
         timer.active = false
+        self:Trace("Timer", "Cancelled timer")
     end
 end
 
@@ -186,6 +194,7 @@ end
 
 -- Hook function
 function BLU:Hook(target, method, callback)
+    self:Trace("Hooks", "Hook request for method '" .. tostring(method) .. "'")
     local original = target[method]
     
     if not original then
@@ -200,6 +209,7 @@ function BLU:Hook(target, method, callback)
     -- Store for unhooking
     self.hooks[target] = self.hooks[target] or {}
     self.hooks[target][method] = original
+    self:Trace("Hooks", "Hooked method '" .. tostring(method) .. "'")
 end
 
 -- Unhook function
@@ -207,6 +217,7 @@ function BLU:Unhook(target, method)
     if self.hooks[target] and self.hooks[target][method] then
         target[method] = self.hooks[target][method]
         self.hooks[target][method] = nil
+        self:Trace("Hooks", "Unhooked method '" .. tostring(method) .. "'")
     end
 end
 
@@ -216,6 +227,7 @@ end
 
 -- Register slash command
 function BLU:RegisterSlashCommand(command, callback)
+    self:Trace("Slash", "Registering slash command(s): " .. tostring(type(command) == "table" and table.concat(command, ", ") or command))
     -- Support multiple commands
     local commands = type(command) == "table" and command or {command}
     
@@ -253,6 +265,7 @@ end
 -- Show welcome message
 function BLU:ShowWelcomeMessage()
     if not (self.db and self.db.profile and self.db.profile.showWelcomeMessage ~= false) then
+        self:Trace("Welcome", "Skipped welcome message")
         return
     end
 
@@ -265,6 +278,7 @@ function BLU:ShowWelcomeMessage()
 
     print(CHAT_PREFIX .. " Welcome! Use |cff05dffa/blu|r to open the options panel or |cff05dffa/blu help|r for more commands.")
     print(CHAT_PREFIX .. " |cffffff00Version:|r |cff8080ff" .. version .. "|r")
+    self:Trace("Welcome", "Displayed welcome message for version " .. tostring(version))
 end
 
 --=====================================================================================
@@ -291,6 +305,7 @@ end
 
 -- Get module
 function BLU:GetModule(name)
+    self:Trace("Modules", "GetModule called for '" .. tostring(name) .. "'")
     return self.Modules[name]
 end
 
@@ -300,6 +315,7 @@ end
 
 -- Create profile
 function BLU:CreateProfile(name)
+    self:Trace("Profiles", "CreateProfile called for '" .. tostring(name) .. "'")
     if not self.Database then
         self:PrintError("Database not initialized")
         return false
@@ -309,6 +325,7 @@ end
 
 -- Delete profile
 function BLU:DeleteProfile(name)
+    self:Trace("Profiles", "DeleteProfile called for '" .. tostring(name) .. "'")
     if not self.Database then
         self:PrintError("Database not initialized")
         return false
@@ -318,6 +335,7 @@ end
 
 -- Load profile
 function BLU:LoadProfile(name)
+    self:Trace("Profiles", "LoadProfile called for '" .. tostring(name) .. "'")
     if not self.Database then
         self:PrintError("Database not initialized")
         return false
@@ -327,6 +345,7 @@ end
 
 -- Save profile
 function BLU:SaveProfile(name)
+    self:Trace("Profiles", "SaveProfile called for '" .. tostring(name) .. "'")
     if not self.Database then
         self:PrintError("Database not initialized")
         return false
@@ -338,6 +357,7 @@ end
 
 -- Rename profile
 function BLU:RenameProfile(oldName, newName)
+    self:Trace("Profiles", "RenameProfile called from '" .. tostring(oldName) .. "' to '" .. tostring(newName) .. "'")
     if not self.Database then
         self:PrintError("Database not initialized")
         return false
@@ -358,6 +378,7 @@ end
 
 -- Serialize profile for export
 function BLU:SerializeProfile(profileName)
+    self:Trace("Profiles", "SerializeProfile called for '" .. tostring(profileName) .. "'")
     if not BLUDB or not BLUDB.profiles or not BLUDB.profiles[profileName] then
         self:PrintError("Profile not found: " .. tostring(profileName))
         return nil
@@ -376,6 +397,7 @@ end
 
 -- Import profile from string
 function BLU:ImportProfile(dataString, profileName)
+    self:Trace("Profiles", "ImportProfile called for target '" .. tostring(profileName or "auto") .. "'")
     local success, data = pcall(loadstring("return " .. dataString))
     if not success or type(data) ~= "table" then
         self:PrintError("Invalid import data")
@@ -429,6 +451,7 @@ end
 
 -- Clear sound cache
 function BLU:ClearSoundCache()
+    self:Trace("Advanced", "ClearSoundCache called")
     if self.Modules.registry and self.Modules.registry.soundCache then
         self.Modules.registry.soundCache = {}
         self:Print("Sound cache cleared")
@@ -437,6 +460,7 @@ end
 
 -- Reset advanced settings
 function BLU:ResetAdvancedSettings()
+    self:Trace("Advanced", "ResetAdvancedSettings called")
     -- Reset only advanced settings to defaults
     local profile = self.db.profile
     if profile then
@@ -460,6 +484,7 @@ end
 
 -- Rebuild database
 function BLU:RebuildDatabase()
+    self:Trace("Advanced", "RebuildDatabase called")
     if self.Database then
         -- Force reload saved variables
         self.Database:LoadSavedVariables()
@@ -469,6 +494,7 @@ end
 
 -- Test sound function
 function BLU:PlayTestSound(category, volume)
+    self:Trace("Sound", "PlayTestSound called for category '" .. tostring(category) .. "' at volume '" .. tostring(volume or 1.0) .. "'")
     if self.Modules.registry then
         local testSounds = {
             levelup = ADDON_PATH .. "media\\sounds\\level_default.ogg",
@@ -509,6 +535,7 @@ end
 
 -- Reload modules function
 function BLU:ReloadModules()
+    self:Trace("Modules", "ReloadModules called")
     if self.Modules.loader and self.Modules.loader.LoadModulesFromSettings then
         self.Modules.loader:LoadModulesFromSettings()
     end
@@ -516,6 +543,7 @@ end
 
 -- Show export dialog
 function BLU:ShowExportDialog(profileData)
+    self:Trace("Profiles", "ShowExportDialog opened")
     -- Create a simple text display dialog
     local frame = CreateFrame("Frame", "BLUExportDialog", UIParent, "BasicFrameTemplateWithInset")
     frame:SetSize(500, 400)
@@ -554,6 +582,7 @@ end
 
 -- Show import dialog
 function BLU:ShowImportDialog()
+    self:Trace("Profiles", "ShowImportDialog opened")
     local frame = CreateFrame("Frame", "BLUImportDialog", UIParent, "BasicFrameTemplateWithInset")
     frame:SetSize(500, 400)
     frame:SetPoint("CENTER")
@@ -602,18 +631,22 @@ end
 
 -- Show character copy dialog
 function BLU:ShowCharacterCopyDialog()
+    self:Trace("Profiles", "ShowCharacterCopyDialog opened")
     self:Print("Character copy functionality not yet implemented")
 end
 
 function BLU:Enable()
+    self:Trace("State", "Enable called")
     -- Already enabled
 end
 
 function BLU:Disable()
+    self:Trace("State", "Disable called")
     self:OnDisable()
 end
 
 function BLU:OnDisable()
+    self:Trace("State", "OnDisable called")
     for name, module in pairs(self.LoadedModules) do
         if module and module.OnDisable then
             module:OnDisable()

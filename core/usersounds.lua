@@ -26,6 +26,7 @@ end
 
 local function CanLoadSoundFile(soundPath)
     if type(soundPath) ~= "string" or soundPath == "" then
+        BLU:PrintDebug("[UserSounds] CanLoadSoundFile rejected invalid path")
         return false
     end
 
@@ -48,10 +49,13 @@ local function CanLoadSoundFile(soundPath)
         pcall(UnmuteSoundFile, soundPath)
     end
 
-    return ok and willPlay == true
+    local canLoad = ok and willPlay == true
+    BLU:PrintDebug("[UserSounds] Probe for '" .. tostring(soundPath) .. "' => " .. tostring(canLoad))
+    return canLoad
 end
 
 local function CollectAutoDetectedEntries()
+    BLU:PrintDebug("[UserSounds] CollectAutoDetectedEntries scanning " .. tostring(AUTO_SLOT_COUNT) .. " slots")
     local entries = {}
     local seenPaths = {}
 
@@ -62,6 +66,7 @@ local function CollectAutoDetectedEntries()
             for _, extension in ipairs(AUTO_SLOT_EXTENSIONS) do
                 local soundPath = string.format(pathPattern, slot, extension)
                 if not seenPaths[soundPath] and CanLoadSoundFile(soundPath) then
+                    BLU:PrintDebug("[UserSounds] Auto-detected custom sound at '" .. tostring(soundPath) .. "'")
                     table.insert(entries, {
                         name = BuildDisplayNameFromPath(soundPath, string.format("Custom %02d", slot)),
                         file = soundPath,
@@ -79,12 +84,14 @@ local function CollectAutoDetectedEntries()
         end
     end
 
+    BLU:PrintDebug("[UserSounds] Auto-detected " .. tostring(#entries) .. " candidate custom sounds")
     return entries
 end
 
 -- Clear all previously registered user custom sounds from the registry
 local function ClearRegisteredSounds()
     if not (BLU.SoundRegistry and BLU.SoundRegistry.UnregisterSound and BLU.SoundRegistry.GetAllSounds) then
+        BLU:PrintDebug("[UserSounds] ClearRegisteredSounds skipped; SoundRegistry unavailable")
         return
     end
     local prefix = PACK_ID .. ":"
@@ -97,10 +104,12 @@ local function ClearRegisteredSounds()
     for _, soundId in ipairs(toRemove) do
         BLU.SoundRegistry:UnregisterSound(soundId)
     end
+    BLU:PrintDebug("[UserSounds] Cleared " .. tostring(#toRemove) .. " previously registered custom sounds")
 end
 
 -- Read auto-detected custom sound slots and register valid entries
 function UserSounds:Register()
+    BLU:PrintDebug("[UserSounds] Register called")
     ClearRegisteredSounds()
 
     local entries = CollectAutoDetectedEntries()
@@ -131,6 +140,7 @@ function UserSounds:Register()
                 packName = PACK_NAME,
             })
             count = count + 1
+            BLU:PrintDebug("[UserSounds] Registered custom sound '" .. tostring(soundId) .. "' from '" .. tostring(entry.file) .. "'")
         end
     end
 
@@ -139,15 +149,18 @@ function UserSounds:Register()
 end
 
 function UserSounds:Init()
+    BLU:PrintDebug("[UserSounds] Init called")
     self:Register()
 
     -- Expose public refresh API so /blu refresh also picks up user sounds
     local existingRefresh = BLU.RefreshUserSounds
     BLU.RefreshUserSounds = function()
+        BLU:PrintDebug("[UserSounds] RefreshUserSounds invoked")
         local count = UserSounds:Register()
         if BLU.RefreshSoundPackUI then BLU.RefreshSoundPackUI() end
         return count
     end
+    BLU:PrintDebug("[UserSounds] Existing refresh hook present: " .. tostring(existingRefresh ~= nil))
 
     BLU:PrintDebug("[UserSounds] User custom sounds module initialized.")
 end

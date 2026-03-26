@@ -267,7 +267,9 @@ local function GetAddOnMetadataValue(index, key)
 end
 
 function SharedMedia:TryBindLSM()
+    BLU:PrintDebug("[SharedMedia] TryBindLSM called")
     if self.LSM then
+        BLU:PrintDebug("[SharedMedia] LSM already bound")
         return true
     end
 
@@ -297,6 +299,7 @@ function SharedMedia:TryBindLSM()
 end
 
 function SharedMedia:ClearExternalFromRegistry()
+    BLU:PrintDebug("[SharedMedia] ClearExternalFromRegistry called")
     if not BLU.SoundRegistry or not BLU.SoundRegistry.GetAllSounds or not BLU.SoundRegistry.UnregisterSound then
         return
     end
@@ -314,7 +317,9 @@ function SharedMedia:ClearExternalFromRegistry()
 end
 
 function SharedMedia:QueueRescan(delaySeconds)
+    BLU:PrintDebug("[SharedMedia] QueueRescan called with delay " .. tostring(delaySeconds or 0))
     if self.pendingRescan then
+        BLU:PrintDebug("[SharedMedia] Rescan already pending")
         return
     end
 
@@ -340,6 +345,7 @@ function SharedMedia:QueueRescan(delaySeconds)
 end
 
 function SharedMedia:NotifyExternalSoundsUpdated()
+    BLU:PrintDebug("[SharedMedia] NotifyExternalSoundsUpdated called")
     if BLU.SoundRegistry then
         BLU.SoundRegistry.uiSoundCache = {}
     end
@@ -353,6 +359,7 @@ function SharedMedia:NotifyExternalSoundsUpdated()
 end
 
 function SharedMedia:RegisterBridgePath(path, preferredPackName)
+    BLU:PrintDebug("[SharedMedia] RegisterBridgePath called for '" .. tostring(path) .. "'")
     if not IsAudioPath(path) then
         return false
     end
@@ -404,6 +411,7 @@ function SharedMedia:RegisterBridgePath(path, preferredPackName)
     }
 
     self._registeredBridgePaths[lowerPath] = true
+    BLU:PrintDebug("[SharedMedia] Registered bridge sound '" .. tostring(soundId) .. "' from pack '" .. tostring(packName) .. "'")
     return true
 end
 
@@ -468,6 +476,7 @@ local function CollectPathsFromValue(value, foundPaths, visitedTables, scanState
 end
 
 function SharedMedia:ScanGenericBridgeSources()
+    BLU:PrintDebug("[SharedMedia] ScanGenericBridgeSources called")
     local foundPaths = {}
     local scanState = { totalFound = 0, sourceTableCount = 0 }
 
@@ -526,6 +535,7 @@ function SharedMedia:ScanGenericBridgeSources()
 end
 
 function SharedMedia:ApplyManualBridgePaths()
+    BLU:PrintDebug("[SharedMedia] ApplyManualBridgePaths called")
     local registered = 0
 
     for _, entry in pairs(self.manualBridgePaths) do
@@ -540,6 +550,7 @@ function SharedMedia:ApplyManualBridgePaths()
 end
 
 function SharedMedia:RegisterExternalSoundEntries(packName, soundEntries, persistManual)
+    BLU:PrintDebug("[SharedMedia] RegisterExternalSoundEntries called for pack '" .. tostring(packName) .. "'")
     if type(soundEntries) ~= "table" then
         return 0
     end
@@ -579,10 +590,12 @@ function SharedMedia:RegisterExternalSoundEntries(packName, soundEntries, persis
 end
 
 function SharedMedia:RegisterExternalSoundPack(packName, soundEntries)
+    BLU:PrintDebug("[SharedMedia] RegisterExternalSoundPack called for pack '" .. tostring(packName) .. "'")
     return self:RegisterExternalSoundEntries(packName, soundEntries, true)
 end
 
 function SharedMedia:EnsureKittyBridgeHook()
+    BLU:PrintDebug("[SharedMedia] EnsureKittyBridgeHook called")
     if self.kittyHookInstalled then
         return
     end
@@ -615,6 +628,7 @@ function SharedMedia:EnsureKittyBridgeHook()
 end
 
 function SharedMedia:ScanKittySoundPacks()
+    BLU:PrintDebug("[SharedMedia] ScanKittySoundPacks called")
     if type(_G.KittyGetSoundPacks) ~= "function" then
         return 0
     end
@@ -636,6 +650,7 @@ function SharedMedia:ScanKittySoundPacks()
 end
 
 function SharedMedia:InvokeDBMPackRegistrars()
+    BLU:PrintDebug("[SharedMedia] InvokeDBMPackRegistrars called")
     if type(_G.DBM) ~= "table" then
         return 0
     end
@@ -711,6 +726,7 @@ function SharedMedia:Init()
 end
 
 function SharedMedia:ScanExternalSounds()
+    BLU:PrintDebug("[SharedMedia] ScanExternalSounds called")
     wipe(self.externalSounds)
     wipe(self.soundCategories)
     self._registeredBridgePaths = {}
@@ -782,14 +798,17 @@ function SharedMedia:ScanExternalSounds()
 end
 
 function SharedMedia:GetExternalSounds()
+    BLU:PrintDebug("[SharedMedia] GetExternalSounds called")
     return self.externalSounds
 end
 
 function SharedMedia:GetSoundCategories()
+    BLU:PrintDebug("[SharedMedia] GetSoundCategories called")
     return self.soundCategories
 end
 
 function SharedMedia:PlayExternalSound(name)
+    BLU:PrintDebug("[SharedMedia] PlayExternalSound called for '" .. tostring(name) .. "'")
     if not self:TryBindLSM() then
         BLU:PrintDebug("LibSharedMedia unavailable; cannot play external sound.")
         return false
@@ -812,6 +831,7 @@ function SharedMedia:PlayExternalSound(name)
 end
 
 function SharedMedia:OnAddonLoaded(loadedAddonName)
+    BLU:PrintDebug("[SharedMedia] OnAddonLoaded called for '" .. tostring(loadedAddonName) .. "'")
     if not IsLikelyMediaProviderName(loadedAddonName) then
         return
     end
@@ -826,10 +846,12 @@ function SharedMedia:OnAddonLoaded(loadedAddonName)
 end
 
 function SharedMedia:OnPlayerLogin()
+    BLU:PrintDebug("[SharedMedia] OnPlayerLogin called")
     self:QueueRescan(1.0)
 end
 
 function SharedMedia:OnMediaRegistered(event, mediatype, key)
+    BLU:PrintDebug("[SharedMedia] OnMediaRegistered called for mediatype='" .. tostring(mediatype) .. "', key='" .. tostring(key) .. "'")
     if mediatype ~= "sound" then
         return
     end
@@ -839,6 +861,7 @@ function SharedMedia:OnMediaRegistered(event, mediatype, key)
 end
 
 function SharedMedia:OnMediaSetGlobal(event, mediatype, key)
+    BLU:PrintDebug("[SharedMedia] OnMediaSetGlobal called for mediatype='" .. tostring(mediatype) .. "', key='" .. tostring(key) .. "'")
     if mediatype ~= "sound" then
         return
     end

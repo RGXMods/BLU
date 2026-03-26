@@ -24,7 +24,7 @@ function RenownRank:Init()
     -- Initialize renown tracking
     self:ScanRenownLevels()
     
-    BLU:PrintDebug("RenownRank module initialized")
+    BLU:PrintDebug(BLU:Loc("MODULE_LOADED", "RenownRank"))
 end
 
 -- Cleanup function
@@ -32,7 +32,7 @@ function RenownRank:Cleanup()
     BLU:UnregisterEvent("MAJOR_FACTION_RENOWN_LEVEL_CHANGED", RENOWN_EVENT_ID_MAJOR)
     BLU:UnregisterEvent("COVENANT_SANCTUM_RENOWN_LEVEL_CHANGED", RENOWN_EVENT_ID_COVENANT)
     
-    BLU:PrintDebug("RenownRank module cleaned up")
+    BLU:PrintDebug(BLU:Loc("MODULE_CLEANED_UP", "RenownRank"))
 end
 
 -- Scan current renown levels
@@ -70,10 +70,10 @@ function RenownRank:OnRenownLevelChanged(event, factionID, newLevel, oldLevel)
     if newLevel > oldLevel then
         self:PlayRenownSound()
         
-        if BLU.debugMode then
+        if BLU.db.profile.debugMode then
             local data = C_MajorFactions.GetMajorFactionData(factionID)
-            local factionName = data and data.name or "Unknown Faction"
-            BLU:Print(string.format("Renown increased with %s: %d -> %d", factionName, oldLevel, newLevel))
+            local factionName = data and data.name or BLU:Loc("UNKNOWN")
+            BLU:Print(BLU:Loc("DEBUG_RENOWN_INCREASED", factionName, oldLevel, newLevel))
         end
     end
     
@@ -90,8 +90,8 @@ function RenownRank:OnCovenantRenownChanged(event, newLevel, oldLevel)
     if newLevel and oldLevel and newLevel > oldLevel then
         self:PlayRenownSound()
         
-        if BLU.debugMode then
-            BLU:Print(string.format("Covenant Renown increased: %d -> %d", oldLevel, newLevel))
+        if BLU.db.profile.debugMode then
+            BLU:Print(BLU:Loc("DEBUG_COVENANT_RENOWN_INCREASED", oldLevel, newLevel))
         end
     end
 end

@@ -58,9 +58,11 @@ local moduleRegistry = {
 local function ResolveModuleKey(moduleType, moduleName)
     local moduleKey = moduleRegistry[moduleType] and moduleRegistry[moduleType][moduleName]
     if moduleKey then
+        BLU:PrintDebug("[Loader] Resolved module '" .. tostring(moduleName) .. "' in type '" .. tostring(moduleType) .. "' to key '" .. tostring(moduleKey) .. "'")
         return moduleKey
     end
 
+    BLU:PrintDebug("[Loader] Using passthrough module key for '" .. tostring(moduleName) .. "'")
     return moduleName
 end
 
@@ -104,6 +106,7 @@ end
 
 -- Module loader function
 function BLU:LoadModule(moduleType, moduleName)
+    self:PrintDebug("[Loader] LoadModule called for type='" .. tostring(moduleType) .. "', module='" .. tostring(moduleName) .. "'")
     -- All modules must be pre-loaded via XML files in WoW
     -- This function now just enables/initializes already loaded modules
     
@@ -147,6 +150,7 @@ end
 
 -- Module unloader function
 function BLU:UnloadModule(moduleName)
+    self:PrintDebug("[Loader] UnloadModule called for '" .. tostring(moduleName) .. "'")
     local moduleKey = ResolveModuleKey("features", moduleName)
     local module = self.LoadedModules[moduleName] or self.LoadedModules[moduleKey]
     if not module then
@@ -170,7 +174,9 @@ end
 
 -- Load modules based on saved settings
 function BLU:LoadModulesFromSettings()
+    self:PrintDebug("[Loader] LoadModulesFromSettings called")
     if not self.db or not self.db.profile then
+        self:PrintDebug("[Loader] LoadModulesFromSettings aborted; profile not ready")
         return
     end
 
@@ -193,8 +199,10 @@ function BLU:LoadModulesFromSettings()
 
         for _, moduleName in ipairs(featureModules) do
             if IsFeatureEnabled(db, moduleName) then
+                self:PrintDebug("[Loader] Feature module enabled by settings: " .. tostring(moduleName))
                 self:LoadModule("features", moduleName)
             else
+                self:PrintDebug("[Loader] Feature module disabled by settings: " .. tostring(moduleName))
                 self:UnloadModule(moduleName)
             end
         end
@@ -220,6 +228,7 @@ function BLU:LoadModulesFromSettings()
     
     -- Load required sound modules
     for soundModule in pairs(soundsToLoad) do
+        self:PrintDebug("[Loader] Loading sound module dependency '" .. tostring(soundModule) .. "'")
         self:LoadModule("sounds", soundModule)
     end
     
@@ -231,6 +240,7 @@ end
 
 -- Update module loading when settings change
 function BLU:UpdateModuleLoading(feature, enabled)
+    self:PrintDebug("[Loader] UpdateModuleLoading called for '" .. tostring(feature) .. "' => " .. tostring(enabled))
     if enabled then
         self:LoadModule("features", feature)
     else

@@ -19,7 +19,7 @@ function TradingPost:Init()
     -- Track currency for changes
     self.lastCurrencyAmount = self:GetTradingPostCurrency()
     
-    BLU:PrintDebug("TradingPost module initialized")
+    BLU:PrintDebug(BLU:Loc("MODULE_LOADED", "TradingPost"))
 end
 
 -- Cleanup function
@@ -27,7 +27,7 @@ function TradingPost:Cleanup()
     BLU:UnregisterEvent("PERKS_PROGRAM_PURCHASE_SUCCESS", TRADING_EVENT_ID_PURCHASE)
     BLU:UnregisterEvent("PERKS_PROGRAM_CURRENCY_REFRESH", TRADING_EVENT_ID_REFRESH)
     
-    BLU:PrintDebug("TradingPost module cleaned up")
+    BLU:PrintDebug(BLU:Loc("MODULE_CLEANED_UP", "TradingPost"))
 end
 
 -- Get current Trading Post currency
@@ -47,8 +47,8 @@ function TradingPost:OnPurchaseSuccess(event, vendorItemID)
     
     self:PlayTradingPostSound()
     
-    if BLU.debugMode then
-        BLU:Print("Trading Post purchase successful!")
+    if BLU.db.profile.debugMode then
+        BLU:Print(BLU:Loc("DEBUG_TRADING_POST_PURCHASE"))
     end
 end
 
@@ -65,9 +65,9 @@ function TradingPost:OnCurrencyRefresh(event)
     if self.lastCurrencyAmount and currentAmount > self.lastCurrencyAmount then
         self:PlayTradingPostSound()
         
-        if BLU.debugMode then
+        if BLU.db.profile.debugMode then
             local gained = currentAmount - self.lastCurrencyAmount
-            BLU:Print(string.format("Gained %d Trading Post currency!", gained))
+            BLU:Print(BLU:Loc("DEBUG_TRADING_POST_CURRENCY_GAINED", gained))
         end
     end
     

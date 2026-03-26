@@ -25,7 +25,7 @@ function Quest:Init()
     -- Track if we're at a quest giver
     self.atQuestGiver = false
     
-    BLU:PrintDebug("Quest module initialized")
+    BLU:PrintDebug(BLU:Loc("MODULE_LOADED", "Quest"))
 end
 
 -- Cleanup function
@@ -34,7 +34,7 @@ function Quest:Cleanup()
     BLU:UnregisterEvent("QUEST_TURNED_IN", QUEST_EVENT_ID_TURNED_IN)
     BLU:UnregisterEvent("QUEST_COMPLETE", QUEST_EVENT_ID_COMPLETE)
     BLU:UnregisterEvent("QUEST_WATCH_UPDATE", QUEST_EVENT_ID_PROGRESS)
-    BLU:PrintDebug("Quest module cleaned up")
+    BLU:PrintDebug(BLU:Loc("MODULE_CLEANED_UP", "Quest"))
 end
 
 -- Quest accepted handler
@@ -47,8 +47,8 @@ function Quest:OnQuestAccepted(event, questId)
     BLU:PlayCategorySound("questaccept")
     
     if BLU.db.profile.debugMode then
-        local questTitle = C_QuestLog.GetTitleForQuestID(questId) or "Unknown Quest"
-        BLU:Print(string.format("Quest accepted: %s", questTitle))
+        local questTitle = C_QuestLog.GetTitleForQuestID(questId) or BLU:Loc("UNKNOWN")
+        BLU:Print(BLU:Loc("DEBUG_QUEST_ACCEPTED", questTitle))
     end
 end
 
@@ -62,8 +62,8 @@ function Quest:OnQuestTurnedIn(event, questId, xpReward, moneyReward)
     BLU:PlayCategorySound("questturnin")
     
     if BLU.db.profile.debugMode then
-        local questTitle = C_QuestLog.GetTitleForQuestID(questId) or "Unknown Quest"
-        BLU:Print(string.format("Quest completed: %s", questTitle))
+        local questTitle = C_QuestLog.GetTitleForQuestID(questId) or BLU:Loc("UNKNOWN")
+        BLU:Print(BLU:Loc("DEBUG_QUEST_COMPLETED", questTitle))
     end
 end
 
@@ -94,8 +94,8 @@ function Quest:OnQuestWatchUpdate(event, questID)
     BLU:PlayCategorySound("questprogress")
 
     if BLU.db.profile.debugMode then
-        local questTitle = C_QuestLog.GetTitleForQuestID and C_QuestLog.GetTitleForQuestID(questID) or "Unknown Quest"
-        BLU:Print(string.format("Quest progress: %s", questTitle))
+        local questTitle = C_QuestLog.GetTitleForQuestID and C_QuestLog.GetTitleForQuestID(questID) or BLU:Loc("UNKNOWN")
+        BLU:Print(BLU:Loc("DEBUG_QUEST_PROGRESS", questTitle))
     end
 end
 

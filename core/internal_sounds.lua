@@ -14,16 +14,16 @@ BLU.Modules = BLU.Modules or {}
 BLU.Modules["internal_sounds"] = InternalSounds
 
 function InternalSounds:Init()
-    BLU:PrintDebug("Internal sounds module initializing...")
+    BLU:PrintDebug("[InternalSounds] Init called")
     
     -- Register all built-in sound packs
     self:RegisterSoundPacks()
     
-    BLU:PrintDebug("Internal sounds module initialized")
+    BLU:PrintDebug("[InternalSounds] Internal sounds module initialized")
 end
 
 function InternalSounds:RegisterSoundPacks()
-    BLU:PrintDebug("Internal sounds module: Registering BLU's built-in sound packs...")
+    BLU:PrintDebug("[InternalSounds] RegisterSoundPacks called")
 
     local function countTableEntries(tbl)
         if type(tbl) ~= "table" then return 0 end
@@ -39,31 +39,33 @@ function InternalSounds:RegisterSoundPacks()
         id = "blu_default",
         name = "BLU Defaults",
         sounds = {
-            achievement_default = { name = "Default Achievement", file = ADDON_PATH .. "media\\sounds\\achievement_default.ogg", duration = 2.0, category = "achievement", source = "BLU", isInternal = true },
-            achievement_progress_default = { name = "Default Achievement Progress", file = ADDON_PATH .. "media\\sounds\\achievement_default.ogg", duration = 2.0, category = "achievementprogress", source = "BLU", isInternal = true },
-            battle_pet_level_default = { name = "Default Battle Pet Level", file = ADDON_PATH .. "media\\sounds\\battle_pet_level_default.ogg", duration = 2.0, category = "battlepet", source = "BLU", isInternal = true },
-            pet_capture_default = { name = "Default Pet Capture", file = ADDON_PATH .. "media\\sounds\\quest_default.ogg", duration = 2.0, category = "petcapture", source = "BLU", isInternal = true },
-            honor_default = { name = "Default Honor", file = ADDON_PATH .. "media\\sounds\\honor_default.ogg", duration = 2.0, category = "honorrank", source = "BLU", isInternal = true },
-            level_default = { name = "Default Level Up", file = ADDON_PATH .. "media\\sounds\\level_default.ogg", duration = 2.0, category = "levelup", source = "BLU", isInternal = true },
-            post_default = { name = "Default Trading Post", file = ADDON_PATH .. "media\\sounds\\post_default.ogg", duration = 2.0, category = "tradingpost", source = "BLU", isInternal = true },
-            quest_accept_default = { name = "Default Quest Accept", file = ADDON_PATH .. "media\\sounds\\quest_accept_default.ogg", duration = 2.0, category = "questaccept", source = "BLU", isInternal = true },
-            quest_default = { name = "Default Quest Complete", file = ADDON_PATH .. "media\\sounds\\quest_default.ogg", duration = 2.0, category = "quest", source = "BLU", isInternal = true },
-            quest_progress_default = { name = "Default Quest Progress", file = ADDON_PATH .. "media\\sounds\\quest_accept_default.ogg", duration = 2.0, category = "questprogress", source = "BLU", isInternal = true },
-            quest_turnin_default = { name = "Default Quest Turn-In", file = ADDON_PATH .. "media\\sounds\\quest_default.ogg", duration = 2.0, category = "questturnin", source = "BLU", isInternal = true },
-            renown_default = { name = "Default Renown", file = ADDON_PATH .. "media\\sounds\\renown_default.ogg", duration = 2.0, category = "renownrank", source = "BLU", isInternal = true },
-            rep_default = { name = "Default Reputation", file = ADDON_PATH .. "media\\sounds\\rep_default.ogg", duration = 2.0, category = "reputation", source = "BLU", isInternal = true },
-            delve_default = { name = "Default Delve Companion", file = ADDON_PATH .. "media\\sounds\\level_default.ogg", duration = 2.0, category = "delvecompanion", source = "BLU", isInternal = true },
-            delve_life_lost_default = { name = "Default Delve Life Lost", file = ADDON_PATH .. "media\\sounds\\honor_default.ogg", duration = 2.0, category = "delvelifelost", source = "BLU", isInternal = true },
-            delve_life_gained_default = { name = "Default Delve Life Gained", file = ADDON_PATH .. "media\\sounds\\level_default.ogg", duration = 2.0, category = "delvelifegained", source = "BLU", isInternal = true },
-            housing_xp_default = { name = "Default House XP", file = ADDON_PATH .. "media\\sounds\\rep_default.ogg", duration = 2.0, category = "housingxpgained", source = "BLU", isInternal = true },
-            housing_level_default = { name = "Default House Level", file = ADDON_PATH .. "media\\sounds\\level_default.ogg", duration = 2.0, category = "housingleveledup", source = "BLU", isInternal = true },
-            housing_rewards_default = { name = "Default House Rewards", file = ADDON_PATH .. "media\\sounds\\achievement_default.ogg", duration = 2.0, category = "housingrewardsreceived", source = "BLU", isInternal = true },
-            housing_decor_default = { name = "Default New Decor", file = ADDON_PATH .. "media\\sounds\\quest_default.ogg", duration = 2.0, category = "housingdecorcollected", source = "BLU", isInternal = true },
+            achievement_default = { name = "Default Achievement", file = ADDON_PATH .. "media\\sounds\\achievement_default_med.ogg", duration = 2.0, category = "achievement", source = "BLU", isInternal = true },
+            achievement_progress_default = { name = "Default Achievement Progress", file = ADDON_PATH .. "media\\sounds\\achievement_default_med.ogg", duration = 2.0, category = "achievementprogress", source = "BLU", isInternal = true },
+            battle_pet_level_default = { name = "Default Battle Pet Level", file = ADDON_PATH .. "media\\sounds\\battle_pet_level_default_med.ogg", duration = 2.0, category = "battlepet", source = "BLU", isInternal = true },
+            pet_capture_default = { name = "Default Pet Capture", file = ADDON_PATH .. "media\\sounds\\quest_default_med.ogg", duration = 2.0, category = "petcapture", source = "BLU", isInternal = true },
+            honor_default = { name = "Default Honor", file = ADDON_PATH .. "media\\sounds\\honor_default_med.ogg", duration = 2.0, category = "honorrank", source = "BLU", isInternal = true },
+            level_default = { name = "Default Level Up", file = ADDON_PATH .. "media\\sounds\\level_default_med.ogg", duration = 2.0, category = "levelup", source = "BLU", isInternal = true },
+            post_default = { name = "Default Trading Post", file = ADDON_PATH .. "media\\sounds\\post_default_med.ogg", duration = 2.0, category = "tradingpost", source = "BLU", isInternal = true },
+            quest_accept_default = { name = "Default Quest Accept", file = ADDON_PATH .. "media\\sounds\\quest_accept_default_med.ogg", duration = 2.0, category = "questaccept", source = "BLU", isInternal = true },
+            quest_default = { name = "Default Quest Complete", file = ADDON_PATH .. "media\\sounds\\quest_default_med.ogg", duration = 2.0, category = "quest", source = "BLU", isInternal = true },
+            quest_progress_default = { name = "Default Quest Progress", file = ADDON_PATH .. "media\\sounds\\quest_accept_default_med.ogg", duration = 2.0, category = "questprogress", source = "BLU", isInternal = true },
+            quest_turnin_default = { name = "Default Quest Turn-In", file = ADDON_PATH .. "media\\sounds\\quest_default_med.ogg", duration = 2.0, category = "questturnin", source = "BLU", isInternal = true },
+            renown_default = { name = "Default Renown", file = ADDON_PATH .. "media\\sounds\\renown_default_med.ogg", duration = 2.0, category = "renownrank", source = "BLU", isInternal = true },
+            rep_default = { name = "Default Reputation", file = ADDON_PATH .. "media\\sounds\\rep_default_med.ogg", duration = 2.0, category = "reputation", source = "BLU", isInternal = true },
+            delve_default = { name = "Default Delve Companion", file = ADDON_PATH .. "media\\sounds\\level_default_med.ogg", duration = 2.0, category = "delvecompanion", source = "BLU", isInternal = true },
+            delve_life_lost_default = { name = "Default Delve Life Lost", file = ADDON_PATH .. "media\\sounds\\honor_default_med.ogg", duration = 2.0, category = "delvelifelost", source = "BLU", isInternal = true },
+            delve_life_gained_default = { name = "Default Delve Life Gained", file = ADDON_PATH .. "media\\sounds\\level_default_med.ogg", duration = 2.0, category = "delvelifegained", source = "BLU", isInternal = true },
+            housing_xp_default = { name = "Default House XP", file = ADDON_PATH .. "media\\sounds\\rep_default_med.ogg", duration = 2.0, category = "housingxpgained", source = "BLU", isInternal = true },
+            housing_level_default = { name = "Default House Level", file = ADDON_PATH .. "media\\sounds\\level_default_med.ogg", duration = 2.0, category = "housingleveledup", source = "BLU", isInternal = true },
+            housing_rewards_default = { name = "Default House Rewards", file = ADDON_PATH .. "media\\sounds\\achievement_default_med.ogg", duration = 2.0, category = "housingrewardsreceived", source = "BLU", isInternal = true },
+            housing_decor_default = { name = "Default New Decor", file = ADDON_PATH .. "media\\sounds\\quest_default_med.ogg", duration = 2.0, category = "housingdecorcollected", source = "BLU", isInternal = true },
         }
     }
     if BLU.RegisterSoundPack then
         BLU:RegisterSoundPack(defaultPack.id, defaultPack.name, defaultPack.sounds)
-        BLU:PrintDebug(string.format("Registered BLU sound pack: %s (%d sounds)", defaultPack.name, countTableEntries(defaultPack.sounds)))
+        BLU:PrintDebug(string.format("[InternalSounds] Registered BLU sound pack: %s (%d sounds)", defaultPack.name, countTableEntries(defaultPack.sounds)))
+    else
+        BLU:PrintDebug("[InternalSounds] RegisterSoundPack unavailable; skipped default pack registration")
     end
 
     -- Register game sound packs
@@ -148,12 +150,11 @@ function InternalSounds:RegisterSoundPacks()
                 duration = 2.0,
                 category = "all",
                 source = "BLU",
-                isInternal = true
             }
         end
         if BLU.RegisterSoundPack then
             BLU:RegisterSoundPack(packData.id, packData.name, soundsToRegister)
-            BLU:PrintDebug(string.format("Registered BLU game pack: %s (%d sounds)", packData.name, countTableEntries(soundsToRegister)))
+            BLU:PrintDebug(string.format("[InternalSounds] Registered BLU game pack: %s (%d sounds)", packData.name, countTableEntries(soundsToRegister)))
         end
     end
 
@@ -164,24 +165,31 @@ function InternalSounds:RegisterSoundPacks()
         for _ in pairs(sounds) do
             count = count + 1
         end
-        BLU:PrintDebug("Total sounds registered in registry: " .. count)
+        BLU:PrintDebug("[InternalSounds] Total sounds registered in registry: " .. count)
+    else
+        BLU:PrintDebug("[InternalSounds] Registry unavailable for post-registration verification")
     end
 end
 
 -- Get all internal sounds for a category
 function InternalSounds:GetSoundsForCategory(category)
     if not BLU.Registry or not BLU.Registry.GetSoundsByCategory then
+        BLU:PrintDebug("[InternalSounds] GetSoundsForCategory skipped; registry unavailable")
         return {}
     end
     
+    BLU:PrintDebug("[InternalSounds] GetSoundsForCategory called for '" .. tostring(category) .. "'")
     return BLU.Registry:GetSoundsByCategory(category)
 end
 
 -- Test play a sound
 function InternalSounds:TestSound(soundId)
     if BLU.Registry and BLU.Registry.PlaySound then
+        BLU:PrintDebug("[InternalSounds] TestSound called for '" .. tostring(soundId) .. "'")
         BLU.Registry:PlaySound(soundId)
         BLU:Print("Playing test sound: " .. (soundId or "none"))
+    else
+        BLU:PrintDebug("[InternalSounds] TestSound skipped; registry playback unavailable")
     end
 end
 

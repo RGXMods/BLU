@@ -23,6 +23,7 @@ SLASH_BLU2 = "/bluesound"
 SlashCmdList["BLU"] = function(msg)
     BLU:PrintDebug("/blu command executed with message: " .. tostring(msg))
     msg = NormalizeCommandInput(msg)
+    BLU:PrintDebug("[Commands] Normalized /blu command to '" .. tostring(msg) .. "'")
     
     -- Check if database is ready
     if not BLU.db then
@@ -34,6 +35,7 @@ SlashCmdList["BLU"] = function(msg)
     end
     
     if msg == "" or msg == "options" or msg == "config" then
+        BLU:PrintDebug("[Commands] Opening options")
         -- Try to open options
         if BLU.OpenOptions then
             BLU:OpenOptions()
@@ -41,12 +43,14 @@ SlashCmdList["BLU"] = function(msg)
             BLU:Print("|cff00ccffBLU:|r Options panel not available yet. Please wait a moment and try again.")
         end
     elseif msg == "test" then
+        BLU:PrintDebug("[Commands] Running test sound command")
         if BLU.PlayTestSound then
             BLU:PlayTestSound("levelup")
         else
             BLU:Print("|cff00ccffBLU:|r Playing test sound...")
         end
     elseif msg == "debug" then
+        BLU:PrintDebug("[Commands] Toggling debug mode")
         if BLU.db and BLU.db.profile then
             BLU.db.profile.debugMode = not BLU.db.profile.debugMode
             BLU.debugMode = BLU.db.profile.debugMode
@@ -55,6 +59,7 @@ SlashCmdList["BLU"] = function(msg)
             BLU:Print("|cff00ccffBLU:|r Database not loaded yet")
         end
     elseif msg == "enable" then
+        BLU:PrintDebug("[Commands] Enabling addon")
         if BLU.db and BLU.db.profile then
             BLU.db.profile.enabled = true
             if BLU.Enable then
@@ -63,6 +68,7 @@ SlashCmdList["BLU"] = function(msg)
             BLU:Print("|cff00ff00BLU Enabled|r")
         end
     elseif msg == "disable" then
+        BLU:PrintDebug("[Commands] Disabling addon")
         if BLU.db and BLU.db.profile then
             BLU.db.profile.enabled = false
             if BLU.Disable then
@@ -71,12 +77,14 @@ SlashCmdList["BLU"] = function(msg)
             BLU:Print("|cffff0000BLU Disabled|r")
         end
     elseif msg == "status" then
+        BLU:PrintDebug("[Commands] Showing addon status")
         BLU:Print("|cff00ccffBLU Status:|r")
         BLU:Print("  Database: " .. (BLU.db and "|cff00ff00Loaded|r" or "|cffff0000Not Loaded|r"))
         BLU:Print("  Options Panel: " .. (BLU.OptionsPanel and "|cff00ff00Created|r" or "|cffff9900Not Created|r"))
         BLU:Print("  Enabled: " .. ((BLU.db and BLU.db.profile and BLU.db.profile.enabled) and "|cff00ff00Yes|r" or "|cffff0000No|r"))
         BLU:Print("  Debug Mode: " .. (BLU.debugMode and "|cff00ff00On|r" or "|cff808080Off|r"))
     elseif msg == "refresh" or msg == "rescan" then
+        BLU:PrintDebug("[Commands] Refreshing external sounds")
         if BLU.RefreshExternalSounds then
             BLU:RefreshExternalSounds()
             BLU:Print("|cff00ccffBLU:|r Rescanning external sound packs...")
@@ -84,6 +92,7 @@ SlashCmdList["BLU"] = function(msg)
             BLU:Print("|cff00ccffBLU:|r SharedMedia bridge is not ready yet.")
         end
     elseif msg == "help" then
+        BLU:PrintDebug("[Commands] Showing help")
         BLU:Print("|cff00ccffBLU Commands:|r")
         BLU:Print("  |cffffff00/blu|r - Open options")
         BLU:Print("  |cffffff00/blu test|r - Play test sound")
@@ -95,6 +104,7 @@ SlashCmdList["BLU"] = function(msg)
         BLU:Print("  |cffffff00/blu help|r - Show this help")
     else
         -- Unknown command, show help
+        BLU:PrintDebug("[Commands] Unknown /blu command: '" .. tostring(msg) .. "'")
         BLU:Print("|cff00ccffBLU:|r Unknown command. Type |cffffff00/blu help|r for help.")
     end
 end
@@ -102,6 +112,7 @@ end
 -- Test command for simulating events
 SLASH_BLUTEST1 = "/blutest"
 SlashCmdList["BLUTEST"] = function(event)
+    BLU:PrintDebug("[Commands] /blutest invoked with '" .. tostring(event) .. "'")
     if not BLU.db then
         BLU:Print("Database not loaded yet")
         return
@@ -123,6 +134,7 @@ SlashCmdList["BLUTEST"] = function(event)
     end
 
     if event == "" then
+        BLU:PrintDebug("[Commands] /blutest requested usage output")
         BLU:Print("Usage: /blutest [event]")
         local available_events = ""
         for eventName, _ in pairs(events) do
@@ -134,8 +146,10 @@ SlashCmdList["BLUTEST"] = function(event)
 
     local handler = events[event:lower()]
     if handler then
+        BLU:PrintDebug("[Commands] Simulating event '" .. tostring(event:lower()) .. "'")
         handler()
     else
+        BLU:PrintDebug("[Commands] Unknown /blutest event '" .. tostring(event) .. "'")
         BLU:Print("Unknown event: " .. event)
         local available_events = ""
         for eventName, _ in pairs(events) do

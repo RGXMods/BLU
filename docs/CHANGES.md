@@ -1,125 +1,22 @@
-## Version 6.1.2 (2026-03-25)
-
-### Patch Release
-
-#### UI Changes
-- Reordered option tabs alphabetically (General first, Sounds last).
-- Removed scroll frame from Housing tab — all options are now fully visible without scrolling.
-- Removed redundant buttons from General tab Actions section — only Reset Profile remains.
-- Moved version/author text in options header to prevent clipping at the panel edge.
-- Added "None" as the first sound selection option in every event dropdown.
-
-#### Bug Fixes
-- Fixed hardcoded `Interface\AddOns\BLU\` paths throughout — all paths now use the addon's actual folder name at runtime, fixing sound and texture loading for users whose folder is not named exactly `BLU` (e.g. manual GitHub clones).
-- Fixed BLU Other Game Sounds not playing — game sound packs now register using the `_med` variant as the base path so both the primary and fallback playback attempts resolve to a file that exists.
-- Fixed Delve and Housing tab icons — replaced with valid WoW icon paths (`Achievement_Zone_Deepholm`, `Trade_Blacksmithing`).
-- Set Quest Progress default sound to None — WoW does not have a native quest progress sound so this event is silent by default.
-- Removed redundant `CreateDelvePanel` function — Delve tab correctly uses `CreateEventSoundPanel` with all three triggers.
-
----
-
-## Version 6.1.1 (2026-03-25)
-
-### Patch Release
-
-#### UI Fixes
-- Added scroll frame to Housing tab — 4 sound pickers now scroll within the panel instead of overflowing.
-- Added scroll frame to Delve tab — now shows all 3 Delve triggers (Companion Level Up, Life Lost, Life Gained) in a single scrollable panel.
-- Fixed tab icons for Trading Post, Delve, and Housing — previous icon paths did not exist in the WoW client.
-- Fixed `PlaySoundFile` audio channel from `"Master"` to `"SFX"` — resolves sounds not playing for some users.
-
----
-
-## Version 6.1.0 (2026-03-24)
-
-### Minor Release
-
-#### New Triggers
-- Added **Achievement Progress** trigger — plays sound when tracked achievement criteria advance (not just on full completion).
-- Added **Quest Progress** trigger — plays sound when tracked quest objectives update mid-quest.
-- Added **Pet Capture** trigger — plays sound when a wild battle pet is successfully captured.
-- Added **Delve Life Lost** trigger — plays sound when the player loses a life (candle) during a delve.
-- Added **Delve Life Gained** trigger — plays sound when the player gains an extra life during a delve.
-
-#### Bug Fixes
-- Fixed Housing module `HOUSE_DECOR_ADDED_TO_CHEST` phantom event registration causing errors when the event was never fired by the game client.
-- Fixed house level-up detection: `HOUSE_LEVEL_CHANGED` payload has no `houseGUID` field — replaced per-GUID map with a simple `lastKnownHouseLevel` tracker seeded from `CURRENT_HOUSE_INFO_RECIEVED`/`UPDATED`.
-
----
-
-## Version 6.0.3 (2026-03-24)
-
-### Patch Release
-
-- Fixed `Random` sound selection to pull from all registered playable sounds instead of only the current event pool.
-- Forced BLU internal sounds chosen by `Random` to use the medium variant by default when low/medium/high versions exist.
-- Corrected no-edit custom sound auto-detection to look in `Interface\AddOns\` and `Interface\AddOns\sounds\`.
-
-## Version 6.0.2 (2026-03-24)
-
-### Patch Release
-
-- Fixed BLU startup slowdowns by limiting expensive external media rescans during load and narrowing late addon rescans to likely media providers.
-- Fixed honor rank detection by sampling the player's actual honor level across the current event set instead of relying on a single payload path.
-- Fixed BLU chat and welcome-message icon rendering by standardizing all chat prefixes to the shipped addon icon texture.
-- Replaced the old About tab with a Housing planning tab and added Discord info directly to the options header.
-- Fixed Trading Post and Delve tab icon assignments to use working Retail icon paths.
-- Added no-edit custom sound auto-detection for `custom01` through `custom24` in `Interface\AddOns\` and `Interface\AddOns\sounds\`, while keeping `user_sounds.lua` support for manual entries.
-
-## Version 6.0.1 (2026-03-24)
-
-### Patch Release
-
-- Fixed SharedMedia external sound rescans timing out with `script ran too long` by narrowing BLU's generic bridge fallback scan to likely media and sound pack containers instead of broadly crawling addon/global tables.
-- Reduced login and manual `/blu refresh` rescan errors when large addon stacks are loaded.
-
-## Version 6.0.0 (2026-03-23)
-
-### Complete Rewrite — Better Level-Up! v6
-
-v6.0.0 is a ground-up rewrite of BLU with a new modular architecture, a fully redesigned options UI, and expanded sound pack support.
-
-### Architecture
-- Rebuilt on a clean modular core (`core/`) replacing the legacy monolithic structure.
-- All feature modules (`Quest`, `LevelUp`, `Achievement`, `Reputation`, `BattlePet`, `Honor`, `Renown`, `TradingPost`, `Delve`) are independently loaded and toggleable.
-- New `combat_protection.lua` guards against taint during combat.
-- New `registry.lua` and `loader.lua` for safe dynamic module registration.
-
-### Sound System
-- New unified sound registry with per-module sound selection.
-- Auto-discovers compatible audio from other loaded addons at startup — no external libraries required.
-- Optional `LibSharedMedia-3.0` integration: if installed, BLU hooks in automatically for broader pack coverage.
-- Added public API `BLU:RegisterExternalSoundPack(packName, soundEntries)` for direct third-party pack registration.
-- Improved discovery timing — rebinds and rescans when media/addons register after startup.
-- Added `/blu refresh` and `/blu rescan` slash commands for safe manual media rebuild without reloading.
-- Fixed forbidden-table iteration errors during external sound rescans.
-
-### User Custom Sounds
-- New "User Custom Sounds" pack: drop `.ogg`, `.mp3`, or `.wav` files into `BLU\user\sounds\` and register them in `BLU\user\user_sounds.lua`.
-- User sounds appear as a dedicated pack in the Sounds tab and are selectable in all module dropdowns.
-- Reference sounds from any path — not just the BLU folder.
-- Use `/blu refresh` or `/reload` to pick up changes without restarting the game.
-
-### Options UI
-- Fully redesigned settings panel integrated into the Retail Settings list with BLU icon and styled title.
-- New tab system: General, Sounds, Modules, About.
-- Sounds tab uses multi-column layout with spillover/paging for large pack lists (175+ entries).
-- Inline play button for sound previews; in-dropdown `♪ Preview` actions in nested sound menus.
-- Single-line sound labels with truncation and tooltip; removed repeated addon/pack prefixes.
-- Module toggle now serves as the disable control (removed redundant `None` option from dropdowns).
-- About panel displays real BLU-loaded pack/count data dynamically.
-- Improved section/header spacing and border rendering to reduce clipped frames.
+## Version 6.2.0 (2026-03-25)
 
 ### Bug Fixes
-- Fixed Delve chat taint error.
-- Fixed burst-trigger freeze on rapid event firing.
-- Fixed syntax errors in sound and initialization modules preventing addon load.
-- Fixed `About` panel error on first open.
-- Fixed version display double-`v` in options panel.
-- Fixed BLU game sounds not correctly nested in dropdown menus.
-- Fixed SharedMedia sounds not appearing in sound selection dropdowns.
-- Fixed `Installed Packs` page error.
-- Fixed `Default Sound` option playing incorrect sounds.
+- **All module triggers now fire correctly** — `enabled = true` was missing from config defaults, causing every module handler to bail early on fresh installs or profiles without a saved `enabled` value; all events (Level Up, Achievement, Quest, Reputation, Honor, Renown, Trading Post, Battle Pet, Delve, Housing) now trigger as expected
+- **Sound channel selection now works for game soundpack sounds** — game packs were incorrectly registered with `isInternal = true`, forcing them onto the Master channel and hiding the channel dropdown; fixed so only BLU default sounds are internal, game packs correctly use the per-event channel dropdown (Master / SFX / Music / Ambience)
+- **Default WoW sounds now fully muted when BLU is active** — expanded mute list with correct retail FileDataIDs sourced from BLU Classic: Quest Accepted (567400), Quest Turned In (567439), Honor (1489546), Battle Pet Level Up (642841), Renown (4745441), Trading Post (2066672), plus all legacy IDs retained; prevents default sounds from playing over BLU sounds
+- **BLU default sound fallback no longer errors** — all default sounds now registered with `_med.ogg` suffix so both the primary variant path and fallback resolve to files that exist on disk
+- **User custom sounds now load on startup** — `usersounds` module was never added to the init sequence; now initializes in Phase 2 so custom OGG/MP3/WAV files placed at `Interface\AddOns\sounds\custom01.ogg` (up to `custom24`) are detected and available in dropdowns after `/reload`
 
-### Compatibility
-- Updated `BLU.toc` interface version to `120001` for WoW Midnight `12.0.1`.
+### New Features
+- **Per-event sound channel selection** — non-BLU (soundpack/game) sounds now have a channel dropdown per event tab (Master / SFX / Music / Ambience), defaulting to SFX; BLU internal default sounds always play on Master with volume controlled by Low/Med/High file variants
+- **Volume label under slider** — replaces static Low/High tick labels with a single dynamic label below the slider that updates as you drag (Low / Medium / High)
+- **User custom sounds** — drop up to 24 OGG, MP3, or WAV files named `custom01`–`custom24` in `Interface\AddOns\sounds\` and they appear under "User Custom Sounds" in every event's sound dropdown after `/reload`
+
+### UI Changes
+- Discord link restored to left side of header, anchored below subtitle/title block
+- Discord invite updated to `discord.gg/N7kdKAHVVF`
+- RGX Mods branding color updated to burgundy (`#8b4b5c`)
+- Housing tab content inset now matches all other tabs (consistent 10px padding)
+- Volume slider Low/High static labels removed; single updating label shown below slider instead
+
+---

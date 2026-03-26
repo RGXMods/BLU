@@ -11,6 +11,7 @@ BLU.Modules["about"] = Housing
 BLU.Modules["housing"] = Housing
 
 local function CreateBulletList(parent, items, startY)
+    BLU:PrintDebug("[Options/About] CreateBulletList called with " .. tostring(#items) .. " items")
     local yOffset = startY or -10
     for _, item in ipairs(items) do
         local text = parent:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
@@ -24,6 +25,7 @@ local function CreateBulletList(parent, items, startY)
 end
 
 function BLU.CreateAboutPanel(panel)
+    BLU:PrintDebug("[Options/About] Creating About panel")
     local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
     scrollFrame:SetPoint("TOPLEFT", 8, -8)
     scrollFrame:SetPoint("BOTTOMRIGHT", -28, 8)
@@ -124,7 +126,7 @@ function BLU.CreateAboutPanel(panel)
 end
 
 function Housing:Init()
-    BLU:PrintDebug("[Housing] Housing panel module initialized")
+    BLU:PrintDebug("[Options/About] About panel module initialized")
 end
 
 if BLU.RegisterModule then

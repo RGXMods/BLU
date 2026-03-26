@@ -137,11 +137,13 @@ end
 
 -- Get sound data
 function SoundRegistry:GetSound(soundId)
+    BLU:PrintDebug("[Registry] GetSound called for '" .. tostring(soundId) .. "'")
     return self.sounds[soundId]
 end
 
 -- Get sounds by category
 function SoundRegistry:GetSoundsByCategory(category)
+    BLU:PrintDebug("[Registry] GetSoundsByCategory called for '" .. tostring(category) .. "'")
     local sounds = {}
     
     if self.categories[category] then
@@ -204,7 +206,9 @@ function SoundRegistry:GetRegisteredPacks()
 end
 
 function SoundRegistry:GetSoundsGroupedForUI(targetEvent)
+    BLU:PrintDebug("[Registry] GetSoundsGroupedForUI called for '" .. tostring(targetEvent) .. "'")
     if self.uiSoundCache[targetEvent] then
+        BLU:PrintDebug("[Registry] Returning cached UI sound hierarchy for '" .. tostring(targetEvent) .. "'")
         return self.uiSoundCache[targetEvent]
     end
 
@@ -236,10 +240,12 @@ function SoundRegistry:GetSoundsGroupedForUI(targetEvent)
     end
 
     self.uiSoundCache[targetEvent] = hierarchy
+    BLU:PrintDebug("[Registry] Built UI sound hierarchy for '" .. tostring(targetEvent) .. "'")
     return hierarchy
 end
 
 function SoundRegistry:GetAllPlayableSoundIds()
+    BLU:PrintDebug("[Registry] GetAllPlayableSoundIds called")
     local grouped = {
         self:GetSoundsGroupedForUI("levelup"),
         self:GetSoundsGroupedForUI("achievement"),
@@ -294,11 +300,13 @@ function SoundRegistry:GetAllPlayableSoundIds()
         addSoundId(defaultSoundId)
     end
 
+    BLU:PrintDebug("[Registry] Collected " .. tostring(#soundIds) .. " playable sound ids")
     return soundIds
 end
 
 -- Play a sound
 function SoundRegistry:PlaySound(soundId, volume, options)
+    BLU:PrintDebug("[Registry] PlaySound called for '" .. tostring(soundId) .. "'")
     local sound = self.sounds[soundId]
     if not sound then
         BLU:PrintDebug("Sound not found: " .. tostring(soundId))
@@ -306,6 +314,7 @@ function SoundRegistry:PlaySound(soundId, volume, options)
     end
 
     options = options or {}
+    BLU:PrintDebug("[Registry] PlaySound options categoryOverride='" .. tostring(options.categoryOverride) .. "', volumeOverride='" .. tostring(options.volumeSettingOverride) .. "'")
     
     -- Get volume settings from profile
     local profileVolume = 1.0
@@ -325,21 +334,34 @@ function SoundRegistry:PlaySound(soundId, volume, options)
         return false
     end
     
-    -- Get sound channel from profile
-    local channel = "SFX"
+    -- Determine playback channel from per-event soundChannels setting.
+    -- BLU internal sounds default to Master; soundpack sounds default to SFX.
+    -- Both respect the per-event channel dropdown so random/direct selections
+    -- play on whichever channel the user has chosen.
+    local channel
+    local channelCategory = options.categoryOverride or sound.category
+    if channelCategory and BLU.db and BLU.db.profile and BLU.db.profile.soundChannels then
+        channel = BLU.db.profile.soundChannels[channelCategory]
+    end
+    if not channel then
+        channel = sound.isInternal and "Master" or "SFX"
+    end
     
     -- Play the sound based on type
     local willPlay, handle
     
     if sound.soundKit then
+        BLU:PrintDebug("[Registry] Using soundKit playback for '" .. tostring(soundId) .. "'")
         -- Use PlaySound for built-in WoW sounds
         willPlay = PlaySound(sound.soundKit, channel)
         handle = sound.soundKit
     elseif sound.file then
+        BLU:PrintDebug("[Registry] Using file playback for '" .. tostring(soundId) .. "'")
         local fileToPlay = sound.file
         
         -- Check if this is a BLU internal sound (should have volume variants)
-        if sound.source == "BLU" or sound.isInternal then
+        if sound.isInternal then
+            BLU:PrintDebug("[Registry] Sound is internal; resolving volume variant for category '" .. tostring(options.categoryOverride or sound.category) .. "'")
             -- BLU internal sounds SHOULD have _low, _med, _high variants
             local category = options.categoryOverride or sound.category
             local volumeSetting = options.volumeSettingOverride or "medium"
@@ -374,6 +396,7 @@ function SoundRegistry:PlaySound(soundId, volume, options)
                 willPlay, handle = PlaySoundFile(sound.file, channel)
             end
         else
+            BLU:PrintDebug("[Registry] Sound is external/non-internal; using direct file playback")
             -- External sounds, SoundPaks, or BLU sounds without variants
             -- These play at full volume on the specified channel
             willPlay, handle = PlaySoundFile(sound.file, channel)
@@ -410,6 +433,7 @@ end
 
 -- Play sound for a specific event category
 function SoundRegistry:PlayCategorySound(category, forceSound)
+    BLU:PrintDebug("[Registry] PlayCategorySound called for '" .. tostring(category) .. "' with forceSound='" .. tostring(forceSound) .. "'")
     if BLU.db and BLU.db.profile and BLU.db.profile.enabled == false then
         BLU:PrintDebug("BLU disabled, skipping category sound: " .. tostring(category))
         return false
@@ -432,6 +456,7 @@ function SoundRegistry:PlayCategorySound(category, forceSound)
     
     -- Check if module is enabled
     local moduleKey = moduleCategoryMap[category] or category
+    BLU:PrintDebug("[Registry] Resolved module key for category '" .. tostring(category) .. "' to '" .. tostring(moduleKey) .. "'")
     if BLU.db and BLU.db.profile and BLU.db.profile.modules and BLU.db.profile.modules[moduleKey] == false then
         BLU:PrintDebug("Module disabled for category: " .. category)
         return false
@@ -459,6 +484,7 @@ function SoundRegistry:PlayCategorySound(category, forceSound)
     if not selectedSound then
         selectedSound = "default"
     end
+    BLU:PrintDebug("[Registry] Selected sound for category '" .. tostring(category) .. "' is '" .. tostring(selectedSound) .. "'")
 
     if selectedSound == "None" then
         BLU:PrintDebug("Selected sound is None, skipping playback.")
@@ -466,10 +492,12 @@ function SoundRegistry:PlayCategorySound(category, forceSound)
     end
 
     if selectedSound == "random" then
+        BLU:PrintDebug("[Registry] Random sound selection requested for '" .. tostring(category) .. "'")
         local soundIds = self:GetAllPlayableSoundIds()
         if #soundIds > 0 then
             local randomIndex = math.random(1, #soundIds)
             local randomSoundId = soundIds[randomIndex]
+            BLU:PrintDebug("[Registry] Randomly selected '" .. tostring(randomSoundId) .. "' for category '" .. tostring(category) .. "'")
             local played = self:PlaySound(randomSoundId, nil, {
                 categoryOverride = category,
                 volumeSettingOverride = "medium",
@@ -488,8 +516,9 @@ function SoundRegistry:PlayCategorySound(category, forceSound)
     -- Handle different sound types
     if selectedSound == "default" then
         local soundId = defaultBluSounds[category]
+        BLU:PrintDebug("[Registry] Default sound lookup for category '" .. tostring(category) .. "' => '" .. tostring(soundId) .. "'")
         if soundId then
-            local played = self:PlaySound(soundId)
+            local played = self:PlaySound(soundId, nil, { categoryOverride = category })
             if played then
                 self.lastCategoryPlayAt[category] = now
                 self.lastAnyPlayAt = now
@@ -500,6 +529,7 @@ function SoundRegistry:PlayCategorySound(category, forceSound)
     elseif selectedSound:match("^external:") then
         -- External sound from SharedMedia
         local externalName = selectedSound:gsub("^external:", "")
+        BLU:PrintDebug("[Registry] External sound requested: '" .. tostring(externalName) .. "'")
         if BLU.PlayExternalSound then
             local played = BLU:PlayExternalSound(externalName)
             if played then
@@ -510,8 +540,9 @@ function SoundRegistry:PlayCategorySound(category, forceSound)
         end
         
     else
+        BLU:PrintDebug("[Registry] Direct sound id playback for '" .. tostring(selectedSound) .. "'")
         -- Direct sound ID
-        local played = self:PlaySound(selectedSound)
+        local played = self:PlaySound(selectedSound, nil, { categoryOverride = category })
         if played then
             self.lastCategoryPlayAt[category] = now
             self.lastAnyPlayAt = now
@@ -524,6 +555,7 @@ end
 
 -- Helper to get sound info
 function SoundRegistry:GetSoundInfo(soundId)
+    BLU:PrintDebug("[Registry] GetSoundInfo called for '" .. tostring(soundId) .. "'")
     local sound = self.sounds[soundId]
     if not sound then return nil end
     
@@ -540,6 +572,7 @@ end
 
 -- Test/preview functions
 function BLU:PlayTestSound(category, volume)
+    self:PrintDebug("[Registry] BLU:PlayTestSound helper called for '" .. tostring(category) .. "'")
     if not BLU.Registry then
         self:PrintDebug("Registry not available")
         return false
@@ -562,6 +595,7 @@ function BLU:PlayTestSound(category, volume)
 end
 
 function BLU:PlayCategorySound(category, volume)
+    self:PrintDebug("[Registry] BLU:PlayCategorySound helper called for '" .. tostring(category) .. "'")
     if BLU.Registry then
         return BLU.Registry:PlayCategorySound(category, volume)
     end
@@ -569,6 +603,7 @@ function BLU:PlayCategorySound(category, volume)
 end
 
 function BLU:TestAllSounds()
+    self:PrintDebug("[Registry] TestAllSounds called")
     if not BLU.Registry then
         self:Print("Sound registry not available")
         return
@@ -594,6 +629,7 @@ end
 
 -- Reload all sounds
 function SoundRegistry:ReloadAllSounds()
+    BLU:PrintDebug("[Registry] ReloadAllSounds called")
     -- Clear cache
     self.sounds = {}
     self.categories = {}

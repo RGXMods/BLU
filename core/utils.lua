@@ -55,7 +55,7 @@ function Utils:Init()
     self.queueTail = 0
     self.recentQueuedSounds = {}
     self.isPlaying = false
-    BLU:PrintDebug("Utils module initialized")
+    BLU:PrintDebug("[Utils] Utils module initialized")
 end
 
 function Utils:DeepCopy(value, seen)
@@ -80,8 +80,10 @@ end
 
 -- Queue a sound to be played
 function Utils:QueueSound(soundFile, volume, callback)
+    BLU:PrintDebug("[Utils] QueueSound called for '" .. tostring(soundFile) .. "' at volume " .. tostring(volume))
     if not BLU.db.profile.queueSounds then
         -- Just play immediately if queuing is disabled
+        BLU:PrintDebug("[Utils] Queue disabled; playing sound immediately")
         self:PlaySoundFile(soundFile, volume, callback)
         return
     end
@@ -90,6 +92,7 @@ function Utils:QueueSound(soundFile, volume, callback)
     local signature = tostring(soundFile) .. "|" .. tostring(volume)
     local lastQueuedAt = self.recentQueuedSounds[signature]
     if lastQueuedAt and (now - lastQueuedAt) < SOUND_QUEUE_DEDUPE_WINDOW_SECONDS then
+        BLU:PrintDebug("[Utils] Skipped duplicate queued sound '" .. tostring(soundFile) .. "'")
         return
     end
     self.recentQueuedSounds[signature] = now
@@ -101,6 +104,7 @@ function Utils:QueueSound(soundFile, volume, callback)
     end
     local maxSize = math.min(configuredMaxSize, SOUND_QUEUE_HARD_CAP)
     if GetQueueSize(self) >= maxSize then
+        BLU:PrintDebug("[Utils] Queue full; dropping oldest queued sound")
         DequeueSound(self)
     end
 
@@ -109,22 +113,27 @@ function Utils:QueueSound(soundFile, volume, callback)
         volume = volume,
         callback = callback
     })
+    BLU:PrintDebug("[Utils] Queued sound. Queue size is now " .. tostring(GetQueueSize(self)))
 
     -- Process queue if not already playing
     if not self.isPlaying then
+        BLU:PrintDebug("[Utils] Queue idle; starting processing")
         self:ProcessSoundQueue()
     end
 end
 
 -- Process sound queue
 function Utils:ProcessSoundQueue()
+    BLU:PrintDebug("[Utils] ProcessSoundQueue called")
     local sound = DequeueSound(self)
     if not sound then
         self.isPlaying = false
+        BLU:PrintDebug("[Utils] Sound queue empty")
         return
     end
 
     self.isPlaying = true
+    BLU:PrintDebug("[Utils] Playing next queued sound '" .. tostring(sound.file) .. "'")
 
     self:PlaySoundFile(sound.file, sound.volume, function()
         if sound.callback then
@@ -133,6 +142,7 @@ function Utils:ProcessSoundQueue()
         
         -- Play next sound after a short delay
         C_Timer.After(0.1, function()
+            BLU:PrintDebug("[Utils] Advancing queued sound playback")
             self:ProcessSoundQueue()
         end)
     end)
@@ -140,12 +150,15 @@ end
 
 -- Play a sound file
 function Utils:PlaySoundFile(soundFile, volume, callback)
+    BLU:PrintDebug("[Utils] PlaySoundFile called for '" .. tostring(soundFile) .. "' at volume " .. tostring(volume))
     local channel = BLU.db.profile.soundChannel or "Master"
     local willPlay, handle = PlaySoundFile(soundFile, channel)
     
     if willPlay then
+        BLU:PrintDebug("[Utils] PlaySoundFile succeeded on channel '" .. tostring(channel) .. "'")
         -- Stop music if configured
         if BLU.db.profile.interruptMusic then
+            BLU:PrintDebug("[Utils] interruptMusic enabled; stopping music")
             StopMusic()
         end
         
@@ -156,10 +169,11 @@ function Utils:PlaySoundFile(soundFile, volume, callback)
         
         if callback then
             -- Estimate duration and call callback
+            BLU:PrintDebug("[Utils] Scheduling playback callback")
             C_Timer.After(2, callback)
         end
     else
-        BLU:PrintDebug("Failed to play sound: " .. tostring(soundFile))
+        BLU:PrintDebug("[Utils] Failed to play sound: " .. tostring(soundFile))
         if callback then
             callback()
         end
@@ -184,17 +198,21 @@ function Utils:Throttle(key, seconds, func)
     
     if not self.throttleTimers[key] or (now - self.throttleTimers[key]) >= seconds then
         self.throttleTimers[key] = now
+        BLU:PrintDebug("[Utils] Throttle executing key '" .. tostring(key) .. "'")
         return func()
     end
+    BLU:PrintDebug("[Utils] Throttle skipped key '" .. tostring(key) .. "'")
 end
 
 -- Debounce function calls
 Utils.debounceTimers = {}
 function Utils:Debounce(key, seconds, func)
     if self.debounceTimers[key] then
+        BLU:PrintDebug("[Utils] Debounce cancelling existing timer for key '" .. tostring(key) .. "'")
         self.debounceTimers[key]:Cancel()
     end
     
+    BLU:PrintDebug("[Utils] Debounce scheduling key '" .. tostring(key) .. "' for " .. tostring(seconds) .. " seconds")
     self.debounceTimers[key] = C_Timer.NewTimer(seconds, func)
 end
 
@@ -222,12 +240,15 @@ end
 -- Safe function call (delays if in combat)
 function Utils:SafeCall(func)
     if self:IsInCombat() then
+        BLU:PrintDebug("[Utils] SafeCall queued until combat ends")
         local eventId = "utils_safe_call_" .. tostring(GetTime and GetTime() or 0) .. "_" .. tostring(math.random(100000, 999999))
         BLU:RegisterEvent("PLAYER_REGEN_ENABLED", function()
             BLU:UnregisterEvent("PLAYER_REGEN_ENABLED", eventId)
+            BLU:PrintDebug("[Utils] SafeCall executing deferred function")
             func()
         end, eventId)
     else
+        BLU:PrintDebug("[Utils] SafeCall executing immediately")
         func()
     end
 end

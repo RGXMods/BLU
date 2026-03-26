@@ -12,6 +12,7 @@ end
 
 local function EnsureProfileDefaults()
     if not IsProfileReady() then
+        BLU:PrintDebug("[Options/General] EnsureProfileDefaults skipped; profile not ready")
         return false
     end
 
@@ -35,6 +36,7 @@ local function CreateCheckbox(parent, text, x, y, checked, onClick)
 end
 
 function BLU.CreateGeneralPanel(panel)
+    BLU:PrintDebug("[Options/General] Creating General panel")
     local content = CreateFrame("Frame", nil, panel)
     content:SetPoint("TOPLEFT", 8, -8)
     content:SetPoint("BOTTOMRIGHT", -8, 8)
@@ -60,6 +62,7 @@ function BLU.CreateGeneralPanel(panel)
 
     CreateCheckbox(coreSection.content, "Enable BLU", 4, -6, profile.enabled ~= false, function(self)
         profile.enabled = self:GetChecked()
+        BLU:PrintDebug("[Options/General] Enable BLU set to " .. tostring(profile.enabled))
         if profile.enabled then
             if BLU.Enable then
                 BLU:Enable()
@@ -76,11 +79,13 @@ function BLU.CreateGeneralPanel(panel)
 
     CreateCheckbox(coreSection.content, "Show welcome message", 4, -36, profile.showWelcomeMessage ~= false, function(self)
         profile.showWelcomeMessage = self:GetChecked()
+        BLU:PrintDebug("[Options/General] Show welcome message set to " .. tostring(profile.showWelcomeMessage))
     end)
 
     CreateCheckbox(coreSection.content, "Debug mode", 4, -66, profile.debugMode == true, function(self)
         profile.debugMode = self:GetChecked()
         BLU.debugMode = profile.debugMode
+        BLU:PrintDebug("[Options/General] Debug mode set to " .. tostring(profile.debugMode))
     end)
 
     local behaviorSection = BLU.Modules.design:CreateSection(content, "Behavior", "Interface\\Icons\\INV_Misc_GroupLooking")
@@ -90,10 +95,12 @@ function BLU.CreateGeneralPanel(panel)
 
     CreateCheckbox(behaviorSection.content, "Mute in instances", 4, -8, profile.muteInInstances == true, function(self)
         profile.muteInInstances = self:GetChecked()
+        BLU:PrintDebug("[Options/General] Mute in instances set to " .. tostring(profile.muteInInstances))
     end)
 
     CreateCheckbox(behaviorSection.content, "Mute in combat", 4, -38, profile.muteInCombat == true, function(self)
         profile.muteInCombat = self:GetChecked()
+        BLU:PrintDebug("[Options/General] Mute in combat set to " .. tostring(profile.muteInCombat))
     end)
 
     local actionsSection = BLU.Modules.design:CreateSection(content, "Actions", "Interface\\Icons\\INV_Misc_Gear_08")
@@ -104,6 +111,7 @@ function BLU.CreateGeneralPanel(panel)
     local resetBtn = BLU.Modules.design:CreateButton(actionsSection.content, "Reset Profile", 110, 24)
     resetBtn:SetPoint("TOPLEFT", 4, -8)
     resetBtn:SetScript("OnClick", function()
+        BLU:PrintDebug("[Options/General] Reset Profile button clicked")
         StaticPopup_Show("BLU_CONFIRM_RESET_PROFILE")
     end)
 
@@ -112,6 +120,7 @@ function BLU.CreateGeneralPanel(panel)
         button1 = YES,
         button2 = NO,
         OnAccept = function()
+            BLU:PrintDebug("[Options/General] Reset Profile confirmed")
             if IsProfileReady() then
                 wipe(BLU.db.profile)
                 if BLU.Modules and BLU.Modules.database and BLU.Modules.database.ApplyDefaults then

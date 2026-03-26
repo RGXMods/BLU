@@ -29,7 +29,7 @@ function DelveCompanion:Init()
     self.lastLifeGainedTime = 0
 
     if not IsRetailClient() then
-        BLU:PrintDebug("DelveCompanion skipped (non-retail client)")
+        BLU:PrintDebug(BLU:Loc("DEBUG_DELVE_SKIPPED_NON_RETAIL"))
         return
     end
 
@@ -39,7 +39,7 @@ function DelveCompanion:Init()
 
     self:UpdateCompanionLevelCache()
     self:UpdateLivesCache()
-    BLU:PrintDebug("DelveCompanion module initialized")
+    BLU:PrintDebug(BLU:Loc("MODULE_LOADED", "DelveCompanion"))
 end
 
 -- Cleanup function
@@ -47,7 +47,7 @@ function DelveCompanion:Cleanup()
     BLU:UnregisterEvent("FACTION_STANDING_CHANGED", DELVE_EVENT_ID_FACTION)
     BLU:UnregisterEvent("MAJOR_FACTION_RENOWN_LEVEL_CHANGED", DELVE_EVENT_ID_RENOWN)
     BLU:UnregisterEvent("UNIT_AURA", DELVE_EVENT_ID_LIVES)
-    BLU:PrintDebug("DelveCompanion module cleaned up")
+    BLU:PrintDebug(BLU:Loc("MODULE_CLEANED_UP", "DelveCompanion"))
 end
 
 function DelveCompanion:IsEnabled()
@@ -138,11 +138,11 @@ function DelveCompanion:TriggerLevelUp(level)
 
     self:PlayDelveSound()
 
-    if BLU.debugMode then
+    if BLU.db and BLU.db.profile and BLU.db.profile.debugMode then
         if level then
-            BLU:Print(string.format("Delve Companion reached level %d!", level))
+            BLU:Print(BLU:Loc("DEBUG_DELVE_COMPANION_LEVEL", level))
         else
-            BLU:Print("Delve Companion leveled up!")
+            BLU:Print(BLU:Loc("DEBUG_DELVE_COMPANION_LEVEL_GENERIC"))
         end
     end
 end
@@ -225,8 +225,8 @@ function DelveCompanion:OnUnitAura(event, unitToken)
             if (now - self.lastLifeLostTime) >= 1.0 then
                 self.lastLifeLostTime = now
                 BLU:PlayCategorySound("delvelifelost")
-                if BLU.debugMode then
-                    BLU:Print(string.format("Delve life lost! %d → %d remaining", previous, current))
+                if BLU.db and BLU.db.profile and BLU.db.profile.debugMode then
+                    BLU:Print(BLU:Loc("DEBUG_DELVE_LIFE_LOST", previous, current))
                 end
             end
         elseif current > previous then
@@ -234,8 +234,8 @@ function DelveCompanion:OnUnitAura(event, unitToken)
             if (now - self.lastLifeGainedTime) >= 1.0 then
                 self.lastLifeGainedTime = now
                 BLU:PlayCategorySound("delvelifegained")
-                if BLU.debugMode then
-                    BLU:Print(string.format("Delve life gained! %d → %d remaining", previous, current))
+                if BLU.db and BLU.db.profile and BLU.db.profile.debugMode then
+                    BLU:Print(BLU:Loc("DEBUG_DELVE_LIFE_GAINED", previous, current))
                 end
             end
         end

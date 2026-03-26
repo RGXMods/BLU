@@ -11,4 +11,4 @@
 ## X-Wago-ID: vEGPgWK1
 ## X-WoWI-ID: 26465
 
-blu.xml
+BLU.xml

@@ -386,36 +386,9 @@ function SoundRegistry:PlaySound(soundId, volume, options)
             end
         else
             BLU:PrintDebug("[Registry] Sound is external/non-internal; using direct file playback")
-            -- External sounds, SoundPaks, or BLU sounds without variants.
-            -- User custom sounds may carry candidate files so shorthand adds can
-            -- fall back across supported extensions and common locations.
-            local fileCandidates = {}
-            local seenFiles = {}
-
-            local function addFileCandidate(filePath)
-                if type(filePath) == "string" and filePath ~= "" and not seenFiles[filePath] then
-                    seenFiles[filePath] = true
-                    table.insert(fileCandidates, filePath)
-                end
-            end
-
-            addFileCandidate(sound.file)
-            if type(sound.candidateFiles) == "table" then
-                for _, candidateFile in ipairs(sound.candidateFiles) do
-                    addFileCandidate(candidateFile)
-                end
-            end
-
-            for _, candidateFile in ipairs(fileCandidates) do
-                BLU:PrintDebug("[Registry] Attempting direct file playback for '" .. tostring(soundId) .. "' using '" .. tostring(candidateFile) .. "'")
-                willPlay, handle = PlaySoundFile(candidateFile, channel)
-                if willPlay then
-                    if candidateFile ~= sound.file then
-                        BLU:PrintDebug("[Registry] Direct file playback succeeded using fallback candidate '" .. tostring(candidateFile) .. "'")
-                    end
-                    break
-                end
-            end
+            -- External sounds, SoundPaks, or user custom sounds should already
+            -- be normalized before they reach live playback.
+            willPlay, handle = PlaySoundFile(sound.file, channel)
         end
     else
         BLU:PrintError("Sound has no file or soundKit: " .. soundId)

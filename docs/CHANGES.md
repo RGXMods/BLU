@@ -1,8 +1,18 @@
 ## Notes
+- 2026-03-26: Started v6.2.4 for custom sound path resolution, display cleanup, and lighter user custom sound playback.
 - 2026-03-26: Released v6.2.3 with the finalized Sounds tab custom sound manager, instant list refreshes, custom sound shorthand/playback fixes, and slash-command cleanup.
 - 2026-03-25: `/blu addcustom` now accepts short names like `myfile` or `myfile.ogg` and checks common AddOns sound locations automatically before saving the resolved path.
 - 2026-03-25: Added a General tab helper button and popup so users can add custom sounds in game without typing the full file path.
 - 2026-03-25: General tab now keeps only the Add Custom Sound button in Actions, places it beside Reset Profile, and restores the BLU header title colors.
+
+## Version 6.2.4 (2026-03-26)
+
+### Bug Fixes
+- **Custom sound add/display paths are more accurate** - shorthand custom sound adds no longer need to wait for a later trigger to reveal the real working file, and chat/UI output is cleaner when BLU resolves a playable match.
+- **Legacy custom sound entries normalize earlier** - stored user custom sounds now normalize during refresh/registration so mismatched placeholder paths are corrected sooner.
+- **User custom sound playback path is lighter again** - removed the expensive per-trigger candidate walk from live playback after moving path normalization earlier in the custom sound flow.
+
+---
 
 ## Version 6.2.3 (2026-03-26)
 

@@ -99,9 +99,13 @@ SlashCmdList["BLU"] = function(msg)
         end
 
         if BLU.Modules and BLU.Modules["usersounds"] and BLU.Modules["usersounds"].AddCustomSound then
-            local ok, result = BLU.Modules["usersounds"]:AddCustomSound(soundPath, displayName)
+            local ok, result, resolvedPath = BLU.Modules["usersounds"]:AddCustomSound(soundPath, displayName)
             if ok then
-                BLU:Print("|cff00ccffBLU:|r Added custom sound: " .. tostring(result))
+                if resolvedPath and displayName then
+                    BLU:Print("|cff00ccffBLU:|r Added custom sound: " .. tostring(result) .. " (" .. tostring(resolvedPath) .. ")")
+                else
+                    BLU:Print("|cff00ccffBLU:|r Added custom sound: " .. tostring(result))
+                end
             else
                 BLU:Print("|cff00ccffBLU:|r Failed to add custom sound: " .. tostring(result))
             end

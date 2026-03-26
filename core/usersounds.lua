@@ -157,6 +157,21 @@ CanLoadSoundFile = function(soundPath)
     return canLoad
 end
 
+local function TryPlayableCandidate(candidatePath)
+    if type(candidatePath) ~= "string" or candidatePath == "" then
+        return false
+    end
+
+    local ok, willPlay, handle = pcall(PlaySoundFile, candidatePath, "Master")
+    if handle and StopSound then
+        pcall(StopSound, handle)
+    end
+
+    local playable = ok and willPlay == true
+    BLU:PrintDebug("[UserSounds] Active verify for '" .. tostring(candidatePath) .. "' => " .. tostring(playable))
+    return playable
+end
+
 local function CollectAutoDetectedEntries()
     BLU:PrintDebug("[UserSounds] CollectAutoDetectedEntries scanning " .. tostring(AUTO_SLOT_COUNT) .. " slots")
     local entries = {}
@@ -209,6 +224,32 @@ local function CollectConfiguredEntries(entries, seenPaths, globalName, sourceLa
             BLU:PrintDebug("[UserSounds] Skipped unsupported " .. tostring(sourceLabel) .. " entry at index " .. tostring(index))
         end
     end
+end
+
+local function NormalizeStoredProfileEntry(entry)
+    if type(entry) ~= "table" then
+        return entry
+    end
+
+    local normalizedPath = NormalizeEntryPath(entry.file or entry.path)
+    local candidateFiles = NormalizeCandidateFiles(entry.candidateFiles)
+    if not normalizedPath or not candidateFiles or #candidateFiles <= 1 then
+        return entry
+    end
+
+    for _, candidatePath in ipairs(candidateFiles) do
+        if TryPlayableCandidate(candidatePath) then
+            if candidatePath ~= normalizedPath then
+                BLU:PrintDebug("[UserSounds] Normalized stored custom sound path from '" .. tostring(normalizedPath) .. "' to '" .. tostring(candidatePath) .. "'")
+                entry.file = candidatePath
+                entry.path = nil
+                entry.candidateFiles = {candidatePath}
+            end
+            break
+        end
+    end
+
+    return entry
 end
 
 local function ResolveCustomSoundPath(soundInput)
@@ -272,6 +313,15 @@ local function ResolveCustomSoundPath(soundInput)
         end
     end
 
+    if not explicitExtension then
+        for _, candidatePath in ipairs(candidatePaths) do
+            if TryPlayableCandidate(candidatePath) then
+                BLU:PrintDebug("[UserSounds] Resolved shorthand custom sound '" .. tostring(soundInput) .. "' via active verify to '" .. tostring(candidatePath) .. "'")
+                return candidatePath, {candidatePath}
+            end
+        end
+    end
+
     if explicitExtension then
         for _, pathPattern in ipairs(CUSTOM_SOUND_SEARCH_PATHS) do
             local candidatePath = string.format(pathPattern, filename)
@@ -309,6 +359,7 @@ local function CollectEntries()
             if type(entry) == "string" then
                 AddEntry(entries, seenPaths, entry, nil, false, true)
             elseif type(entry) == "table" then
+                entry = NormalizeStoredProfileEntry(entry)
                 AddEntry(entries, seenPaths, entry.file or entry.path, entry.name, false, true, entry.candidateFiles)
             else
                 BLU:PrintDebug("[UserSounds] Skipped unsupported profile custom sound entry at index " .. tostring(index))
@@ -430,7 +481,43 @@ function UserSounds:AddCustomSound(soundPath, displayName)
         BLU:RefreshUserSounds()
     end
 
-    return true, resolvedPath
+    return true, resolvedName or BuildDisplayNameFromPath(resolvedPath), resolvedPath
+end
+
+function UserSounds:PromoteResolvedCustomSound(previousPath, resolvedPath)
+    BLU:PrintDebug("[UserSounds] PromoteResolvedCustomSound called for '" .. tostring(previousPath) .. "' => '" .. tostring(resolvedPath) .. "'")
+    if not (BLU.db and BLU.db.profile and type(BLU.db.profile.userCustomSounds) == "table") then
+        return false, "No profile custom sounds configured"
+    end
+
+    local normalizedPrevious = NormalizeEntryPath(previousPath)
+    local normalizedResolved = NormalizeEntryPath(resolvedPath)
+    if not normalizedPrevious or not normalizedResolved or normalizedPrevious == normalizedResolved then
+        return false, "No custom sound update required"
+    end
+
+    for _, entry in ipairs(BLU.db.profile.userCustomSounds) do
+        if type(entry) == "table" then
+            local entryPath = NormalizeEntryPath(entry.file or entry.path)
+            if entryPath == normalizedPrevious then
+                entry.file = normalizedResolved
+                entry.path = nil
+                entry.candidateFiles = {normalizedResolved}
+                if not entry.name or entry.name == "" or entry.name == BuildDisplayNameFromPath(normalizedPrevious) then
+                    entry.name = BuildDisplayNameFromPath(normalizedResolved, entry.name)
+                end
+
+                if BLU.RefreshUserSounds then
+                    BLU:RefreshUserSounds()
+                end
+
+                BLU:PrintDebug("[UserSounds] Promoted custom sound path to '" .. tostring(normalizedResolved) .. "'")
+                return true
+            end
+        end
+    end
+
+    return false, "Custom sound not found"
 end
 
 function UserSounds:RemoveCustomSound(matchValue)

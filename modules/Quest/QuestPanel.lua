@@ -67,11 +67,6 @@ function BLU.CreateQuestPanel(panel)
             elseif selected:match("^blu:") then
                 local soundFile = selected:gsub("^blu:", "")
                 PlaySoundFile(soundFile, BLU.db.profile.soundChannel or "Master")
-            elseif selected:match("^external:") then
-                local soundName = selected:gsub("^external:", "")
-                if BLU.Modules.sharedmedia then
-                    BLU.Modules.sharedmedia:PlayExternalSound(soundName)
-                end
             end
             
             C_Timer.After(2, function()
@@ -130,20 +125,6 @@ function BLU.CreateQuestPanel(panel)
                 info.menuList = "blu_sounds"
                 info.notCheckable = true
                 UIDropDownMenu_AddButton(info, level)
-                
-                -- SharedMedia/External sounds
-                if BLU.Modules.sharedmedia then
-                    local categories = BLU.Modules.sharedmedia:GetSoundCategories()
-                    if categories and next(categories) then
-                        info = UIDropDownMenu_CreateInfo()
-                        info.text = "|cff00ff00SharedMedia & Sound Packs|r"
-                        info.value = "sharedmedia"
-                        info.hasArrow = true
-                        info.menuList = "sharedmedia"
-                        info.notCheckable = true
-                        UIDropDownMenu_AddButton(info, level)
-                    end
-                end
                 
             elseif level == 2 then
                 if menuList == "default_volumes" then
@@ -208,50 +189,6 @@ function BLU.CreateQuestPanel(panel)
                         UIDropDownMenu_AddButton(info, level)
                     end
                     
-                elseif menuList == "sharedmedia" then
-                    -- SharedMedia categories
-                    if BLU.Modules.sharedmedia then
-                        local categories = BLU.Modules.sharedmedia:GetSoundCategories()
-                        for category, sounds in pairs(categories) do
-                            local info = UIDropDownMenu_CreateInfo()
-                            info.text = category .. " (" .. #sounds .. ")"
-                            info.value = category
-                            info.hasArrow = true
-                            info.menuList = "sm_" .. category
-                            info.notCheckable = true
-                            UIDropDownMenu_AddButton(info, level)
-                        end
-                    end
-                    
-                elseif menuList and menuList:match("^sm_") then
-                    -- SharedMedia sounds
-                    local category = menuList:gsub("^sm_", "")
-                    if BLU.Modules.sharedmedia then
-                        local categories = BLU.Modules.sharedmedia:GetSoundCategories()
-                        local sounds = categories[category]
-                        if sounds then
-                            for _, soundName in ipairs(sounds) do
-                                local info = UIDropDownMenu_CreateInfo()
-                                info.text = soundName
-                                info.value = "external:" .. soundName
-                                info.func = function()
-                                    BLU.db.profile.selectedSounds[dropdown.eventId] = info.value
-                                    UIDropDownMenu_SetText(dropdown, soundName)
-                                    currentSound:SetText("|cff00ff00" .. soundName .. "|r")
-                                    CloseDropDownMenus()
-                                    
-                                    -- Enable quest module
-                                    BLU.db.profile.modules = BLU.db.profile.modules or {}
-                                    BLU.db.profile.modules.quest = true
-                                    if BLU.LoadModule then
-                                        BLU:LoadModule("features", "quest")
-                                    end
-                                end
-                                info.checked = BLU.db.profile.selectedSounds[dropdown.eventId] == info.value
-                                UIDropDownMenu_AddButton(info, level)
-                            end
-                        end
-                    end
                 end
             end
         end)

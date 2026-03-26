@@ -13,18 +13,97 @@ BLU.Modules["usersounds"] = UserSounds
 
 local PACK_ID   = "user_custom_sounds"
 local PACK_NAME = "User Custom Sounds"
-local AUTO_SLOT_COUNT = 24
+local AUTO_SLOT_COUNT = 99
 local AUTO_SLOT_EXTENSIONS = {"ogg", "mp3", "wav"}
-local AUTO_SLOT_PATHS = {
-    "Interface\\AddOns\\custom%02d.%s",
-    "Interface\\AddOns\\sounds\\custom%02d.%s",
+local AUTO_SLOT_NAME_PATTERNS = {
+    "custom%02d",
+    "sound%02d",
+    "usersound%02d",
+    "blu_custom%02d",
 }
+local AUTO_SLOT_PATH_PATTERNS = {
+    "Interface\\AddOns\\%s.%s",
+    "Interface\\AddOns\\sounds\\%s.%s",
+    "Interface\\AddOns\\" .. addonName .. "\\%s.%s",
+    "Interface\\AddOns\\" .. addonName .. "\\sounds\\%s.%s",
+    "Interface\\AddOns\\" .. addonName .. "\\media\\sounds\\%s.%s",
+}
+local CUSTOM_SOUND_SEARCH_PATHS = {
+    "Interface\\AddOns\\%s",
+    "Interface\\AddOns\\sounds\\%s",
+    "Interface\\AddOns\\" .. addonName .. "\\%s",
+    "Interface\\AddOns\\" .. addonName .. "\\sounds\\%s",
+    "Interface\\AddOns\\" .. addonName .. "\\user\\%s",
+    "Interface\\AddOns\\" .. addonName .. "\\user\\sounds\\%s",
+    "Interface\\AddOns\\" .. addonName .. "\\media\\%s",
+    "Interface\\AddOns\\" .. addonName .. "\\media\\sounds\\%s",
+}
+local CanLoadSoundFile
+
+local function NormalizeEntryPath(soundPath)
+    if type(soundPath) ~= "string" then
+        return nil
+    end
+
+    local normalized = soundPath:gsub("/", "\\")
+    if normalized == "" then
+        return nil
+    end
+
+    return normalized
+end
 
 local function BuildDisplayNameFromPath(filePath, fallbackName)
     return string.match(filePath or "", "([^\\]+)%.[^%.]+$") or fallbackName
 end
 
-local function CanLoadSoundFile(soundPath)
+local function HasSupportedExtension(soundPath)
+    if type(soundPath) ~= "string" then
+        return false
+    end
+
+    local lowerPath = soundPath:lower()
+    for _, extension in ipairs(AUTO_SLOT_EXTENSIONS) do
+        if lowerPath:sub(-(#extension + 1)) == "." .. extension then
+            return true
+        end
+    end
+
+    return false
+end
+
+local function AddEntry(entries, seenPaths, soundPath, displayName, autoDetected, allowUnverified)
+    local normalizedPath = NormalizeEntryPath(soundPath)
+    if not normalizedPath then
+        BLU:PrintDebug("[UserSounds] Skipped invalid custom sound path")
+        return false
+    end
+
+    if seenPaths[normalizedPath] then
+        BLU:PrintDebug("[UserSounds] Skipped duplicate custom sound path '" .. tostring(normalizedPath) .. "'")
+        return false
+    end
+
+    if not CanLoadSoundFile(normalizedPath) then
+        if allowUnverified then
+            BLU:PrintDebug("[UserSounds] Accepting unverified custom sound path '" .. tostring(normalizedPath) .. "'")
+        else
+            BLU:PrintDebug("[UserSounds] Probe failed for custom sound path '" .. tostring(normalizedPath) .. "'")
+            return false
+        end
+    end
+
+    table.insert(entries, {
+        name = displayName or BuildDisplayNameFromPath(normalizedPath),
+        file = normalizedPath,
+        autoDetected = autoDetected == true,
+    })
+    seenPaths[normalizedPath] = true
+    BLU:PrintDebug("[UserSounds] Accepted custom sound path '" .. tostring(normalizedPath) .. "'")
+    return true
+end
+
+CanLoadSoundFile = function(soundPath)
     if type(soundPath) ~= "string" or soundPath == "" then
         BLU:PrintDebug("[UserSounds] CanLoadSoundFile rejected invalid path")
         return false
@@ -60,20 +139,21 @@ local function CollectAutoDetectedEntries()
     local seenPaths = {}
 
     for slot = 1, AUTO_SLOT_COUNT do
-        for _, pathPattern in ipairs(AUTO_SLOT_PATHS) do
+        for _, namePattern in ipairs(AUTO_SLOT_NAME_PATTERNS) do
+            local slotName = string.format(namePattern, slot)
             local foundForPattern = false
 
-            for _, extension in ipairs(AUTO_SLOT_EXTENSIONS) do
-                local soundPath = string.format(pathPattern, slot, extension)
-                if not seenPaths[soundPath] and CanLoadSoundFile(soundPath) then
-                    BLU:PrintDebug("[UserSounds] Auto-detected custom sound at '" .. tostring(soundPath) .. "'")
-                    table.insert(entries, {
-                        name = BuildDisplayNameFromPath(soundPath, string.format("Custom %02d", slot)),
-                        file = soundPath,
-                        autoDetected = true,
-                    })
-                    seenPaths[soundPath] = true
-                    foundForPattern = true
+            for _, pathPattern in ipairs(AUTO_SLOT_PATH_PATTERNS) do
+                for _, extension in ipairs(AUTO_SLOT_EXTENSIONS) do
+                    local soundPath = string.format(pathPattern, slotName, extension)
+                    if AddEntry(entries, seenPaths, soundPath, slotName, true) then
+                        BLU:PrintDebug("[UserSounds] Auto-detected custom sound at '" .. tostring(soundPath) .. "'")
+                        foundForPattern = true
+                        break
+                    end
+                end
+
+                if foundForPattern then
                     break
                 end
             end
@@ -85,6 +165,104 @@ local function CollectAutoDetectedEntries()
     end
 
     BLU:PrintDebug("[UserSounds] Auto-detected " .. tostring(#entries) .. " candidate custom sounds")
+    return entries
+end
+
+local function CollectConfiguredEntries(entries, seenPaths, globalName, sourceLabel)
+    BLU:PrintDebug("[UserSounds] CollectConfiguredEntries called for '" .. tostring(globalName) .. "'")
+    local configured = _G[globalName]
+    if type(configured) ~= "table" then
+        BLU:PrintDebug("[UserSounds] No configured custom sound table found for '" .. tostring(globalName) .. "'")
+        return
+    end
+
+    for index, entry in ipairs(configured) do
+        if type(entry) == "string" then
+            AddEntry(entries, seenPaths, entry, nil, false, true)
+        elseif type(entry) == "table" then
+            AddEntry(entries, seenPaths, entry.file or entry.path, entry.name, false, true)
+        else
+            BLU:PrintDebug("[UserSounds] Skipped unsupported " .. tostring(sourceLabel) .. " entry at index " .. tostring(index))
+        end
+    end
+end
+
+local function ResolveCustomSoundPath(soundInput)
+    local normalizedInput = NormalizeEntryPath(soundInput)
+    if not normalizedInput then
+        return nil
+    end
+
+    if normalizedInput:lower():find("^interface\\addons\\") or normalizedInput:find("\\") then
+        if HasSupportedExtension(normalizedInput) and CanLoadSoundFile(normalizedInput) then
+            BLU:PrintDebug("[UserSounds] Resolved explicit custom sound path '" .. tostring(normalizedInput) .. "'")
+            return normalizedInput
+        end
+    end
+
+    local filename = normalizedInput:gsub("^%s+", ""):gsub("%s+$", "")
+    if filename == "" then
+        return nil
+    end
+
+    local candidateNames = {}
+    local fallbackPath = nil
+    if HasSupportedExtension(filename) then
+        table.insert(candidateNames, filename)
+    else
+        for _, extension in ipairs(AUTO_SLOT_EXTENSIONS) do
+            table.insert(candidateNames, filename .. "." .. extension)
+        end
+    end
+
+    for _, candidateName in ipairs(candidateNames) do
+        for _, pathPattern in ipairs(CUSTOM_SOUND_SEARCH_PATHS) do
+            local candidatePath = string.format(pathPattern, candidateName)
+            if not fallbackPath then
+                fallbackPath = candidatePath
+            end
+            if CanLoadSoundFile(candidatePath) then
+                BLU:PrintDebug("[UserSounds] Resolved shorthand custom sound '" .. tostring(soundInput) .. "' to '" .. tostring(candidatePath) .. "'")
+                return candidatePath
+            end
+        end
+    end
+
+    if fallbackPath then
+        BLU:PrintDebug("[UserSounds] Falling back to unverified custom sound path '" .. tostring(fallbackPath) .. "' for input '" .. tostring(soundInput) .. "'")
+        return fallbackPath
+    end
+
+    BLU:PrintDebug("[UserSounds] Failed to resolve custom sound input '" .. tostring(soundInput) .. "'")
+    return nil
+end
+
+local function CollectEntries()
+    local entries = CollectAutoDetectedEntries()
+    local seenPaths = {}
+
+    for _, entry in ipairs(entries) do
+        if entry.file then
+            seenPaths[entry.file] = true
+        end
+    end
+
+    if BLU.db and BLU.db.profile and type(BLU.db.profile.userCustomSounds) == "table" then
+        for index, entry in ipairs(BLU.db.profile.userCustomSounds) do
+            if type(entry) == "string" then
+                AddEntry(entries, seenPaths, entry, nil, false, true)
+            elseif type(entry) == "table" then
+                AddEntry(entries, seenPaths, entry.file or entry.path, entry.name, false, true)
+            else
+                BLU:PrintDebug("[UserSounds] Skipped unsupported profile custom sound entry at index " .. tostring(index))
+            end
+        end
+    else
+        BLU:PrintDebug("[UserSounds] No profile custom sounds configured")
+    end
+
+    CollectConfiguredEntries(entries, seenPaths, "BLU_UserCustomSounds", "manual")
+    BLU:PrintDebug("[UserSounds] Total custom sound candidates after configured merge: " .. tostring(#entries))
     return entries
 end
 
@@ -112,7 +290,7 @@ function UserSounds:Register()
     BLU:PrintDebug("[UserSounds] Register called")
     ClearRegisteredSounds()
 
-    local entries = CollectAutoDetectedEntries()
+    local entries = CollectEntries()
     if #entries == 0 then
         BLU:PrintDebug("[UserSounds] No user custom sounds found.")
         return 0
@@ -163,6 +341,53 @@ function UserSounds:Init()
     BLU:PrintDebug("[UserSounds] Existing refresh hook present: " .. tostring(existingRefresh ~= nil))
 
     BLU:PrintDebug("[UserSounds] User custom sounds module initialized.")
+end
+
+function UserSounds:AddCustomSound(soundPath, displayName)
+    BLU:PrintDebug("[UserSounds] AddCustomSound called for '" .. tostring(soundPath) .. "'")
+    if not (BLU.db and BLU.db.profile) then
+        return false, "Database not ready"
+    end
+
+    local resolvedPath = ResolveCustomSoundPath(soundPath)
+    if not resolvedPath then
+        return false, "Could not find a compatible sound file for '" .. tostring(soundPath) .. "'"
+    end
+
+    BLU.db.profile.userCustomSounds = BLU.db.profile.userCustomSounds or {}
+    table.insert(BLU.db.profile.userCustomSounds, {
+        file = resolvedPath,
+        name = displayName,
+    })
+
+    if BLU.RefreshUserSounds then
+        BLU:RefreshUserSounds()
+    end
+
+    return true, resolvedPath
+end
+
+function UserSounds:RemoveCustomSound(matchValue)
+    BLU:PrintDebug("[UserSounds] RemoveCustomSound called for '" .. tostring(matchValue) .. "'")
+    if not (BLU.db and BLU.db.profile and type(BLU.db.profile.userCustomSounds) == "table") then
+        return false, "No profile custom sounds configured"
+    end
+
+    local normalizedMatch = NormalizeEntryPath(matchValue)
+    for index = #BLU.db.profile.userCustomSounds, 1, -1 do
+        local entry = BLU.db.profile.userCustomSounds[index]
+        local entryPath = type(entry) == "table" and NormalizeEntryPath(entry.file or entry.path) or NormalizeEntryPath(entry)
+        local entryName = type(entry) == "table" and entry.name or nil
+        if entryPath == normalizedMatch or entryName == matchValue then
+            table.remove(BLU.db.profile.userCustomSounds, index)
+            if BLU.RefreshUserSounds then
+                BLU:RefreshUserSounds()
+            end
+            return true
+        end
+    end
+
+    return false, "Custom sound not found"
 end
 
 if BLU.RegisterModule then

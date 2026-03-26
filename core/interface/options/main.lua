@@ -98,31 +98,34 @@ function Options:CreateOptionsPanel()
     logo:SetTexture(ADDON_PATH .. "media\\Textures\\icon.tga")
 
     local title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    title:SetPoint("LEFT", logo, "RIGHT", 10, 5)
-    title:SetText("|cff05dffaBLU|r - Better Level-Up!")
+    title:SetPoint("TOPLEFT", logo, "TOPRIGHT", 10, -10)
+    title:SetText("|cff05dffaB|r|cffffffffetter |cff05dffaL|r|cffffffffevel-|cff05dffaU|r|cffffffffp|cff05dffa!|r")
 
     local subtitle = header:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    subtitle:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -5)
+    subtitle:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -4)
     subtitle:SetText("Iconic game sounds for World of Warcraft events")
     subtitle:SetTextColor(0.7, 0.7, 0.7)
 
     local version = header:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    version:SetPoint("TOPRIGHT", -30, -15)
+    version:SetPoint("TOPRIGHT", -15, -10)
     local metadataVersion = (C_AddOns and C_AddOns.GetAddOnMetadata and C_AddOns.GetAddOnMetadata(addonName, "Version"))
         or (GetAddOnMetadata and GetAddOnMetadata(addonName, "Version"))
         or BLU.version
         or "v6.0.0"
     version:SetText(metadataVersion)
     version:SetTextColor(unpack(BLU.Modules.design.Colors.Primary))
+    version:SetJustifyH("RIGHT")
 
     local author = header:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    author:SetPoint("TOP", version, "BOTTOM", 0, -2)
+    author:SetPoint("TOPRIGHT", version, "BOTTOMRIGHT", 0, -4)
     author:SetText("by donniedice")
     author:SetTextColor(0.7, 0.7, 0.7)
+    author:SetJustifyH("RIGHT")
 
     local branding = header:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    branding:SetPoint("BOTTOMRIGHT", -15, 22)
+    branding:SetPoint("TOPRIGHT", author, "BOTTOMRIGHT", 0, -4)
     branding:SetText("|cff8b4b5cRGX|r |cffffd700Mods|r")
+    branding:SetJustifyH("RIGHT")
 
     local discord = header:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     discord:SetPoint("TOPLEFT", subtitle, "BOTTOMLEFT", 0, -4)

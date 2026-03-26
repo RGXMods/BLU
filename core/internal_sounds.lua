@@ -13,6 +13,19 @@ local InternalSounds = {}
 BLU.Modules = BLU.Modules or {}
 BLU.Modules["internal_sounds"] = InternalSounds
 
+local function RegisterPack(packId, packName, sounds)
+    if BLU.RegisterSoundPack then
+        return BLU:RegisterSoundPack(packId, packName, sounds)
+    end
+
+    if BLU.SoundRegistry and BLU.SoundRegistry.RegisterSoundPack then
+        BLU:PrintDebug("[InternalSounds] Falling back to direct SoundRegistry:RegisterSoundPack for '" .. tostring(packName) .. "'")
+        return BLU.SoundRegistry:RegisterSoundPack(packId, packName, sounds)
+    end
+
+    return false
+end
+
 function InternalSounds:Init()
     BLU:PrintDebug("[InternalSounds] Init called")
     
@@ -61,8 +74,7 @@ function InternalSounds:RegisterSoundPacks()
             housing_decor_default = { name = "Default New Decor", file = ADDON_PATH .. "media\\sounds\\quest_default_med.ogg", duration = 2.0, category = "housingdecorcollected", source = "BLU", isInternal = true },
         }
     }
-    if BLU.RegisterSoundPack then
-        BLU:RegisterSoundPack(defaultPack.id, defaultPack.name, defaultPack.sounds)
+    if RegisterPack(defaultPack.id, defaultPack.name, defaultPack.sounds) then
         BLU:PrintDebug(string.format("[InternalSounds] Registered BLU sound pack: %s (%d sounds)", defaultPack.name, countTableEntries(defaultPack.sounds)))
     else
         BLU:PrintDebug("[InternalSounds] RegisterSoundPack unavailable; skipped default pack registration")
@@ -152,9 +164,10 @@ function InternalSounds:RegisterSoundPacks()
                 source = "BLU",
             }
         end
-        if BLU.RegisterSoundPack then
-            BLU:RegisterSoundPack(packData.id, packData.name, soundsToRegister)
+        if RegisterPack(packData.id, packData.name, soundsToRegister) then
             BLU:PrintDebug(string.format("[InternalSounds] Registered BLU game pack: %s (%d sounds)", packData.name, countTableEntries(soundsToRegister)))
+        else
+            BLU:PrintDebug("[InternalSounds] Failed to register BLU game pack '" .. tostring(packData.name) .. "'")
         end
     end
 

@@ -7,13 +7,18 @@ BLU:PrintDebug("core/commands.lua loaded.")
 local addonName = ...
 local BLU = _G["BLU"]
 
-local function NormalizeCommandInput(msg)
+local function ParseCommandInput(msg)
     if type(msg) ~= "string" then
-        return ""
+        return "", ""
     end
 
     msg = msg:gsub("^%s+", ""):gsub("%s+$", "")
-    return msg:lower()
+    if msg == "" then
+        return "", ""
+    end
+
+    local command, rest = msg:match("^(%S+)%s*(.-)$")
+    return (command or ""):lower(), rest or ""
 end
 
 -- Register slash commands
@@ -22,8 +27,8 @@ SLASH_BLU2 = "/bluesound"
 
 SlashCmdList["BLU"] = function(msg)
     BLU:PrintDebug("/blu command executed with message: " .. tostring(msg))
-    msg = NormalizeCommandInput(msg)
-    BLU:PrintDebug("[Commands] Normalized /blu command to '" .. tostring(msg) .. "'")
+    local command, rest = ParseCommandInput(msg)
+    BLU:PrintDebug("[Commands] Parsed /blu command to command='" .. tostring(command) .. "', rest='" .. tostring(rest) .. "'")
     
     -- Check if database is ready
     if not BLU.db then
@@ -34,7 +39,7 @@ SlashCmdList["BLU"] = function(msg)
         return
     end
     
-    if msg == "" or msg == "options" or msg == "config" then
+    if command == "" or command == "options" or command == "config" then
         BLU:PrintDebug("[Commands] Opening options")
         -- Try to open options
         if BLU.OpenOptions then
@@ -42,14 +47,14 @@ SlashCmdList["BLU"] = function(msg)
         else
             BLU:Print("|cff00ccffBLU:|r Options panel not available yet. Please wait a moment and try again.")
         end
-    elseif msg == "test" then
+    elseif command == "test" then
         BLU:PrintDebug("[Commands] Running test sound command")
         if BLU.PlayTestSound then
             BLU:PlayTestSound("levelup")
         else
             BLU:Print("|cff00ccffBLU:|r Playing test sound...")
         end
-    elseif msg == "debug" then
+    elseif command == "debug" then
         BLU:PrintDebug("[Commands] Toggling debug mode")
         if BLU.db and BLU.db.profile then
             BLU.db.profile.debugMode = not BLU.db.profile.debugMode
@@ -58,7 +63,7 @@ SlashCmdList["BLU"] = function(msg)
         else
             BLU:Print("|cff00ccffBLU:|r Database not loaded yet")
         end
-    elseif msg == "enable" then
+    elseif command == "enable" then
         BLU:PrintDebug("[Commands] Enabling addon")
         if BLU.db and BLU.db.profile then
             BLU.db.profile.enabled = true
@@ -67,7 +72,7 @@ SlashCmdList["BLU"] = function(msg)
             end
             BLU:Print("|cff00ff00BLU Enabled|r")
         end
-    elseif msg == "disable" then
+    elseif command == "disable" then
         BLU:PrintDebug("[Commands] Disabling addon")
         if BLU.db and BLU.db.profile then
             BLU.db.profile.enabled = false
@@ -76,22 +81,55 @@ SlashCmdList["BLU"] = function(msg)
             end
             BLU:Print("|cffff0000BLU Disabled|r")
         end
-    elseif msg == "status" then
+    elseif command == "status" then
         BLU:PrintDebug("[Commands] Showing addon status")
         BLU:Print("|cff00ccffBLU Status:|r")
         BLU:Print("  Database: " .. (BLU.db and "|cff00ff00Loaded|r" or "|cffff0000Not Loaded|r"))
         BLU:Print("  Options Panel: " .. (BLU.OptionsPanel and "|cff00ff00Created|r" or "|cffff9900Not Created|r"))
         BLU:Print("  Enabled: " .. ((BLU.db and BLU.db.profile and BLU.db.profile.enabled) and "|cff00ff00Yes|r" or "|cffff0000No|r"))
         BLU:Print("  Debug Mode: " .. (BLU.debugMode and "|cff00ff00On|r" or "|cff808080Off|r"))
-    elseif msg == "refresh" or msg == "rescan" then
+    elseif command == "refresh" or command == "rescan" then
         BLU:PrintDebug("[Commands] Refreshing external sounds")
-        if BLU.RefreshExternalSounds then
-            BLU:RefreshExternalSounds()
-            BLU:Print("|cff00ccffBLU:|r Rescanning external sound packs...")
-        else
-            BLU:Print("|cff00ccffBLU:|r SharedMedia bridge is not ready yet.")
+        if BLU.RefreshUserSounds then
+            BLU:RefreshUserSounds()
+            BLU:Print("|cff00ccffBLU:|r Rescanning user custom sounds...")
         end
-    elseif msg == "help" then
+    elseif command == "addcustom" then
+        BLU:PrintDebug("[Commands] Adding profile custom sound")
+        local soundPath, displayName = rest:match("^(.-)%s*|%s*(.+)$")
+        soundPath = soundPath or rest
+        soundPath = soundPath and soundPath:gsub("^%s+", ""):gsub("%s+$", "") or ""
+
+        if soundPath == "" then
+            BLU:Print("|cff00ccffBLU:|r Usage: /blu addcustom myfile[.ogg] | Optional Name")
+            return
+        end
+
+        if BLU.Modules and BLU.Modules["usersounds"] and BLU.Modules["usersounds"].AddCustomSound then
+            local ok, result = BLU.Modules["usersounds"]:AddCustomSound(soundPath, displayName)
+            if ok then
+                BLU:Print("|cff00ccffBLU:|r Added custom sound: " .. tostring(result))
+            else
+                BLU:Print("|cff00ccffBLU:|r Failed to add custom sound: " .. tostring(result))
+            end
+        end
+    elseif command == "removecustom" then
+        BLU:PrintDebug("[Commands] Removing profile custom sound")
+        local matchValue = rest and rest:gsub("^%s+", ""):gsub("%s+$", "") or ""
+        if matchValue == "" then
+            BLU:Print("|cff00ccffBLU:|r Usage: /blu removecustom Interface\\AddOns\\file.ogg")
+            return
+        end
+
+        if BLU.Modules and BLU.Modules["usersounds"] and BLU.Modules["usersounds"].RemoveCustomSound then
+            local ok, err = BLU.Modules["usersounds"]:RemoveCustomSound(matchValue)
+            if ok then
+                BLU:Print("|cff00ccffBLU:|r Removed custom sound: " .. matchValue)
+            else
+                BLU:Print("|cff00ccffBLU:|r Failed to remove custom sound: " .. tostring(err))
+            end
+        end
+    elseif command == "help" then
         BLU:PrintDebug("[Commands] Showing help")
         BLU:Print("|cff00ccffBLU Commands:|r")
         BLU:Print("  |cffffff00/blu|r - Open options")
@@ -99,12 +137,14 @@ SlashCmdList["BLU"] = function(msg)
         BLU:Print("  |cffffff00/blu debug|r - Toggle debug mode")
         BLU:Print("  |cffffff00/blu status|r - Show addon status")
         BLU:Print("  |cffffff00/blu refresh|r - Rescan external sound packs")
+        BLU:Print("  |cffffff00/blu addcustom <file or path> | <name>|r - Add a custom sound file")
+        BLU:Print("  |cffffff00/blu removecustom <path>|r - Remove a custom sound file")
         BLU:Print("  |cffffff00/blu enable|r - Enable addon")
         BLU:Print("  |cffffff00/blu disable|r - Disable addon")
         BLU:Print("  |cffffff00/blu help|r - Show this help")
     else
         -- Unknown command, show help
-        BLU:PrintDebug("[Commands] Unknown /blu command: '" .. tostring(msg) .. "'")
+        BLU:PrintDebug("[Commands] Unknown /blu command: '" .. tostring(command) .. "'")
         BLU:Print("|cff00ccffBLU:|r Unknown command. Type |cffffff00/blu help|r for help.")
     end
 end

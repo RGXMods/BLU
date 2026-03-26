@@ -148,7 +148,6 @@ function BLU.CreateSoundsPanel(panel)
             elseif soundData and soundData.source == "SharedMedia" then
                 local packId = soundData.packId or soundData.packName or "SharedMedia"
                 local packName = soundData.packName or soundData.packId or "SharedMedia"
-
                 if not sharedMediaPacks[packId] then
                     sharedMediaPacks[packId] = {
                         id = "sharedmedia_" .. tostring(packId),
@@ -158,7 +157,6 @@ function BLU.CreateSoundsPanel(panel)
                         soundCount = 0,
                     }
                 end
-
                 sharedMediaPacks[packId].soundCount = sharedMediaPacks[packId].soundCount + 1
             end
         end
@@ -171,7 +169,6 @@ function BLU.CreateSoundsPanel(panel)
     table.sort(sharedRows, function(a, b)
         return string.lower(a.name) < string.lower(b.name)
     end)
-
     for _, row in ipairs(sharedRows) do
         table.insert(packRows, row)
     end

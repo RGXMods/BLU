@@ -102,7 +102,6 @@ function BLU.CreateAboutPanel(panel)
     
     local features = {
         "|cff05dffa50+ Game Sound Packs|r - Iconic sounds from your favorite games",
-        "|cff05dffaSharedMedia Support|r - Use sounds from other addons",
         "|cff05dffaVolume Control|r - Adjust sound levels to your preference",
         "|cff05dffaPer-Event Customization|r - Different sounds for each event type",
         "|cff05dffaLightweight Design|r - No external library dependencies",

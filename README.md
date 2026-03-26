@@ -228,6 +228,8 @@ BLU:RegisterExternalSoundPack("My Pack Name", {
 | `/blu test` | Play test sound |
 | `/blu refresh` | Rebuild external and user custom sound pack registry |
 | `/blu rescan` | Rescan for newly registered media |
+| `/blu addcustom myfile` | Tries common AddOns folders and adds the first matching `.ogg`/`.mp3`/`.wav` |
+| `/blu removecustom path` | Removes a previously added custom sound |
 
 </div>
 
@@ -360,6 +362,28 @@ _<span style="color:#e67e23">"Make every level count with sounds that matter!"</
 **<span style="color:#2dc26b">The Kiwi Says:</span>** <span style="color:#b96ad9">"Bwwiiiee."</span>
 
 ---
+
+## Custom Sound Shortcuts
+
+BLU still supports no-edit auto-detect for common numbered files like `custom01.ogg`, but you can now add arbitrary file names in game more easily.
+
+Examples:
+
+```text
+/blu addcustom myfile
+/blu addcustom myfile.ogg
+/blu addcustom Interface\AddOns\myfile.ogg | My Custom Sound
+```
+
+If you only provide a short file name, BLU will try these common locations automatically:
+
+- `Interface\AddOns\`
+- `Interface\AddOns\sounds\`
+- `Interface\AddOns\BLU\`
+- `Interface\AddOns\BLU\sounds\`
+- `Interface\AddOns\BLU\media\sounds\`
+
+The first compatible `.ogg`, `.mp3`, or `.wav` match gets registered and appears under `User Custom Sounds` in the nested dropdown.
 
 ### <span style="color:#05dffa">Part of the RGX Mods Collection</span>
 

@@ -334,18 +334,7 @@ function SoundRegistry:PlaySound(soundId, volume, options)
         return false
     end
     
-    -- Determine playback channel from per-event soundChannels setting.
-    -- BLU internal sounds default to Master; soundpack sounds default to SFX.
-    -- Both respect the per-event channel dropdown so random/direct selections
-    -- play on whichever channel the user has chosen.
-    local channel
-    local channelCategory = options.categoryOverride or sound.category
-    if channelCategory and BLU.db and BLU.db.profile and BLU.db.profile.soundChannels then
-        channel = BLU.db.profile.soundChannels[channelCategory]
-    end
-    if not channel then
-        channel = sound.isInternal and "Master" or "SFX"
-    end
+    local channel = "Master"
     
     -- Play the sound based on type
     local willPlay, handle
@@ -359,10 +348,10 @@ function SoundRegistry:PlaySound(soundId, volume, options)
         BLU:PrintDebug("[Registry] Using file playback for '" .. tostring(soundId) .. "'")
         local fileToPlay = sound.file
         
-        -- Check if this is a BLU internal sound (should have volume variants)
-        if sound.isInternal then
-            BLU:PrintDebug("[Registry] Sound is internal; resolving volume variant for category '" .. tostring(options.categoryOverride or sound.category) .. "'")
-            -- BLU internal sounds SHOULD have _low, _med, _high variants
+        -- Check if this is a BLU sound (all BLU sounds have _low, _med, _high variants)
+        if sound.isInternal or sound.source == "BLU" then
+            BLU:PrintDebug("[Registry] Sound is BLU source; resolving volume variant for category '" .. tostring(options.categoryOverride or sound.category) .. "'")
+            -- BLU sounds have _low, _med, _high variants
             local category = options.categoryOverride or sound.category
             local volumeSetting = options.volumeSettingOverride or "medium"
             if not options.volumeSettingOverride and BLU.db and BLU.db.profile and BLU.db.profile.soundVolumes and BLU.db.profile.soundVolumes[category] then
@@ -527,9 +516,8 @@ function SoundRegistry:PlayCategorySound(category, forceSound)
         end
         
     elseif selectedSound:match("^external:") then
-        -- External sound from SharedMedia
+        BLU:PrintDebug("[Registry] External sound playback for '" .. tostring(selectedSound) .. "'")
         local externalName = selectedSound:gsub("^external:", "")
-        BLU:PrintDebug("[Registry] External sound requested: '" .. tostring(externalName) .. "'")
         if BLU.PlayExternalSound then
             local played = BLU:PlayExternalSound(externalName)
             if played then
@@ -538,7 +526,7 @@ function SoundRegistry:PlayCategorySound(category, forceSound)
             end
             return played
         end
-        
+
     else
         BLU:PrintDebug("[Registry] Direct sound id playback for '" .. tostring(selectedSound) .. "'")
         -- Direct sound ID

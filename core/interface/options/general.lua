@@ -35,6 +35,11 @@ local function CreateCheckbox(parent, text, x, y, checked, onClick)
     return checkbox
 end
 
+local function OpenAddCustomSoundDialog()
+    BLU:PrintDebug("[Options/General] Add Custom Sound button clicked")
+    StaticPopup_Show("BLU_ADD_CUSTOM_SOUND")
+end
+
 function BLU.CreateGeneralPanel(panel)
     BLU:PrintDebug("[Options/General] Creating General panel")
     local content = CreateFrame("Frame", nil, panel)
@@ -106,7 +111,7 @@ function BLU.CreateGeneralPanel(panel)
     local actionsSection = BLU.Modules.design:CreateSection(content, "Actions", "Interface\\Icons\\INV_Misc_Gear_08")
     actionsSection:SetPoint("TOPLEFT", behaviorSection, "BOTTOMLEFT", 0, -10)
     actionsSection:SetPoint("RIGHT", 0, 0)
-    actionsSection:SetHeight(84)
+    actionsSection:SetHeight(122)
 
     local resetBtn = BLU.Modules.design:CreateButton(actionsSection.content, "Reset Profile", 110, 24)
     resetBtn:SetPoint("TOPLEFT", 4, -8)
@@ -114,6 +119,10 @@ function BLU.CreateGeneralPanel(panel)
         BLU:PrintDebug("[Options/General] Reset Profile button clicked")
         StaticPopup_Show("BLU_CONFIRM_RESET_PROFILE")
     end)
+
+    local customSoundBtn = BLU.Modules.design:CreateButton(actionsSection.content, "Add Custom Sound", 140, 24)
+    customSoundBtn:SetPoint("LEFT", resetBtn, "RIGHT", 10, 0)
+    customSoundBtn:SetScript("OnClick", OpenAddCustomSoundDialog)
 
     StaticPopupDialogs["BLU_CONFIRM_RESET_PROFILE"] = {
         text = "Reset BLU profile settings to defaults and reload UI?",
@@ -128,6 +137,65 @@ function BLU.CreateGeneralPanel(panel)
                 end
             end
             ReloadUI()
+        end,
+        timeout = 0,
+        whileDead = true,
+        hideOnEscape = true,
+        preferredIndex = 3,
+    }
+
+    StaticPopupDialogs["BLU_ADD_CUSTOM_SOUND"] = {
+        text = "Add a custom sound file for BLU.",
+        subText = "Enter a short file name like myfile or myfile.ogg. You can also paste a full path like Interface\\AddOns\\myfile.ogg. BLU will try common AddOns folders automatically.",
+        button1 = ADD,
+        button2 = CANCEL,
+        hasEditBox = true,
+        maxLetters = 255,
+        editBoxWidth = 320,
+        OnShow = function(self)
+            if self.editBox then
+                self._bluCustomSoundText = ""
+                self.editBox:SetText("")
+                self.editBox:SetAutoFocus(false)
+                self.editBox:SetFocus()
+            end
+        end,
+        OnHide = function(self)
+            self._bluCustomSoundText = nil
+        end,
+        EditBoxOnTextChanged = function(self)
+            local parent = self:GetParent()
+            if parent then
+                parent._bluCustomSoundText = self:GetText() or ""
+            end
+        end,
+        EditBoxOnEnterPressed = function(self)
+            local parent = self:GetParent()
+            if parent and parent.button1 then
+                parent._bluCustomSoundText = self:GetText() or ""
+                parent.button1:Click()
+            end
+        end,
+        OnAccept = function(self)
+            local soundInput = self._bluCustomSoundText or (self.editBox and self.editBox:GetText()) or ""
+            soundInput = soundInput:gsub("^%s+", ""):gsub("%s+$", "")
+            BLU:PrintDebug("[Options/General] Add Custom Sound popup accepted with input '" .. tostring(soundInput) .. "'")
+
+            if soundInput == "" then
+                BLU:Print("|cff00ccffBLU:|r Enter a file name like myfile or myfile.ogg.")
+                return
+            end
+
+            if BLU.Modules and BLU.Modules["usersounds"] and BLU.Modules["usersounds"].AddCustomSound then
+                local ok, result = BLU.Modules["usersounds"]:AddCustomSound(soundInput)
+                if ok then
+                    BLU:Print("|cff00ccffBLU:|r Added custom sound: " .. tostring(result))
+                else
+                    BLU:Print("|cff00ccffBLU:|r Failed to add custom sound: " .. tostring(result))
+                end
+            else
+                BLU:Print("|cff00ccffBLU:|r User custom sounds are not available yet.")
+            end
         end,
         timeout = 0,
         whileDead = true,

@@ -133,56 +133,24 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
     local initialVolume = (BLU.db and BLU.db.profile and BLU.db.profile.soundVolumes and BLU.db.profile.soundVolumes[actualEventType]) or "medium"
     setVolumeSliderValue(initialVolume)
 
-    -- Channel selector for soundpack/non-BLU sounds (BLU sounds always use Master)
-    local CHANNEL_OPTIONS = {"Master", "SFX", "Music", "Ambience"}
-    local channelDropdown = CreateFrame("Frame", "BLUChanDD_" .. actualEventType, controlsFrame, "UIDropDownMenuTemplate")
-    channelDropdown:SetPoint("LEFT", -16, -5)
-    UIDropDownMenu_SetWidth(channelDropdown, 100)
-    channelDropdown:Hide()
-
-    UIDropDownMenu_Initialize(channelDropdown, function(self, level)
-        local current = (BLU.db and BLU.db.profile and BLU.db.profile.soundChannels and BLU.db.profile.soundChannels[actualEventType]) or "SFX"
-        for _, channelName in ipairs(CHANNEL_OPTIONS) do
-            local info = UIDropDownMenu_CreateInfo()
-            info.text = channelName
-            info.value = channelName
-            info.checked = current == channelName
-            info.func = function()
-                BLU.db.profile.soundChannels = BLU.db.profile.soundChannels or {}
-                BLU.db.profile.soundChannels[actualEventType] = channelName
-                UIDropDownMenu_SetText(channelDropdown, channelName)
-                BLU:PrintDebug("[Options/SoundPanel] Set channel for '" .. tostring(actualEventType) .. "' to '" .. tostring(channelName) .. "'")
-                CloseDropDownMenus()
-            end
-            UIDropDownMenu_AddButton(info, level)
-        end
-    end)
-
-    local initChannel = (BLU.db and BLU.db.profile and BLU.db.profile.soundChannels and BLU.db.profile.soundChannels[actualEventType]) or "SFX"
-    UIDropDownMenu_SetText(channelDropdown, initChannel)
-
     local function isBluVolumeSelection(selectionValue)
         if selectionValue == "random" then
-            return false  -- random: show channel dropdown, volume is always medium
+            return false  -- random always plays at medium; no volume slider needed
         end
         if not selectionValue or selectionValue == "default" or selectionValue == "None" then
-            return true  -- no sound selected: show volume slider as default state
+            return true
         end
-
         if type(selectionValue) ~= "string" or selectionValue:match("^external:") then
             return false
         end
-
         if not (BLU.SoundRegistry and BLU.SoundRegistry.GetSound) then
             return false
         end
-
         local soundInfo = BLU.SoundRegistry:GetSound(selectionValue)
         if not soundInfo then
             return false
         end
-
-        return soundInfo.isInternal == true
+        return soundInfo.source == "BLU" or soundInfo.isInternal == true
     end
 
     local function updateSoundControlMode(selectionValue)
@@ -191,13 +159,9 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
             setVolumeSliderValue(stored)
             volumeSlider:Show()
             medLabel:Show()
-            channelDropdown:Hide()
         else
             volumeSlider:Hide()
             medLabel:Hide()
-            local current = (BLU.db and BLU.db.profile and BLU.db.profile.soundChannels and BLU.db.profile.soundChannels[actualEventType]) or "SFX"
-            UIDropDownMenu_SetText(channelDropdown, current)
-            channelDropdown:Show()
         end
     end
 
@@ -207,9 +171,6 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
         BLU:PrintDebug("Test button clicked for event: " .. actualEventType)
         local selectedSound = BLU.db and BLU.db.profile and BLU.db.profile.selectedSounds and BLU.db.profile.selectedSounds[actualEventType]
         BLU:PrintDebug("Selected sound is: " .. tostring(selectedSound))
-
-        local channel = (BLU.db and BLU.db.profile and BLU.db.profile.soundChannels and BLU.db.profile.soundChannels[actualEventType]) or "SFX"
-        BLU:Print("Test [" .. actualEventType .. "] channel: " .. channel)
 
         self:SetText("Playing...")
         self:Disable()
@@ -460,6 +421,7 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
         local customHierarchy = {
             ["BLU WoW Defaults"] = {},
             ["BLU Other Game Sounds"] = {},
+            ["User Custom Sounds"] = {},
             ["Shared Media"] = {},
         }
         if BLU.SoundRegistry and BLU.SoundRegistry.GetSoundsGroupedForUI then
@@ -637,14 +599,14 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
 
     local icons = {
         levelup      = "Interface\\Icons\\Achievement_Level_100",
-        achievement  = "Interface\\Icons\\Achievement_GuildPerk_MobileMailbox",
+        achievement  = "Interface\\Icons\\Achievement_Quests_Completed_08",
         quest        = "Interface\\Icons\\INV_Misc_Note_01",
         reputation   = "Interface\\Icons\\Achievement_Reputation_01",
         battlepet    = "Interface\\Icons\\INV_Pet_BattlePetTraining",
         honorrank    = "Interface\\Icons\\PVPCurrency-Honor-Horde",
         renownrank   = "Interface\\Icons\\UI_MajorFaction_Centaur",
         tradingpost  = "Interface\\Icons\\INV_Misc_Coin_02",
-        delvecompanion = "Interface\\Icons\\Ability_DungeonFinder",
+        delvecompanion = "Interface\\Icons\\INV_Misc_Map_01",
     }
 
     -- Single titlebar: icon + title + module toggle

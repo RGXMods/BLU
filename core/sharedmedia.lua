@@ -15,12 +15,11 @@ BLU.Modules["sharedmedia"] = SharedMedia
 SharedMedia.externalSounds = {}
 SharedMedia.soundCategories = {}
 SharedMedia.manualBridgePaths = {}
-SharedMedia.callbacksRegistered = false
 SharedMedia.eventsRegistered = false
 SharedMedia.pendingRescan = false
 SharedMedia.kittyHookInstalled = false
 SharedMedia._invokedDBMPackFunctions = {}
-SharedMedia.enableGenericFallbackScan = false
+SharedMedia.enableGenericFallbackScan = true
 
 local SHARED_MEDIA_ADDON_EVENT_ID = "sharedmedia_addon_loaded"
 local SHARED_MEDIA_LOGIN_EVENT_ID = "sharedmedia_player_login"
@@ -41,6 +40,29 @@ local IGNORED_GLOBALS = {
     ["io"] = true,
     ["os"] = true,
     ["package"] = true,
+}
+local KNOWN_ADDON_SOUND_COMPATIBILITY = {
+    ["Prat-3.0"] = {
+        packName = "Prat",
+        sounds = {
+            { name = "Bell",    path = "Interface\\AddOns\\Prat-3.0\\sounds\\Bell.ogg" },
+            { name = "Chime",   path = "Interface\\AddOns\\Prat-3.0\\Sounds\\Chime.ogg" },
+            { name = "Heart",   path = "Interface\\AddOns\\Prat-3.0\\Sounds\\Heart.ogg" },
+            { name = "IM",      path = "Interface\\AddOns\\Prat-3.0\\Sounds\\IM.ogg" },
+            { name = "Info",    path = "Interface\\AddOns\\Prat-3.0\\Sounds\\Info.ogg" },
+            { name = "Kachink", path = "Interface\\AddOns\\Prat-3.0\\Sounds\\Kachink.ogg" },
+            { name = "Popup",   path = "Interface\\AddOns\\Prat-3.0\\Sounds\\Link.ogg" },
+            { name = "Text1",   path = "Interface\\AddOns\\Prat-3.0\\Sounds\\Text1.ogg" },
+            { name = "Text2",   path = "Interface\\AddOns\\Prat-3.0\\Sounds\\Text2.ogg" },
+            { name = "Xylo",    path = "Interface\\AddOns\\Prat-3.0\\Sounds\\Xylo.ogg" },
+        },
+    },
+    ["TradeSkillMaster"] = {
+        packName = "TradeSkillMaster",
+        sounds = {
+            { name = "Cash Register", path = "Interface\\AddOns\\TradeSkillMaster\\Media\\register.mp3" },
+        },
+    },
 }
 
 local function SortCaseInsensitive(a, b)
@@ -123,7 +145,11 @@ local function ExtractAddonNameFromPath(path)
     return "SharedMedia"
 end
 
-local function BuildBridgeDisplayName(addonFolder, normalizedPath)
+local function BuildBridgeDisplayName(addonFolder, normalizedPath, preferredDisplayName)
+    if type(preferredDisplayName) == "string" and preferredDisplayName ~= "" then
+        return string.format("%s - %s", addonFolder, preferredDisplayName)
+    end
+
     local fileName = string.match(normalizedPath, "([^\\]+)%.[^%.]+$") or normalizedPath
     local parentFolder = string.match(normalizedPath, "\\([^\\]+)\\[^\\]+%.[^%.]+$")
 
@@ -198,6 +224,26 @@ local function IsLikelyMediaProviderName(name)
         or string.find(lower, "pack", 1, true)
 end
 
+local function IsAddOnLoadedByName(addonName)
+    if type(addonName) ~= "string" or addonName == "" then
+        return false
+    end
+
+    if C_AddOns and C_AddOns.IsAddOnLoaded then
+        local ok, isLoaded = pcall(C_AddOns.IsAddOnLoaded, addonName)
+        if ok then
+            return isLoaded == true
+        end
+    elseif IsAddOnLoaded then
+        local ok, isLoaded = pcall(IsAddOnLoaded, addonName)
+        if ok then
+            return isLoaded == true
+        end
+    end
+
+    return false
+end
+
 local function AddAddonGlobalCandidate(candidateSet, candidateName)
     if type(candidateName) ~= "string" or candidateName == "" then
         return
@@ -267,35 +313,8 @@ local function GetAddOnMetadataValue(index, key)
 end
 
 function SharedMedia:TryBindLSM()
-    BLU:PrintDebug("[SharedMedia] TryBindLSM called")
-    if self.LSM then
-        BLU:PrintDebug("[SharedMedia] LSM already bound")
-        return true
-    end
-
-    local libStub = _G.LibStub
-    if not libStub then
-        return false
-    end
-
-    local ok, lsm = pcall(function()
-        return libStub("LibSharedMedia-3.0", true)
-    end)
-
-    if not ok or not lsm then
-        return false
-    end
-
-    self.LSM = lsm
-
-    if not self.callbacksRegistered then
-        self.LSM.RegisterCallback(self, "LibSharedMedia_Registered", "OnMediaRegistered")
-        self.LSM.RegisterCallback(self, "LibSharedMedia_SetGlobal", "OnMediaSetGlobal")
-        self.callbacksRegistered = true
-    end
-
-    BLU:PrintDebug("LibSharedMedia found and callbacks registered.")
-    return true
+    -- BLU uses its own internal bridge scanner; no external LibStub/LibSharedMedia dependency.
+    return false
 end
 
 function SharedMedia:ClearExternalFromRegistry()
@@ -358,7 +377,7 @@ function SharedMedia:NotifyExternalSoundsUpdated()
     end
 end
 
-function SharedMedia:RegisterBridgePath(path, preferredPackName)
+function SharedMedia:RegisterBridgePath(path, preferredPackName, preferredDisplayName)
     BLU:PrintDebug("[SharedMedia] RegisterBridgePath called for '" .. tostring(path) .. "'")
     if not IsAudioPath(path) then
         return false
@@ -382,12 +401,7 @@ function SharedMedia:RegisterBridgePath(path, preferredPackName)
         return false
     end
 
-    self._lsmPathSet = self._lsmPathSet or {}
-    if self._lsmPathSet[lowerPath] then
-        return false
-    end
-
-    local displayName = BuildBridgeDisplayName(packName, normalizedPath)
+    local displayName = BuildBridgeDisplayName(packName, normalizedPath, preferredDisplayName)
     local soundId = string.format("bridge:%s:%08x", string.gsub(lowerPack, "[^%w]", "_"), HashString(lowerPath))
 
     if BLU.SoundRegistry and BLU.SoundRegistry.RegisterSound then
@@ -413,6 +427,26 @@ function SharedMedia:RegisterBridgePath(path, preferredPackName)
     self._registeredBridgePaths[lowerPath] = true
     BLU:PrintDebug("[SharedMedia] Registered bridge sound '" .. tostring(soundId) .. "' from pack '" .. tostring(packName) .. "'")
     return true
+end
+
+function SharedMedia:RegisterKnownAddonCompatibilitySounds()
+    BLU:PrintDebug("[SharedMedia] RegisterKnownAddonCompatibilitySounds called")
+    local registered = 0
+
+    for addonName, compatData in pairs(KNOWN_ADDON_SOUND_COMPATIBILITY) do
+        if IsAddOnLoadedByName(addonName) and type(compatData) == "table" and type(compatData.sounds) == "table" then
+            BLU:PrintDebug("[SharedMedia] Applying known compatibility bridge for '" .. tostring(addonName) .. "'")
+            for _, soundData in ipairs(compatData.sounds) do
+                if type(soundData) == "table" and type(soundData.path) == "string" then
+                    if self:RegisterBridgePath(soundData.path, compatData.packName or addonName, soundData.name) then
+                        registered = registered + 1
+                    end
+                end
+            end
+        end
+    end
+
+    return registered
 end
 
 local function CollectPathsFromValue(value, foundPaths, visitedTables, scanState, depth)
@@ -505,6 +539,22 @@ function SharedMedia:ScanGenericBridgeSources()
         end
     end
 
+    -- Scan loaded addon globals derived from addon names. This keeps the
+    -- search focused on addon-owned root tables without broad _G crawling.
+    if scanState.totalFound < MAX_BRIDGED_SOUNDS_PER_SCAN then
+        local addonCandidates = GetAddonGlobalCandidates()
+        for _, candidateTable in ipairs(addonCandidates) do
+            if type(candidateTable) == "table" then
+                scanState.sourceTableCount = 0
+                CollectPathsFromValue(candidateTable, foundPaths, {}, scanState, 0)
+
+                if scanState.totalFound >= MAX_BRIDGED_SOUNDS_PER_SCAN then
+                    break
+                end
+            end
+        end
+    end
+
     -- Conservative fallback: only scan globals whose names strongly suggest
     -- they are media/sound pack containers. Broad _G crawling can hit WoW's
     -- script execution limit on large addon stacks, so keep this disabled
@@ -579,7 +629,7 @@ function SharedMedia:RegisterExternalSoundEntries(packName, soundEntries, persis
                     }
                 end
 
-                if self:RegisterBridgePath(normalizedPath, packName) then
+                if self:RegisterBridgePath(normalizedPath, packName, value.name) then
                     registered = registered + 1
                 end
             end
@@ -730,68 +780,21 @@ function SharedMedia:ScanExternalSounds()
     wipe(self.externalSounds)
     wipe(self.soundCategories)
     self._registeredBridgePaths = {}
-    self._lsmPathSet = {}
     self:EnsureKittyBridgeHook()
     self:ClearExternalFromRegistry()
 
-    local lsmCount = 0
-    local lsmPackCount = 0
-
-    if self:TryBindLSM() then
-        local soundList = self.LSM:List("sound") or {}
-
-        for _, soundName in ipairs(soundList) do
-            local soundPath = self.LSM:Fetch("sound", soundName)
-            if type(soundPath) == "string" and soundPath ~= "" then
-                local packName = ExtractAddonNameFromPath(soundPath)
-                local normalizedPath = NormalizePath(soundPath)
-                if normalizedPath then
-                    self._lsmPathSet[string.lower(normalizedPath)] = true
-                end
-
-                self.externalSounds[soundName] = {
-                    name = soundName,
-                    file = soundPath,
-                    packId = packName,
-                    packName = packName,
-                }
-
-                self.soundCategories[packName] = self.soundCategories[packName] or {}
-                table.insert(self.soundCategories[packName], soundName)
-
-                if BLU.SoundRegistry and BLU.SoundRegistry.RegisterSound then
-                    BLU.SoundRegistry:RegisterSound("external:" .. soundName, {
-                        name = soundName,
-                        file = soundPath,
-                        category = "all",
-                        source = "SharedMedia",
-                        packId = packName,
-                        packName = packName,
-                    })
-                end
-
-                lsmCount = lsmCount + 1
-            end
-        end
-    end
-
-    for _, categorySounds in pairs(self.soundCategories) do
-        table.sort(categorySounds, SortCaseInsensitive)
-        lsmPackCount = lsmPackCount + 1
-    end
-
     local kittyBridgeCount = self:ScanKittySoundPacks()
     local dbmRegistrarCount = self:InvokeDBMPackRegistrars()
+    local compatibilityBridgeCount = self:RegisterKnownAddonCompatibilitySounds()
     local bridgeCount = self:ScanGenericBridgeSources()
     local manualBridgeCount = self:ApplyManualBridgePaths()
     self:NotifyExternalSoundsUpdated()
 
     BLU:PrintDebug(string.format(
-        "SharedMedia scan complete: %d LSM sounds across %d LSM packs, %d Kitty sounds, %d DBM registrar hooks, %d bridged sounds, %d manual bridge sounds.",
-        lsmCount,
-        lsmPackCount,
+        "SharedMedia scan complete: %d Kitty sounds, %d DBM registrar hooks, %d compatibility bridge sounds, %d generic bridged sounds, %d manual bridge sounds.",
         kittyBridgeCount,
         dbmRegistrarCount,
+        compatibilityBridgeCount,
         bridgeCount,
         manualBridgeCount
     ))
@@ -809,24 +812,31 @@ end
 
 function SharedMedia:PlayExternalSound(name)
     BLU:PrintDebug("[SharedMedia] PlayExternalSound called for '" .. tostring(name) .. "'")
-    if not self:TryBindLSM() then
-        BLU:PrintDebug("LibSharedMedia unavailable; cannot play external sound.")
-        return false
+
+    -- Try registry lookup first (covers both "external:name" and bridge IDs)
+    if BLU.SoundRegistry then
+        local soundId = "external:" .. tostring(name)
+        local sound = BLU.SoundRegistry.sounds and BLU.SoundRegistry.sounds[soundId]
+        if sound and sound.file then
+            local willPlay = PlaySoundFile(sound.file, "Master")
+            if willPlay then
+                BLU:PrintDebug("[SharedMedia] Played external sound from registry: " .. soundId)
+                return true
+            end
+        end
     end
 
-    local soundPath = self.LSM:Fetch("sound", name)
-    if not soundPath then
-        BLU:PrintDebug("External sound not found: " .. tostring(name))
-        return false
+    -- Fallback: check externalSounds table populated by bridge scanner
+    local entry = self.externalSounds[name]
+    if entry and entry.file then
+        local willPlay = PlaySoundFile(entry.file, "Master")
+        if willPlay then
+            BLU:PrintDebug("[SharedMedia] Played external sound from bridge table: " .. tostring(name))
+            return true
+        end
     end
 
-    local willPlay = PlaySoundFile(soundPath, "Master")
-    if willPlay then
-        BLU:PrintDebug(string.format("Playing external sound: %s", tostring(name)))
-        return true
-    end
-
-    BLU:PrintError("Failed to play external sound: " .. tostring(name))
+    BLU:PrintDebug("External sound not found: " .. tostring(name))
     return false
 end
 
@@ -836,12 +846,8 @@ function SharedMedia:OnAddonLoaded(loadedAddonName)
         return
     end
 
-    -- Rescan after likely media-provider addons load so non-LSM and late
-    -- registrations are captured without hammering startup.
+    -- Rescan after likely media-provider addons load so late registrations are captured.
     self:EnsureKittyBridgeHook()
-    if self:TryBindLSM() then
-        BLU:PrintDebug("SharedMedia addon load update: " .. tostring(loadedAddonName))
-    end
     self:QueueRescan(0.25)
 end
 

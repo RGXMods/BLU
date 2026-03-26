@@ -128,9 +128,9 @@ function Tabs:Init()
     BLU.OptionsTabs = {
         -- Row 1: General first, then A-Z
         {text = "General",      create = BLU.CreateGeneralPanel, row = 1, col = 1, icon = "Interface\\Icons\\INV_Misc_Gear_08"},
-        {text = "Achievement",  eventType = "achievement",       row = 1, col = 2, icon = "Interface\\Icons\\Achievement_General"},
+        {text = "Achievement",  eventType = "achievement",       row = 1, col = 2, icon = "Interface\\Icons\\Achievement_Quests_Completed_08"},
         {text = "Battle Pets",  eventType = "battlepet",         row = 1, col = 3, icon = "Interface\\Icons\\INV_Pet_BattlePetTraining"},
-        {text = "Delve",        eventType = "delvecompanion",    row = 1, col = 4, icon = "Interface\\Icons\\Achievement_Zone_Deepholm"},
+        {text = "Delve",        eventType = "delvecompanion",    row = 1, col = 4, icon = "Interface\\Icons\\INV_Misc_Map_01"},
         {text = "Honor",        eventType = "honorrank",         row = 1, col = 5, icon = "Interface\\Icons\\PVPCurrency-Honor-Horde"},
         {text = "Housing",      create = BLU.CreateHousingPanel, row = 1, col = 6, icon = "Interface\\Icons\\Trade_Blacksmithing"},
         -- Row 2: A-Z continued, Sounds last

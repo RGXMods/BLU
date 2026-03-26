@@ -61,6 +61,7 @@ Config.defaults = {
         selectedSounds = {
             questprogress = "None",
         },
+        userCustomSounds = {},
         
         soundVolumes = {
             levelup = "medium",

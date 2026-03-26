@@ -18,7 +18,7 @@ print("BLU: Core loading started.")
 -- Create the main addon object (global)
 BLU = {
     name = addonName,
-    version = "v6.2.0",
+    version = "v6.2.1",
     author = C_AddOns.GetAddOnMetadata(addonName, "Author"),
     
     -- Core tables

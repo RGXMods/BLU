@@ -79,8 +79,8 @@ function BLU:Initialize()
         "registry",
         "internal_sounds",  -- Must come after registry
         "usersounds",       -- Must come after registry
-        "loader",
-        "sharedmedia"
+        "sharedmedia",      -- Optional LibSharedMedia integration (detected at runtime)
+        "loader"
     })
     
     BLU:PrintDebug("[Init] BLU.db after Phase 2: " .. tostring(BLU.db))

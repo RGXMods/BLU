@@ -37,7 +37,7 @@
 
 <!-- WoW Compatibility -->
 [![WoW Retail](https://img.shields.io/badge/WoW-Retail%20Midnight-05dffa?style=flat-square&logo=worldofwarcraft)](https://worldofwarcraft.com)
-[![Version](https://img.shields.io/badge/Version-v6.2.0-blue?style=flat-square)](https://github.com/donniedice/BLU/releases)
+[![Version](https://img.shields.io/badge/Version-v6.2.4-blue?style=flat-square)](https://github.com/donniedice/BLU/releases)
 
 [Features](#features) • [Quick Start](#quick-start) • [Commands](#command-reference) • [Compatibility](#compatibility) • [Installation](#installation) • [Support](#support)
 
@@ -125,7 +125,7 @@ _<span style="color:#e67e23">Every coffee helps fund new features and sound addi
 | 🎚️ **Sound Channels** | Choose which audio channel to use (Master, Sound, Music, etc.) |
 | 🎛️ **Per-Event Override** | Customize volume for specific events |
 | 📦 **Sound Pack Support** | Auto-discovers sounds from other addons — no dependencies required |
-| 🗂️ **User Custom Sounds** | Drop your own `.ogg`/`.mp3`/`.wav` files in `BLU\user\sounds\` |
+| 🗂️ **User Custom Sounds** | Add your own `.ogg`/`.mp3`/`.wav` files from the Sounds tab or with `/blu addcustom` |
 | 🔌 **Third-Party API** | Addon devs can register packs via `BLU:RegisterExternalSoundPack()` |
 | ⚙️ **Modular System** | Only load the features you need |
 | 💾 **Profile Support** | Save different configurations |
@@ -189,7 +189,7 @@ _`Note`: Each game includes Low, Medium, and High volume variants for all sound 
 
 1. **<span style="color:#2dc26b">Default WoW Sounds</span><span style="color:#3598db">:</span>** <span style="color:#e67e23">Original game sounds (no volume control)</span>
 2. **<span style="color:#05dffa">BLU Internal Sounds</span><span style="color:#3598db">:</span>** <span style="color:#e67e23">Custom sounds with 3 volume variants — High, Medium (default), Low</span>
-3. **<span style="color:#b96ad9">External Sound Packs</span><span style="color:#3598db">:</span>** <span style="color:#e67e23">Auto-discovered from other loaded addons at startup. If `LibSharedMedia-3.0` is present, BLU also hooks into it. Devs can register packs via `BLU:RegisterExternalSoundPack()`</span>
+3. **<span style="color:#b96ad9">External Sound Packs</span><span style="color:#3598db">:</span>** <span style="color:#e67e23">Auto-discovered from other loaded addons at startup through BLU's native bridge/discovery system. Devs can also register packs via `BLU:RegisterExternalSoundPack()`</span>
 
 ### <span style="color:#4ecdc4">Sound Pack API (for addon developers):</span>
 ```lua
@@ -265,15 +265,16 @@ BLU:RegisterExternalSoundPack("My Pack Name", {
 
 ---
 
-## <span style="color:#05dffa">🆕 What's New in v6.2.0</span>
+## <span style="color:#05dffa">🆕 What's New in v6.2.4</span>
 
 <details>
 <summary><strong><span style="color:#05dffa">🎉 Click to see the latest updates!</span></strong></summary>
 
 ### <span style="color:#4ecdc4">🆕 Latest Updates</span>
-- <span style="color:#2dc26b">✅ **Expanded localization coverage**</span> <span style="color:#e67e23">— added new localized strings for module lifecycle messages and event debug output</span>
-- <span style="color:#05dffa">✅ **Module debug cleanup**</span> <span style="color:#e67e23">— standardized debug messaging across Quest, Reputation, Battle Pet, Honor, Renown, Trading Post, Delve, and Housing</span>
-- <span style="color:#ff6b6b">✅ **Improved debug consistency**</span> <span style="color:#e67e23">— aligned updated modules around profile-backed debug checks for more predictable in-game logging</span>
+- <span style="color:#2dc26b">✅ **Sounds tab custom sound manager**</span> <span style="color:#e67e23">— add, view, and remove user custom sounds directly from the dedicated User Custom Sounds column</span>
+- <span style="color:#05dffa">✅ **Better shorthand custom sound resolution**</span> <span style="color:#e67e23">— short names like `test` or `water` resolve more reliably to compatible `.ogg`, `.mp3`, or `.wav` files</span>
+- <span style="color:#ff6b6b">✅ **Cleaner custom sound playback flow**</span> <span style="color:#e67e23">— custom sound entries normalize earlier so UI, logs, and playback stay more consistent</span>
+- <span style="color:#4ecdc4">✅ **Header and Sounds tab polish**</span> <span style="color:#e67e23">— alignment, layout, and custom sound row sizing have been cleaned up across the updated options UI</span>
 
 </details>
 
@@ -363,7 +364,19 @@ _<span style="color:#e67e23">"Make every level count with sounds that matter!"</
 
 ## Custom Sound Shortcuts
 
-BLU still supports no-edit auto-detect for common numbered files like `custom01.ogg`, but you can now add arbitrary file names in game more easily.
+BLU still supports no-edit auto-detect for common numbered files like `custom01.ogg`, but the main user-friendly flow is now built into the Sounds tab.
+
+Recommended in-game flow:
+
+- Open `/blu`
+- Go to the `Sounds` tab
+- Use the `User Custom Sounds` panel on the right
+- Click `Add Custom Sound`
+- Type a short name like `myfile` or `myfile.ogg`
+
+BLU will try common AddOns locations automatically and add the first compatible match it finds.
+
+You can also use slash commands if you prefer:
 
 Examples:
 
@@ -381,7 +394,7 @@ If you only provide a short file name, BLU will try these common locations autom
 - `Interface\AddOns\BLU\sounds\`
 - `Interface\AddOns\BLU\media\sounds\`
 
-The first compatible `.ogg`, `.mp3`, or `.wav` match gets registered and appears under `User Custom Sounds` in the nested dropdown.
+The first compatible `.ogg`, `.mp3`, or `.wav` match gets registered and appears under `User Custom Sounds` in the nested dropdown and in the Sounds tab manager list.
 
 ### <span style="color:#05dffa">Part of the RGX Mods Collection</span>
 

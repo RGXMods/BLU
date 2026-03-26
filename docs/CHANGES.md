@@ -1,9 +1,22 @@
 ## Notes
+- 2026-03-26: Started v6.2.5 for quest progress trigger fixes, welcome/prefix formatting cleanup, combat-safe settings opening, and `None` option UI correction.
 - 2026-03-26: Started v6.2.4 for custom sound path resolution, display cleanup, and lighter user custom sound playback.
 - 2026-03-26: Released v6.2.3 with the finalized Sounds tab custom sound manager, instant list refreshes, custom sound shorthand/playback fixes, and slash-command cleanup.
 - 2026-03-25: `/blu addcustom` now accepts short names like `myfile` or `myfile.ogg` and checks common AddOns sound locations automatically before saving the resolved path.
 - 2026-03-25: Added a General tab helper button and popup so users can add custom sounds in game without typing the full file path.
 - 2026-03-25: General tab now keeps only the Add Custom Sound button in Actions, places it beside Reset Profile, and restores the BLU header title colors.
+
+## Version 6.2.5 (2026-03-26)
+
+### Bug Fixes
+- **Options opening is now combat-safe** - BLU no longer calls the settings API directly during combat and instead queues the options panel to open after combat ends.
+- **`None` now behaves like a true disabled sound selection** - selecting `None` no longer forces the volume slider to stay visible in the event sound panel.
+- **Welcome and chat prefix formatting cleaned up** - the intro message and chat prefix now use the icon-first `[icon] - [BLU]` style consistently.
+- **Quest percentage progress detection is being expanded** - current work now targets percentage/objective progress updates so they can use the Quest Progress sound selection more reliably.
+- **Quest Complete now has its own sound selection and trigger** - quest-ready/complete state now has a dedicated dropdown and playback category instead of sharing only accept, turn-in, and progress paths.
+- **Inline sound preview controls are proper play buttons again** - dropdown preview controls now render as small play buttons instead of broken or misleading image assets.
+
+---
 
 ## Version 6.2.4 (2026-03-26)
 

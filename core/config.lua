@@ -59,6 +59,7 @@ Config.defaults = {
         
         tradingPostVolume = 0.8,
         selectedSounds = {
+            questcomplete = "None",
             questprogress = "None",
         },
         userCustomSounds = {},
@@ -69,6 +70,7 @@ Config.defaults = {
             achievementprogress = "medium",
             reputation = "medium",
             questturnin = "medium",
+            questcomplete = "medium",
             questaccept = "medium",
             questprogress = "medium",
             battlepet = "medium",
@@ -94,6 +96,7 @@ Config.defaults = {
             achievementprogress = "Master",
             reputation = "Master",
             questturnin = "Master",
+            questcomplete = "Master",
             questaccept = "Master",
             questprogress = "Master",
             battlepet = "Master",

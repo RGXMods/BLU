@@ -222,6 +222,28 @@ function Options:OpenOptions()
         return
     end
 
+    if InCombatLockdown and InCombatLockdown() then
+        BLU:PrintDebug("[Options] OpenOptions blocked by combat lockdown")
+        if not BLU._queuedOpenOptions then
+            BLU._queuedOpenOptions = true
+            BLU:Print("|cff00ccffBLU:|r Options cannot be opened in combat. Queued to open after combat.")
+            if BLU.QueueForCombat then
+                BLU:QueueForCombat(function()
+                    BLU._queuedOpenOptions = nil
+                    if BLU.OpenOptions then
+                        BLU:OpenOptions()
+                    end
+                    return true
+                end)
+            else
+                BLU._queuedOpenOptions = nil
+            end
+        else
+            BLU:PrintDebug("[Options] OpenOptions already queued for after combat")
+        end
+        return
+    end
+
     if not BLU.OptionsPanel then
         BLU:PrintDebug("[Options] Options panel missing, creating now")
         self:CreateOptionsPanel()

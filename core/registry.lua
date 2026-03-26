@@ -13,6 +13,7 @@ local defaultBluSounds = {
     achievement = "achievement_default",
     achievementprogress = "achievement_progress_default",
     quest = "quest_default",
+    questcomplete = "quest_complete_default",
     questaccept = "quest_accept_default",
     questturnin = "quest_turnin_default",
     reputation = "rep_default",
@@ -32,6 +33,7 @@ local defaultBluSounds = {
 
 local moduleCategoryMap = {
     questaccept = "quest",
+    questcomplete = "quest",
     questturnin = "quest",
     questprogress = "quest",
     achievementprogress = "achievement",

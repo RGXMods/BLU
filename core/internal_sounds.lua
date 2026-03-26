@@ -61,6 +61,7 @@ function InternalSounds:RegisterSoundPacks()
             post_default = { name = "Default Trading Post", file = ADDON_PATH .. "media\\sounds\\post_default_med.ogg", duration = 2.0, category = "tradingpost", source = "BLU", isInternal = true },
             quest_accept_default = { name = "Default Quest Accept", file = ADDON_PATH .. "media\\sounds\\quest_accept_default_med.ogg", duration = 2.0, category = "questaccept", source = "BLU", isInternal = true },
             quest_default = { name = "Default Quest Complete", file = ADDON_PATH .. "media\\sounds\\quest_default_med.ogg", duration = 2.0, category = "quest", source = "BLU", isInternal = true },
+            quest_complete_default = { name = "Default Quest Ready To Turn In", file = ADDON_PATH .. "media\\sounds\\quest_default_med.ogg", duration = 2.0, category = "questcomplete", source = "BLU", isInternal = true },
             quest_progress_default = { name = "Default Quest Progress", file = ADDON_PATH .. "media\\sounds\\quest_accept_default_med.ogg", duration = 2.0, category = "questprogress", source = "BLU", isInternal = true },
             quest_turnin_default = { name = "Default Quest Turn-In", file = ADDON_PATH .. "media\\sounds\\quest_default_med.ogg", duration = 2.0, category = "questturnin", source = "BLU", isInternal = true },
             renown_default = { name = "Default Renown", file = ADDON_PATH .. "media\\sounds\\renown_default_med.ogg", duration = 2.0, category = "renownrank", source = "BLU", isInternal = true },

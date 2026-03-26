@@ -9,7 +9,7 @@ local addonName, addonTable = ...
 local ADDON_PATH = "Interface\\AddOns\\" .. addonName .. "\\"
 local CORE_EVENT_ID_LOGOUT = "core_player_logout"
 local CHAT_ICON = "|T" .. ADDON_PATH .. "media\\Textures\\icon.tga:16:16:0:0|t"
-local CHAT_PREFIX = CHAT_ICON .. " |cff05dffa[BLU]|r"
+local CHAT_PREFIX = CHAT_ICON .. " - |cff05dffa[BLU]|r"
 local CHAT_DEBUG_PREFIX = CHAT_PREFIX .. " |cff808080[DEBUG]|r"
 local CHAT_ERROR_PREFIX = CHAT_PREFIX .. " |cffff0000[ERROR]|r"
 
@@ -18,7 +18,7 @@ print("BLU: Core loading started.")
 -- Create the main addon object (global)
 BLU = {
     name = addonName,
-    version = "v6.2.4",
+    version = "v6.2.5",
     author = C_AddOns.GetAddOnMetadata(addonName, "Author"),
     
     -- Core tables
@@ -276,7 +276,7 @@ function BLU:ShowWelcomeMessage()
         version = GetAddOnMetadata(addonName, "Version") or version
     end
 
-    print(CHAT_PREFIX .. " Welcome! Use |cff05dffa/blu|r to open the options panel or |cff05dffa/blu help|r for more commands.")
+    print(CHAT_PREFIX .. " Welcome. Use |cff05dffa/blu|r to open the options panel or |cff05dffa/blu help|r for more commands.")
     print(CHAT_PREFIX .. " |cffffff00Version:|r |cff8080ff" .. version .. "|r")
     self:Trace("Welcome", "Displayed welcome message for version " .. tostring(version))
 end

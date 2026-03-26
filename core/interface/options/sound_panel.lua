@@ -137,7 +137,10 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
         if selectionValue == "random" then
             return false  -- random always plays at medium; no volume slider needed
         end
-        if not selectionValue or selectionValue == "default" or selectionValue == "None" then
+        if selectionValue == "None" then
+            return false
+        end
+        if not selectionValue or selectionValue == "default" then
             return true
         end
         if type(selectionValue) ~= "string" or selectionValue:match("^external:") then
@@ -196,7 +199,6 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 
     UIDropDownMenu_Initialize(dropdown, function(self, level, menuList)
         local MAX_SOUNDS_PER_MENU_PAGE = 24
-        local INLINE_PREVIEW_TEXTURE = ADDON_PATH .. "media\\Textures\\play.blp"
         local MENU_BUTTON_WIDTH = 212
         local MENU_TEXT_WIDTH = 174
         local MENU_LIST_MIN_WIDTH = 236
@@ -301,8 +303,11 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 
             local previewButton = button.bluPreviewButton
             if not previewButton then
-                previewButton = CreateFrame("Button", nil, button)
-                previewButton:SetSize(14, 14)
+                previewButton = CreateFrame("Button", nil, button, "BackdropTemplate")
+                previewButton:SetSize(34, 16)
+                previewButton:SetBackdrop(BLU.Modules.design.Backdrops.Button)
+                previewButton:SetBackdropColor(0.08, 0.10, 0.13, 0.95)
+                previewButton:SetBackdropBorderColor(0.14, 0.20, 0.28, 1)
                 previewButton:RegisterForClicks("LeftButtonUp")
                 previewButton:SetScript("OnClick", function(btn)
                     if btn.soundId and BLU.SoundRegistry and BLU.SoundRegistry.PlaySound then
@@ -310,19 +315,24 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
                     end
                 end)
                 previewButton:SetScript("OnEnter", function(btn)
+                    btn:SetBackdropColor(0.12, 0.16, 0.22, 1)
+                    btn:SetBackdropBorderColor(unpack(BLU.Modules.design.Colors.Primary))
                     GameTooltip:SetOwner(btn, "ANCHOR_RIGHT")
-                    GameTooltip:SetText("Preview")
+                    GameTooltip:SetText("Play")
                     GameTooltip:AddLine("Click to play this sound.", 0.7, 0.7, 0.7, true)
                     GameTooltip:Show()
                 end)
-                previewButton:SetScript("OnLeave", function()
+                previewButton:SetScript("OnLeave", function(btn)
+                    btn:SetBackdropColor(0.08, 0.10, 0.13, 0.95)
+                    btn:SetBackdropBorderColor(0.14, 0.20, 0.28, 1)
                     GameTooltip:Hide()
                 end)
 
-                local texture = previewButton:CreateTexture(nil, "ARTWORK")
-                texture:SetAllPoints()
-                texture:SetTexture(INLINE_PREVIEW_TEXTURE)
-                previewButton.texture = texture
+                local label = previewButton:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+                label:SetPoint("CENTER", 0, 0)
+                label:SetText("Play")
+                label:SetTextColor(unpack(BLU.Modules.design.Colors.Primary))
+                previewButton.label = label
                 button.bluPreviewButton = previewButton
             end
 
@@ -332,7 +342,7 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
             local normalText = _G[button:GetName() .. "NormalText"]
             if normalText then
                 local stringWidth = normalText:GetStringWidth() or 0
-                local defaultOffset = button:GetWidth() - 28
+                local defaultOffset = button:GetWidth() - 40
                 local desiredOffset = 16 + stringWidth + 8
                 if desiredOffset > defaultOffset then
                     desiredOffset = defaultOffset
@@ -566,15 +576,11 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
     end)
 
     local selectedValue = BLU.db and BLU.db.profile and BLU.db.profile.selectedSounds and BLU.db.profile.selectedSounds[actualEventType] or "default"
-    if selectedValue == "None" then
-        selectedValue = "default"
-        if BLU.db and BLU.db.profile and BLU.db.profile.selectedSounds then
-            BLU.db.profile.selectedSounds[actualEventType] = "default"
-        end
-    end
 
     local selectedText = selectedValue
-    if selectedValue == "default" then
+    if selectedValue == "None" then
+        selectedText = "None"
+    elseif selectedValue == "default" then
         selectedText = "Default Sound"
     elseif selectedValue == "random" then
         selectedText = "Random"
@@ -703,9 +709,10 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     -- Sound dropdowns directly below titleBar
     local dropY = -54
     if eventType == "quest" then
-        CreateSoundDropdown(content, "quest", "Quest Turn-In Sound",    dropY,       "questturnin")
-        CreateSoundDropdown(content, "quest", "Quest Accept Sound",     dropY - 90,  "questaccept")
-        CreateSoundDropdown(content, "quest", "Quest Progress Sound",   dropY - 180, "questprogress")
+        CreateSoundDropdown(content, "quest", "Quest Turn-In Sound",         dropY,       "questturnin")
+        CreateSoundDropdown(content, "quest", "Quest Accept Sound",          dropY - 90,  "questaccept")
+        CreateSoundDropdown(content, "quest", "Quest Complete Sound",        dropY - 180, "questcomplete")
+        CreateSoundDropdown(content, "quest", "Quest Progress Sound",        dropY - 270, "questprogress")
     elseif eventType == "delvecompanion" then
         CreateSoundDropdown(content, eventType, "Companion Level-Up Sound", dropY)
         CreateSoundDropdown(content, eventType, "Delve Life Lost Sound",    dropY - 90,  "delvelifelost")

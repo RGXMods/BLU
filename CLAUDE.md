@@ -37,7 +37,7 @@ BLU/
 ├── .github/            # GitHub Actions workflows
 ├── .claude-code-router/ # AI agent configurations
 ├── BLU.toc             # Table of Contents (uppercase)
-├── blu.xml             # Main XML loader (lowercase)
+├── BLU.xml             # Main XML loader (lowercase)
 ├── README.md           # Public documentation
 └── CLAUDE.md           # This file
 ```
@@ -45,7 +45,7 @@ BLU/
 ## Architecture
 
 ### Loading Order
-`BLU.toc` -> `blu.xml` -> Core Systems -> Localization -> Interface -> Feature Modules.
+`BLU.toc` -> `BLU.xml` -> Core Systems -> Localization -> Interface -> Feature Modules.
 
 ### AI Assistant Integration
 This project uses `claude-code-router` to delegate tasks to specialized AI models:
@@ -87,7 +87,7 @@ To test changes in-game, you need to manually copy the addon files to your World
    function module:Init() ... end
    function module:Cleanup() ... end
    ```
-3. Add the new Lua file to `blu.xml` to be loaded.
+3. Add the new Lua file to `BLU.xml` to be loaded.
 
 ### Git Workflow
 - **`main`**: Stable releases.

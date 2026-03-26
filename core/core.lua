@@ -258,9 +258,9 @@ function BLU:ShowWelcomeMessage()
 
     local version = "Unknown"
     if C_AddOns and C_AddOns.GetAddOnMetadata then
-        version = C_AddOns.GetAddOnMetadata("BLU", "Version") or version
+        version = C_AddOns.GetAddOnMetadata(addonName, "Version") or version
     elseif GetAddOnMetadata then
-        version = GetAddOnMetadata("BLU", "Version") or version
+        version = GetAddOnMetadata(addonName, "Version") or version
     end
 
     print(CHAT_PREFIX .. " Welcome! Use |cff05dffa/blu|r to open the options panel or |cff05dffa/blu help|r for more commands.")

@@ -1,7 +1,17 @@
 ## Notes
+- 2026-03-25: Released v6.2.2 with a real header alignment fix that aligns the right-side rows to the left-side title, subtitle, and Discord rows, instead of only adjusting spacing.
 - 2026-03-25: `/blu addcustom` now accepts short names like `myfile` or `myfile.ogg` and checks common AddOns sound locations automatically before saving the resolved path.
 - 2026-03-25: Added a General tab helper button and popup so users can add custom sounds in game without typing the full file path.
 - 2026-03-25: General tab now keeps only the Add Custom Sound button in Actions, places it beside Reset Profile, and restores the BLU header title colors.
+
+## Version 6.2.2 (2026-03-25)
+
+### Bug Fixes
+- **Header row alignment fixed for real** - the right-side version, author, and RGX Mods lines now align directly to the left-side title, subtitle, and Discord rows instead of relying on independent spacing that still left the columns visually off.
+- **Custom sound shorthand now resolves the real supported extension** - bare names like `water` now match the actual compatible `.ogg`, `.mp3`, or `.wav` file instead of incorrectly assuming the first extension checked.
+- **Nested dropdown labels are cleaner** - sound entries now show just the sound name or filename in submenus instead of repeating pack/path context that the dropdown hierarchy already shows.
+
+---
 
 ## Version 6.2.1 (2026-03-25)
 

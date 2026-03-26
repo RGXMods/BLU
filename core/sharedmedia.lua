@@ -147,17 +147,11 @@ end
 
 local function BuildBridgeDisplayName(addonFolder, normalizedPath, preferredDisplayName)
     if type(preferredDisplayName) == "string" and preferredDisplayName ~= "" then
-        return string.format("%s - %s", addonFolder, preferredDisplayName)
+        return preferredDisplayName
     end
 
     local fileName = string.match(normalizedPath, "([^\\]+)%.[^%.]+$") or normalizedPath
-    local parentFolder = string.match(normalizedPath, "\\([^\\]+)\\[^\\]+%.[^%.]+$")
-
-    if parentFolder and parentFolder ~= "" and parentFolder ~= addonFolder then
-        return string.format("%s - %s/%s", addonFolder, parentFolder, fileName)
-    end
-
-    return string.format("%s - %s", addonFolder, fileName)
+    return fileName
 end
 
 local function HashString(input)

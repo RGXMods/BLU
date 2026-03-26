@@ -193,9 +193,17 @@ local function ResolveCustomSoundPath(soundInput)
         return nil
     end
 
+    local explicitPath = normalizedInput:lower():find("^interface\\addons\\") or normalizedInput:find("\\")
+    local explicitExtension = HasSupportedExtension(normalizedInput)
+
     if normalizedInput:lower():find("^interface\\addons\\") or normalizedInput:find("\\") then
         if HasSupportedExtension(normalizedInput) and CanLoadSoundFile(normalizedInput) then
             BLU:PrintDebug("[UserSounds] Resolved explicit custom sound path '" .. tostring(normalizedInput) .. "'")
+            return normalizedInput
+        end
+
+        if explicitExtension then
+            BLU:PrintDebug("[UserSounds] Falling back to explicit custom sound path '" .. tostring(normalizedInput) .. "'")
             return normalizedInput
         end
     end
@@ -205,8 +213,11 @@ local function ResolveCustomSoundPath(soundInput)
         return nil
     end
 
+    if not explicitExtension then
+        BLU:PrintDebug("[UserSounds] Attempting supported extension resolution for '" .. tostring(filename) .. "' using .ogg/.mp3/.wav")
+    end
+
     local candidateNames = {}
-    local fallbackPath = nil
     if HasSupportedExtension(filename) then
         table.insert(candidateNames, filename)
     else
@@ -218,9 +229,6 @@ local function ResolveCustomSoundPath(soundInput)
     for _, candidateName in ipairs(candidateNames) do
         for _, pathPattern in ipairs(CUSTOM_SOUND_SEARCH_PATHS) do
             local candidatePath = string.format(pathPattern, candidateName)
-            if not fallbackPath then
-                fallbackPath = candidatePath
-            end
             if CanLoadSoundFile(candidatePath) then
                 BLU:PrintDebug("[UserSounds] Resolved shorthand custom sound '" .. tostring(soundInput) .. "' to '" .. tostring(candidatePath) .. "'")
                 return candidatePath
@@ -228,9 +236,17 @@ local function ResolveCustomSoundPath(soundInput)
         end
     end
 
-    if fallbackPath then
-        BLU:PrintDebug("[UserSounds] Falling back to unverified custom sound path '" .. tostring(fallbackPath) .. "' for input '" .. tostring(soundInput) .. "'")
-        return fallbackPath
+    if explicitExtension then
+        for _, pathPattern in ipairs(CUSTOM_SOUND_SEARCH_PATHS) do
+            local candidatePath = string.format(pathPattern, filename)
+            BLU:PrintDebug("[UserSounds] Falling back to explicit-extension custom sound path '" .. tostring(candidatePath) .. "' for input '" .. tostring(soundInput) .. "'")
+            return candidatePath
+        end
+    end
+
+    if explicitPath and not explicitExtension then
+        BLU:PrintDebug("[UserSounds] Falling back to explicit custom sound path without extension '" .. tostring(normalizedInput) .. "'")
+        return normalizedInput
     end
 
     BLU:PrintDebug("[UserSounds] Failed to resolve custom sound input '" .. tostring(soundInput) .. "'")
@@ -351,7 +367,7 @@ function UserSounds:AddCustomSound(soundPath, displayName)
 
     local resolvedPath = ResolveCustomSoundPath(soundPath)
     if not resolvedPath then
-        return false, "Could not find a compatible sound file for '" .. tostring(soundPath) .. "'"
+        return false, "Could not find a compatible .ogg, .mp3, or .wav file for '" .. tostring(soundPath) .. "'"
     end
 
     BLU.db.profile.userCustomSounds = BLU.db.profile.userCustomSounds or {}

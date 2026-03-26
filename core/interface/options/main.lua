@@ -97,17 +97,26 @@ function Options:CreateOptionsPanel()
     logo:SetPoint("LEFT", 10, 0)
     logo:SetTexture(ADDON_PATH .. "media\\Textures\\icon.tga")
 
+    local CONTENT_TOP_INSET = -10
+    local ROW_TWO_OFFSET = -22
+    local ROW_THREE_OFFSET = -40
+
     local title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    title:SetPoint("TOPLEFT", logo, "TOPRIGHT", 10, -10)
+    title:SetPoint("TOPLEFT", logo, "TOPRIGHT", 10, CONTENT_TOP_INSET)
     title:SetText("|cff05dffaB|r|cffffffffetter |cff05dffaL|r|cffffffffevel-|cff05dffaU|r|cffffffffp|cff05dffa!|r")
 
     local subtitle = header:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    subtitle:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -4)
+    subtitle:SetPoint("TOPLEFT", logo, "TOPRIGHT", 10, CONTENT_TOP_INSET + ROW_TWO_OFFSET)
     subtitle:SetText("Iconic game sounds for World of Warcraft events")
     subtitle:SetTextColor(0.7, 0.7, 0.7)
 
+    local discord = header:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    discord:SetPoint("TOPLEFT", logo, "TOPRIGHT", 10, CONTENT_TOP_INSET + ROW_THREE_OFFSET)
+    discord:SetText("|cff7289daDiscord:|r |cffffd700discord.gg/N7kdKAHVVF|r")
+    discord:SetTextColor(0.85, 0.85, 0.85)
+
     local version = header:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    version:SetPoint("TOPRIGHT", -15, -10)
+    version:SetPoint("TOPRIGHT", -15, CONTENT_TOP_INSET)
     local metadataVersion = (C_AddOns and C_AddOns.GetAddOnMetadata and C_AddOns.GetAddOnMetadata(addonName, "Version"))
         or (GetAddOnMetadata and GetAddOnMetadata(addonName, "Version"))
         or BLU.version
@@ -117,20 +126,15 @@ function Options:CreateOptionsPanel()
     version:SetJustifyH("RIGHT")
 
     local author = header:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    author:SetPoint("TOPRIGHT", version, "BOTTOMRIGHT", 0, -4)
+    author:SetPoint("TOPRIGHT", -15, CONTENT_TOP_INSET + ROW_TWO_OFFSET)
     author:SetText("by donniedice")
     author:SetTextColor(0.7, 0.7, 0.7)
     author:SetJustifyH("RIGHT")
 
     local branding = header:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    branding:SetPoint("TOPRIGHT", author, "BOTTOMRIGHT", 0, -4)
+    branding:SetPoint("TOPRIGHT", -15, CONTENT_TOP_INSET + ROW_THREE_OFFSET)
     branding:SetText("|cff8b4b5cRGX|r |cffffd700Mods|r")
     branding:SetJustifyH("RIGHT")
-
-    local discord = header:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    discord:SetPoint("TOPLEFT", subtitle, "BOTTOMLEFT", 0, -4)
-    discord:SetText("|cff7289daDiscord:|r |cffffd700discord.gg/N7kdKAHVVF|r")
-    discord:SetTextColor(0.85, 0.85, 0.85)
 
     local tabContainer = CreateFrame("Frame", nil, container)
     tabContainer:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -4)

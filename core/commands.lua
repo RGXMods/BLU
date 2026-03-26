@@ -47,13 +47,6 @@ SlashCmdList["BLU"] = function(msg)
         else
             BLU:Print("|cff00ccffBLU:|r Options panel not available yet. Please wait a moment and try again.")
         end
-    elseif command == "test" then
-        BLU:PrintDebug("[Commands] Running test sound command")
-        if BLU.PlayTestSound then
-            BLU:PlayTestSound("levelup")
-        else
-            BLU:Print("|cff00ccffBLU:|r Playing test sound...")
-        end
     elseif command == "debug" then
         BLU:PrintDebug("[Commands] Toggling debug mode")
         if BLU.db and BLU.db.profile then
@@ -133,7 +126,6 @@ SlashCmdList["BLU"] = function(msg)
         BLU:PrintDebug("[Commands] Showing help")
         BLU:Print("|cff00ccffBLU Commands:|r")
         BLU:Print("  |cffffff00/blu|r - Open options")
-        BLU:Print("  |cffffff00/blu test|r - Play test sound")
         BLU:Print("  |cffffff00/blu debug|r - Toggle debug mode")
         BLU:Print("  |cffffff00/blu status|r - Show addon status")
         BLU:Print("  |cffffff00/blu refresh|r - Rescan external sound packs")

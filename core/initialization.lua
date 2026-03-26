@@ -226,7 +226,6 @@ end
 function BLU:ShowHelp()
     self:Print("BLU Commands:")
     self:Print("  |cffffff00/blu|r - Open options")
-    self:Print("  |cffffff00/blu test|r - Play test sound")
     self:Print("  |cffffff00/blu debug|r - Toggle debug mode")
     self:Print("  |cffffff00/blu status|r - Show addon status")
     self:Print("  |cffffff00/blu help|r - Show this help")

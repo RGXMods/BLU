@@ -145,6 +145,32 @@ local function ExtractAddonNameFromPath(path)
     return "SharedMedia"
 end
 
+local function IsLooseUserCustomPath(path)
+    local normalized = NormalizePath(path)
+    if not normalized then
+        return false
+    end
+
+    local lower = string.lower(normalized)
+    if string.match(lower, "^interface\\addons\\[^\\]+%.[^\\]+$") then
+        return true
+    end
+
+    if string.match(lower, "^interface\\addons\\sounds\\[^\\]+%.[^\\]+$") then
+        return true
+    end
+
+    if string.match(lower, "^interface\\addons\\blu\\user\\[^\\]+%.[^\\]+$") then
+        return true
+    end
+
+    if string.match(lower, "^interface\\addons\\blu\\user\\sounds\\[^\\]+%.[^\\]+$") then
+        return true
+    end
+
+    return false
+end
+
 local function BuildBridgeDisplayName(addonFolder, normalizedPath, preferredDisplayName)
     if type(preferredDisplayName) == "string" and preferredDisplayName ~= "" then
         return preferredDisplayName
@@ -381,6 +407,11 @@ function SharedMedia:RegisterBridgePath(path, preferredPackName, preferredDispla
     local lowerPath = string.lower(normalizedPath)
 
     if string.find(lowerPath, "interface\\addons\\blu\\", 1, true) then
+        return false
+    end
+
+    if IsLooseUserCustomPath(normalizedPath) then
+        BLU:PrintDebug("[SharedMedia] Skipping loose user-custom path '" .. tostring(normalizedPath) .. "'")
         return false
     end
 

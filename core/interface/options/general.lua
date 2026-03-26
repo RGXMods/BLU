@@ -35,11 +35,6 @@ local function CreateCheckbox(parent, text, x, y, checked, onClick)
     return checkbox
 end
 
-local function OpenAddCustomSoundDialog()
-    BLU:PrintDebug("[Options/General] Add Custom Sound button clicked")
-    StaticPopup_Show("BLU_ADD_CUSTOM_SOUND")
-end
-
 function BLU.CreateGeneralPanel(panel)
     BLU:PrintDebug("[Options/General] Creating General panel")
     local content = CreateFrame("Frame", nil, panel)
@@ -111,7 +106,7 @@ function BLU.CreateGeneralPanel(panel)
     local actionsSection = BLU.Modules.design:CreateSection(content, "Actions", "Interface\\Icons\\INV_Misc_Gear_08")
     actionsSection:SetPoint("TOPLEFT", behaviorSection, "BOTTOMLEFT", 0, -10)
     actionsSection:SetPoint("RIGHT", 0, 0)
-    actionsSection:SetHeight(122)
+    actionsSection:SetHeight(88)
 
     local resetBtn = BLU.Modules.design:CreateButton(actionsSection.content, "Reset Profile", 110, 24)
     resetBtn:SetPoint("TOPLEFT", 4, -8)
@@ -119,10 +114,6 @@ function BLU.CreateGeneralPanel(panel)
         BLU:PrintDebug("[Options/General] Reset Profile button clicked")
         StaticPopup_Show("BLU_CONFIRM_RESET_PROFILE")
     end)
-
-    local customSoundBtn = BLU.Modules.design:CreateButton(actionsSection.content, "Add Custom Sound", 140, 24)
-    customSoundBtn:SetPoint("LEFT", resetBtn, "RIGHT", 10, 0)
-    customSoundBtn:SetScript("OnClick", OpenAddCustomSoundDialog)
 
     StaticPopupDialogs["BLU_CONFIRM_RESET_PROFILE"] = {
         text = "Reset BLU profile settings to defaults and reload UI?",

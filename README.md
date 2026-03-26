@@ -225,7 +225,6 @@ BLU:RegisterExternalSoundPack("My Pack Name", {
 | `/blu status` | Show addon status |
 | `/blu enable` | Enable addon |
 | `/blu disable` | Disable addon |
-| `/blu test` | Play test sound |
 | `/blu refresh` | Rebuild external and user custom sound pack registry |
 | `/blu rescan` | Rescan for newly registered media |
 | `/blu addcustom myfile` | Tries common AddOns folders and adds the first matching `.ogg`/`.mp3`/`.wav` |
@@ -316,7 +315,6 @@ BLU:RegisterExternalSoundPack("My Pack Name", {
 ## <span style="color:#05dffa">🔧 Troubleshooting</span>
 
 **<span style="color:#ff6b6b">No sound playing?</span>**
-- <span style="color:#e67e23">Run</span> `/blu test` <span style="color:#e67e23">to verify the addon is active and sound is working</span>
 - <span style="color:#e67e23">Check that your in-game Master volume is not muted</span>
 
 **<span style="color:#ff6b6b">Sound pack not showing up?</span>**

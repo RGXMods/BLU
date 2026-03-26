@@ -1,14 +1,18 @@
 ## Notes
-- 2026-03-25: Released v6.2.2 with a real header alignment fix that aligns the right-side rows to the left-side title, subtitle, and Discord rows, instead of only adjusting spacing.
+- 2026-03-26: Released v6.2.3 with the finalized Sounds tab custom sound manager, instant list refreshes, custom sound shorthand/playback fixes, and slash-command cleanup.
 - 2026-03-25: `/blu addcustom` now accepts short names like `myfile` or `myfile.ogg` and checks common AddOns sound locations automatically before saving the resolved path.
 - 2026-03-25: Added a General tab helper button and popup so users can add custom sounds in game without typing the full file path.
 - 2026-03-25: General tab now keeps only the Add Custom Sound button in Actions, places it beside Reset Profile, and restores the BLU header title colors.
 
-## Version 6.2.2 (2026-03-25)
+## Version 6.2.3 (2026-03-26)
 
 ### Bug Fixes
 - **Header row alignment fixed for real** - the right-side version, author, and RGX Mods lines now align directly to the left-side title, subtitle, and Discord rows instead of relying on independent spacing that still left the columns visually off.
 - **Custom sound shorthand now resolves the real supported extension** - bare names like `water` now match the actual compatible `.ogg`, `.mp3`, or `.wav` file instead of incorrectly assuming the first extension checked.
+- **Custom sound shorthand works again for forgiving AddOns-root adds** - shorthand entries now keep candidate file paths so easy inputs like `test` still add and playback can resolve the real working file instead of failing the whole add flow.
+- **User Custom Sounds manager now refreshes immediately** - adding or removing a custom sound updates the Sounds tab list in place instead of waiting for another tab change or reload.
+- **Custom sound rows now fit the right column correctly** - removed hidden scrollbar gutter clipping and tuned the entry widths so the custom sound list lines up cleanly inside the panel.
+- **`/blu test` removed from slash command help flow** - the stale generic test command no longer points users at an invalid test-sound path from help text or README instructions.
 - **Nested dropdown labels are cleaner** - sound entries now show just the sound name or filename in submenus instead of repeating pack/path context that the dropdown hierarchy already shows.
 
 ---

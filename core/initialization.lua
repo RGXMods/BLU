@@ -93,7 +93,6 @@ function BLU:Initialize()
         "general",     -- General panel
         "sound_panel", -- Sound panel components
         "sounds",      -- Sounds panel
-        "about",       -- About panel
         "modules",     -- Modules panel
         "options"      -- Main options panel (MUST be last)
     })

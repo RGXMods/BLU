@@ -1,10 +1,20 @@
 ## Notes
+- 2026-03-27: Started v6.2.6 for interface options file naming cleanup, Housing panel extraction, and removal of unused duplicate panel files.
 - 2026-03-26: Started v6.2.5 for quest progress trigger fixes, welcome/prefix formatting cleanup, combat-safe settings opening, and `None` option UI correction.
 - 2026-03-26: Started v6.2.4 for custom sound path resolution, display cleanup, and lighter user custom sound playback.
 - 2026-03-26: Released v6.2.3 with the finalized Sounds tab custom sound manager, instant list refreshes, custom sound shorthand/playback fixes, and slash-command cleanup.
 - 2026-03-25: `/blu addcustom` now accepts short names like `myfile` or `myfile.ogg` and checks common AddOns sound locations automatically before saving the resolved path.
 - 2026-03-25: Added a General tab helper button and popup so users can add custom sounds in game without typing the full file path.
 - 2026-03-25: General tab now keeps only the Add Custom Sound button in Actions, places it beside Reset Profile, and restores the BLU header title colors.
+
+## Version 6.2.6 (2026-03-27)
+
+### Maintenance
+- **Options file names now match the real UI structure** - the Housing tab builder now lives in its own `housing.lua` file instead of being split across misleading `about.lua` and `sound_panel.lua` locations.
+- **Unused duplicate panel files were removed** - legacy `core/interface/panels/about.lua` and `core/interface/panels/general.lua` copies are gone so there is a single active source of truth for each loaded panel.
+- **Options loader/init references were cleaned up** - the XML loader and interface init sequence now point at the actual Housing options file and no longer carry the stale `about` options module entry.
+
+---
 
 ## Version 6.2.5 (2026-03-26)
 

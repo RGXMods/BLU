@@ -91,9 +91,10 @@ jobs:
 
           if [[ "$GITHUB_REF" == refs/tags/* ]]; then
             tag="${GITHUB_REF#refs/tags/}"
+            base_tag="${tag%%-*}"
 
-            if [[ "$tag" != "$version" ]]; then
-              echo "::error::Tag '$tag' does not match BLU.toc version '$version'."
+            if [[ "$tag" != "$version" && "$base_tag" != "$version" ]]; then
+              echo "::error::Tag '$tag' does not match BLU.toc version '$version' or base version '$base_tag'."
               exit 1
             fi
 
@@ -114,8 +115,15 @@ jobs:
         run: |
           version="${{ steps.version.outputs.version }}"
           short_version="${version#v}"
+          tag_name="${GITHUB_REF#refs/tags/}"
+          tag_short_version="${tag_name#v}"
+          base_short_version="${tag_short_version%%-*}"
 
-          if [[ -f "docs/changelogs/${short_version}.md" ]]; then
+          if [[ "$GITHUB_REF" == refs/tags/* && -f "docs/changelogs/${tag_short_version}.md" ]]; then
+            changelog_content="$(cat "docs/changelogs/${tag_short_version}.md")"
+          elif [[ "$GITHUB_REF" == refs/tags/* && -f "docs/changelogs/${base_short_version}.md" ]]; then
+            changelog_content="$(cat "docs/changelogs/${base_short_version}.md")"
+          elif [[ -f "docs/changelogs/${short_version}.md" ]]; then
             changelog_content="$(cat "docs/changelogs/${short_version}.md")"
           elif [[ -f "docs/CHANGES.md" ]]; then
             changelog_content="$(awk '
@@ -160,6 +168,9 @@ jobs:
           changelog_content="${CHANGELOG_CONTENT}"
           release_type="${RELEASE_TYPE}"
           version="${RELEASE_VERSION}"
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            version="${GITHUB_REF#refs/tags/}"
+          fi
 
           case "$release_type" in
             "release")
@@ -250,8 +261,13 @@ jobs:
       - name: ❌ Send Failure Notification
         if: failure()
         run: |
+          version="${{ steps.version.outputs.version || 'Unknown' }}"
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            version="${GITHUB_REF#refs/tags/}"
+          fi
+
           jq -n \
-            --arg version "${{ steps.version.outputs.version || 'Unknown' }}" \
+            --arg version "$version" \
             --arg run_id "${{ github.run_id }}" \
             --arg timestamp "${{ steps.version.outputs.timestamp }}" \
             '{

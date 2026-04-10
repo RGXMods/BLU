@@ -50,6 +50,7 @@ function DropdownUtil:ForceWidth(level, minWidth, leftInset, opts)
     opts = opts or {}
     local deleteKey  = opts.deleteKey  or "bluDeleteButton"
     local previewKey = opts.previewKey or "bluPreviewButton"
+    local countKey   = opts.countKey
     local compactRightControl = opts.compactRightControl
     local util = self
 
@@ -63,19 +64,28 @@ function DropdownUtil:ForceWidth(level, minWidth, leftInset, opts)
         -- neededContentWidth = leftInset + text + rightReservation
         -- listFrame width    = neededContentWidth + BORDER_PAD (WoW border on each side)
         local neededContentWidth = (minWidth or 200) - BORDER_PAD
+        local visibleButtonCount = 0
         for i = 1, maxButtons do
             local btn = _G[listFrame:GetName() .. "Button" .. i]
-            if btn then
+            if btn and btn:IsShown() then
+                visibleButtonCount = visibleButtonCount + 1
                 local nt          = _G[btn:GetName() .. "NormalText"]
                 local expandArrow = _G[btn:GetName() .. "ExpandArrow"]
                 local hasPreview  = btn[previewKey] and btn[previewKey]:IsShown()
                 local hasDelete   = btn[deleteKey]  and btn[deleteKey]:IsShown()
+                local countLabel  = countKey and btn[countKey]
+                local hasCount    = countLabel and countLabel:IsShown()
                 local hasArrow    = expandArrow     and expandArrow:IsShown()
                 local tw          = nt and math.ceil(nt:GetStringWidth() or 0) or 0
+                local cw          = hasCount and math.ceil(countLabel:GetStringWidth() or 0) or 0
                 -- right reservation for inline widget + gap
-                local rightRes = hasPreview and 40 or (hasDelete and 24 or (hasArrow and 14 or 6))
+                local rightRes = hasPreview and 40 or (hasDelete and 24 or ((hasArrow and 14 or 6) + (hasCount and (cw + 6) or 0)))
                 neededContentWidth = math.max(neededContentWidth, leftInset + tw + rightRes)
             end
+        end
+
+        if visibleButtonCount == 0 then
+            return
         end
 
         -- Pass 2: apply sizes and re-anchor everything
@@ -85,14 +95,16 @@ function DropdownUtil:ForceWidth(level, minWidth, leftInset, opts)
 
         for i = 1, maxButtons do
             local btn = _G[listFrame:GetName() .. "Button" .. i]
-            if btn then
+            if btn and btn:IsShown() then
                 btn:SetWidth(btnWidth)
                 local nt          = _G[btn:GetName() .. "NormalText"]
                 local expandArrow = _G[btn:GetName() .. "ExpandArrow"]
                 local previewBtn  = btn[previewKey]
                 local deleteBtn   = btn[deleteKey]
+                local countLabel  = countKey and btn[countKey]
                 local hasPreview  = previewBtn and previewBtn:IsShown()
                 local hasDelete   = deleteBtn  and deleteBtn:IsShown()
+                local hasCount    = countLabel and countLabel:IsShown()
                 local hasArrow    = expandArrow and expandArrow:IsShown()
                 local textWidth   = nt and math.ceil(nt:GetStringWidth() or 0) or 0
                 local anchorX     = leftInset + textWidth + 4
@@ -137,7 +149,19 @@ function DropdownUtil:ForceWidth(level, minWidth, leftInset, opts)
                     if nt then
                         nt:ClearAllPoints()
                         nt:SetPoint("LEFT",  btn, "LEFT",  leftInset, 0)
-                        if not compactRightControl then
+                        if hasCount and countLabel then
+                            if hasArrow and expandArrow then
+                                expandArrow:ClearAllPoints()
+                                expandArrow:SetPoint("RIGHT", btn, "RIGHT", -3, 0)
+                            end
+                            countLabel:ClearAllPoints()
+                            if hasArrow and expandArrow then
+                                countLabel:SetPoint("RIGHT", expandArrow, "LEFT", -4, 0)
+                            else
+                                countLabel:SetPoint("RIGHT", btn, "RIGHT", -6, 0)
+                            end
+                            nt:SetPoint("RIGHT", countLabel, "LEFT", -6, 0)
+                        elseif not compactRightControl then
                             nt:SetPoint("RIGHT", btn, "RIGHT", hasArrow and -16 or -6, 0)
                         end
                         nt:SetJustifyH("LEFT")

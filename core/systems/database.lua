@@ -415,11 +415,53 @@ end
 
 -- Make profile functions available globally
 -- Map Database methods to BLU object safely for both '.' and ':' calls
-function BLU:CreateProfile(name) return Database:CreateProfile(name) end
-function BLU:LoadProfile(name) return Database:LoadProfile(name) end
-function BLU:DeleteProfile(name) return Database:DeleteProfile(name) end
-function BLU:RenameProfile(old, new) return Database:RenameProfile(old, new) end
-function BLU:SerializeProfile(name) return Database:SerializeProfile(name) end
-function BLU:ImportProfile(data, name) return Database:DeserializeProfile(data) end
-function BLU:ShowExportDialog(data) return Database:ShowExportDialog(data) end
+function BLU.CreateProfile(self, name)
+    if type(self) == "string" and name == nil then
+        name = self
+    end
+    return Database:CreateProfile(name)
+end
+
+function BLU.LoadProfile(self, name)
+    if type(self) == "string" and name == nil then
+        name = self
+    end
+    return Database:LoadProfile(name)
+end
+
+function BLU.DeleteProfile(self, name)
+    if type(self) == "string" and name == nil then
+        name = self
+    end
+    return Database:DeleteProfile(name)
+end
+
+function BLU.RenameProfile(self, oldName, newName)
+    if type(self) == "string" and newName == nil then
+        newName = oldName
+        oldName = self
+    end
+    return Database:RenameProfile(oldName, newName)
+end
+
+function BLU.SerializeProfile(self, name)
+    if type(self) == "string" and name == nil then
+        name = self
+    end
+    return Database:SerializeProfile(name)
+end
+
+function BLU.ImportProfile(self, data, name)
+    if type(self) == "string" and data == nil then
+        data = self
+    end
+    return Database:DeserializeProfile(data)
+end
+
+function BLU.ShowExportDialog(self, data)
+    if type(self) == "string" and data == nil then
+        data = self
+    end
+    return Database:ShowExportDialog(data)
+end
 function BLU:ShowImportDialog() return Database:ShowImportDialog() end

@@ -2,7 +2,7 @@
 
 BLU is a Retail World of Warcraft addon that swaps default progression sounds with curated audio from many other games, while giving you per-event control over what plays and when.
 
-Current alpha release: `v6.3.0-alpha.1`
+Current release: `v6.3.0`
 
 ## What BLU Does
 
@@ -25,13 +25,13 @@ Current alpha release: `v6.3.0-alpha.1`
 - Reputation
 - Trading Post
 
-## Highlights In v6.3.0-alpha.1
+## Highlights In v6.3.0
 
-- Added a dedicated Profiles tab with saved profile management, import/export flows, and quick presets
+- Added a dedicated Profiles tab with saved profile management, import/export flows, quick presets, and realtime list updates
 - Added preset application flows for adventure, spooky, minimal, and DonnieDice-curated setups
 - Expanded the options UI to a 3-row alphabetical tab layout with new placeholder modules for Combat, Collectibles, Loot, and Prey
 - Split out a dedicated Debug module and tab with scoped troubleshooting controls
-- Improved Delve life-credit sound reliability and tightened nested dropdown behavior
+- Improved Delve life-credit sound reliability and finalized nested dropdown behavior
 - Hardened popup and addon metadata handling for newer WoW API environments
 
 ## Profiles
@@ -40,7 +40,7 @@ The Profiles tab now supports:
 - viewing saved profiles and the active profile
 - creating, loading, renaming, deleting, and resetting profiles
 - importing/exporting profile strings
-- copying from the current character profile
+- duplicating the active profile with sequential `Copy` naming
 - applying quick presets to the selected profile
 
 ## Debug
@@ -105,6 +105,13 @@ Near-term roadmap items include:
 - continued Profiles tab compaction and UX polish
 - more preset curation and named setup flows
 - ongoing event-trigger verification and sound coverage cleanup
+
+## Release Workflow
+
+Alpha releases should use the helper in [`scripts/release-alpha.ps1`](./scripts/release-alpha.ps1).
+
+The default flow pushes the `alpha` branch but keeps the tag local so GitHub/Discord only emit one notification.
+See [`docs/RELEASING.md`](./docs/RELEASING.md) for the exact commands.
 
 ## Support
 

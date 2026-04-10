@@ -239,14 +239,40 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
             return soundName
         end
 
-        -- Keep the list width stable while laying out inline controls more tightly.
-        local MIN_WIDTH = math.floor(dropdown:GetWidth())
-        if MIN_WIDTH < 100 then MIN_WIDTH = 260 end
+        -- Keep level 1 aligned with the parent dropdown, but let nested menus
+        -- size closer to their actual content width.
+        local BASE_MIN_WIDTH = math.floor(dropdown:GetWidth())
+        if BASE_MIN_WIDTH < 100 then BASE_MIN_WIDTH = 260 end
+
+        local function getMinWidthForLevel(levelToUse)
+            if (levelToUse or 1) <= 1 then
+                return BASE_MIN_WIDTH
+            end
+
+            return math.max(150, math.floor(BASE_MIN_WIDTH * 0.58))
+        end
+
+        local function getLeftInsetForLevel(levelToUse)
+            if (levelToUse or 1) == 1 then
+                return 24
+            end
+
+            if (levelToUse or 1) >= 3 then
+                return 24
+            end
+
+            return 10
+        end
+
+        local function shouldCompactRightControl(levelToUse)
+            return (levelToUse or 1) < 3
+        end
 
         local function forceListFrameWidth(levelToUse)
-            dd:ForceWidth(levelToUse, MIN_WIDTH, 10, {
+            dd:ForceWidth(levelToUse, getMinWidthForLevel(levelToUse), getLeftInsetForLevel(levelToUse), {
+                countKey = "bluCountLabel",
                 previewKey = "bluPreviewButton",
-                compactRightControl = true,
+                compactRightControl = shouldCompactRightControl(levelToUse),
             })
         end
 
@@ -269,6 +295,9 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
                     end
                     if button.bluDeleteButton then
                         button.bluDeleteButton:Hide()
+                    end
+                    if button.bluCountLabel then
+                        button.bluCountLabel:Hide()
                     end
                 end
             end
@@ -333,6 +362,29 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
                 normalText:SetPoint("RIGHT", previewButton, "LEFT", -6, 0)
                 normalText:SetJustifyH("LEFT")
             end
+        end
+
+        local function attachInlineCountLabel(levelToUse, text)
+            local listFrame = getDropDownListFrame(levelToUse)
+            if not listFrame or not listFrame.numButtons then
+                return
+            end
+
+            local button = _G[listFrame:GetName() .. "Button" .. listFrame.numButtons]
+            if not button then
+                return
+            end
+
+            local countLabel = button.bluCountLabel
+            if not countLabel then
+                countLabel = button:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+                countLabel:SetJustifyH("RIGHT")
+                countLabel:SetTextColor(0.72, 0.72, 0.72)
+                button.bluCountLabel = countLabel
+            end
+
+            countLabel:SetText(text or "")
+            countLabel:Show()
         end
 
         hideInlinePreviewButtons(level)
@@ -501,11 +553,12 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
                     else
                         info.menuList = {group = groupKey, sub = subKey, type = "pack", page = 1}
                     end
-                    info.text = displaySubKey .. " (" .. #sounds .. ")"
+                    info.text = displaySubKey
                     if subKeyTruncated then
                         info.tooltipTitle = subKey
                     end
                     UIDropDownMenu_AddButton(info, level)
+                    attachInlineCountLabel(level, "(" .. #sounds .. ")")
                     styleLastAddedButton(level, {hasArrow = true, notCheckable = true})
                 end
             end

@@ -1,31 +1,35 @@
-## Notes
-- 2026-04-10: Active alpha build is v6.3.0-alpha.1. Profiles, presets, debug separation, module placeholders, and dropdown/popup hardening are now included in release notes.
+# Changes
 
-## Version 6.3.0-alpha.1 (2026-04-10)
+`docs/CHANGES.md` is the canonical changelog summary for BLU.
 
-### Updates
-- Added a dedicated Profiles tab with saved profile management, import/export actions, rename/delete/reset flows, and copy-from-character support.
-- Added preset application flows so Adventure, Spooky, Minimal, and DonnieDice-curated setups can be applied without rebuilding a profile by hand.
-- Expanded the options panel into a 3-row alphabetical tab layout and reserved future-facing placeholder modules for Combat, Collectibles, Loot, and Prey.
-- Moved scoped troubleshooting into a dedicated Debug module and tab while keeping the release focused on lightweight diagnostics.
-- Improved Delve life-credit sound handling and tightened nested dropdown behavior for inline arrows, preview buttons, and delete actions.
-- Hardened StaticPopup editbox handling and addon metadata fallbacks to avoid nil-index and metadata lookup errors on newer WoW clients.
+## Current Release
 
-## Version 6.3.0 (2026-04-09)
+### [`v6.3.0`](./changelogs/6.3.0.md) - 2026-04-10
 
-### Updates
-- All 18 option tabs are now in full alphabetical order across three rows of six.
-- Combat, Collectibles, Loot, and Prey now share one consistent styled placeholder panel with a title bar, icon, and coming-soon section — no more grayed-out non-clickable slots for these.
-- Prey tab and module stub added to reserve the category for a future hunt/target-tracking sound system.
-- Collectibles, Loot, and Prey each have dedicated module stub files under `modules/` matching the Combat module pattern.
-- Profiles tab layout rebuilt: saved profiles, current selection, and actions now share a single combined section, with the delete action moved into the profile dropdown instead of a separate inline quick-delete button.
-- Fixed profile popup handling so `hasEditBox` dialogs safely guard `self.editBox` access and avoid nil-index crashes.
-- Added robust addon metadata lookup fallback for `C_AddOns.GetAddOnMetadata` and `GetAddOnMetadata`, preventing broken saves in newer WoW environments.
-- Fixed tab button sizing on stacked rows by removing a redundant `SetSize` call and ensuring second and later column tabs use the correct wide width.
-- StaticPopup success messages (create/rename/delete) now route through `PrintDebug` instead of `BLU:Print`, so they are silent when debug mode is off.
-- Removed the redundant `|cff00ccffBLU:|r` prefix from all popup error messages — `BLU:Print` already adds the addon prefix.
-- General tab: wider gap between Core and Behavior column sections; Debug section now sits lower with more breathing room above it.
-- Debug tab added to the tab grid (alphabetical slot col 5 row 1); debug controls remain in General for quick-access toggle as well.
+- **Options tabs now support a true third row** - the layout and sizing logic in [`core/interface/options/tabs.lua`](../core/interface/options/tabs.lua) now supports the larger alphabetical panel grid cleanly.
+- **Combat, Collectibles, Loot, and Prey now have reserved tabs** - new placeholder modules in [`modules/Combat/Combat.lua`](../modules/Combat/Combat.lua), [`modules/Collectibles/Collectibles.lua`](../modules/Collectibles/Collectibles.lua), [`modules/Loot/Loot.lua`](../modules/Loot/Loot.lua), and [`modules/Prey/Prey.lua`](../modules/Prey/Prey.lua) keep future trigger groups visible in the live UI.
+- **Profiles now have a dedicated management tab** - the main work lives in [`core/interface/options/profiles.lua`](../core/interface/options/profiles.lua), with import/export and mutation helpers in [`core/systems/database.lua`](../core/systems/database.lua).
+- **Profile actions now update in real time** - create, rename, delete, reset, and duplicate flows now refresh the live Profiles tab instead of waiting for a reopen.
+- **Profile duplication is now productionized** - duplicate naming now follows the active profile plus `Copy`, `Copy 2`, `Copy 3`, and so on inside [`core/interface/options/profiles.lua`](../core/interface/options/profiles.lua).
+- **Preset support was added for quick setup flows** - `donniedice's Preset`, `Spooky Preset`, `Adventure Preset`, and `Minimal Preset` now ship as part of the Profiles workflow in [`core/interface/options/profiles.lua`](../core/interface/options/profiles.lua).
+- **Debug now has a dedicated module and tab** - scoped debug controls are backed by [`modules/Debug/Debug.lua`](../modules/Debug/Debug.lua) and surfaced through the options UI.
+- **Delve life-credit handling is more reliable** - the Delve trigger improvements live in [`modules/Delve/Delve.lua`](../modules/Delve/Delve.lua).
+- **Dropdown behavior is now finalized** - shared sizing/alignment logic in [`core/interface/dropdown.lua`](../core/interface/dropdown.lua) and sound-menu integration in [`core/interface/options/sound_panel.lua`](../core/interface/options/sound_panel.lua) now keep nested menus compact and consistently aligned.
+- **Improved metadata and popup safety** - metadata fallbacks in [`core/core.lua`](../core/core.lua) and [`core/systems/database.lua`](../core/systems/database.lua) now cover both legacy and current WoW APIs, while popup edit-box lookups are guarded for safer profile actions.
+- **Chat prefix styling is cleaner** - login, debug, and error chat prefix rendering was cleaned up in [`core/core.lua`](../core/core.lua).
 
+Full notes:
+- [`v6.3.0`](./changelogs/6.3.0.md)
 
----
+## Recent History
+
+- [`v6.2.5`](./changelogs/6.2.5.md)
+- [`v6.2.4`](./changelogs/6.2.4.md)
+- [`v6.2.3`](./changelogs/6.2.3.md)
+- [`v6.2.1`](./changelogs/6.2.1.md)
+- [`v6.2.0`](./changelogs/6.2.0.md)
+- [`v6.1.3`](./changelogs/6.1.3.md)
+- [`v6.1.2`](./changelogs/6.1.2.md)
+- [`v6.1.1`](./changelogs/6.1.1.md)
+- [`v6.1.0`](./changelogs/6.1.0.md)
+- [`v6.0.0`](./changelogs/6.0.0.md)

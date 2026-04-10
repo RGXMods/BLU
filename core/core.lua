@@ -35,7 +35,7 @@ print("BLU: Core loading started.")
 BLU = {
     GetMetadata = GetAddOnMetadataSafe,
     name = addonName,
-    version = "v6.3.0-alpha.1",
+    version = "v6.3.0",
     author = GetAddOnMetadataSafe(addonName, "Author"),
     
     -- Core tables

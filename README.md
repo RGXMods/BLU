@@ -122,8 +122,7 @@ _<span style="color:#e67e23">Every coffee helps fund new features and sound addi
 | 📜 **Quests** | Unique sounds for quest accept/turn-in |
 | 🛒 **Trading Post** | Sounds for Trading Post activities |
 | 🔊 **Volume Control** | 3-tier volume system for BLU sounds (low/med/high) |
-| 🎚️ **Sound Channels** | Choose which audio channel to use (Master, SFX, Music, Ambience, Dialog) |
-| 🔈 **Live Channel Volume** | Slider synced to WoW's actual audio CVars — matches the in-game audio options |
+| 🎚️ **Sound Channels** | Choose which audio channel to use (Master, Sound, Music, etc.) |
 | 🎛️ **Per-Event Override** | Customize volume for specific events |
 | 📦 **Sound Pack Support** | Auto-discovers sounds from other addons — no dependencies required |
 | 🗂️ **User Custom Sounds** | Add your own `.ogg`/`.mp3`/`.wav` files from the Sounds tab or with `/blu addcustom` |
@@ -267,20 +266,6 @@ BLU:RegisterExternalSoundPack("My Pack Name", {
 ---
 
 ## <span style="color:#05dffa">🆕 What's New in v6.4.0</span>
-
-<details>
-<summary><strong><span style="color:#05dffa">🎉 Click to see the latest updates!</span></strong></summary>
-
-### <span style="color:#4ecdc4">🆕 Latest Updates</span>
-- <span style="color:#2dc26b">✅ **CVar-backed channel volume slider**</span> <span style="color:#e67e23">— the Sound Output card on the General tab reads and writes WoW's actual audio channel CVars, staying in sync with the in-game audio options</span>
-- <span style="color:#05dffa">✅ **Sound Output card**</span> <span style="color:#e67e23">— channel selector and volume slider are now a self-contained panel in the top-right of the General tab</span>
-- <span style="color:#b96ad9">✅ **Profile management overhaul**</span> <span style="color:#e67e23">— new profiles start from clean defaults, the Copy button produces a true independent deep copy, and profile switches instantly rebuild all option tab panels</span>
-- <span style="color:#ff6b6b">✅ **Preset confirmation dialog**</span> <span style="color:#e67e23">— applying a preset now requires confirmation before overwriting profile settings</span>
-- <span style="color:#4ecdc4">✅ **Animated profile action buttons**</span> <span style="color:#e67e23">— Create, Rename, Reset, Copy, and all preset buttons now use the same hover animation and tooltips as the tab buttons</span>
-
-</details>
-
-## <span style="color:#05dffa">🆕 What's New in v6.2.4</span>
 
 <details>
 <summary><strong><span style="color:#05dffa">🎉 Click to see the latest updates!</span></strong></summary>

@@ -2,7 +2,7 @@
 
 BLU is a Retail World of Warcraft addon that swaps default progression sounds with curated audio from many other games, while giving you per-event control over what plays and when.
 
-Current release: `v6.3.0`
+Current alpha release: `v6.4.0-alpha.1`
 
 ## What BLU Does
 
@@ -25,14 +25,11 @@ Current release: `v6.3.0`
 - Reputation
 - Trading Post
 
-## Highlights In v6.3.0
+## Highlights In v6.4.0-alpha.1
 
-- Added a dedicated Profiles tab with saved profile management, import/export flows, quick presets, and realtime list updates
-- Added preset application flows for adventure, spooky, minimal, and DonnieDice-curated setups
-- Expanded the options UI to a 3-row alphabetical tab layout with new placeholder modules for Combat, Collectibles, Loot, and Prey
-- Split out a dedicated Debug module and tab with scoped troubleshooting controls
-- Improved Delve life-credit sound reliability and finalized nested dropdown behavior
-- Hardened popup and addon metadata handling for newer WoW API environments
+- Alpha branch opened for the next BLU release cycle
+- `v6.3.0` production release work now lives in the docs changelog set
+- New work for `v6.4.0` will be tracked from this point forward
 
 ## Profiles
 

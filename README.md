@@ -96,7 +96,7 @@ _<span style="color:#e67e23">Every coffee helps fund new features and sound addi
 
 ### <span style="color:#05dffa">🔥 Why Choose BLU?</span>
 - **<span style="color:#2dc26b">🎮 50+ Games:</span>** <span style="color:#e67e23">Iconic sounds from Final Fantasy, Zelda, Mario, Skyrim, and many more</span>
-- **<span style="color:#05dffa">🌟 Sound Pack API:</span>** <span style="color:#e67e23">Addon devs can register custom sound packs directly with BLU</span>
+- **<span style="color:#05dffa">🌟 Sound Pack API:</span>** <span style="color:#e67e23">Addon devs can build BLU-compatible sound packs with 3-tier volume variants and register them directly with BLU</span>
 - **<span style="color:#b96ad9">🛠️ Modular:</span>** <span style="color:#e67e23">Only load the feature modules you actually use</span>
 - **<span style="color:#4ecdc4">🎯 No Dependencies:</span>** <span style="color:#e67e23">Auto-discovers sounds from other addons — no libraries required</span>
 - **<span style="color:#ff6b6b">💬 Active Support:</span>** <span style="color:#e67e23">Join our Discord for instant help!</span>
@@ -126,7 +126,7 @@ _<span style="color:#e67e23">Every coffee helps fund new features and sound addi
 | 🎛️ **Per-Event Override** | Customize volume for specific events |
 | 📦 **Sound Pack Support** | Auto-discovers sounds from other addons — no dependencies required |
 | 🗂️ **User Custom Sounds** | Add your own `.ogg`/`.mp3`/`.wav` files from the Sounds tab or with `/blu addcustom` |
-| 🔌 **Third-Party API** | Addon devs can register packs via `BLU:RegisterExternalSoundPack()` |
+| 🔌 **Third-Party API** | Addon devs can register BLU-compatible packs via `BLU:RegisterSoundPack()` or bridge simple single-file packs via `BLU:RegisterExternalSoundPack()` |
 | ⚙️ **Modular System** | Only load the features you need |
 | 💾 **Profile Support** | Save different configurations |
 | 🎨 **Modern UI** | Clean tabbed interface with inline sound previews |
@@ -189,15 +189,24 @@ _`Note`: Each game includes Low, Medium, and High volume variants for all sound 
 
 1. **<span style="color:#2dc26b">Default WoW Sounds</span><span style="color:#3598db">:</span>** <span style="color:#e67e23">Original game sounds (no volume control)</span>
 2. **<span style="color:#05dffa">BLU Internal Sounds</span><span style="color:#3598db">:</span>** <span style="color:#e67e23">Custom sounds with 3 volume variants — High, Medium (default), Low</span>
-3. **<span style="color:#b96ad9">External Sound Packs</span><span style="color:#3598db">:</span>** <span style="color:#e67e23">Auto-discovered from other loaded addons at startup through BLU's native bridge/discovery system. Devs can also register packs via `BLU:RegisterExternalSoundPack()`</span>
+3. **<span style="color:#b96ad9">External Sound Packs</span><span style="color:#3598db">:</span>** <span style="color:#e67e23">Auto-discovered from other loaded addons at startup through BLU's native bridge/discovery system. Devs can register full BLU-compatible packs via `BLU:RegisterSoundPack()` or simple bridge packs via `BLU:RegisterExternalSoundPack()`</span>
 
 ### <span style="color:#4ecdc4">Sound Pack API (for addon developers):</span>
+<span style="color:#e67e23">For the full current guide, including the recommended folder layout, `_low` / `_med` / `_high` naming, and both registration paths, see the</span> [<span style="color:#05dffa">Sounds Guidelines wiki</span>](https://github.com/DonnieDice/BLU/wiki/Sounds-Guidelines)<span style="color:#e67e23">.</span>
+
 ```lua
--- Register your sound pack directly with BLU
-BLU:RegisterExternalSoundPack("My Pack Name", {
-    { name = "My Sound", path = "Interface\\AddOns\\MyAddon\\sounds\\mysound.ogg" },
+-- Full BLU-compatible pack with low / medium / high variants
+BLU:RegisterSoundPack("my_pack", "My Pack", {
+    my_pack_victory = {
+        name = "Victory",
+        file = "Interface\\AddOns\\MyPack\\media\\sounds\\victory_med.ogg",
+        category = "all",
+        source = "BLU",
+    },
 })
 ```
+
+<span style="color:#e67e23">Use `BLU:RegisterExternalSoundPack()` only when you want to bridge simple single-file sounds that do not need BLU's 3-volume variant behavior.</span>
 
 ---
 
@@ -321,6 +330,7 @@ BLU:RegisterExternalSoundPack("My Pack Name", {
 **<span style="color:#ff6b6b">Sound pack not showing up?</span>**
 - <span style="color:#e67e23">Run</span> `/blu rescan` <span style="color:#e67e23">to re-discover newly registered media</span>
 - <span style="color:#e67e23">Run</span> `/blu refresh` <span style="color:#e67e23">to rebuild the external and user custom sound pack registry</span>
+- <span style="color:#e67e23">If you're building your own pack or adding custom files, follow the</span> [<span style="color:#05dffa">Sounds Guidelines wiki</span>](https://github.com/DonnieDice/BLU/wiki/Sounds-Guidelines) <span style="color:#e67e23">for the current folder paths and registration examples</span>
 
 **<span style="color:#ff6b6b">Still having trouble?</span>**
 - <span style="color:#e67e23">Join our</span> [<span style="color:#7289da">Discord</span>](https://discord.gg/N7kdKAHVVF) <span style="color:#e67e23">for instant support</span>

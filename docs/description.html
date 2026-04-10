@@ -64,8 +64,12 @@ This update tightens profile behavior, fixes a live quest-turn-in error, and imp
 BLU supports:
 - built-in BLU sound packs
 - external addon packs discovered automatically
-- direct registration through `BLU:RegisterExternalSoundPack(...)`
+- direct registration through `BLU:RegisterSoundPack(...)` for full BLU-compatible 3-volume packs
+- bridge registration through `BLU:RegisterExternalSoundPack(...)` for simple single-file sounds
 - user custom `.ogg`, `.mp3`, and `.wav` files
+
+Full setup instructions for addon authors and custom-sound users:
+https://github.com/DonnieDice/BLU/wiki/Sounds-Guidelines
 
 ***
 

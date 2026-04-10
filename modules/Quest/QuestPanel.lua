@@ -51,7 +51,7 @@ function BLU.CreateQuestPanel(panel)
         local testBtn = BLU.Design:CreateButton(section.content, "Test", 60, 22)
         testBtn:SetPoint("RIGHT", -BLU.Design.Layout.Spacing, -BLU.Design.Layout.Spacing)
         testBtn:SetScript("OnClick", function(self)
-            local selected = BLU.db.profile.selectedSounds and BLU.db.profile.selectedSounds[questEventType]
+            local selected = BLU.db.selectedSounds and BLU.db.selectedSounds[questEventType]
             
             if not selected or selected == "none" then
                 BLU:Print("No sound selected for " .. questEventName)
@@ -66,7 +66,7 @@ function BLU.CreateQuestPanel(panel)
                 PlaySound(SOUNDKIT.READY_CHECK, "Master")
             elseif selected:match("^blu:") then
                 local soundFile = selected:gsub("^blu:", "")
-                PlaySoundFile(soundFile, BLU.db.profile.soundChannel or "Master")
+                PlaySoundFile(soundFile, BLU.db.soundChannel or "Master")
             end
             
             C_Timer.After(2, function()
@@ -85,7 +85,7 @@ function BLU.CreateQuestPanel(panel)
         dropdown.eventId = questEventType
         UIDropDownMenu_Initialize(dropdown, function(self, level, menuList)
             level = level or 1
-            BLU.db.profile.selectedSounds = BLU.db.profile.selectedSounds or {}
+            BLU.db.selectedSounds = BLU.db.selectedSounds or {}
             
             if level == 1 then
                 -- NONE option
@@ -93,12 +93,12 @@ function BLU.CreateQuestPanel(panel)
                 info.text = "|cff888888None (Disabled)|r"
                 info.value = "none"
                 info.func = function()
-                    BLU.db.profile.selectedSounds[self.eventId] = "none"
+                    BLU.db.selectedSounds[self.eventId] = "none"
                     UIDropDownMenu_SetText(self, "None (Disabled)")
                     currentSound:SetText("|cff888888None|r")
                     CloseDropDownMenus()
                 end
-                info.checked = BLU.db.profile.selectedSounds[self.eventId] == "none"
+                info.checked = BLU.db.selectedSounds[self.eventId] == "none"
                 UIDropDownMenu_AddButton(info, level)
                 
                 -- Separator
@@ -141,21 +141,21 @@ function BLU.CreateQuestPanel(panel)
                         info.text = vol.text
                         info.value = vol.value
                         info.func = function()
-                            BLU.db.profile.selectedSounds[dropdown.eventId] = vol.value
+                            BLU.db.selectedSounds[dropdown.eventId] = vol.value
                             UIDropDownMenu_SetText(dropdown, vol.text)
                             currentSound:SetText(vol.text)
                             CloseDropDownMenus()
                             
                             -- Enable quest module if any sound is selected
                             if vol.value ~= "none" then
-                                BLU.db.profile.modules = BLU.db.profile.modules or {}
-                                BLU.db.profile.modules.quest = true
+                                BLU.db.modules = BLU.db.modules or {}
+                                BLU.db.modules.quest = true
                                 if BLU.LoadModule then
                                     BLU:LoadModule("features", "quest")
                                 end
                             end
                         end
-                        info.checked = BLU.db.profile.selectedSounds[dropdown.eventId] == vol.value
+                        info.checked = BLU.db.selectedSounds[dropdown.eventId] == vol.value
                         UIDropDownMenu_AddButton(info, level)
                     end
                     
@@ -173,19 +173,19 @@ function BLU.CreateQuestPanel(panel)
                         info.text = sound.name
                         info.value = "blu:" .. sound.file
                         info.func = function()
-                            BLU.db.profile.selectedSounds[dropdown.eventId] = info.value
+                            BLU.db.selectedSounds[dropdown.eventId] = info.value
                             UIDropDownMenu_SetText(dropdown, sound.name)
                             currentSound:SetText("|cff05dffa" .. sound.name .. "|r")
                             CloseDropDownMenus()
                             
                             -- Enable quest module
-                            BLU.db.profile.modules = BLU.db.profile.modules or {}
-                            BLU.db.profile.modules.quest = true
+                            BLU.db.modules = BLU.db.modules or {}
+                            BLU.db.modules.quest = true
                             if BLU.LoadModule then
                                 BLU:LoadModule("features", "quest")
                             end
                         end
-                        info.checked = BLU.db.profile.selectedSounds[dropdown.eventId] == info.value
+                        info.checked = BLU.db.selectedSounds[dropdown.eventId] == info.value
                         UIDropDownMenu_AddButton(info, level)
                     end
                     
@@ -194,8 +194,8 @@ function BLU.CreateQuestPanel(panel)
         end)
         
         -- Set initial selection
-        local selectedSound = BLU.db and BLU.db.profile and BLU.db.profile.selectedSounds and 
-                             BLU.db.profile.selectedSounds[questEventType] or "none"
+        local selectedSound = BLU.db and BLU.db.selectedSounds and 
+                             BLU.db.selectedSounds[questEventType] or "none"
         
         if selectedSound == "none" then
             UIDropDownMenu_SetText(dropdown, "None (Disabled)")

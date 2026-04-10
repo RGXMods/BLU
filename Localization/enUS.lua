@@ -1,3 +1,4 @@
+
 --=====================================================================================
 -- BLU | Localization - English (US)
 -- Author: donniedice
@@ -38,6 +39,7 @@ L["CMD_VERSION"] = "Shows addon version"
 L["SETTINGS_TITLE"] = "BLU Settings"
 L["GENERAL_TAB"] = "General"
 L["SOUNDS_TAB"] = "Sounds"
+L["CHANNEL_VOLUME"] = "Channel Volume"
 L["MODULES_TAB"] = "Modules"
 L["PROFILES_TAB"] = "Profiles"
 L["ADVANCED_TAB"] = "Advanced"

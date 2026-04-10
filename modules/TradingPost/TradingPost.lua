@@ -40,24 +40,24 @@ end
 
 -- Purchase success handler
 function TradingPost:OnPurchaseSuccess(event, vendorItemID)
-    if not BLU.db or not BLU.db.profile then return end
-    if not BLU.db.profile.enabled then return end
-    if not BLU.db.profile.enableTradingPost then return end
-    if BLU.db.profile.modules and BLU.db.profile.modules.tradingpost == false then return end
+    if not BLU.db then return end
+    if not BLU.db.enabled then return end
+    if not BLU.db.enableTradingPost then return end
+    if BLU.db.modules and BLU.db.modules.tradingpost == false then return end
     
     self:PlayTradingPostSound()
     
-    if BLU.db.profile.debugMode then
+    if BLU.db.debugMode then
         BLU:Print(BLU:Loc("DEBUG_TRADING_POST_PURCHASE"))
     end
 end
 
 -- Currency refresh handler
 function TradingPost:OnCurrencyRefresh(event)
-    if not BLU.db or not BLU.db.profile then return end
-    if not BLU.db.profile.enabled then return end
-    if not BLU.db.profile.enableTradingPost then return end
-    if BLU.db.profile.modules and BLU.db.profile.modules.tradingpost == false then return end
+    if not BLU.db then return end
+    if not BLU.db.enabled then return end
+    if not BLU.db.enableTradingPost then return end
+    if BLU.db.modules and BLU.db.modules.tradingpost == false then return end
     
     local currentAmount = self:GetTradingPostCurrency()
     
@@ -65,7 +65,7 @@ function TradingPost:OnCurrencyRefresh(event)
     if self.lastCurrencyAmount and currentAmount > self.lastCurrencyAmount then
         self:PlayTradingPostSound()
         
-        if BLU.db.profile.debugMode then
+        if BLU.db.debugMode then
             local gained = currentAmount - self.lastCurrencyAmount
             BLU:Print(BLU:Loc("DEBUG_TRADING_POST_CURRENCY_GAINED", gained))
         end

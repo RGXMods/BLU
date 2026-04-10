@@ -59,10 +59,10 @@ end
 
 -- Pet level changed handler
 function BattlePet:OnPetLevelChanged(event, owner, petSlot, newLevel, oldLevel)
-    if not BLU.db or not BLU.db.profile then return end
-    if not BLU.db.profile.enabled then return end
-    if not BLU.db.profile.enableBattlePet then return end
-    if BLU.db.profile.modules and BLU.db.profile.modules.battlepet == false then return end
+    if not BLU.db then return end
+    if not BLU.db.enabled then return end
+    if not BLU.db.enableBattlePet then return end
+    if BLU.db.modules and BLU.db.modules.battlepet == false then return end
     
     -- Only play for player's pets
     if owner ~= Enum.BattlePetOwner.Ally then return end
@@ -77,45 +77,45 @@ function BattlePet:OnPetLevelChanged(event, owner, petSlot, newLevel, oldLevel)
     
     BLU:PlayCategorySound("battlepet")
     
-    if BLU.db.profile.debugMode then
+    if BLU.db.debugMode then
         BLU:Print(BLU:Loc("DEBUG_BATTLE_PET_LEVEL_SLOT", petSlot, oldLevel, newLevel))
     end
 end
 
 -- Pet changed handler
 function BattlePet:OnPetChanged(event)
-    if not BLU.db or not BLU.db.profile then return end
-    if not BLU.db.profile.enabled then return end
-    if not BLU.db.profile.enableBattlePet then return end
-    if BLU.db.profile.modules and BLU.db.profile.modules.battlepet == false then return end
+    if not BLU.db then return end
+    if not BLU.db.enabled then return end
+    if not BLU.db.enableBattlePet then return end
+    if BLU.db.modules and BLU.db.modules.battlepet == false then return end
     self:SchedulePetLevelScan(0.2)
 end
 
 function BattlePet:OnPetCaptured(event, owner, petIndex)
-    if not BLU.db or not BLU.db.profile then return end
-    if not BLU.db.profile.enabled then return end
-    if not BLU.db.profile.enableBattlePet then return end
-    if BLU.db.profile.modules and BLU.db.profile.modules.battlepet == false then return end
+    if not BLU.db then return end
+    if not BLU.db.enabled then return end
+    if not BLU.db.enableBattlePet then return end
+    if BLU.db.modules and BLU.db.modules.battlepet == false then return end
     if owner ~= Enum.BattlePetOwner.Ally then return end
 
     BLU:PlayCategorySound("petcapture")
 
-    if BLU.db.profile.debugMode then
+    if BLU.db.debugMode then
         BLU:Print(BLU:Loc("DEBUG_BATTLE_PET_CAPTURED", tostring(petIndex)))
     end
 end
 
 -- Check for pet level changes
 function BattlePet:CheckPetLevels()
-    if not BLU.db or not BLU.db.profile then
+    if not BLU.db then
         return
     end
 
-    if BLU.db.profile.enabled == false or BLU.db.profile.enableBattlePet == false then
+    if BLU.db.enabled == false or BLU.db.enableBattlePet == false then
         return
     end
 
-    if BLU.db.profile.modules and BLU.db.profile.modules.battlepet == false then
+    if BLU.db.modules and BLU.db.modules.battlepet == false then
         return
     end
 
@@ -136,7 +136,7 @@ function BattlePet:CheckPetLevels()
                     -- Pet leveled up!
                     BLU:PlayCategorySound("battlepet")
                     
-                    if BLU.db.profile.debugMode then
+                    if BLU.db.debugMode then
                         BLU:Print(BLU:Loc("DEBUG_BATTLE_PET_LEVEL_NAME", name or BLU:Loc("UNKNOWN"), level))
                     end
                     

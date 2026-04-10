@@ -32,10 +32,10 @@ local function GetCurrentHonorLevel()
 end
 
 function HonorRank:IsEnabled()
-    if not BLU.db or not BLU.db.profile then return false end
-    if not BLU.db.profile.enabled then return false end
-    if not BLU.db.profile.enableHonorRank then return false end
-    if BLU.db.profile.modules and BLU.db.profile.modules.honorrank == false then return false end
+    if not BLU.db then return false end
+    if not BLU.db.enabled then return false end
+    if not BLU.db.enableHonorRank then return false end
+    if BLU.db.modules and BLU.db.modules.honorrank == false then return false end
     return true
 end
 
@@ -65,10 +65,10 @@ function HonorRank:EvaluateHonorLevelChange(triggerName)
     if newLevel > oldLevel then
         self:PlayHonorSound()
 
-        if BLU.db and BLU.db.profile and BLU.db.profile.debugMode then
+        if BLU.db and BLU.db.debugMode then
             BLU:Print(BLU:Loc("DEBUG_HONOR_LEVEL_INCREASED", oldLevel, newLevel, tostring(triggerName or "unknown")))
         end
-    elseif BLU.db and BLU.db.profile and BLU.db.profile.debugMode and newLevel < oldLevel then
+    elseif BLU.db and BLU.db.debugMode and newLevel < oldLevel then
         BLU:Print(BLU:Loc("DEBUG_HONOR_LEVEL_RESYNC", oldLevel, newLevel, tostring(triggerName or "unknown")))
     end
 

@@ -218,16 +218,46 @@ function Options:CreateOptionsPanel()
         panel.contents[i] = content
     end
 
+    -- Destroy all child frames/regions on a content panel so a clean rebuild won't stack widgets.
+    local function ClearTabContent(content)
+        for _, child in ipairs({content:GetChildren()}) do
+            child:Hide()
+            child:SetParent(nil)
+        end
+        -- Also clear any textures/fontstrings created directly on the frame
+        for _, region in ipairs({content:GetRegions()}) do
+            region:Hide()
+        end
+        -- Reset Refresh so a stale closure from the previous build doesn't fire
+        content.Refresh = nil
+    end
+
+    local function RebuildTab(content, tabInfo)
+        ClearTabContent(content)
+        content._bluDirty = nil
+        if tabInfo.create then
+            local ok, err = pcall(tabInfo.create, content)
+            if not ok then BLU:PrintError("Tab rebuild error: " .. tostring(err)) end
+        elseif tabInfo.eventType then
+            local ok, err = pcall(BLU.CreateEventSoundPanel, content, tabInfo.eventType, tabInfo.text)
+            if not ok then BLU:PrintError("Tab rebuild error: " .. tostring(err)) end
+        end
+    end
+
     function panel:SelectTab(index)
         BLU:PrintDebug("[Options] Selecting tab index " .. tostring(index))
         for i, tab in ipairs(self.tabs) do
             if self.tabs[i] and self.contents[i] then
                 self.tabs[i]:SetActive(i == index)
                 self.contents[i]:SetShown(i == index)
-                if i == index and type(self.contents[i].Refresh) == "function" then
-                    local success, err = pcall(self.contents[i].Refresh, self.contents[i])
-                    if not success then
-                        BLU:PrintError("Error refreshing content for " .. tostring(tabs[i] and tabs[i].text or i) .. ": " .. tostring(err))
+                if i == index then
+                    local content = self.contents[i]
+                    local tabInfo = BLU.OptionsTabs and BLU.OptionsTabs[i]
+                    if content._bluDirty and tabInfo then
+                        RebuildTab(content, tabInfo)
+                    elseif type(content.Refresh) == "function" then
+                        local ok, err = pcall(content.Refresh, content)
+                        if not ok then BLU:PrintError("Tab refresh error: " .. tostring(err)) end
                     end
                 end
             end
@@ -238,14 +268,27 @@ function Options:CreateOptionsPanel()
         panel:SelectTab(1)
     end
 
-    -- Global refresh helper to update the currently active options tab
+    -- Mark all tab content frames dirty so each will do a full rebuild on next view.
+    function BLU:InvalidateAllTabs()
+        if not panel or not panel.contents then return end
+        for _, content in ipairs(panel.contents) do
+            content._bluDirty = true
+        end
+    end
+
+    -- Rebuild every visible dirty tab; call Refresh on visible non-dirty tabs.
     function BLU:RefreshOptions()
         if not panel or not panel.contents then return end
         for i, content in ipairs(panel.contents) do
-            if content:IsShown() and type(content.Refresh) == "function" then
-                local success, err = pcall(content.Refresh, content)
-                if not success then
-                    BLU:PrintDebug("RefreshOptions error: " .. tostring(err))
+            if content:IsShown() then
+                local tabInfo = BLU.OptionsTabs and BLU.OptionsTabs[i]
+                if content._bluDirty and tabInfo then
+                    RebuildTab(content, tabInfo)
+                elseif type(content.Refresh) == "function" then
+                    local ok, err = pcall(content.Refresh, content)
+                    if not ok then
+                        BLU:PrintDebug("RefreshOptions error: " .. tostring(err))
+                    end
                 end
             end
         end
@@ -269,7 +312,7 @@ end
 -- Open options
 function Options:OpenOptions()
     BLU:PrintDebug("[Options] OpenOptions called")
-    if not BLU.db or not BLU.db.profile then
+    if not BLU.db then
         BLU:Print("Database not ready. Please wait a moment and try again.")
         return
     end

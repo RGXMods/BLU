@@ -185,12 +185,12 @@ end
 -- Load modules based on saved settings
 function BLU:LoadModulesFromSettings()
     self:PrintDebug("[Loader] LoadModulesFromSettings called")
-    if not self.db or not self.db.profile then
+    if not self.db then
         self:PrintDebug("[Loader] LoadModulesFromSettings aborted; profile not ready")
         return
     end
 
-    local db = self.db.profile
+    local db = self.db
     
     -- Load all feature modules if addon is enabled
     if db.enabled then

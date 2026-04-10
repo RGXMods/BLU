@@ -86,7 +86,7 @@ end
 -- Queue a sound to be played
 function Utils:QueueSound(soundFile, volume, callback)
     BLU:PrintDebug("[Utils] QueueSound called for '" .. SafeToString(soundFile) .. "' at volume " .. SafeToString(volume))
-    if not BLU.db.profile.queueSounds then
+    if not BLU.db.queueSounds then
         -- Just play immediately if queuing is disabled
         BLU:PrintDebug("[Utils] Queue disabled; playing sound immediately")
         self:PlaySoundFile(soundFile, volume, callback)
@@ -103,7 +103,7 @@ function Utils:QueueSound(soundFile, volume, callback)
     self.recentQueuedSounds[signature] = now
 
     -- Add to queue
-    local configuredMaxSize = tonumber(BLU.db.profile.maxQueueSize) or 3
+    local configuredMaxSize = tonumber(BLU.db.maxQueueSize) or 3
     if configuredMaxSize < 1 then
         configuredMaxSize = 1
     end
@@ -163,13 +163,13 @@ function Utils:PlaySoundFile(soundFile, volume, callback)
         end
     end
 
-    local channel = BLU.db.profile.soundChannel or "Master"
+    local channel = BLU.db.soundChannel or "Master"
     local willPlay, handle = PlaySoundFile(soundFile, channel)
     
     if willPlay then
         BLU:PrintDebug("[Utils] PlaySoundFile succeeded on channel '" .. tostring(channel) .. "'")
         -- Stop music if configured
-        if BLU.db.profile.interruptMusic then
+        if BLU.db.interruptMusic then
             BLU:PrintDebug("[Utils] interruptMusic enabled; stopping music")
             StopMusic()
         end

@@ -24,11 +24,11 @@ local DEBUG_SCOPES = {
 BLU.DebugScopeDefinitions = DEBUG_SCOPES
 
 local function EnsureDebugDefaults()
-    if not (BLU and BLU.db and BLU.db.profile) then
+    if not (BLU and BLU.db) then
         return false
     end
 
-    local profile = BLU.db.profile
+    local profile = BLU.db
     profile.debugScopes = profile.debugScopes or {}
     for _, scopeInfo in ipairs(DEBUG_SCOPES) do
         if profile.debugScopes[scopeInfo.key] == nil then
@@ -84,7 +84,7 @@ local function CreateDebugControls(parent, options)
 
     options = options or {}
 
-    local profile = BLU.db.profile
+    local profile = BLU.db
     local section = BLU.Modules.design:CreateSection(parent, options.title, options.icon)
     if options.point then
         section:SetPoint(unpack(options.point))
@@ -216,7 +216,7 @@ function BLU.CreateDebugPanel(panel)
         return
     end
 
-    local profile = BLU.db.profile
+    local profile = BLU.db
     local switchFrame, toggle, updateToggle = CreateToggleState(titleBar, profile.debugMode == true)
     switchFrame:SetPoint("RIGHT", -10, 0)
 

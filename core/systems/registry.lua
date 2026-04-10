@@ -323,25 +323,10 @@ function SoundRegistry:PlaySound(soundId, volume, options)
     options = options or {}
     BLU:PrintDebug("[Registry] PlaySound options categoryOverride='" .. tostring(options.categoryOverride) .. "', volumeOverride='" .. tostring(options.volumeSettingOverride) .. "'")
     
-    -- Get volume settings from profile
-    local profileVolume = 1.0
-    if BLU.db and BLU.db.profile then
-        profileVolume = (BLU.db.profile.soundVolume or 100) / 100
-    end
-    
-    -- Apply volume multiplier
-    volume = (volume or 1.0) * profileVolume
-    
-    -- Clamp volume
-    volume = math.max(0, math.min(1, volume))
-    
-    -- Skip if volume is 0
-    if volume <= 0 then
-        BLU:PrintDebug("Volume is 0, skipping sound: " .. soundId)
-        return false
-    end
-    
     local channel = "Master"
+    if BLU.db and BLU.db.soundChannel then
+        channel = BLU.db.soundChannel
+    end
     
     -- Play the sound based on type
     local willPlay, handle
@@ -361,8 +346,8 @@ function SoundRegistry:PlaySound(soundId, volume, options)
             -- BLU sounds have _low, _med, _high variants
             local category = options.categoryOverride or sound.category
             local volumeSetting = options.volumeSettingOverride or "medium"
-            if not options.volumeSettingOverride and BLU.db and BLU.db.profile and BLU.db.profile.soundVolumes and BLU.db.profile.soundVolumes[category] then
-                volumeSetting = BLU.db.profile.soundVolumes[category]
+            if not options.volumeSettingOverride and BLU.db and BLU.db.soundVolumes and BLU.db.soundVolumes[category] then
+                volumeSetting = BLU.db.soundVolumes[category]
             end
 
             if volumeSetting == "none" then
@@ -406,7 +391,7 @@ function SoundRegistry:PlaySound(soundId, volume, options)
         BLU:PrintDebug(string.format("Playing sound: %s (volume: %.2f, channel: %s)", soundId, volume, channel))
         
         -- Show in chat if enabled
-        if BLU.db and BLU.db.profile and BLU.db.profile.debugMode then
+        if BLU.db and BLU.db.debugMode then
             BLU:Print(string.format("|cff00ff00Playing:|r %s", sound.name or soundId))
         end
         
@@ -430,13 +415,13 @@ end
 -- Play sound for a specific event category
 function SoundRegistry:PlayCategorySound(category, forceSound)
     BLU:PrintDebug("[Registry] PlayCategorySound called for '" .. tostring(category) .. "' with forceSound='" .. tostring(forceSound) .. "'")
-    if BLU.db and BLU.db.profile and BLU.db.profile.enabled == false then
+    if BLU.db and BLU.db.enabled == false then
         BLU:PrintDebug("BLU disabled, skipping category sound: " .. tostring(category))
         return false
     end
 
     -- Check if muted in instances
-    if BLU.db and BLU.db.profile and BLU.db.profile.muteInInstances then
+    if BLU.db and BLU.db.muteInInstances then
         local inInstance, instanceType = IsInInstance()
         if inInstance and (instanceType == "party" or instanceType == "raid" or instanceType == "arena" or instanceType == "pvp") then
             BLU:PrintDebug("Sound muted in instance")
@@ -445,7 +430,7 @@ function SoundRegistry:PlayCategorySound(category, forceSound)
     end
     
     -- Check if muted in combat
-    if BLU.db and BLU.db.profile and BLU.db.profile.muteInCombat and InCombatLockdown() then
+    if BLU.db and BLU.db.muteInCombat and InCombatLockdown() then
         BLU:PrintDebug("Sound muted in combat")
         return false
     end
@@ -453,7 +438,7 @@ function SoundRegistry:PlayCategorySound(category, forceSound)
     -- Check if module is enabled
     local moduleKey = moduleCategoryMap[category] or category
     BLU:PrintDebug("[Registry] Resolved module key for category '" .. tostring(category) .. "' to '" .. tostring(moduleKey) .. "'")
-    if BLU.db and BLU.db.profile and BLU.db.profile.modules and BLU.db.profile.modules[moduleKey] == false then
+    if BLU.db and BLU.db.modules and BLU.db.modules[moduleKey] == false then
         BLU:PrintDebug("Module disabled for category: " .. category)
         return false
     end
@@ -472,8 +457,8 @@ function SoundRegistry:PlayCategorySound(category, forceSound)
     
     -- Get selected sound for category
     local selectedSound = forceSound
-    if not selectedSound and BLU.db and BLU.db.profile and BLU.db.profile.selectedSounds then
-        selectedSound = BLU.db.profile.selectedSounds[category]
+    if not selectedSound and BLU.db and BLU.db.selectedSounds then
+        selectedSound = BLU.db.selectedSounds[category]
     end
     
     -- Default to "default" if nothing selected

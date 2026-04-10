@@ -2,34 +2,32 @@
 
 `docs/CHANGES.md` is the canonical changelog summary for BLU.
 
-## Current Release
+## Current Production Release
 
-### [`v6.3.0`](./changelogs/6.3.0.md) - 2026-04-10
+### [v6.4.0](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.4.0.md) - 2026-04-10
 
-- **Options tabs now support a true third row** - the layout and sizing logic in [`core/interface/options/tabs.lua`](../core/interface/options/tabs.lua) now supports the larger alphabetical panel grid cleanly.
-- **Combat, Collectibles, Loot, and Prey now have reserved tabs** - new placeholder modules in [`modules/Combat/Combat.lua`](../modules/Combat/Combat.lua), [`modules/Collectibles/Collectibles.lua`](../modules/Collectibles/Collectibles.lua), [`modules/Loot/Loot.lua`](../modules/Loot/Loot.lua), and [`modules/Prey/Prey.lua`](../modules/Prey/Prey.lua) keep future trigger groups visible in the live UI.
-- **Profiles now have a dedicated management tab** - the main work lives in [`core/interface/options/profiles.lua`](../core/interface/options/profiles.lua), with import/export and mutation helpers in [`core/systems/database.lua`](../core/systems/database.lua).
-- **Profile actions now update in real time** - create, rename, delete, reset, and duplicate flows now refresh the live Profiles tab instead of waiting for a reopen.
-- **Profile duplication is now productionized** - duplicate naming now follows the active profile plus `Copy`, `Copy 2`, `Copy 3`, and so on inside [`core/interface/options/profiles.lua`](../core/interface/options/profiles.lua).
-- **Preset support was added for quick setup flows** - `donniedice's Preset`, `Spooky Preset`, `Adventure Preset`, and `Minimal Preset` now ship as part of the Profiles workflow in [`core/interface/options/profiles.lua`](../core/interface/options/profiles.lua).
-- **Debug now has a dedicated module and tab** - scoped debug controls are backed by [`modules/Debug/Debug.lua`](../modules/Debug/Debug.lua) and surfaced through the options UI.
-- **Delve life-credit handling is more reliable** - the Delve trigger improvements live in [`modules/Delve/Delve.lua`](../modules/Delve/Delve.lua).
-- **Dropdown behavior is now finalized** - shared sizing/alignment logic in [`core/interface/dropdown.lua`](../core/interface/dropdown.lua) and sound-menu integration in [`core/interface/options/sound_panel.lua`](../core/interface/options/sound_panel.lua) now keep nested menus compact and consistently aligned.
-- **Improved metadata and popup safety** - metadata fallbacks in [`core/core.lua`](../core/core.lua) and [`core/systems/database.lua`](../core/systems/database.lua) now cover both legacy and current WoW APIs, while popup edit-box lookups are guarded for safer profile actions.
-- **Chat prefix styling is cleaner** - login, debug, and error chat prefix rendering was cleaned up in [`core/core.lua`](../core/core.lua).
+- Sound Output section on the General tab is now a self-contained card with a channel selector and a volume slider that reads/writes WoW's actual audio CVars.
+- Profile management overhauled: Default is permanent and always pinned at the top of the dropdown; new profiles start from clean defaults; copies are true independent deep copies; preset application and profile switches fully rebuild all option tab panels in real time.
+- Applying a preset now requires confirmation before overwriting profile settings.
+- All Profiles panel action buttons (Create, Rename, Reset, Copy, presets) use the same animated hover style as the tab buttons, with consistent tooltips.
+- Fixed welcome message, debug scopes, and module toggles all broken by stale nested `BLU.db.profile.*` schema references — standardized to flat `BLU.db.*` across the entire codebase.
+- Fixed ghost widget stacking on repeated profile switches.
+- Fixed `Slider:SetMinMaxValues` Lua error that blocked the General tab from rendering.
+- Fixed "Database not ready" error on every options panel open.
 
 Full notes:
-- [`v6.3.0`](./changelogs/6.3.0.md)
+- [v6.4.0 changelog](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.4.0.md)
 
 ## Recent History
 
-- [`v6.2.5`](./changelogs/6.2.5.md)
-- [`v6.2.4`](./changelogs/6.2.4.md)
-- [`v6.2.3`](./changelogs/6.2.3.md)
-- [`v6.2.1`](./changelogs/6.2.1.md)
-- [`v6.2.0`](./changelogs/6.2.0.md)
-- [`v6.1.3`](./changelogs/6.1.3.md)
-- [`v6.1.2`](./changelogs/6.1.2.md)
-- [`v6.1.1`](./changelogs/6.1.1.md)
-- [`v6.1.0`](./changelogs/6.1.0.md)
-- [`v6.0.0`](./changelogs/6.0.0.md)
+- [v6.3.0](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.3.0.md)
+- [v6.2.5](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.2.5.md)
+- [v6.2.4](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.2.4.md)
+- [v6.2.3](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.2.3.md)
+- [v6.2.1](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.2.1.md)
+- [v6.2.0](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.2.0.md)
+- [v6.1.3](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.1.3.md)
+- [v6.1.2](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.1.2.md)
+- [v6.1.1](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.1.1.md)
+- [v6.1.0](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.1.0.md)
+- [v6.0.0](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.0.0.md)

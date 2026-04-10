@@ -137,10 +137,10 @@ Config.defaults = {
 -- Profile changed handler
 function Config:ApplySettings()
     BLU:PrintDebug("[Config] ApplySettings called")
-    if not BLU.db or not BLU.db.profile then return end
+    if not BLU.db then return end
 
-    BLU.debugMode = BLU.db.profile.debugMode
-    BLU.showWelcomeMessage = BLU.db.profile.showWelcomeMessage
+    BLU.debugMode = BLU.db.debugMode
+    BLU.showWelcomeMessage = BLU.db.showWelcomeMessage
 
     BLU:PrintDebug("Settings applied. Debug mode is: " .. tostring(BLU.debugMode))
 end
@@ -148,13 +148,13 @@ end
 -- Get setting value
 function Config:Get(key)
     BLU:PrintDebug("[Config] Get called for key '" .. tostring(key) .. "'")
-    return BLU.db.profile[key]
+    return BLU.db[key]
 end
 
 -- Set setting value
 function Config:Set(key, value)
     BLU:PrintDebug("[Config] Set called for key '" .. tostring(key) .. "' => " .. tostring(value))
-    BLU.db.profile[key] = value
+    BLU.db[key] = value
     
     -- Handle special cases
     if key == "debugMode" then
@@ -204,7 +204,7 @@ end
 function Config:ExportSettings()
     BLU:PrintDebug("[Config] ExportSettings called")
     -- Simple export without compression for now
-    local settings = BLU.db.profile
+    local settings = BLU.db
     -- Convert to string representation
     local str = "BLU_SETTINGS:"
     for k, v in pairs(settings) do
@@ -238,7 +238,7 @@ function Config:ImportSettings(importString)
     
     -- Apply imported settings
     for key, value in pairs(settings) do
-        BLU.db.profile[key] = value
+        BLU.db[key] = value
     end
     
     self:ApplySettings()
@@ -251,9 +251,9 @@ end
 
 function Config:MigrateVolumeSettings()
     BLU:PrintDebug("[Config] MigrateVolumeSettings called")
-    if not BLU.db or not BLU.db.profile or not BLU.db.profile.soundVolumes then return end
+    if not BLU.db or not BLU.db.soundVolumes then return end
 
-    local volumes = BLU.db.profile.soundVolumes
+    local volumes = BLU.db.soundVolumes
     for event, value in pairs(volumes) do
         if type(value) == "number" then
             if value <= 0.33 then

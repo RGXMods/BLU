@@ -7,7 +7,7 @@ This file gives repository-specific guidance to Claude Code and similar coding a
 BLU (Better Level-Up!) is a Retail World of Warcraft addon that replaces milestone and progression sounds with curated audio from many other games.
 
 Current release target:
-- Version: `v6.3.0`
+- Version: `v6.4.0-alpha.1`
 - WoW interface: `120001`
 - Addon type: Retail-only UI/sound customization addon
 - Branding: RGX Mods / RealmGX community project

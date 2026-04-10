@@ -7,16 +7,15 @@ local addonName = ...
 local BLU = _G["BLU"]
 
 local function IsProfileReady()
-    return BLU and BLU.db and BLU.db.profile
+    return BLU and BLU.db
 end
 
 local function EnsureProfileDefaults()
-    if not IsProfileReady() then
-        BLU:PrintDebug("[Options/General] EnsureProfileDefaults skipped; profile not ready")
-        return false
+    if not BLU or not BLU.db then
+        return false 
     end
 
-    local profile = BLU.db.profile
+    local profile = BLU.db
     profile.soundVolume = tonumber(profile.soundVolume) or 100
     profile.soundChannel = profile.soundChannel or "Master"
     profile.maxQueueSize = tonumber(profile.maxQueueSize) or 3
@@ -33,6 +32,33 @@ local function CreateCheckbox(parent, text, x, y, checked, onClick)
     checkbox.check:SetChecked(checked)
     checkbox.check:SetScript("OnClick", onClick)
     return checkbox
+end
+
+local SOUND_CHANNELS = {
+    "Master",
+    "SFX",
+    "Music",
+    "Ambience",
+    "Dialog",
+}
+
+
+local CHANNEL_CVARS = {
+    Master   = "Sound_MasterVolume",
+    SFX      = "Sound_SFXVolume",
+    Music    = "Sound_MusicVolume",
+    Ambience = "Sound_AmbienceVolume",
+    Dialog   = "Sound_DialogVolume",
+}
+
+local function GetChannelVolume(profile)
+    local cvar = CHANNEL_CVARS[profile.soundChannel or "Master"] or "Sound_MasterVolume"
+    return math.floor((tonumber(GetCVar(cvar)) or 1) * 100)
+end
+
+local function SetChannelVolume(profile, val)
+    local cvar = CHANNEL_CVARS[profile.soundChannel or "Master"] or "Sound_MasterVolume"
+    SetCVar(cvar, val / 100)
 end
 
 function BLU.CreateGeneralPanel(panel)
@@ -53,8 +79,9 @@ function BLU.CreateGeneralPanel(panel)
         return
     end
 
-    local profile = BLU.db.profile
+    local profile = BLU.db
 
+    -- Left column: Core on top, Behavior below
     local coreSection = BLU.Modules.design:CreateSection(content, "Core", "Interface\\Icons\\Achievement_General")
     coreSection:SetPoint("TOPLEFT", content, "TOPLEFT", 2, -2)
     coreSection:SetPoint("TOPRIGHT", content, "TOP", -4, -2)
@@ -64,38 +91,98 @@ function BLU.CreateGeneralPanel(panel)
         profile.enabled = self:GetChecked()
         BLU:PrintDebug("[Options/General] Enable BLU set to " .. tostring(profile.enabled))
         if profile.enabled then
-            if BLU.Enable then
-                BLU:Enable()
-            end
-            if BLU.ReloadModules then
-                BLU:ReloadModules()
-            end
+            if BLU.Enable then BLU:Enable() end
+            if BLU.ReloadModules then BLU:ReloadModules() end
         else
-            if BLU.Disable then
-                BLU:Disable()
-            end
+            if BLU.Disable then BLU:Disable() end
         end
     end)
 
     CreateCheckbox(coreSection.content, "Show welcome message", 4, -32, profile.showWelcomeMessage ~= false, function(self)
         profile.showWelcomeMessage = self:GetChecked()
-        BLU:PrintDebug("[Options/General] Show welcome message set to " .. tostring(profile.showWelcomeMessage))
     end)
 
     local behaviorSection = BLU.Modules.design:CreateSection(content, "Behavior", "Interface\\Icons\\INV_Misc_GroupLooking")
-    behaviorSection:SetPoint("TOPLEFT", content, "TOP", 4, -2)
-    behaviorSection:SetPoint("TOPRIGHT", content, "TOPRIGHT", -2, -2)
+    behaviorSection:SetPoint("TOPLEFT", coreSection, "BOTTOMLEFT", 0, -12)
+    behaviorSection:SetPoint("TOPRIGHT", content, "TOP", -4, -12)
     behaviorSection:SetHeight(104)
 
     CreateCheckbox(behaviorSection.content, "Mute in instances", 4, -6, profile.muteInInstances == true, function(self)
         profile.muteInInstances = self:GetChecked()
-        BLU:PrintDebug("[Options/General] Mute in instances set to " .. tostring(profile.muteInInstances))
     end)
 
     CreateCheckbox(behaviorSection.content, "Mute in combat", 4, -34, profile.muteInCombat == true, function(self)
         profile.muteInCombat = self:GetChecked()
-        BLU:PrintDebug("[Options/General] Mute in combat set to " .. tostring(profile.muteInCombat))
     end)
+
+    -- Right column: Sound Output, anchored to top-right, same top as Core
+    local soundSection = BLU.Modules.design:CreateSection(content, "Sound Output", "Interface\\Icons\\INV_Misc_Bell_01")
+    soundSection:SetPoint("TOPLEFT", content, "TOP", 4, -2)
+    soundSection:SetPoint("TOPRIGHT", content, "TOPRIGHT", -2, -2)
+    soundSection:SetHeight(220)
+
+    local soundDesc = soundSection.content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    soundDesc:SetPoint("TOPLEFT", 8, -8)
+    soundDesc:SetPoint("RIGHT", soundSection.content, "RIGHT", -8, 0)
+    soundDesc:SetJustifyH("LEFT")
+    soundDesc:SetWordWrap(true)
+    soundDesc:SetTextColor(0.72, 0.78, 0.86)
+    soundDesc:SetText("All BLU sounds play through the selected channel. Adjusting the volume here changes your in-game channel level.")
+
+    local soundChannelLabel = soundSection.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    soundChannelLabel:SetPoint("TOPLEFT", 8, -52)
+    soundChannelLabel:SetText("Sound Channel")
+
+    local soundChannelDropdown = CreateFrame("Frame", nil, soundSection.content, "UIDropDownMenuTemplate")
+    soundChannelDropdown:SetPoint("TOPLEFT", soundChannelLabel, "BOTTOMLEFT", -16, -2)
+    UIDropDownMenu_SetWidth(soundChannelDropdown, 160)
+
+    local volumeLabel = soundSection.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    volumeLabel:SetPoint("TOPLEFT", 8, -120)
+    volumeLabel:SetText("Channel Volume")
+
+    local volumeValueText = soundSection.content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    volumeValueText:SetPoint("LEFT", volumeLabel, "RIGHT", 8, 0)
+    volumeValueText:SetTextColor(0.72, 0.78, 0.86)
+
+    local volumeSlider = BLU.Modules.widgets:CreateSlider(soundSection.content, "", 0, 100, 1)
+    volumeSlider:SetPoint("TOPLEFT", volumeLabel, "BOTTOMLEFT", 0, -10)
+    volumeSlider:SetPoint("RIGHT", soundSection.content, "RIGHT", -12, 0)
+    volumeSlider.Low:SetText("")
+    volumeSlider.High:SetText("")
+    volumeSlider.value:SetPoint("TOP", volumeSlider, "BOTTOM", 0, -200)
+
+    local function RefreshVolumeSlider()
+        local vol = GetChannelVolume(profile)
+        volumeSlider:SetValue(vol)
+        volumeValueText:SetText(vol .. "%")
+    end
+
+    volumeSlider:SetScript("OnValueChanged", function(self, value)
+        value = math.floor(value)
+        SetChannelVolume(profile, value)
+        volumeValueText:SetText(value .. "%")
+    end)
+
+    local function SetSelectedChannel(channel)
+        profile.soundChannel = channel or "Master"
+        UIDropDownMenu_SetSelectedValue(soundChannelDropdown, profile.soundChannel)
+        UIDropDownMenu_SetText(soundChannelDropdown, profile.soundChannel)
+        RefreshVolumeSlider()
+    end
+
+    UIDropDownMenu_Initialize(soundChannelDropdown, function()
+        for _, channel in ipairs(SOUND_CHANNELS) do
+            local info = UIDropDownMenu_CreateInfo()
+            info.text = channel
+            info.value = channel
+            info.checked = (profile.soundChannel == channel)
+            info.func = function() SetSelectedChannel(channel) end
+            UIDropDownMenu_AddButton(info)
+        end
+    end)
+
+    SetSelectedChannel(profile.soundChannel or "Master")
 
     StaticPopupDialogs["BLU_ADD_CUSTOM_SOUND"] = {
         text = "Add a custom sound file for BLU.",
@@ -160,5 +247,5 @@ function BLU.CreateGeneralPanel(panel)
         preferredIndex = 3,
     }
 
-    content:SetHeight(296)
+    content:SetHeight(480)
 end

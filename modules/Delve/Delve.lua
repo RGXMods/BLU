@@ -81,19 +81,19 @@ function DelveCompanion:Cleanup()
 end
 
 function DelveCompanion:IsEnabled()
-    if not (BLU.db and BLU.db.profile) then
+    if not (BLU.db) then
         return false
     end
 
-    if BLU.db.profile.enabled == false then
+    if BLU.db.enabled == false then
         return false
     end
 
-    if BLU.db.profile.enableDelveCompanion == false then
+    if BLU.db.enableDelveCompanion == false then
         return false
     end
 
-    if BLU.db.profile.modules and BLU.db.profile.modules.delvecompanion == false then
+    if BLU.db.modules and BLU.db.modules.delvecompanion == false then
         return false
     end
 
@@ -168,7 +168,7 @@ function DelveCompanion:TriggerLevelUp(level)
 
     self:PlayDelveSound()
 
-    if BLU.db and BLU.db.profile and BLU.db.profile.debugMode then
+    if BLU.db and BLU.db.debugMode then
         if level then
             BLU:Print(BLU:Loc("DEBUG_DELVE_COMPANION_LEVEL", level))
         else
@@ -253,7 +253,7 @@ function DelveCompanion:RefreshLivesState()
             if (now - self.lastLifeLostTime) >= 1.0 then
                 self.lastLifeLostTime = now
                 BLU:PlayCategorySound("delvelifelost")
-                if BLU.db and BLU.db.profile and BLU.db.profile.debugMode then
+                if BLU.db and BLU.db.debugMode then
                     BLU:Print(BLU:Loc("DEBUG_DELVE_LIFE_LOST", previous, current))
                 end
             end
@@ -262,7 +262,7 @@ function DelveCompanion:RefreshLivesState()
             if (now - self.lastLifeGainedTime) >= 1.0 then
                 self.lastLifeGainedTime = now
                 BLU:PlayCategorySound("delvelifegained")
-                if BLU.db and BLU.db.profile and BLU.db.profile.debugMode then
+                if BLU.db and BLU.db.debugMode then
                     BLU:Print(BLU:Loc("DEBUG_DELVE_LIFE_GAINED", previous, current))
                 end
             end
@@ -303,9 +303,9 @@ function DelveCompanion:PlayDelveSound()
         return
     end
 
-    local soundName = BLU.db and BLU.db.profile and BLU.db.profile.delveCompanionSound
-    local delveVolume = BLU.db and BLU.db.profile and BLU.db.profile.delveCompanionVolume or 1
-    local masterVolume = BLU.db and BLU.db.profile and BLU.db.profile.masterVolume or 1
+    local soundName = BLU.db and BLU.db.delveCompanionSound
+    local delveVolume = BLU.db and BLU.db.delveCompanionVolume or 1
+    local masterVolume = BLU.db and BLU.db.masterVolume or 1
     BLU:PlaySound(soundName, delveVolume * masterVolume)
 end
 

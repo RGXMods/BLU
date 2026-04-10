@@ -62,15 +62,15 @@ end
 
 -- Major faction renown level changed
 function RenownRank:OnRenownLevelChanged(event, factionID, newLevel, oldLevel)
-    if not BLU.db or not BLU.db.profile then return end
-    if not BLU.db.profile.enabled then return end
-    if not BLU.db.profile.enableRenownRank then return end
-    if BLU.db.profile.modules and BLU.db.profile.modules.renownrank == false then return end
+    if not BLU.db then return end
+    if not BLU.db.enabled then return end
+    if not BLU.db.enableRenownRank then return end
+    if BLU.db.modules and BLU.db.modules.renownrank == false then return end
     
     if newLevel > oldLevel then
         self:PlayRenownSound()
         
-        if BLU.db.profile.debugMode then
+        if BLU.db.debugMode then
             local data = C_MajorFactions.GetMajorFactionData(factionID)
             local factionName = data and data.name or BLU:Loc("UNKNOWN")
             BLU:Print(BLU:Loc("DEBUG_RENOWN_INCREASED", factionName, oldLevel, newLevel))
@@ -82,15 +82,15 @@ end
 
 -- Covenant renown changed
 function RenownRank:OnCovenantRenownChanged(event, newLevel, oldLevel)
-    if not BLU.db or not BLU.db.profile then return end
-    if not BLU.db.profile.enabled then return end
-    if not BLU.db.profile.enableRenownRank then return end
-    if BLU.db.profile.modules and BLU.db.profile.modules.renownrank == false then return end
+    if not BLU.db then return end
+    if not BLU.db.enabled then return end
+    if not BLU.db.enableRenownRank then return end
+    if BLU.db.modules and BLU.db.modules.renownrank == false then return end
     
     if newLevel and oldLevel and newLevel > oldLevel then
         self:PlayRenownSound()
         
-        if BLU.db.profile.debugMode then
+        if BLU.db.debugMode then
             BLU:Print(BLU:Loc("DEBUG_COVENANT_RENOWN_INCREASED", oldLevel, newLevel))
         end
     end

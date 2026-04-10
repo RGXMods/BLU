@@ -37,7 +37,7 @@
 
 <!-- WoW Compatibility -->
 [![WoW Retail](https://img.shields.io/badge/WoW-Retail%20Midnight-05dffa?style=flat-square&logo=worldofwarcraft)](https://worldofwarcraft.com)
-[![Version](https://img.shields.io/badge/Version-v6.4.0-blue?style=flat-square)](https://github.com/donniedice/BLU/releases)
+[![Version](https://img.shields.io/badge/Version-v6.4.1-blue?style=flat-square)](https://github.com/donniedice/BLU/releases)
 
 [Features](#features) • [Quick Start](#quick-start) • [Commands](#command-reference) • [Compatibility](#compatibility) • [Installation](#installation) • [Support](#support)
 
@@ -265,7 +265,7 @@ BLU:RegisterExternalSoundPack("My Pack Name", {
 
 ---
 
-## <span style="color:#05dffa">🆕 What's New in v6.4.0</span>
+## <span style="color:#05dffa">🆕 What's New in v6.4.1</span>
 
 <details>
 <summary><strong><span style="color:#05dffa">🎉 Click to see the latest updates!</span></strong></summary>
@@ -403,3 +403,4 @@ The first compatible `.ogg`, `.mp3`, or `.wav` match gets registered and appears
 **<span style="color:#8B1538">🎮</span> <span style="color:#8B1538">R</span><span style="color:#8B1538">G</span><span style="color:#8B1538">X</span> <span style="color:#4ecdc4">Mods</span> <span style="color:#3598db">-</span> <span style="color:#e67e23">Powered by</span> [<span style="color:#8B1538">R</span><span style="color:#7598b6">ealm</span><span style="color:#8B1538">G</span><span style="color:#8B1538">X</span>](https://realmgx.com) <span style="color:#e67e23">Community</span>**
 
 </div>
+

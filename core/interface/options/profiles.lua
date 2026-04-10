@@ -337,9 +337,20 @@ local function EnsurePopupConfig(targetPanel)
         OnAccept = function(self)
             local editBox = GetPopupEditBox(self)
             local profileName = (editBox and editBox:GetText() or ""):gsub("^%s+", ""):gsub("%s+$", "")
+
+            -- If no name entered, default to character-server name
             if profileName == "" then
-                BLU:Print("Enter a profile name first.")
-                return
+                local charName = GetCharacterProfileName()
+                -- If that name already exists, append a suffix to keep it unique
+                if BLUDB and BLUDB.profiles and BLUDB.profiles[charName] then
+                    local suffix = 2
+                    while BLUDB.profiles[charName .. " " .. suffix] do
+                        suffix = suffix + 1
+                    end
+                    profileName = charName .. " " .. suffix
+                else
+                    profileName = charName
+                end
             end
 
             if profileName == "Default" then

@@ -2,7 +2,7 @@
 
 BLU is a Retail World of Warcraft addon that replaces default progression sounds with curated audio from many other games.
 
-Current version: `v6.4.0-alpha.1`
+Current version: `v6.4.1`
 
 ***
 
@@ -10,7 +10,7 @@ Current version: `v6.4.0-alpha.1`
 
 BLU lets you swap in custom sounds for major progression moments across World of Warcraft while keeping control over event categories, sound sources, and profile setups.
 
-This alpha marks the start of the next BLU release cycle and will collect changes targeted for the post-6.3.0 update.
+This update tightens profile behavior, fixes a live quest-turn-in error, and improves release note delivery across the production workflow.
 
 ***
 
@@ -33,11 +33,12 @@ This alpha marks the start of the next BLU release cycle and will collect change
 
 ***
 
-## Highlights In v6.4.0-alpha.1
+## Highlights In v6.4.1
 
-- Alpha branch opened for the next BLU release cycle
-- `v6.3.0` production notes now live in the versioned changelog docs
-- New `v6.4.0` work will accumulate here
+- Default remains the fallback profile until the user creates or selects another one
+- Blank new profile names now auto-fill from the current character and realm
+- `QUEST_TURNED_IN` playback no longer crashes when a missing volume reaches debug logging
+- Discord release messages now send a condensed summary instead of truncating the full changelog
 
 ***
 

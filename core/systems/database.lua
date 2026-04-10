@@ -31,19 +31,6 @@ function Database:EnsureDefaultTemplate()
     end
 end
 
--- Create (or return existing) the character-keyed working profile.
-function Database:EnsureCharProfile(charKey)
-    BLUDB.profiles = BLUDB.profiles or {}
-    if not BLUDB.profiles[charKey] then
-        local p = {}
-        if BLU.Modules and BLU.Modules.config and BLU.Modules.config.defaults then
-            self:MergeDefaults(p, BLU.Modules.config.defaults.profile)
-        end
-        p.currentProfile = charKey
-        BLUDB.profiles[charKey] = p
-    end
-    return charKey
-end
 
 -- Initialize database with defaults
 function Database:InitializeDatabase()
@@ -55,13 +42,12 @@ function Database:InitializeDatabase()
     -- Ensure the Default profile exists (creates it only if absent).
     self:EnsureDefaultTemplate()
 
-    local charKey = UnitName("player") .. "-" .. GetRealmName()
     local activeProfile = BLUDB.activeProfile
 
-    -- Resolve active profile: must exist in the profiles table
+    -- Resolve active profile: must exist in the profiles table.
+    -- Fall back to Default — the user can create their own profile when ready.
     if not activeProfile or not BLUDB.profiles[activeProfile] then
-        -- Fall back to character profile, creating it if needed
-        activeProfile = self:EnsureCharProfile(charKey)
+        activeProfile = PROTECTED_PROFILE
     end
 
     -- Set active database reference and persist selection globally
@@ -296,21 +282,15 @@ function Database:DeleteProfile(name)
     if BLUDB.profiles and BLUDB.profiles[name] then
         BLUDB.profiles[name] = nil
 
-        -- If we deleted the active profile, find another profile to switch to
+        -- If we deleted the active profile, find another profile to switch to.
+        -- Prefer any existing non-Default profile; fall back to Default.
         if BLUDB.activeProfile == name then
-            -- Pick any existing non-Default profile as the fallback
-            local fallback = nil
+            local fallback = PROTECTED_PROFILE
             for profileName in pairs(BLUDB.profiles) do
                 if profileName ~= PROTECTED_PROFILE then
                     fallback = profileName
                     break
                 end
-            end
-
-            -- No other profiles exist — create a fresh character-keyed one
-            if not fallback then
-                local charKey = UnitName("player") .. "-" .. GetRealmName()
-                fallback = self:EnsureCharProfile(charKey)
             end
 
             self:LoadProfile(fallback)

@@ -129,14 +129,22 @@ jobs:
             changelog_content="No changelog available."
           fi
 
-          # Keep embed size safe for Discord limits.
-          if ((${#changelog_content} > 2500)); then
-            changelog_content="${changelog_content:0:2497}..."
-          fi
-
+          # Full body for GitHub Release (no limit needed)
           {
             echo "body<<EOF"
             echo "$changelog_content"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+          # Discord field values are capped at 1024 chars — extract bullet lines only
+          bullet_lines="$(echo "$changelog_content" | grep -E '^[-*]|^\*\*' | head -20 | sed 's/^\*\*[^*]*\*\*[[:space:]]*//' )"
+          if ((${#bullet_lines} > 980)); then
+            bullet_lines="${bullet_lines:0:977}..."
+          fi
+
+          {
+            echo "discord_summary<<EOF"
+            echo "$bullet_lines"
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
@@ -152,12 +160,12 @@ jobs:
         if: success()
         shell: bash
         env:
-          CHANGELOG_CONTENT: ${{ steps.changelog.outputs.body }}
+          DISCORD_SUMMARY: ${{ steps.changelog.outputs.discord_summary }}
           RELEASE_TYPE: ${{ steps.release_type.outputs.type }}
           RELEASE_VERSION: ${{ steps.version.outputs.version }}
           RELEASE_TIMESTAMP: ${{ steps.version.outputs.timestamp }}
         run: |
-          changelog_content="${CHANGELOG_CONTENT}"
+          summary="${DISCORD_SUMMARY}"
           release_type="${RELEASE_TYPE}"
           version="${RELEASE_VERSION}"
 
@@ -166,86 +174,83 @@ jobs:
               title="BLU | Better Level-Up! ${version}"
               color=385018
               footer="RGX Mods • Stable Release"
-              intro="A new stable release is live."
-              fields='[
-                {"name":"Channel","value":"Release","inline":true},
-                {"name":"Downloads","value":"[CurseForge](https://www.curseforge.com/wow/addons/blu-better-level-up) • [Wago](https://addons.wago.io/addons/vEGPgWK1) • [GitHub](https://github.com/DonnieDice/BLU/releases)","inline":false}
-              ]'
+              description="A new stable release is live."
+              release_url="https://github.com/DonnieDice/BLU/releases/tag/${version}"
+              downloads="[CurseForge](https://www.curseforge.com/wow/addons/blu-better-level-up) • [Wago](https://addons.wago.io/addons/vEGPgWK1) • [WoWInterface](https://www.wowinterface.com/downloads/info26465) • [GitHub](${release_url})"
+              channel="Release"
               ;;
             "beta")
               title="BLU | Better Level-Up! ${version} (Beta)"
               color=16744448
               footer="RGX Mods • Beta Build"
-              intro="Beta build for testing."
-              fields='[
-                {"name":"Channel","value":"Beta","inline":true},
-                {"name":"Downloads","value":"[CurseForge](https://www.curseforge.com/wow/addons/blu-better-level-up) • [GitHub](https://github.com/DonnieDice/BLU/releases)","inline":false}
-              ]'
+              description="Beta build available for testing."
+              release_url="https://github.com/DonnieDice/BLU/releases/tag/${version}"
+              downloads="[CurseForge](https://www.curseforge.com/wow/addons/blu-better-level-up) • [GitHub](${release_url})"
+              channel="Beta"
               ;;
             "alpha"|"alpha-branch")
               title="BLU | Better Level-Up! ${version} (Alpha)"
-              color=385018
+              color=9109504
               footer="RGX Mods • Alpha Build"
-              intro="Alpha build for testing."
-              fields='[
-                {"name":"Channel","value":"Alpha","inline":true},
-                {"name":"Downloads","value":"[CurseForge](https://www.curseforge.com/wow/addons/blu-better-level-up) • [GitHub](https://github.com/DonnieDice/BLU/tree/alpha)","inline":false}
-              ]'
+              description="Alpha build available for testing."
+              release_url="https://github.com/DonnieDice/BLU/tree/alpha"
+              downloads="[GitHub Alpha Branch](${release_url})"
+              channel="Alpha"
               ;;
             "dev")
               title="BLU | Better Level-Up! ${version} (Dev)"
               color=3447003
               footer="RGX Mods • Dev Build"
-              intro="Development build from the dev branch."
-              fields='[
-                {"name":"Channel","value":"Dev","inline":true},
-                {"name":"Branch","value":"`dev`","inline":true}
-              ]'
+              description="Development build from the dev branch."
+              release_url="https://github.com/DonnieDice/BLU/tree/dev"
+              downloads="[GitHub Dev Branch](${release_url})"
+              channel="Dev"
               ;;
             *)
               title="BLU | Better Level-Up! ${version}"
               color=10000000
               footer="RGX Mods"
-              intro="Build completed."
-              fields='[]'
+              description="Build completed."
+              release_url="https://github.com/DonnieDice/BLU/releases"
+              downloads="[GitHub](${release_url})"
+              channel="Unknown"
               ;;
           esac
 
-          desc=$(cat <<EOF
-          ${intro}
-
-          ### What's New
-          ${changelog_content}
-          EOF
-          )
-
           jq -n \
-            --arg username "BLU Notification" \
+            --arg username "BLU Releases" \
             --arg avatar_url "https://raw.githubusercontent.com/DonnieDice/BLU/main/media/Textures/logo.png" \
             --arg title "$title" \
-            --arg desc "$desc" \
+            --arg url "$release_url" \
+            --arg description "$description" \
             --argjson color "$color" \
             --arg footer "$footer" \
             --arg icon_url "https://raw.githubusercontent.com/donniedice/SimpleQuestPlates/main/images/kiwi.gif" \
             --arg timestamp "${RELEASE_TIMESTAMP}" \
-            --argjson fields "$fields" \
+            --arg summary "$summary" \
+            --arg downloads "$downloads" \
+            --arg channel "$channel" \
             '{
               username: $username,
               avatar_url: $avatar_url,
               embeds: [{
                 title: $title,
-                description: $desc,
+                url: $url,
+                description: $description,
                 color: $color,
-                footer: {
-                  text: $footer,
-                  icon_url: $icon_url
-                },
-                fields: $fields,
+                fields: [
+                  { name: "What'\''s New", value: $summary, inline: false },
+                  { name: "Downloads", value: $downloads, inline: false },
+                  { name: "Channel", value: $channel, inline: true }
+                ],
+                footer: { text: $footer, icon_url: $icon_url },
                 timestamp: $timestamp
               }]
             }' > payload.json
 
-          curl -H "Content-Type: application/json" -X POST -d @payload.json "$DISCORD_WEBHOOK"
+          curl -s -o /dev/null -w "%{http_code}" \
+            -H "Content-Type: application/json" \
+            -X POST -d @payload.json "$DISCORD_WEBHOOK"
 
       - name: ❌ Send Failure Notification
         if: failure()

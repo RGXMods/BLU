@@ -321,6 +321,7 @@ function SoundRegistry:PlaySound(soundId, volume, options)
     end
 
     options = options or {}
+    local resolvedVolume = tonumber(volume) or 1
     BLU:PrintDebug("[Registry] PlaySound options categoryOverride='" .. tostring(options.categoryOverride) .. "', volumeOverride='" .. tostring(options.volumeSettingOverride) .. "'")
     
     local channel = "Master"
@@ -388,7 +389,7 @@ function SoundRegistry:PlaySound(soundId, volume, options)
     end
     
     if willPlay then
-        BLU:PrintDebug(string.format("Playing sound: %s (volume: %.2f, channel: %s)", soundId, volume, channel))
+        BLU:PrintDebug(string.format("Playing sound: %s (volume: %.2f, channel: %s)", soundId, resolvedVolume, channel))
         
         -- Show in chat if enabled
         if BLU.db and BLU.db.debugMode then
@@ -397,7 +398,7 @@ function SoundRegistry:PlaySound(soundId, volume, options)
         
         -- Handle callbacks if provided
         if sound.onPlay then
-            sound.onPlay(soundId, volume)
+            sound.onPlay(soundId, resolvedVolume)
         end
         
         return true

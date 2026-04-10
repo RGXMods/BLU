@@ -192,7 +192,7 @@ _`Note`: Each game includes Low, Medium, and High volume variants for all sound 
 3. **<span style="color:#b96ad9">External Sound Packs</span><span style="color:#3598db">:</span>** <span style="color:#e67e23">Auto-discovered from other loaded addons at startup through BLU's native bridge/discovery system. Devs can register full BLU-compatible packs via `BLU:RegisterSoundPack()` or simple bridge packs via `BLU:RegisterExternalSoundPack()`</span>
 
 ### <span style="color:#4ecdc4">Sound Pack API (for addon developers):</span>
-<span style="color:#e67e23">For the full current guide, including the recommended folder layout, `_low` / `_med` / `_high` naming, and both registration paths, see the</span> [<span style="color:#05dffa">Sounds Guidelines wiki</span>](https://github.com/DonnieDice/BLU/wiki/Sounds-Guidelines)<span style="color:#e67e23">.</span>
+<span style="color:#e67e23">For clear instructions on both supported pack types â€” simple single-file third-party packs and full BLU-compatible `_low` / `_med` / `_high` packs â€” see the</span> [<span style="color:#05dffa">Sounds Guidelines wiki</span>](https://github.com/DonnieDice/BLU/wiki/Sounds-Guidelines)<span style="color:#e67e23">.</span>
 
 ```lua
 -- Full BLU-compatible pack with low / medium / high variants
@@ -206,7 +206,7 @@ BLU:RegisterSoundPack("my_pack", "My Pack", {
 })
 ```
 
-<span style="color:#e67e23">Use `BLU:RegisterExternalSoundPack()` only when you want to bridge simple single-file sounds that do not need BLU's 3-volume variant behavior.</span>
+<span style="color:#e67e23">The wiki covers both supported approaches: `BLU:RegisterExternalSoundPack()` for simple single-file third-party packs and `BLU:RegisterSoundPack()` for full BLU-compatible 3-volume packs.</span>
 
 ---
 

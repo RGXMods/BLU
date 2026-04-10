@@ -9,17 +9,34 @@ local addonName, addonTable = ...
 local ADDON_PATH = "Interface\\AddOns\\" .. addonName .. "\\"
 local CORE_EVENT_ID_LOGOUT = "core_player_logout"
 local CHAT_ICON = "|T" .. ADDON_PATH .. "media\\Textures\\icon.tga:16:16:0:0|t"
-local CHAT_PREFIX = CHAT_ICON .. " - |cff05dffa[BLU]|r"
-local CHAT_DEBUG_PREFIX = CHAT_PREFIX .. " |cff808080[DEBUG]|r"
-local CHAT_ERROR_PREFIX = CHAT_PREFIX .. " |cffff0000[ERROR]|r"
+local CHAT_PREFIX = CHAT_ICON .. " - |cffffffff[|r|cff05dffaBLU|r|cffffffff]|r"
+local CHAT_DEBUG_PREFIX = CHAT_PREFIX .. " |cffffffff[|r|cff808080DEBUG|r|cffffffff]|r"
+local CHAT_ERROR_PREFIX = CHAT_PREFIX .. " |cffffffff[|r|cffff0000ERROR|r|cffffffff]|r"
 
+local function GetAddOnMetadataSafe(self, addonName, key)
+    -- Support both BLU:GetMetadata(name, key) and GetAddOnMetadataSafe(name, key)
+    if type(self) == "string" and key == nil then
+        key = addonName
+        addonName = self
+    end
+
+    if C_AddOns and C_AddOns.GetAddOnMetadata then
+        local ok, value = pcall(C_AddOns.GetAddOnMetadata, addonName, key)
+        return ok and value or nil
+    elseif GetAddOnMetadata then
+        local ok, value = pcall(GetAddOnMetadata, addonName, key)
+        return ok and value or nil
+    end
+    return nil
+end
 print("BLU: Core loading started.")
 
 -- Create the main addon object (global)
 BLU = {
+    GetMetadata = GetAddOnMetadataSafe,
     name = addonName,
-    version = "v6.2.5",
-    author = C_AddOns.GetAddOnMetadata(addonName, "Author"),
+    version = "v6.3.0-alpha.1",
+    author = GetAddOnMetadataSafe(addonName, "Author"),
     
     -- Core tables
     Modules = {},
@@ -40,18 +57,106 @@ end
 
 -- Print debug message
 function BLU:PrintDebug(message)
-    if self.debugMode then
-        print(CHAT_DEBUG_PREFIX .. " " .. message)
+    if not self.debugMode then
+        return
     end
+
+    if not self:IsDebugScopeEnabledForMessage(message) then
+        return
+    end
+
+    print(CHAT_DEBUG_PREFIX .. " " .. message)
 end
 
 function BLU:Trace(scope, message)
+    if not self.debugMode then
+        return
+    end
+
+    if not self:IsDebugScopeEnabled(scope) then
+        return
+    end
+
     self:PrintDebug("[" .. tostring(scope) .. "] " .. tostring(message))
 end
 
 -- Print error message
 function BLU:PrintError(message)
     print(CHAT_ERROR_PREFIX .. " " .. message)
+end
+
+function BLU:NormalizeDebugScope(scope)
+    if type(scope) ~= "string" or scope == "" then
+        return "core"
+    end
+
+    local normalized = string.lower(scope)
+    normalized = normalized:gsub("^%s+", ""):gsub("%s+$", "")
+
+    if normalized:find("^tabs") then
+        return "tabs"
+    end
+    if normalized:find("^options") then
+        return "options"
+    end
+    if normalized:find("^registry") or normalized:find("^soundregistry") then
+        return "registry"
+    end
+    if normalized:find("^soundpanel") or normalized:find("^sounds") or normalized:find("^usersounds") or normalized:find("^sharedmedia") or normalized:find("^internalsounds") then
+        return "sounds"
+    end
+    if normalized:find("^loader") or normalized:find("^init") then
+        return "loader"
+    end
+    if normalized:find("^database") or normalized:find("^config") then
+        return "database"
+    end
+    if normalized:find("^profiles") then
+        return "profiles"
+    end
+    if normalized:find("^modules") or normalized:find("^module") then
+        return "modules"
+    end
+    if normalized:find("^events") or normalized:find("^combat") or normalized:find("^timer") or normalized:find("^hooks") or normalized:find("^slash") or normalized:find("^welcome") or normalized:find("^state") then
+        return "events"
+    end
+    if normalized:find("^achievement") or normalized:find("^levelup") or normalized:find("^quest") or normalized:find("^reputation") or normalized:find("^battlepet") or normalized:find("^honor") or normalized:find("^renown") or normalized:find("^delve") or normalized:find("^housing") or normalized:find("^tradingpost") then
+        return "features"
+    end
+
+    return "core"
+end
+
+function BLU:IsDebugScopeEnabled(scope)
+    local profile = self.db and self.db.profile
+    if not profile then
+        return true
+    end
+
+    local scopes = profile.debugScopes
+    if type(scopes) ~= "table" then
+        return true
+    end
+
+    local normalized = self:NormalizeDebugScope(scope)
+    if scopes[normalized] == nil then
+        return true
+    end
+
+    return scopes[normalized] ~= false
+end
+
+function BLU:IsDebugScopeEnabledForMessage(message)
+    if type(message) ~= "string" then
+        return self:IsDebugScopeEnabled("core")
+    end
+
+    local rawScope = string.match(message, "^%[([^%]]+)%]")
+    if rawScope then
+        return self:IsDebugScopeEnabled(rawScope)
+    end
+
+    return self:IsDebugScopeEnabled("core")
 end
 
 -- Create event frame (early definition)
@@ -241,27 +346,6 @@ function BLU:RegisterSlashCommand(command, callback)
     SlashCmdList[cmdName] = callback
 end
 
---=====================================================================================
--- Print Functions
---=====================================================================================
-
--- Print message
-function BLU:Print(message)
-    print(CHAT_PREFIX .. " " .. message)
-end
-
--- Print debug message
-function BLU:PrintDebug(message)
-    if self.debugMode then
-        print(CHAT_DEBUG_PREFIX .. " " .. message)
-    end
-end
-
--- Print error message
-function BLU:PrintError(message)
-    print(CHAT_ERROR_PREFIX .. " " .. message)
-end
-
 -- Show welcome message
 function BLU:ShowWelcomeMessage()
     if not (self.db and self.db.profile and self.db.profile.showWelcomeMessage ~= false) then
@@ -269,13 +353,7 @@ function BLU:ShowWelcomeMessage()
         return
     end
 
-    local version = "Unknown"
-    if C_AddOns and C_AddOns.GetAddOnMetadata then
-        version = C_AddOns.GetAddOnMetadata(addonName, "Version") or version
-    elseif GetAddOnMetadata then
-        version = GetAddOnMetadata(addonName, "Version") or version
-    end
-
+    local version = self.GetMetadata(addonName, "Version") or self.version or "Unknown"
     print(CHAT_PREFIX .. " Welcome. Use |cff05dffa/blu|r to open the options panel or |cff05dffa/blu help|r for more commands.")
     print(CHAT_PREFIX .. " |cffffff00Version:|r |cff8080ff" .. version .. "|r")
     self:Trace("Welcome", "Displayed welcome message for version " .. tostring(version))
@@ -314,68 +392,6 @@ end
 --=====================================================================================
 
 -- Create profile
-function BLU:CreateProfile(name)
-    self:Trace("Profiles", "CreateProfile called for '" .. tostring(name) .. "'")
-    if not self.Database then
-        self:PrintError("Database not initialized")
-        return false
-    end
-    return self.Database:CreateProfile(name)
-end
-
--- Delete profile
-function BLU:DeleteProfile(name)
-    self:Trace("Profiles", "DeleteProfile called for '" .. tostring(name) .. "'")
-    if not self.Database then
-        self:PrintError("Database not initialized")
-        return false
-    end
-    return self.Database:DeleteProfile(name)
-end
-
--- Load profile
-function BLU:LoadProfile(name)
-    self:Trace("Profiles", "LoadProfile called for '" .. tostring(name) .. "'")
-    if not self.Database then
-        self:PrintError("Database not initialized")
-        return false
-    end
-    return self.Database:SetProfile(name)
-end
-
--- Save profile
-function BLU:SaveProfile(name)
-    self:Trace("Profiles", "SaveProfile called for '" .. tostring(name) .. "'")
-    if not self.Database then
-        self:PrintError("Database not initialized")
-        return false
-    end
-    -- Force save current settings
-    self.Database:Save()
-    return true
-end
-
--- Rename profile
-function BLU:RenameProfile(oldName, newName)
-    self:Trace("Profiles", "RenameProfile called from '" .. tostring(oldName) .. "' to '" .. tostring(newName) .. "'")
-    if not self.Database then
-        self:PrintError("Database not initialized")
-        return false
-    end
-    
-    if not self.Database:CopyProfile(oldName, newName) then
-        return false
-    end
-    
-    -- Switch to new profile if it was the active one
-    if BLUDB.currentProfile == oldName then
-        self.Database:SetProfile(newName)
-    end
-    
-    -- Delete old profile
-    return self.Database:DeleteProfile(oldName)
-end
-
 -- Serialize profile for export
 function BLU:SerializeProfile(profileName)
     self:Trace("Profiles", "SerializeProfile called for '" .. tostring(profileName) .. "'")
@@ -659,4 +675,3 @@ BLU:RegisterEvent("PLAYER_LOGOUT", function(event)
 end, CORE_EVENT_ID_LOGOUT)
 
 -- Copy all BLU functions to addon table so other files can access them via local addonName, addonTable = ...
-

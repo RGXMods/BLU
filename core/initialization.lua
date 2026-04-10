@@ -89,8 +89,10 @@ function BLU:Initialize()
     self:InitializePhase("interface", {
         "design",      -- Design system MUST be first
         "widgets",     -- Widget helpers
+        "profiles",    -- Profiles panel
         "tabs",        -- Tab system
         "general",     -- General panel
+        "debug",       -- Debug panel module
         "sound_panel", -- Sound panel components
         "sounds",      -- Sounds panel
         "about",       -- About panel
@@ -105,6 +107,7 @@ function BLU:Initialize()
     -- Phase 4: Feature Modules
     self:InitializePhase("modules", {
         "quest",
+        "combat",
         "levelup",
         "achievement",
         "reputation",

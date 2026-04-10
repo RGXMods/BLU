@@ -1,152 +1,103 @@
-# <span style="color: #ffe568;">🎮 </span> <span style="color: #8b4b5c;">R</span><span style="color: #8b4b5c;">G</span><span style="color: #8b4b5c;">X</span> <span style="color: #ffe568;">| </span> <span style="color: #4a90e2;">B</span><span style="color: #fff;">etter </span> <span style="color: #4a90e2;">L</span><span style="color: #fff;">evel-</span><span style="color: #4a90e2;">U</span><span style="color: #fff;">p</span><span style="color: #4a90e2;">!</span>
+# BLU | Better Level-Up!
 
-![BLU Logo](https://media.forgecdn.net/attachments/1260/966/638038186089895874-png.png)
+BLU is a Retail World of Warcraft addon that replaces default progression sounds with curated audio from many other games.
 
-## ![](https://github.com/donniedice/SimpleQuestPlates/blob/main/images/kiwi.gif?raw=true) <span style="color: #8b4b5c;">R</span><span style="color: #8b4b5c;">G</span><span style="color: #8b4b5c;">X</span> <span style="color: #4ecdc4;">Mods</span> <span style="color: #3598db;">-</span> <span style="color: #8b4b5c;">R</span><span style="color: #6b8fb0;">ealm</span><span style="color: #8b4b5c;">G</span><span style="color: #8b4b5c;">X</span> <span style="color: #6b8fb0;">Community Project</span>
-
-***
-
-## <span style="color: #05dffa;">🎯 Overview</span>
-
-**<span style="color: #8b4b5c;">R</span><span style="color: #8b4b5c;">G</span><span style="color: #8b4b5c;">X</span> <span style="color: #3598db;">| </span> <span style="color: #4a90e2;">B</span><span style="color: #fff;">etter </span> <span style="color: #4a90e2;">L</span><span style="color: #fff;">evel-</span><span style="color: #4a90e2;">U</span><span style="color: #fff;">p</span><span style="color: #4a90e2;">!</span>** <span style="color: #e67e23;">changes up the repetitive sounds in</span> <span style="color: #06c;">World of Warcraft</span><span style="color: #e67e23;">, giving you the option to hear sounds from other games when you level-up, complete</span> <span style="color: #ff6b6b;">Trade Post</span> <span style="color: #e67e23;">activities, gain reputation, or level-up your</span> <span style="color: #b96ad9;">Delve Companion</span><span style="color: #e67e23;">.</span>
-
-![RealmGX Kiwi](https://github.com/donniedice/SimpleQuestPlates/blob/main/images/kiwi.gif?raw=true) **<span style="color: #2dc26b;">The Kiwi Says:</span>** <span style="color: #b96ad9;">"Bwwiiiee."</span>
+Current version: `v6.3.0-alpha.1`
 
 ***
 
-## <span style="color: #05dffa;">✨ Features</span>
+## Overview
 
-<span style="color: #2dc26b;">🏆 <strong>Achievements</strong></span> <span style="color: #3598db;">-</span> <span style="color: #e67e23;">Play sounds from other games when you earn</span> <span style="color: #ffe568;">Achievements</span><span style="color: #e67e23;">!</span>
+BLU lets you swap in custom sounds for major progression moments across World of Warcraft while keeping control over event categories, sound sources, and profile setups.
 
-<span style="color: #ff69b4;">🐾 <strong>Battle-Pets</strong></span> <span style="color: #3598db;">-</span> <span style="color: #e67e23;">Play sounds from other games when you level-up</span> <span style="color: #ff69b4;">Battle-Pets</span><span style="color: #e67e23;">!</span>
-
-<span style="color: #b96ad9;">⛏️ <strong>Delve Companion Level-Up</strong></span> <span style="color: #3598db;">-</span> <span style="color: #e67e23;">Play sounds from other games when your</span> <span style="color: #b96ad9;">Delve Companion</span> <span style="color: #e67e23;">levels-up!</span>
-
-<span style="color: #ff6b6b;">⚔️ <strong>Honor Ranks</strong></span> <span style="color: #3598db;">-</span> <span style="color: #e67e23;">Play sounds from other games when you gain</span> <span style="color: #ff6b6b;">Honor Ranks</span><span style="color: #e67e23;">!</span>
-
-<span style="color: #ffe568;">📈 <strong>Level-Up</strong></span> <span style="color: #3598db;">-</span> <span style="color: #e67e23;">Play sounds from other games when you Level-Up!</span>
-
-<span style="color: #4ecdc4;">🌟 <strong>Renown Reputation Ranks</strong></span> <span style="color: #3598db;">-</span> <span style="color: #e67e23;">Play sounds from other games when you gain</span> <span style="color: #4ecdc4;">Renown</span> <span style="color: #e67e23;">reputation ranks!</span>
-
-<span style="color: #2dc26b;">👥 <strong>Reputation Ranks</strong></span> <span style="color: #3598db;">-</span> <span style="color: #e67e23;">Play sounds from other games when you gain Reputation ranks!</span>
-
-<span style="color: #ffe568;">📋 <strong>Quests</strong></span> <span style="color: #3598db;">-</span> <span style="color: #e67e23;">Play sounds from other games when you Accept or Turn-in</span> <span style="color: #ffe568;">Quests</span><span style="color: #e67e23;">!</span>
-
-<span style="color: #ff6b6b;">🏪 <strong>Trading Post Activities</strong></span> <span style="color: #3598db;">-</span> <span style="color: #e67e23;">Play sounds from other games when you complete</span> <span style="color: #ff6b6b;">Trading Post</span> <span style="color: #e67e23;">activities!</span>
-
-<span style="color: #4ecdc4;">🎵 <strong>Soundpack Support</strong></span> <span style="color: #3598db;">-</span> <span style="color: #e67e23;">BLU auto-discovers compatible sounds from other loaded addons at startup — no external libraries required. Addon devs can also register packs directly using</span> <span style="color: #4ecdc4;">BLU:RegisterExternalSoundPack()</span><span style="color: #e67e23;">. If</span> <span style="color: #4ecdc4;">LibSharedMedia-3.0</span> <span style="color: #e67e23;">is installed, BLU hooks into it automatically for even broader coverage.</span>
-
-<span style="color: #ffe568;">🗂️ <strong>User Custom Sounds</strong></span> <span style="color: #3598db;">-</span> <span style="color: #e67e23;">Drop your own</span> <span style="color: #4ecdc4;">.ogg</span><span style="color: #e67e23;">,</span> <span style="color: #4ecdc4;">.mp3</span><span style="color: #e67e23;">, or</span> <span style="color: #4ecdc4;">.wav</span> <span style="color: #e67e23;">files into</span> <span style="color: #4ecdc4;">Interface\AddOns\</span> <span style="color: #e67e23;">or</span> <span style="color: #4ecdc4;">Interface\AddOns\sounds\</span> <span style="color: #e67e23;">using names like</span> <span style="color: #4ecdc4;">custom01.ogg</span> <span style="color: #e67e23;">through</span> <span style="color: #4ecdc4;">custom24.ogg</span><span style="color: #e67e23;">. BLU auto-picks them up with no Lua editing required.</span>
-
-**<span style="color: #ff6b6b;">Note</span><span style="color: #3598db;">:</span>** <span style="color: #e67e23;">All sounds feature independent volume adjustment capability.</span>
+This alpha focuses on a cleaner options experience, stronger profile management, preset-driven setup flows, and a dedicated Debug tab for scoped troubleshooting.
 
 ***
 
-## <span style="color: #05dffa;">📋 Slash Commands</span>
+## Features
 
-<span style="color: #e67e23;">The addon can be managed using the following slash commands</span><span style="color: #3598db;">:</span>
-
-<div style="background-color: #0d1117; color: #58a6ff; font-family: 'Consolas', 'Monaco', monospace; border: 1px solid #30363d;">/blu          # Opens the options panel<br>/blu debug    # Toggles debug mode<br>/blu welcome  # Toggles the welcome message on login<br>/blu help     # Displays help information<br>/blu refresh  # Rebuilds external and user custom sound pack registry<br>/blu rescan   # Rescans for newly registered media (no reload needed)</div>
-
-***
-
-## <span style="color: #05dffa;">🎵 Soundpack Support &amp; Developer API</span>
-
-<span style="color: #e67e23;">BLU v6.2.0 includes first-class soundpack support. BLU scans loaded addons for compatible audio at startup — no external libraries needed. If</span> <span style="color: #4ecdc4;">LibSharedMedia-3.0</span> <span style="color: #e67e23;">is present it hooks in automatically. Addon developers can also register packs directly</span><span style="color: #3598db;">:</span>
-
-<div style="background-color: #0d1117; color: #58a6ff; font-family: 'Consolas', 'Monaco', monospace; border: 1px solid #30363d;">-- Register a soundpack directly with BLU from your addon<br>BLU:RegisterExternalSoundPack("My Pack Name", {<br>&nbsp;&nbsp;{ name = "Level Up", path = "Interface\\AddOns\\MyAddon\\sounds\\levelup.ogg" },<br>&nbsp;&nbsp;{ name = "Quest Done", path = "Interface\\AddOns\\MyAddon\\sounds\\quest.ogg" },<br>})</div>
-
-<span style="color: #e67e23;">Use</span> <span style="color: #4ecdc4;">/blu refresh</span> <span style="color: #e67e23;">or</span> <span style="color: #4ecdc4;">/blu rescan</span> <span style="color: #e67e23;">to reload external packs live without restarting the game.</span>
-
-***
-
-## <span style="color: #05dffa;">🗂️ User Custom Sounds</span>
-
-<span style="color: #e67e23;">Want to use your own audio files? BLU now supports drop-in custom sound slots with no Lua editing required:</span>
-
-<div style="background-color: #0d1117; color: #58a6ff; font-family: 'Consolas', 'Monaco', monospace; border: 1px solid #30363d;">Interface\AddOns\custom01.ogg<br>Interface\AddOns\sounds\custom02.mp3<br>Interface\AddOns\custom03.wav</div>
-
-<span style="color: #e67e23;">Drop your</span> <span style="color: #4ecdc4;">.ogg</span><span style="color: #e67e23;">,</span> <span style="color: #4ecdc4;">.mp3</span><span style="color: #e67e23;">, or</span> <span style="color: #4ecdc4;">.wav</span> <span style="color: #e67e23;">files into</span> <span style="color: #4ecdc4;">Interface\AddOns\</span> <span style="color: #e67e23;">or</span> <span style="color: #4ecdc4;">Interface\AddOns\sounds\</span> <span style="color: #e67e23;">using</span> <span style="color: #4ecdc4;">custom01</span> <span style="color: #e67e23;">through</span> <span style="color: #4ecdc4;">custom24</span> <span style="color: #e67e23;">slot names, then use</span> <span style="color: #4ecdc4;">/blu refresh</span> <span style="color: #e67e23;">or</span> <span style="color: #4ecdc4;">/reload</span><span style="color: #e67e23;">. They appear automatically in the</span> <span style="color: #ffe568;">User Custom Sounds</span> <span style="color: #e67e23;">pack in every module's sound dropdown.</span>
+- Achievement sounds
+- Battle Pet sounds
+- Delve sounds, including companion progression and lives events
+- Honor sounds
+- Housing sounds
+- Level-Up sounds
+- Quest sounds
+- Renown sounds
+- Reputation sounds
+- Trading Post sounds
+- Profile management with saved profiles and presets
+- Debug tab with scoped debug filtering
+- User custom sound support
+- External sound pack discovery and registration API support
 
 ***
 
-## <span style="color: #05dffa;">🎵 Available Game Sounds</span>
+## Highlights In v6.3.0-alpha.1
 
-<table style="width: 100%;"><tr><td style="vertical-align: top; width: 33%;"><ul><li><span style="color: #ff6b6b;">Altered Beast</span></li><li><span style="color: #b96ad9;">Assassin's Creed</span></li><li><span style="color: #4ecdc4;">Castlevania</span></li><li><span style="color: #ff6b6b;">Diablo 2</span></li><li><span style="color: #2dc26b;">Dragon Quest</span></li><li><span style="color: #ffe568;">DotA 2</span></li><li><span style="color: #b96ad9;">Elden Ring</span></li><li><span style="color: #4ecdc4;">EverQuest</span></li><li><span style="color: #ff6b6b;">Fallout - New Vegas</span></li><li><span style="color: #2dc26b;">Fallout 3</span></li><li><span style="color: #ff69b4;">Final Fantasy</span></li></ul></td><td style="vertical-align: top; width: 33%;"><ul><li><span style="color: #ffe568;">Fire Emblem</span></li><li><span style="color: #b96ad9;">Fly For Fun</span></li><li><span style="color: #4ecdc4;">Fortnite</span></li><li><span style="color: #ff6b6b;">GTA - San Andreas</span></li><li><span style="color: #2dc26b;">Kingdom Hearts 3</span></li><li><span style="color: #ffe568;">Kirby</span></li><li><span style="color: #b96ad9;">League of Legends</span></li><li><span style="color: #4ecdc4;">Legend of Zelda</span></li><li><span style="color: #ff6b6b;">Maplestory</span></li><li><span style="color: #2dc26b;">Metal Gear Solid 5</span></li><li><span style="color: #ffe568;">Minecraft</span></li></ul></td><td style="vertical-align: top; width: 33%;"><ul><li><span style="color: #b96ad9;">Modern Warfare 2</span></li><li><span style="color: #4ecdc4;">Morrowind</span></li><li><span style="color: #ff6b6b;">Old School Runescape</span></li><li><span style="color: #2dc26b;">Palworld</span></li><li><span style="color: #ffe568;">Path of Exile</span></li><li><span style="color: #b96ad9;">Pokemon</span></li><li><span style="color: #4ecdc4;">Ragnarok Online</span></li><li><span style="color: #a8a8a8;">Skyrim</span></li><li><span style="color: #ff6b6b;">Spyro The Dragon</span></li><li><span style="color: #2dc26b;">Super Mario Bros 3</span></li><li><span style="color: #ffe568;">The Witcher 3</span></li></ul></td></tr></table>
-
-**<span style="color: #ff6b6b;">Note</span><span style="color: #3598db;">:</span>** <span style="color: #e67e23;">When new sounds are added, they are listed in alphabetical order. This may change the selection order in the code for</span> `sounds.lua`<span style="color: #e67e23;">. You may need to re-select previously selected sounds after updates.</span>
-
-![RealmGX Kiwi](https://github.com/donniedice/SimpleQuestPlates/blob/main/images/kiwi.gif?raw=true) **<span style="color: #2dc26b;">The Kiwi Says:</span>** <span style="color: #b96ad9;">"So many sounds to choose from! Bwwiiiee."</span>
-
-***
-
-## <span style="color: #05dffa;">🎮 Compatibility</span>
-
-<span style="color: #2dc26b;"><strong>Retail WoW</strong></span> <span style="color: #3598db;">|</span> <span style="color: #2dc26b;">✅ Fully Supported (WoW Midnight 12.0.1)</span>
-
-**<span style="color: #ff6b6b;">Note</span><span style="color: #3598db;">:</span>** <span style="color: #e67e23;">BLU currently only supports Retail WoW. Classic WoW support is planned for a future update.</span>
+- Added a dedicated Profiles tab with saved profile management, import/export support, and presets
+- Added preset flows for quick setup swaps without hand-tuning every event
+- Expanded the options panel to a 3-row alphabetical tab layout with future-facing module placeholders
+- Added a dedicated Debug tab backed by its own module and scoped debug controls
+- Improved Delve life-credit handling and tightened nested dropdown behavior
+- Hardened popup and addon metadata safety for modern WoW API behavior
 
 ***
 
-## <span style="color: #05dffa;">📥 Installation</span>
+## Slash Commands
 
-1.  **<span style="color: #2dc26b;">Download</span>** <span style="color: #8b4b5c;">R</span><span style="color: #8b4b5c;">G</span><span style="color: #8b4b5c;">X</span> <span style="color: #3598db;">| </span> <span style="color: #4a90e2;">B</span><span style="color: #fff;">etter </span> <span style="color: #4a90e2;">L</span><span style="color: #fff;">evel-</span><span style="color: #4a90e2;">U</span><span style="color: #fff;">p</span><span style="color: #4a90e2;">!</span> <span style="color: #e67e23;">from your preferred platform</span><span style="color: #3598db;">:</span>
-    *   [<span style="color: #4ecdc4;">CurseForge</span>](https://www.curseforge.com/wow/addons/blu-better-level-up)
-    *   [<span style="color: #24292e;">GitHub</span>](https://github.com/donniedice/BLU)
-    *   [<span style="color: #b96ad9;">Wago.io</span>](https://addons.wago.io/addons/blu)
-    *   [<span style="color: #ffe568;">WoWInterface</span>](https://www.wowinterface.com/downloads/info26465-BLU-BetterLevelUp.html)
-2.  **<span style="color: #4ecdc4;">Extract</span>** <span style="color: #e67e23;">to your</span> <span style="color: #06c;">WoW</span> `Interface/AddOns` <span style="color: #e67e23;">directory</span><span style="color: #3598db;">:</span>
-    *   **<span style="color: #2dc26b;">Retail WoW</span><span style="color: #3598db;">:</span>** <span style="color: #e67e23;">World of Warcraft/<em>retail</em>/Interface/AddOns</span>
-3.  **<span style="color: #b96ad9;">Restart</span>** <span style="color: #06c;">WoW</span> <span style="color: #e67e23;">and enable the addon in the AddOns menu.</span>
-
-![RealmGX Kiwi](https://github.com/donniedice/SimpleQuestPlates/blob/main/images/kiwi.gif?raw=true) **<span style="color: #2dc26b;">The Kiwi Says:</span>** <span style="color: #b96ad9;">"Installation is easy! Bwwiiiee."</span>
-
-***
-
-## <span style="color: #05dffa;">💝 Support the Project</span>
-
-<span style="color: #e67e23;">Love</span> <span style="color: #8b4b5c;">R</span><span style="color: #8b4b5c;">G</span><span style="color: #8b4b5c;">X</span> <span style="color: #3598db;">| </span> <span style="color: #4a90e2;">B</span><span style="color: #fff;">etter </span> <span style="color: #4a90e2;">L</span><span style="color: #fff;">evel-</span><span style="color: #4a90e2;">U</span><span style="color: #fff;">p</span><span style="color: #4a90e2;">!</span><span style="color: #e67e23;">? Here's how you can show your support</span><span style="color: #3598db;">:</span>
-
-*   **<span style="color: #e67e23;">☕️ Buy Me a Coffee</span><span style="color: #3598db;">:</span>** [<span style="color: #ffe568;">Donate</span>](https://www.buymeacoffee.com/donniedice)
-*   **<span style="color: #2dc26b;">💸 Donate via CashApp</span><span style="color: #3598db;">:</span>** [<span style="color: #ffe568;">Donate</span>](https://bit.ly/3fyxxSU)
-*   **<span style="color: #ff6b6b;">⭐️ Star on GitHub</span><span style="color: #3598db;">:</span>** [<span style="color: #8b4b5c;">R</span><span style="color: #8b4b5c;">G</span><span style="color: #8b4b5c;">X</span> <span style="color: #3598db;">| </span> <span style="color: #4a90e2;">B</span><span style="color: #fff;">etter </span> <span style="color: #4a90e2;">L</span><span style="color: #fff;">evel-</span><span style="color: #4a90e2;">U</span><span style="color: #fff;">p</span><span style="color: #4a90e2;">!</span>](https://github.com/donniedice/BLU)
-*   **<span style="color: #b96ad9;">📢 Share</span><span style="color: #3598db;">:</span>** <span style="color: #e67e23;">Share it with friends and guildmates!</span>
+```text
+/blu
+/blu help
+/blu debug
+/blu status
+/blu enable
+/blu disable
+/blu refresh
+/blu rescan
+/blu addcustom myfile
+/blu removecustom path
+```
 
 ***
 
-## <span style="color: #05dffa;">🤝 Feedback and Contributions</span>
+## Sound Pack Support
 
-<span style="color: #e67e23;">Your feedback is valuable! If you encounter any issues or have suggestions</span><span style="color: #3598db;">:</span>
-
-*   **<span style="color: #ff6b6b;">🐛 Report Issues</span><span style="color: #3598db;">:</span>** [<span style="color: #24292e;">GitHub</span> <span style="color: #ff6b6b;">Issues</span>](https://github.com/donniedice/BLU/issues)
-*   **<span style="color: #2dc26b;">🔧 Contribute</span><span style="color: #3598db;">:</span>** <span style="color: #e67e23;">Submit a pull request on</span> [<span style="color: #24292e;">GitHub</span>](https://github.com/donniedice/BLU)<span style="color: #e67e23;">.</span>
-*   **<span style="color: #b96ad9;">📞 Contact</span><span style="color: #3598db;">:</span>** <span style="color: #e67e23;">Reach out via</span> [<span style="color: #24292e;">GitHub</span>](https://github.com/donniedice)<span style="color: #e67e23;">.</span>
-
-***
-
-## <span style="color: #05dffa;">📄 License</span>
-
-<span style="color: #e67e23;">This project is licensed under the</span> [<span style="color: #2dc26b;">MIT License</span>](https://github.com/donniedice/BLU/blob/main/LICENSE)<span style="color: #e67e23;">.</span>
+BLU supports:
+- built-in BLU sound packs
+- external addon packs discovered automatically
+- direct registration through `BLU:RegisterExternalSoundPack(...)`
+- user custom `.ogg`, `.mp3`, and `.wav` files
 
 ***
 
-## <span style="color: #05dffa;">⚠️ Disclaimer</span>
+## Compatibility
 
-**<span style="color: #ff6b6b;">Disclaimer</span><span style="color: #3598db;">:</span>** <span style="color: #e67e23;">This</span> <span style="color: #8b4b5c;">R</span><span style="color: #8b4b5c;">G</span><span style="color: #8b4b5c;">X</span> <span style="color: #3598db;">| </span> <span style="color: #4a90e2;">B</span><span style="color: #fff;">etter </span> <span style="color: #4a90e2;">L</span><span style="color: #fff;">evel-</span><span style="color: #4a90e2;">U</span><span style="color: #fff;">p</span><span style="color: #4a90e2;">!</span> <span style="color: #e67e23;">addon is provided</span> <span style="color: #a8a8a8;">"as is"</span> <span style="color: #e67e23;">without warranty. Use at your own risk. The author is not responsible for any issues arising from its use.</span>
+- WoW Retail only
+- Interface version: `120001`
 
-***
-
-## <span style="color: #4ecdc4;">🌟 Thank you for choosing </span> <span style="color: #8b4b5c;">R</span><span style="color: #8b4b5c;">G</span><span style="color: #8b4b5c;">X</span> <span style="color: #4ecdc4;">Mods! 🌟</span>
-
-**<span style="color: #e67e23;">Made with ❤️ by the</span> <span style="color: #8b4b5c;">R</span><span style="color: #6b8fb0;">ealm</span><span style="color: #8b4b5c;">G</span><span style="color: #8b4b5c;">X</span> <span style="color: #6b8fb0;">Community</span>**
-**<span style="color: #2dc26b;">Lead Developer</span><span style="color: #3598db;">:</span>** [<span style="color: #b96ad9;">DonnieDice</span>](https://github.com/donniedice)
-
-_<span style="color: #e67e23;">"Experience sounds from your favorite games in</span> <span style="color: #06c;">World of Warcraft</span><span style="color: #e67e23;">!"</span>_
-
-![RealmGX Kiwi](https://github.com/donniedice/SimpleQuestPlates/blob/main/images/kiwi.gif?raw=true) **<span style="color: #2dc26b;">The Kiwi Says:</span>** <span style="color: #b96ad9;">"Better level-ups for everyone! Bwwiiiee."</span>
+For Classic support, use BLU Classic.
 
 ***
 
-[<span style="color: #ffe568;">🎮 Join our</span> <span style="color: #7289da;">Discord</span> <span style="color: #ffe568;">Community</span>](https://discord.gg/N7kdKAHVVF) <span style="color: #3598db;">|</span> [<span style="color: #2dc26b;">⭐ Star us on</span> <span style="color: #24292e;">GitHub</span>](https://github.com/donniedice/BLU) <span style="color: #3598db;">|</span> [<span style="color: #ff6b6b;">☕ Support Development</span>](https://www.buymeacoffee.com/donniedice)
+## Roadmap
 
-**<span style="color: #ffe568;">🎮 </span> <span style="color: #8b4b5c;">R</span><span style="color: #8b4b5c;">G</span><span style="color: #8b4b5c;">X</span> <span style="color: #4ecdc4;">Mods</span> <span style="color: #3598db;">-</span> <span style="color: #6b8fb0;">Powered by </span> <span style="color: #8b4b5c;">R</span><span style="color: #6b8fb0;">ealm</span><span style="color: #8b4b5c;">G</span><span style="color: #8b4b5c;">X</span> <span style="color: #6b8fb0;">Community</span>**
+Planned follow-up areas include:
+- deeper debug tooling built on the new Debug tab
+- more compact and intuitive Profiles tab refinements
+- additional named presets and setup flows
+- continued trigger validation and event coverage cleanup
+
+***
+
+## Support
+
+- Discord: https://discord.gg/N7kdKAHVVF
+- GitHub: https://github.com/donniedice/BLU
+- Issues: https://github.com/donniedice/BLU/issues
+
+***
+
+## License
+
+MIT

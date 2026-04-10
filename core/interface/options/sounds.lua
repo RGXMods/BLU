@@ -17,13 +17,13 @@ local function GetAddonIconTexture(addonName)
     end
 
     if C_AddOns and C_AddOns.GetAddOnMetadata then
-        local icon = C_AddOns.GetAddOnMetadata(addonName, "IconTexture")
-        if type(icon) == "string" and icon ~= "" then
+        local ok, icon = pcall(C_AddOns.GetAddOnMetadata, addonName, "IconTexture")
+        if ok and type(icon) == "string" and icon ~= "" then
             return icon
         end
     elseif GetAddOnMetadata then
-        local icon = GetAddOnMetadata(addonName, "IconTexture")
-        if type(icon) == "string" and icon ~= "" then
+        local ok, icon = pcall(GetAddOnMetadata, addonName, "IconTexture")
+        if ok and type(icon) == "string" and icon ~= "" then
             return icon
         end
     end
@@ -77,11 +77,19 @@ function BLU.CreateSoundsPanel(panel)
         child:SetParent(nil)
     end
 
-    local splitX = 300
+    local leftColumnWidth = 300
 
-    local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
-    scrollFrame:SetPoint("TOPLEFT", 5, -5)
-    scrollFrame:SetPoint("BOTTOMRIGHT", splitX, 5)
+    local installedPanel = CreateFrame("Frame", nil, panel, "BackdropTemplate")
+    installedPanel:SetPoint("TOPLEFT", 3, -5)
+    installedPanel:SetPoint("BOTTOMLEFT", panel, "BOTTOMLEFT", 6, 5)
+    installedPanel:SetWidth(leftColumnWidth + 3)
+    installedPanel:SetBackdrop(BLU.Modules.design.Backdrops.Dark)
+    installedPanel:SetBackdropColor(0.06, 0.06, 0.06, 0.95)
+    installedPanel:SetBackdropBorderColor(0.2, 0.2, 0.2, 1)
+
+    local scrollFrame = CreateFrame("ScrollFrame", nil, installedPanel, "UIPanelScrollFrameTemplate")
+    scrollFrame:SetPoint("TOPLEFT", 8, -8)
+    scrollFrame:SetPoint("BOTTOMRIGHT", -8, 8)
     scrollFrame:EnableMouseWheel(true)
 
     if scrollFrame.ScrollBar then
@@ -90,7 +98,7 @@ function BLU.CreateSoundsPanel(panel)
     end
 
     local content = CreateFrame("Frame", nil, scrollFrame)
-    content:SetWidth(300)
+    content:SetWidth(284)
     scrollFrame:SetScrollChild(content)
     scrollFrame:SetScript("OnMouseWheel", function(self, delta)
         local current = self:GetVerticalScroll() or 0
@@ -113,7 +121,7 @@ function BLU.CreateSoundsPanel(panel)
     local rowsPerColumn = 12
     local maxColumns = 1
     local columnXStart = 10
-    local columnWidth = 260
+    local columnWidth = 244
     local columnSpacing = 0
     local rowStep = 45
     local blockSpacing = 18
@@ -247,7 +255,7 @@ function BLU.CreateSoundsPanel(panel)
     BLU:PrintDebug("[Options/Sounds] Rendered " .. tostring(#packRows) .. " sound pack entries")
 
     local managerPanel = CreateFrame("Frame", nil, panel, "BackdropTemplate")
-    managerPanel:SetPoint("TOPLEFT", splitX + 8, -5)
+    managerPanel:SetPoint("TOPLEFT", installedPanel, "TOPRIGHT", 8, 0)
     managerPanel:SetPoint("BOTTOMRIGHT", -8, 5)
     managerPanel:SetBackdrop(BLU.Modules.design.Backdrops.Dark)
     managerPanel:SetBackdropColor(0.06, 0.06, 0.06, 0.95)

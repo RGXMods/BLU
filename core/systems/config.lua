@@ -19,6 +19,19 @@ Config.defaults = {
         debugMode = false,
         muteInInstances = false,
         muteInCombat = false,
+        debugScopes = {
+            core = true,
+            options = true,
+            tabs = true,
+            registry = true,
+            loader = true,
+            database = true,
+            profiles = true,
+            modules = true,
+            events = true,
+            sounds = true,
+            features = true,
+        },
         
         -- Feature toggles
         enableLevelUp = true,

@@ -10,9 +10,38 @@ local DelveCompanion = {}
 local DELVE_EVENT_ID_FACTION = "delve_faction_standing_changed"
 local DELVE_EVENT_ID_RENOWN = "delve_renown_changed"
 local DELVE_EVENT_ID_LIVES = "delve_lives_update"
+local DELVE_LIVES_RECHECK_DELAY_SECONDS = 0.10
 
 -- Spell ID for the "Lives Remaining" delve aura (added patch 11.0.0 TWW)
 local DELVE_LIVES_SPELL_ID = 458103
+
+local function GetAuraStackCount(aura)
+    if type(aura) ~= "table" then
+        return nil
+    end
+
+    if type(aura.applications) == "number" then
+        return aura.applications
+    end
+
+    if type(aura.stackCount) == "number" then
+        return aura.stackCount
+    end
+
+    if type(aura.charges) == "number" then
+        return aura.charges
+    end
+
+    if type(aura.points) == "table" then
+        for _, value in ipairs(aura.points) do
+            if type(value) == "number" then
+                return value
+            end
+        end
+    end
+
+    return 0
+end
 
 local function IsRetailClient()
     local _, _, _, interfaceVersion = GetBuildInfo()
@@ -27,6 +56,7 @@ function DelveCompanion:Init()
     self.cachedLivesRemaining = nil
     self.lastLifeLostTime = 0
     self.lastLifeGainedTime = 0
+    self.pendingLivesRefresh = false
 
     if not IsRetailClient() then
         BLU:PrintDebug(BLU:Loc("DEBUG_DELVE_SKIPPED_NON_RETAIL"))
@@ -195,7 +225,7 @@ function DelveCompanion:GetDelveLivesRemaining()
     if not C_UnitAuras or not C_UnitAuras.GetPlayerAuraBySpellID then return nil end
     local aura = C_UnitAuras.GetPlayerAuraBySpellID(DELVE_LIVES_SPELL_ID)
     if aura then
-        return aura.applications or 0
+        return GetAuraStackCount(aura)
     end
     return nil
 end
@@ -205,10 +235,8 @@ function DelveCompanion:UpdateLivesCache()
 end
 
 -- UNIT_AURA handler — tracks the "Lives Remaining" aura stack count
-function DelveCompanion:OnUnitAura(event, unitToken)
-    if unitToken ~= "player" then return end
-    if not self:IsEnabled() then return end
-
+-- Tracks the "Lives Remaining" aura stack count.
+function DelveCompanion:RefreshLivesState()
     local current = self:GetDelveLivesRemaining()
     local previous = self.cachedLivesRemaining
 
@@ -242,6 +270,30 @@ function DelveCompanion:OnUnitAura(event, unitToken)
     end
 
     self.cachedLivesRemaining = current
+end
+
+function DelveCompanion:QueueLivesRefresh(delaySeconds)
+    if self.pendingLivesRefresh then
+        return
+    end
+
+    self.pendingLivesRefresh = true
+    C_Timer.After(delaySeconds or DELVE_LIVES_RECHECK_DELAY_SECONDS, function()
+        self.pendingLivesRefresh = false
+        if self:IsEnabled() then
+            self:RefreshLivesState()
+        else
+            self:UpdateLivesCache()
+        end
+    end)
+end
+
+function DelveCompanion:OnUnitAura(event, unitToken)
+    if unitToken ~= "player" then return end
+    if not self:IsEnabled() then return end
+
+    self:RefreshLivesState()
+    self:QueueLivesRefresh(DELVE_LIVES_RECHECK_DELAY_SECONDS)
 end
 
 -- Play Delve Companion sound

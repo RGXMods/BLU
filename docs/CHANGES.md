@@ -1,80 +1,31 @@
 ## Notes
-- 2026-03-26: Started v6.2.5 for quest progress trigger fixes, welcome/prefix formatting cleanup, combat-safe settings opening, and `None` option UI correction.
-- 2026-03-26: Started v6.2.4 for custom sound path resolution, display cleanup, and lighter user custom sound playback.
-- 2026-03-26: Released v6.2.3 with the finalized Sounds tab custom sound manager, instant list refreshes, custom sound shorthand/playback fixes, and slash-command cleanup.
-- 2026-03-25: `/blu addcustom` now accepts short names like `myfile` or `myfile.ogg` and checks common AddOns sound locations automatically before saving the resolved path.
-- 2026-03-25: Added a General tab helper button and popup so users can add custom sounds in game without typing the full file path.
-- 2026-03-25: General tab now keeps only the Add Custom Sound button in Actions, places it beside Reset Profile, and restores the BLU header title colors.
+- 2026-04-10: Active alpha build is v6.3.0-alpha.1. Profiles, presets, debug separation, module placeholders, and dropdown/popup hardening are now included in release notes.
 
-## Version 6.2.5 (2026-03-26)
+## Version 6.3.0-alpha.1 (2026-04-10)
 
-### Bug Fixes
-- **Options opening is now combat-safe** - BLU no longer calls the settings API directly during combat and instead queues the options panel to open after combat ends.
-- **`None` now behaves like a true disabled sound selection** - selecting `None` no longer forces the volume slider to stay visible in the event sound panel.
-- **Welcome and chat prefix formatting cleaned up** - the intro message and chat prefix now use the icon-first `[icon] - [BLU]` style consistently.
-- **Quest percentage progress detection is being expanded** - current work now targets percentage/objective progress updates so they can use the Quest Progress sound selection more reliably.
-- **Quest Complete now has its own sound selection and trigger** - quest-ready/complete state now has a dedicated dropdown and playback category instead of sharing only accept, turn-in, and progress paths.
-- **Inline sound preview controls are proper play buttons again** - dropdown preview controls now render as small play buttons instead of broken or misleading image assets.
+### Updates
+- Added a dedicated Profiles tab with saved profile management, import/export actions, rename/delete/reset flows, and copy-from-character support.
+- Added preset application flows so Adventure, Spooky, Minimal, and DonnieDice-curated setups can be applied without rebuilding a profile by hand.
+- Expanded the options panel into a 3-row alphabetical tab layout and reserved future-facing placeholder modules for Combat, Collectibles, Loot, and Prey.
+- Moved scoped troubleshooting into a dedicated Debug module and tab while keeping the release focused on lightweight diagnostics.
+- Improved Delve life-credit sound handling and tightened nested dropdown behavior for inline arrows, preview buttons, and delete actions.
+- Hardened StaticPopup editbox handling and addon metadata fallbacks to avoid nil-index and metadata lookup errors on newer WoW clients.
 
----
+## Version 6.3.0 (2026-04-09)
 
-## Version 6.2.4 (2026-03-26)
+### Updates
+- All 18 option tabs are now in full alphabetical order across three rows of six.
+- Combat, Collectibles, Loot, and Prey now share one consistent styled placeholder panel with a title bar, icon, and coming-soon section — no more grayed-out non-clickable slots for these.
+- Prey tab and module stub added to reserve the category for a future hunt/target-tracking sound system.
+- Collectibles, Loot, and Prey each have dedicated module stub files under `modules/` matching the Combat module pattern.
+- Profiles tab layout rebuilt: saved profiles, current selection, and actions now share a single combined section, with the delete action moved into the profile dropdown instead of a separate inline quick-delete button.
+- Fixed profile popup handling so `hasEditBox` dialogs safely guard `self.editBox` access and avoid nil-index crashes.
+- Added robust addon metadata lookup fallback for `C_AddOns.GetAddOnMetadata` and `GetAddOnMetadata`, preventing broken saves in newer WoW environments.
+- Fixed tab button sizing on stacked rows by removing a redundant `SetSize` call and ensuring second and later column tabs use the correct wide width.
+- StaticPopup success messages (create/rename/delete) now route through `PrintDebug` instead of `BLU:Print`, so they are silent when debug mode is off.
+- Removed the redundant `|cff00ccffBLU:|r` prefix from all popup error messages — `BLU:Print` already adds the addon prefix.
+- General tab: wider gap between Core and Behavior column sections; Debug section now sits lower with more breathing room above it.
+- Debug tab added to the tab grid (alphabetical slot col 5 row 1); debug controls remain in General for quick-access toggle as well.
 
-### Bug Fixes
-- **Custom sound add/display paths are more accurate** - shorthand custom sound adds no longer need to wait for a later trigger to reveal the real working file, and chat/UI output is cleaner when BLU resolves a playable match.
-- **Legacy custom sound entries normalize earlier** - stored user custom sounds now normalize during refresh/registration so mismatched placeholder paths are corrected sooner.
-- **User custom sound playback path is lighter again** - removed the expensive per-trigger candidate walk from live playback after moving path normalization earlier in the custom sound flow.
-
----
-
-## Version 6.2.3 (2026-03-26)
-
-### Bug Fixes
-- **Header row alignment fixed for real** - the right-side version, author, and RGX Mods lines now align directly to the left-side title, subtitle, and Discord rows instead of relying on independent spacing that still left the columns visually off.
-- **Custom sound shorthand now resolves the real supported extension** - bare names like `water` now match the actual compatible `.ogg`, `.mp3`, or `.wav` file instead of incorrectly assuming the first extension checked.
-- **Custom sound shorthand works again for forgiving AddOns-root adds** - shorthand entries now keep candidate file paths so easy inputs like `test` still add and playback can resolve the real working file instead of failing the whole add flow.
-- **User Custom Sounds manager now refreshes immediately** - adding or removing a custom sound updates the Sounds tab list in place instead of waiting for another tab change or reload.
-- **Custom sound rows now fit the right column correctly** - removed hidden scrollbar gutter clipping and tuned the entry widths so the custom sound list lines up cleanly inside the panel.
-- **`/blu test` removed from slash command help flow** - the stale generic test command no longer points users at an invalid test-sound path from help text or README instructions.
-- **Nested dropdown labels are cleaner** - sound entries now show just the sound name or filename in submenus instead of repeating pack/path context that the dropdown hierarchy already shows.
-
----
-
-## Version 6.2.1 (2026-03-25)
-
-### Bug Fixes
-- **BLU default sounds now show volume slider** - selecting "None" was showing the channel dropdown instead of the volume slider; fixed so None/default always shows the Low/Med/High slider
-- **All sounds now play on Master channel** - per-event channel dropdown removed; all sound types (BLU defaults, game soundpacks, user custom, SharedMedia, random) play on the Master channel
-- **No external library dependencies** - removed all LibStub and LibSharedMedia-3.0 usage; BLU's own internal bridge scanner discovers external sound packs without any third-party library; no `OptionalDeps` in TOC; immune to library version conflicts from other addons
-- **SharedMedia dropdown restored** - "Shared Media" section appears in sound dropdown when external sound pack addons are installed; powered by BLU's internal bridge scanner
-- **Game soundpack volume variants now respect slider** - selecting Low/Medium/High on a game soundpack sound now plays the correct `_low`/`_med`/`_high` file variant instead of always playing `_med`
-- **Header alignment fixed** - removed extra visual gap above "BLU" title and extra space below "RGX Mods" branding on right side of header
-- **Delve icons restored again** - Delve now uses safer stock icon textures in both the tab strip and event panel header so the icon renders reliably
-- **Shared media compatibility improved** - BLU now includes native compatibility bridges for installed addons like Prat and TradeSkillMaster whose sound tables are not exposed globally, allowing those packs to appear in the Sounds tab and dropdowns again without external dependencies
-- **Header columns now align properly** - the three-line branding block on the right side of the options header now stacks from the same top edge and spacing pattern as the three-line block on the left
-- **Manual custom sound adds no longer disappear on probe failure** - when users add a shorthand name like `test`, BLU now keeps the resolved fallback path and registers it into `User Custom Sounds` even if WoW refuses the initial root-path probe during detection
-
----
-
-## Version 6.2.0 (2026-03-25)
-
-### Bug Fixes
-- **All module triggers now fire correctly** - `enabled = true` was missing from config defaults, causing every module handler to bail early on fresh installs or profiles without a saved `enabled` value; all events (Level Up, Achievement, Quest, Reputation, Honor, Renown, Trading Post, Battle Pet, Delve, Housing) now trigger as expected
-- **Sound channel selection now works for game soundpack sounds** - game packs were incorrectly registered with `isInternal = true`, forcing them onto the Master channel and hiding the channel dropdown; fixed so only BLU default sounds are internal, game packs correctly use the per-event channel dropdown (Master / SFX / Music / Ambience)
-- **Default WoW sounds now fully muted when BLU is active** - expanded mute list with correct retail FileDataIDs sourced from BLU Classic: Quest Accepted (567400), Quest Turned In (567439), Honor (1489546), Battle Pet Level Up (642841), Renown (4745441), Trading Post (2066672), plus all legacy IDs retained; prevents default sounds from playing over BLU sounds
-- **BLU default sound fallback no longer errors** - all default sounds now registered with `_med.ogg` suffix so both the primary variant path and fallback resolve to files that exist on disk
-- **User custom sounds now load on startup** - `usersounds` module was never added to the init sequence; now initializes in Phase 2 so custom OGG/MP3/WAV files placed at `Interface\AddOns\sounds\custom01.ogg` (up to `custom24`) are detected and available in dropdowns after `/reload`
-
-### New Features
-- **Per-event sound channel selection** - non-BLU (soundpack/game) sounds now have a channel dropdown per event tab (Master / SFX / Music / Ambience), defaulting to SFX; BLU internal default sounds always play on Master with volume controlled by Low/Med/High file variants
-- **Volume label under slider** - replaces static Low/High tick labels with a single dynamic label below the slider that updates as you drag (Low / Medium / High)
-- **User custom sounds** - drop up to 24 OGG, MP3, or WAV files named `custom01`-`custom24` in `Interface\AddOns\sounds\` and they appear under "User Custom Sounds" in every event's sound dropdown after `/reload`
-
-### UI Changes
-- Discord link restored to left side of header, anchored below subtitle/title block
-- Discord invite updated to `discord.gg/N7kdKAHVVF`
-- RGX Mods branding color updated to burgundy (`#8b4b5c`)
-- Housing tab content inset now matches all other tabs (consistent 10px padding)
-- Volume slider Low/High static labels removed; single updating label shown below slider instead
 
 ---

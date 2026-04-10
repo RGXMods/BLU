@@ -78,9 +78,14 @@ function Utils:DeepCopy(value, seen)
     return setmetatable(copy, getmetatable(value))
 end
 
+local function SafeToString(value)
+    local ok, result = pcall(tostring, value)
+    return ok and result or "<secret>"
+end
+
 -- Queue a sound to be played
 function Utils:QueueSound(soundFile, volume, callback)
-    BLU:PrintDebug("[Utils] QueueSound called for '" .. tostring(soundFile) .. "' at volume " .. tostring(volume))
+    BLU:PrintDebug("[Utils] QueueSound called for '" .. SafeToString(soundFile) .. "' at volume " .. SafeToString(volume))
     if not BLU.db.profile.queueSounds then
         -- Just play immediately if queuing is disabled
         BLU:PrintDebug("[Utils] Queue disabled; playing sound immediately")
@@ -89,10 +94,10 @@ function Utils:QueueSound(soundFile, volume, callback)
     end
 
     local now = GetTime and GetTime() or 0
-    local signature = tostring(soundFile) .. "|" .. tostring(volume)
+    local signature = SafeToString(soundFile) .. "|" .. SafeToString(volume)
     local lastQueuedAt = self.recentQueuedSounds[signature]
     if lastQueuedAt and (now - lastQueuedAt) < SOUND_QUEUE_DEDUPE_WINDOW_SECONDS then
-        BLU:PrintDebug("[Utils] Skipped duplicate queued sound '" .. tostring(soundFile) .. "'")
+        BLU:PrintDebug("[Utils] Skipped duplicate queued sound '" .. SafeToString(soundFile) .. "'")
         return
     end
     self.recentQueuedSounds[signature] = now
@@ -133,7 +138,7 @@ function Utils:ProcessSoundQueue()
     end
 
     self.isPlaying = true
-    BLU:PrintDebug("[Utils] Playing next queued sound '" .. tostring(sound.file) .. "'")
+    BLU:PrintDebug("[Utils] Playing next queued sound '" .. SafeToString(sound.file) .. "'")
 
     self:PlaySoundFile(sound.file, sound.volume, function()
         if sound.callback then
@@ -150,7 +155,14 @@ end
 
 -- Play a sound file
 function Utils:PlaySoundFile(soundFile, volume, callback)
-    BLU:PrintDebug("[Utils] PlaySoundFile called for '" .. tostring(soundFile) .. "' at volume " .. tostring(volume))
+    BLU:PrintDebug("[Utils] PlaySoundFile called for '" .. SafeToString(soundFile) .. "' at volume " .. SafeToString(volume))
+    if type(soundFile) == "string" then
+        soundFile = soundFile:gsub("/", "\\")
+        if soundFile:match("^\\?BLU\\") then
+            soundFile = "Interface\\AddOns\\" .. soundFile:gsub("^\\+", "")
+        end
+    end
+
     local channel = BLU.db.profile.soundChannel or "Master"
     local willPlay, handle = PlaySoundFile(soundFile, channel)
     
@@ -173,7 +185,7 @@ function Utils:PlaySoundFile(soundFile, volume, callback)
             C_Timer.After(2, callback)
         end
     else
-        BLU:PrintDebug("[Utils] Failed to play sound: " .. tostring(soundFile))
+        BLU:PrintDebug("[Utils] Failed to play sound: " .. SafeToString(soundFile))
         if callback then
             callback()
         end

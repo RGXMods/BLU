@@ -1,119 +1,142 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file gives repository-specific guidance to Claude Code and similar coding agents working in this project.
 
 ## Project Overview
 
-BLU (Better Level-Up!) is a World of Warcraft addon that replaces default sounds with iconic audio from 50+ games. Currently in v6.0.0-alpha with a complete professional reorganization.
+BLU (Better Level-Up!) is a Retail World of Warcraft addon that replaces milestone and progression sounds with curated audio from many other games.
 
-**Key Points:**
-- Retail WoW only (TWW 11.0.5)
-- No external library dependencies
-- Professional folder structure with proper capitalization
-- Modular architecture for performance
-- RGX Mods branding (RealmGX Community Project)
-- Manual copy script (`copy_to_wow.bat`) for testing
+Current release target:
+- Version: `v6.3.0-alpha.1`
+- WoW interface: `120001`
+- Addon type: Retail-only UI/sound customization addon
+- Branding: RGX Mods / RealmGX community project
 
-## Current Directory Structure
+## Current Structure
 
-```
-BLU/
-├── core/               # Framework and core systems
-├── modules/            # Feature modules (quest, levelup, etc)
-│   ├── achievement/
-│   ├── battlepet/
-│   ├── delve/
-│   ├── honor/
-│   ├── levelup/
-│   ├── quest/
-│   ├── renown/
-│   ├── reputation/
-│   └── tradingpost/
-├── media/              # Sounds and textures
-│   ├── sounds/         # Game sound files (.ogg)
-│   └── Textures/       # Icons and images (.tga, .blp, .png)
-├── localization/       # Language files
-├── libs/               # External libraries (LibSharedMedia-3.0)
-├── .github/            # GitHub Actions workflows
-├── .claude-code-router/ # AI agent configurations
-├── BLU.toc             # Table of Contents (uppercase)
-├── BLU.xml             # Main XML loader (lowercase)
-├── README.md           # Public documentation
-└── CLAUDE.md           # This file
+```text
+blu/
+|- core/                         # Framework, database, registry, loader, UI plumbing
+|- modules/                      # Feature modules and dedicated panels
+|  |- Achievement/
+|  |- BattlePet/
+|  |- Debug/
+|  |- Delve/
+|  |- Honor/
+|  |- Housing/
+|  |- LevelUp/
+|  |- Quest/
+|  |- Renown/
+|  |- Reputation/
+|  `- TradingPost/
+|- media/                        # Sounds and textures
+|- Localization/                 # Localized strings
+|- docs/                         # Release notes and changelogs
+|- user/                         # User-defined sound helpers / persisted assets
+|- BLU.toc
+|- BLU.xml
+|- README.md
+`- CLAUDE.md
 ```
 
-## Architecture
+## Architecture Notes
 
-### Loading Order
-`BLU.toc` -> `BLU.xml` -> Core Systems -> Localization -> Interface -> Feature Modules.
+Loading flow:
+- `BLU.toc` loads `BLU.xml`
+- `BLU.xml` loads core systems, interface files, then feature modules
+- `core/initialization.lua` handles staged setup after files are available
 
-### AI Assistant Integration
-This project uses `claude-code-router` to delegate tasks to specialized AI models:
-- **`wow-ui-expert` (GPT-4o)**: For UI/UX design and implementation.
-- **`lua-optimizer` (Deepseek)**: For performance and memory optimization.
-- **`code-reviewer` (Gemini)**: For code quality, architecture, and security reviews.
+Important core files:
+- `core/core.lua`: addon object, chat output, debug scope filtering, helpers
+- `core/config.lua`: defaults and profile defaults
+- `core/database.lua`: SavedVariables and profile persistence
+- `core/loader.lua`: feature/module toggles and init helpers
+- `core/registry.lua`: sound registration and event category mapping
+- `core/interface/options/`: options UI shell and tab layout
 
-### Core Systems
-- **core.lua**: Main framework, event system, timers, hooks
-- **database.lua**: SavedVariables management
-- **config.lua**: Configuration defaults
-- **registry.lua**: Sound registry system
-- **loader.lua**: Dynamic module loading
-- **sharedmedia.lua**: Optional SharedMedia support
+Important current UI panels:
+- `core/interface/options/general.lua`
+- `core/interface/options/profiles.lua`
+- `core/interface/options/sound_panel.lua`
+- `modules/Debug/Debug.lua`
 
-### Module Types
-1. **Core Modules** (always loaded): framework, database, events, localization, config, utils
-2. **Feature Modules** (loaded on-demand): levelup, achievement, quest, reputation, etc.
+## Current Product Shape
 
-### Key Design Decisions
-- Feature modules only loaded when enabled (CPU/memory optimization)
-- No dependencies on external libraries
-- Custom lightweight framework mimics Ace3 API for easier migration
+The addon now includes:
+- A 3-row options tab layout
+- A dedicated Profiles tab with create/load/rename/delete/reset/import-export controls
+- A dedicated Debug tab backed by `modules/Debug/Debug.lua`
+- Sounds-style grouped UI sections for larger management panels
+- Support for event-based sounds across level up, achievements, quests, pets, delve, renown, honor, reputation, trading post, and housing-related triggers
 
-## Common Development Tasks
+## Development Expectations
 
-### Testing the Addon
-To test changes in-game, you need to manually copy the addon files to your World of Warcraft directory.
+When making changes:
+- Keep `BLU.toc` and `core/core.lua` version strings aligned
+- Keep `docs/CHANGES.md` as the single current release summary
+- Add or update the matching file in `docs/changelogs/`
+- Prefer keeping options panels compact and visually consistent with the existing BLU UI
+- Use the existing BLU APIs for profile work:
+  - `BLU.CreateProfile`
+  - `BLU.LoadProfile`
+  - `BLU.DeleteProfile`
+  - `BLU.RenameProfile`
 
-1.  Run the `copy_to_wow.bat` script in the root of the repository.
-2.  This will copy all the necessary files to `C:\Program Files (x86)\World of Warcraft\_retail_\Interface\AddOns\BLU`.
-3.  After the script finishes, use `/reload` in-game to see the changes.
+## Naming And File Conventions
 
-### Adding a New Feature Module
-1. Create `modules/NewFeature/NewFeature.lua`
-2. Implement module structure:
-   ```lua
-   local module = BLU:NewModule("NewFeature")
-   function module:Init() ... end
-   function module:Cleanup() ... end
-   ```
-3. Add the new Lua file to `BLU.xml` to be loaded.
+- Addon object name in code is always `BLU`
+- `BLU.toc` stays uppercase
+- Module directories use PascalCase names such as `modules/Debug/Debug.lua`
+- Core/interface filenames are generally lowercase
+- Paths referenced from XML and Lua must match actual casing exactly
 
-### Git Workflow
-- **`main`**: Stable releases.
-- **`alpha`**: Active development.
-- **IMPORTANT**: Do NOT add Claude as co-author in commits
-- Do NOT include any AI assistant attribution
-- Commits should be made as the repository owner only
+## Testing Workflow
 
-## Important Conventions
+Primary local test path:
+- `E:\World of Warcraft\_retail_\Interface\AddOns\BLU`
 
-### Naming Conventions (STRICT REQUIREMENT)
-- **ALL directories**: MUST be `lowercase`.
-- **ALL Lua and XML files**: MUST be `lowercase`.
-- **EXCEPTIONS**:
-  - `BLU.toc` MUST be `UPPERCASE`.
-- **Addon Name in Code**: `BLU` (uppercase).
-- **Author**: `donniedice`
-- **Email**: `60427166+donniedice@users.noreply.github.com`
+Common sync command:
 
-**IMPORTANT**: Windows is case-insensitive but WoW's Lua is case-sensitive. All paths in XML/Lua must match exact case.
+```powershell
+robocopy 'c:\Users\Admin\projects\blu' 'E:\World of Warcraft\_retail_\Interface\AddOns\BLU' /MIR /XD .git .claude .claude-code-router .github /XF CLAUDE.md *.tmp *.bak
+```
 
-### Sound File Structure
-- The project is transitioning its sound file structure. While the goal is to have consolidated sound files with volume handled by addon settings, the current implementation still uses volume variants in filenames (e.g., `gamename_soundtype_high.ogg`).
-- The sound registry (`core/registry.lua`) contains logic to handle both consolidated and variant filenames.
-- When working with sounds, refer to `core/registry.lua` and the existing files in `media/sounds/` to understand the current conventions.
+After syncing:
+- launch or focus Retail WoW
+- run `/reload`
+- test the changed tab or event in the options UI
 
-### Localization
-- Use `BLU:Loc(key, ...)` for all user-facing strings.
-- All localizations are stored in `localization/`.
+## Debug Guidance
+
+Debug output is intentionally scoped now.
+
+Relevant areas:
+- `core`
+- `options`
+- `tabs`
+- `registry`
+- `loader`
+- `database`
+- `profiles`
+- `modules`
+- `events`
+- `sounds`
+- `features`
+
+Prefer using `BLU:Trace(scope, message)` for new debug output so it respects the Debug tab filters.
+
+## Documentation To Keep In Sync
+
+When feature work lands, check these files:
+- `README.md`
+- `docs/description.html`
+- `docs/CHANGES.md`
+- `docs/changelogs/<version>.md`
+- `ROADMAP.md` when future/planned work changes
+
+## Git And Commit Expectations
+
+- Do not add AI co-author lines
+- Do not include assistant attribution in commits
+- Do not rewrite unrelated user changes
+- Avoid destructive git commands unless explicitly requested

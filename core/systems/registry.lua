@@ -40,6 +40,10 @@ local moduleCategoryMap = {
     petcapture = "battlepet",
     delvelifelost = "delvecompanion",
     delvelifegained = "delvecompanion",
+    housingxpgained = "housing",
+    housingleveledup = "housing",
+    housingrewardsreceived = "housing",
+    housingdecorcollected = "housing",
 }
 
 local CATEGORY_SOUND_COOLDOWN_SECONDS = 0.20
@@ -253,6 +257,7 @@ function SoundRegistry:GetAllPlayableSoundIds()
         self:GetSoundsGroupedForUI("achievement"),
         self:GetSoundsGroupedForUI("achievementprogress"),
         self:GetSoundsGroupedForUI("questaccept"),
+        self:GetSoundsGroupedForUI("questcomplete"),
         self:GetSoundsGroupedForUI("questturnin"),
         self:GetSoundsGroupedForUI("questprogress"),
         self:GetSoundsGroupedForUI("reputation"),

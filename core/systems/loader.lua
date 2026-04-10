@@ -49,7 +49,17 @@ local moduleRegistry = {
         renownrank = "renown",
         delvecompanion = "delve",
         questaccept = "quest",
-        questturnin = "quest"
+        questcomplete = "quest",
+        questturnin = "quest",
+        questprogress = "quest",
+        achievementprogress = "achievement",
+        petcapture = "battlepet",
+        delvelifelost = "delve",
+        delvelifegained = "delve",
+        housingxpgained = "housing",
+        housingleveledup = "housing",
+        housingrewardsreceived = "housing",
+        housingdecorcollected = "housing",
     },
     
 

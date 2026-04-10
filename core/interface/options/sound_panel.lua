@@ -49,16 +49,12 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
     local currentSound = container:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     currentSound:SetPoint("LEFT", currentLabel, "RIGHT", 5, 0)
     currentSound:SetTextColor(0.02, 0.87, 0.98)
-    currentSound:SetWidth(360)
+    currentSound:SetWidth(400)
     currentSound:SetJustifyH("LEFT")
     currentSound:SetWordWrap(false)
     if currentSound.SetMaxLines then
         currentSound:SetMaxLines(1)
     end
-
-    local controlsFrame = CreateFrame("Frame", nil, container)
-    controlsFrame:SetPoint("TOPRIGHT", container, "TOPRIGHT", -8, -32)
-    controlsFrame:SetSize(230, 24)
 
     local function volumeToStep(volume)
         if volume == "low" then
@@ -78,8 +74,8 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
         return "medium"
     end
 
-    local volumeSlider = CreateFrame("Slider", nil, controlsFrame, "OptionsSliderTemplate")
-    volumeSlider:SetPoint("LEFT", 0, -3)
+    local volumeSlider = CreateFrame("Slider", nil, container, "OptionsSliderTemplate")
+    volumeSlider:SetPoint("TOP", container, "TOP", 70, -34)
     volumeSlider:SetWidth(108)
     volumeSlider:SetMinMaxValues(1, 3)
     volumeSlider:SetValueStep(1)
@@ -90,7 +86,7 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
     volumeSlider.Low:Hide()
     volumeSlider.High:Hide()
 
-    local medLabel = controlsFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    local medLabel = container:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     medLabel:SetPoint("TOP", volumeSlider, "BOTTOM", 0, 2)
     medLabel:SetText("Medium")
     medLabel:SetTextColor(0.8, 0.8, 0.8)
@@ -168,8 +164,8 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
         end
     end
 
-    local testBtn = BLU.Modules.design:CreateButton(controlsFrame, "Test", 60, 22)
-    testBtn:SetPoint("RIGHT", controlsFrame, "RIGHT", 0, -3)
+    local testBtn = BLU.Modules.design:CreateButton(container, "Test", 60, 22)
+    testBtn:SetPoint("TOPRIGHT", container, "TOPRIGHT", -12, -31)
     testBtn:SetScript("OnClick", function(self)
         BLU:PrintDebug("Test button clicked for event: " .. actualEventType)
         local selectedSound = BLU.db and BLU.db.profile and BLU.db.profile.selectedSounds and BLU.db.profile.selectedSounds[actualEventType]
@@ -192,36 +188,32 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 
     local dropdown = CreateFrame("Frame", "BLUDropdown_" .. actualEventType, container, "UIDropDownMenuTemplate")
     dropdown:SetPoint("TOPLEFT", currentLabel, "BOTTOMLEFT", -16, -5)
-    UIDropDownMenu_SetWidth(dropdown, 260)
+    UIDropDownMenu_SetWidth(dropdown, 220)
 
     dropdown.currentSound = currentSound
     dropdown.eventId = actualEventType
 
     UIDropDownMenu_Initialize(dropdown, function(self, level, menuList)
         local MAX_SOUNDS_PER_MENU_PAGE = 24
-        local MENU_BUTTON_WIDTH = 212
-        local MENU_TEXT_WIDTH = 174
-        local MENU_LIST_MIN_WIDTH = 236
-        local MENU_TITLE_TEXT_WIDTH = 186
+        local MENU_LIST_MIN_WIDTH = 140
+        local MENU_LIST_MAX_WIDTH = 460
+        local MENU_TEXT_PADDING = 42
+        local MENU_ARROW_PADDING = 18
+        local MENU_PREVIEW_PADDING = 42
+        local MENU_RIGHT_PADDING = 8
         level = level or 1
 
         if not BLU.db or not BLU.db.profile then return end
         BLU.db.profile.selectedSounds = BLU.db.profile.selectedSounds or {}
 
+        local dd = BLU.Modules.dropdown
+
         local function getDropDownListFrame(levelToUse)
-            return _G["DropDownList" .. levelToUse] or _G["LibDropDownMenu_List" .. levelToUse]
+            return dd:GetListFrame(levelToUse)
         end
 
         local function shortenLabel(text, maxChars)
-            if type(text) ~= "string" then
-                return "", false
-            end
-
-            if #text <= maxChars then
-                return text, false
-            end
-
-            return string.sub(text, 1, maxChars - 3) .. "...", true
+            return dd:ShortenLabel(text, maxChars)
         end
 
         local function trimSoundNameForSubmenu(soundName, parentLabel)
@@ -247,33 +239,20 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
             return soundName
         end
 
-        local function styleLastAddedButton(levelToUse, textWidth, buttonWidth)
-            local listFrame = getDropDownListFrame(levelToUse)
-            if not listFrame or not listFrame.numButtons then
-                return
-            end
+        -- Keep the list width stable while laying out inline controls more tightly.
+        local MIN_WIDTH = math.floor(dropdown:GetWidth())
+        if MIN_WIDTH < 100 then MIN_WIDTH = 260 end
 
-            local button = _G[listFrame:GetName() .. "Button" .. listFrame.numButtons]
-            if not button then
-                return
-            end
-
-            local effectiveButtonWidth = buttonWidth or MENU_BUTTON_WIDTH
-            button:SetWidth(effectiveButtonWidth)
-
-            local normalText = _G[button:GetName() .. "NormalText"]
-            if normalText then
-                normalText:SetWordWrap(false)
-                if normalText.SetMaxLines then
-                    normalText:SetMaxLines(1)
-                end
-                normalText:SetWidth(textWidth or MENU_TEXT_WIDTH)
-            end
-
-            if listFrame:GetWidth() < MENU_LIST_MIN_WIDTH then
-                listFrame:SetWidth(MENU_LIST_MIN_WIDTH)
-            end
+        local function forceListFrameWidth(levelToUse)
+            dd:ForceWidth(levelToUse, MIN_WIDTH, 10, {
+                previewKey = "bluPreviewButton",
+                compactRightControl = true,
+            })
         end
+
+        -- no-op stubs so existing call sites don't error
+        local function styleLastAddedButton(levelToUse, options) end
+        local function resetDropDownListFrame(levelToUse) end
 
         local function hideInlinePreviewButtons(levelToUse)
             local listFrame = getDropDownListFrame(levelToUse)
@@ -284,8 +263,13 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
             local maxButtons = UIDROPDOWNMENU_MAXBUTTONS or 32
             for i = 1, maxButtons do
                 local button = _G[listFrame:GetName() .. "Button" .. i]
-                if button and button.bluPreviewButton then
-                    button.bluPreviewButton:Hide()
+                if button then
+                    if button.bluPreviewButton then
+                        button.bluPreviewButton:Hide()
+                    end
+                    if button.bluDeleteButton then
+                        button.bluDeleteButton:Hide()
+                    end
                 end
             end
         end
@@ -340,21 +324,14 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
             previewButton:Show()
 
             local normalText = _G[button:GetName() .. "NormalText"]
+            previewButton:ClearAllPoints()
+            previewButton:SetPoint("RIGHT", button, "RIGHT", -8, 0)
+
             if normalText then
-                local stringWidth = normalText:GetStringWidth() or 0
-                local defaultOffset = button:GetWidth() - 40
-                local desiredOffset = 16 + stringWidth + 8
-                if desiredOffset > defaultOffset then
-                    desiredOffset = defaultOffset
-                end
-                if desiredOffset < 92 then
-                    desiredOffset = 92
-                end
-                previewButton:ClearAllPoints()
-                previewButton:SetPoint("LEFT", button, "LEFT", desiredOffset, 0)
-            else
-                previewButton:ClearAllPoints()
-                previewButton:SetPoint("RIGHT", button, "RIGHT", -18, 0)
+                normalText:ClearAllPoints()
+                normalText:SetPoint("LEFT", button, "LEFT", 10, 0)
+                normalText:SetPoint("RIGHT", previewButton, "LEFT", -6, 0)
+                normalText:SetJustifyH("LEFT")
             end
         end
 
@@ -389,21 +366,22 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 
         local function addSoundSelectEntry(levelToUse, soundId, soundName, parentLabel)
             local trimmedSoundName = trimSoundNameForSubmenu(soundName, parentLabel)
-            local displayText, wasTruncated = shortenLabel(trimmedSoundName, 44)
-            local selectInfo = UIDropDownMenu_CreateInfo()
-            selectInfo.text = displayText
-            selectInfo.value = soundId
-            selectInfo.func = function()
-                onSoundSelected(soundId, trimmedSoundName)
+            local maxChars = levelToUse >= 2 and 60 or 46
+            local displayText, wasTruncated = shortenLabel(trimmedSoundName, maxChars)
+                local selectInfo = UIDropDownMenu_CreateInfo()
+                selectInfo.text = displayText
+                selectInfo.value = soundId
+                selectInfo.func = function()
+                    onSoundSelected(soundId, trimmedSoundName)
             end
             selectInfo.checked = BLU.db.profile.selectedSounds[dropdown.eventId] == soundId
-            if wasTruncated or trimmedSoundName ~= soundName then
-                selectInfo.tooltipTitle = soundName
+                if wasTruncated or trimmedSoundName ~= soundName then
+                    selectInfo.tooltipTitle = soundName
+                end
+                UIDropDownMenu_AddButton(selectInfo, levelToUse)
+                styleLastAddedButton(levelToUse, {hasPreview = true, minWidth = (levelToUse >= 3 and 220 or nil)})
+                attachInlinePreviewButton(levelToUse, soundId)
             end
-            UIDropDownMenu_AddButton(selectInfo, levelToUse)
-            styleLastAddedButton(levelToUse, MENU_TEXT_WIDTH, MENU_BUTTON_WIDTH)
-            attachInlinePreviewButton(levelToUse, soundId)
-        end
 
         local function renderPagedSoundList(levelToUse, sounds, page, parentLabel)
             table.sort(sounds, function(a, b) return a.name < b.name end)
@@ -420,7 +398,7 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
                 pageInfo.isTitle = true
                 pageInfo.notCheckable = true
                 UIDropDownMenu_AddButton(pageInfo, levelToUse)
-                styleLastAddedButton(levelToUse, MENU_TITLE_TEXT_WIDTH, MENU_BUTTON_WIDTH)
+                styleLastAddedButton(levelToUse, {minWidth = 120})
             end
 
             for i = startIndex, endIndex do
@@ -451,14 +429,14 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
                 dInfo.func = function() onSoundSelected(info.value, info.text) end
                 dInfo.checked = BLU.db.profile.selectedSounds[self.eventId] == info.value
                 UIDropDownMenu_AddButton(dInfo, level)
-                styleLastAddedButton(level, MENU_TITLE_TEXT_WIDTH, MENU_BUTTON_WIDTH)
+                styleLastAddedButton(level, {minWidth = 150})
             end
 
             local sep = UIDropDownMenu_CreateInfo()
             sep.notClickable = true
             sep.notCheckable = true
             UIDropDownMenu_AddButton(sep, level)
-            styleLastAddedButton(level, MENU_TITLE_TEXT_WIDTH, MENU_BUTTON_WIDTH)
+            styleLastAddedButton(level, {minWidth = 150})
 
             local sortedTopLevelKeys = {"BLU WoW Defaults", "BLU Other Game Sounds", "User Custom Sounds", "Shared Media"}
 
@@ -487,7 +465,7 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
                         info.menuList = groupKey
                         info.notCheckable = true
                         UIDropDownMenu_AddButton(info, level)
-                        styleLastAddedButton(level, MENU_TITLE_TEXT_WIDTH, MENU_BUTTON_WIDTH)
+                        styleLastAddedButton(level, {hasArrow = true, notCheckable = true})
                     end
                 end
             end
@@ -513,7 +491,7 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
                 for _, subKey in ipairs(sortedSubKeys) do
                     local sounds = subgroups[subKey]
                     local pageCount = math.max(1, math.ceil(#sounds / MAX_SOUNDS_PER_MENU_PAGE))
-                    local displaySubKey, subKeyTruncated = shortenLabel(subKey, 32)
+                    local displaySubKey, subKeyTruncated = shortenLabel(subKey, 60)
                     local info = UIDropDownMenu_CreateInfo()
                     info.value = subKey
                     info.notCheckable = true
@@ -528,7 +506,7 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
                         info.tooltipTitle = subKey
                     end
                     UIDropDownMenu_AddButton(info, level)
-                    styleLastAddedButton(level, MENU_TITLE_TEXT_WIDTH, MENU_BUTTON_WIDTH)
+                    styleLastAddedButton(level, {hasArrow = true, notCheckable = true})
                 end
             end
         elseif level == 3 then
@@ -554,7 +532,7 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
                         pageInfo.menuList = {group = groupKey, sub = subKey, type = "pack", page = pageIndex}
                         pageInfo.text = string.format("Page %d (%d-%d)", pageIndex, firstEntry, lastEntry)
                         UIDropDownMenu_AddButton(pageInfo, level)
-                        styleLastAddedButton(level, MENU_TITLE_TEXT_WIDTH, MENU_BUTTON_WIDTH)
+                        styleLastAddedButton(level, {hasArrow = true, notCheckable = true})
                     end
                 else
                     renderPagedSoundList(level, soundsToDisplay, menuList.page or 1, subKey)
@@ -573,6 +551,9 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
                 renderPagedSoundList(level, soundsToDisplay, menuList.page or 1, subKey)
             end
         end
+
+        -- Force all levels to the same width after WoW finishes its own layout
+        forceListFrameWidth(level)
     end)
 
     local selectedValue = BLU.db and BLU.db.profile and BLU.db.profile.selectedSounds and BLU.db.profile.selectedSounds[actualEventType] or "default"
@@ -831,4 +812,3 @@ end
 if BLU.RegisterModule then
     BLU:RegisterModule(SoundPanel, "sound_panel", "Sound Panel")
 end
-

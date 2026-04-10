@@ -29,6 +29,7 @@ function Database:InitializeDatabase()
     
     -- Set active database reference
     BLU.db = BLUDB.profiles[charKey]
+    BLU.db.currentProfile = charKey
     
     -- Initialize with defaults
     self:ApplyDefaults()
@@ -182,7 +183,11 @@ function Database:SaveSettings()
     -- Trigger SavedVariables write
     if BLU.db then
         BLU.db.lastSaved = time()
-        BLU.db.version = GetAddOnMetadata(addonName, "Version")
+        local version = (BLU.GetMetadata and BLU:GetMetadata(addonName, "Version"))
+            or (C_AddOns and C_AddOns.GetAddOnMetadata and C_AddOns.GetAddOnMetadata(addonName, "Version"))
+            or (GetAddOnMetadata and GetAddOnMetadata(addonName, "Version"))
+            or BLU.version or "v6.0.0"
+        BLU.db.version = version
     end
 end
 
@@ -209,6 +214,14 @@ function Database:CreateProfile(name)
     self:SetDB("currentProfile", name)
     self:LoadProfile(name)
     
+    -- Refresh UI to show the new profile in lists
+    if BLU.RefreshOptions then
+        BLU:RefreshOptions()
+    end
+    if BLU.RefreshProfilesUI then
+        BLU:RefreshProfilesUI()
+    end
+
     return true
 end
 
@@ -230,6 +243,9 @@ function Database:LoadProfile(name)
     if BLU.RefreshOptions then
         BLU:RefreshOptions()
     end
+    if BLU.RefreshProfilesUI then
+        BLU:RefreshProfilesUI()
+    end
     
     return true
 end
@@ -246,6 +262,13 @@ function Database:DeleteProfile(name)
         -- Switch to Default if we deleted current
         if self:GetDB("currentProfile") == name then
             self:LoadProfile("Default")
+        else
+            if BLU.RefreshOptions then
+                BLU:RefreshOptions()
+            end
+            if BLU.RefreshProfilesUI then
+                BLU:RefreshProfilesUI()
+            end
         end
         
         return true
@@ -267,8 +290,20 @@ function Database:RenameProfile(oldName, newName)
         -- Update current profile name if needed
         if self:GetDB("currentProfile") == oldName then
             self:SetDB("currentProfile", newName)
+            -- Re-link the active reference to the new database key
+            BLU.db = BLUDB.profiles[newName]
+            -- Synchronize the internal name key
+            BLU.db.currentProfile = newName
         end
-        
+
+        -- Trigger a global UI refresh to update labels and lists in realtime
+        if BLU.RefreshOptions then
+            BLU:RefreshOptions()
+        end
+        if BLU.RefreshProfilesUI then
+            BLU:RefreshProfilesUI()
+        end
+
         return true
     end
     
@@ -332,8 +367,10 @@ function Database:ShowExportDialog(data)
         hasEditBox = true,
         editBoxWidth = 350,
         OnShow = function(self)
-            self.editBox:SetText(data)
-            self.editBox:HighlightText()
+            if self.editBox then
+                self.editBox:SetText(data)
+                self.editBox:HighlightText()
+            end
         end,
         timeout = 0,
         whileDead = true,
@@ -352,7 +389,12 @@ function Database:ShowImportDialog()
         editBoxWidth = 350,
         OnAccept = function(self)
             BLU:PrintDebug("[Database] Import dialog accepted")
-            local data = self.editBox:GetText()
+            if not self.editBox then
+                BLU:PrintError("Import failed: EditBox not found")
+                return
+            end
+            
+            local data = self.editBox:GetText() or ""
             local profile = Database:DeserializeProfile(data)
             if profile then
                 -- Create new profile with imported data
@@ -372,11 +414,12 @@ function Database:ShowImportDialog()
 end
 
 -- Make profile functions available globally
-BLU.CreateProfile = function(name) return Database:CreateProfile(name) end
-BLU.LoadProfile = function(name) return Database:LoadProfile(name) end
-BLU.DeleteProfile = function(name) return Database:DeleteProfile(name) end
-BLU.RenameProfile = function(old, new) return Database:RenameProfile(old, new) end
-BLU.SerializeProfile = function(name) return Database:SerializeProfile(name) end
-BLU.ImportProfile = function(data, name) return Database:DeserializeProfile(data) end
-BLU.ShowExportDialog = function(data) return Database:ShowExportDialog(data) end
-BLU.ShowImportDialog = function() return Database:ShowImportDialog() end
+-- Map Database methods to BLU object safely for both '.' and ':' calls
+function BLU:CreateProfile(name) return Database:CreateProfile(name) end
+function BLU:LoadProfile(name) return Database:LoadProfile(name) end
+function BLU:DeleteProfile(name) return Database:DeleteProfile(name) end
+function BLU:RenameProfile(old, new) return Database:RenameProfile(old, new) end
+function BLU:SerializeProfile(name) return Database:SerializeProfile(name) end
+function BLU:ImportProfile(data, name) return Database:DeserializeProfile(data) end
+function BLU:ShowExportDialog(data) return Database:ShowExportDialog(data) end
+function BLU:ShowImportDialog() return Database:ShowImportDialog() end

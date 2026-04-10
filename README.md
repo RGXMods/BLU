@@ -37,7 +37,7 @@
 
 <!-- WoW Compatibility -->
 [![WoW Retail](https://img.shields.io/badge/WoW-Retail%20Midnight-05dffa?style=flat-square&logo=worldofwarcraft)](https://worldofwarcraft.com)
-[![Version](https://img.shields.io/badge/Version-v6.4.1-blue?style=flat-square)](https://github.com/donniedice/BLU/releases)
+[![Version](https://img.shields.io/badge/Version-v6.5.0-blue?style=flat-square)](https://github.com/donniedice/BLU/releases)
 
 [Features](#features) • [Quick Start](#quick-start) • [Commands](#command-reference) • [Compatibility](#compatibility) • [Installation](#installation) • [Support](#support)
 
@@ -274,16 +274,16 @@ BLU:RegisterSoundPack("my_pack", "My Pack", {
 
 ---
 
-## <span style="color:#05dffa">🆕 What's New in v6.4.1</span>
+## <span style="color:#05dffa">🆕 What's New in v6.5.0</span>
 
 <details>
 <summary><strong><span style="color:#05dffa">🎉 Click to see the latest updates!</span></strong></summary>
 
 ### <span style="color:#4ecdc4">🆕 Latest Updates</span>
-- <span style="color:#2dc26b">✅ **Sounds tab custom sound manager**</span> <span style="color:#e67e23">— add, view, and remove user custom sounds directly from the dedicated User Custom Sounds column</span>
-- <span style="color:#05dffa">✅ **Better shorthand custom sound resolution**</span> <span style="color:#e67e23">— short names like `test` or `water` resolve more reliably to compatible `.ogg`, `.mp3`, or `.wav` files</span>
-- <span style="color:#ff6b6b">✅ **Cleaner custom sound playback flow**</span> <span style="color:#e67e23">— custom sound entries normalize earlier so UI, logs, and playback stay more consistent</span>
-- <span style="color:#4ecdc4">✅ **Header and Sounds tab polish**</span> <span style="color:#e67e23">— alignment, layout, and custom sound row sizing have been cleaned up across the updated options UI</span>
+- <span style="color:#2dc26b">✅ **Real Combat page added**</span> <span style="color:#e67e23">— Combat now has a proper options panel with the same header toggle style used by the other modules</span>
+- <span style="color:#05dffa">✅ **Compact 8-slot combat paging layout**</span> <span style="color:#e67e23">— the new Combat UI can display 8 trigger cards per page in a 2-column layout</span>
+- <span style="color:#ff6b6b">✅ **Nested sound selection in combat rows**</span> <span style="color:#e67e23">— Combat trigger dropdowns now use the same grouped BLU sound menu structure as the event panels</span>
+- <span style="color:#4ecdc4">✅ **Combat cue placeholders are now real UI rows**</span> <span style="color:#e67e23">— `Combat Start`, `Combat End`, and `Combat Music Track` now exist as functional visual settings for ongoing module work</span>
 
 </details>
 

@@ -24,6 +24,7 @@
     <Script file="core/interface/design.lua"/>
     <Script file="core/interface/widgets.lua"/>
     <Script file="core/interface/dropdown.lua"/>
+    <Script file="core/interface/options/combat.lua"/>
     <Script file="core/interface/options/tabs.lua"/>
     <Script file="core/interface/options/general.lua"/>
     <Script file="core/interface/options/profiles.lua"/>

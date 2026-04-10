@@ -108,6 +108,10 @@ function SoundRegistry:RegisterSound(soundId, soundData)
     end
     BLU:PrintDebug(string.format("SoundRegistry:RegisterSound: id='%s', name='%s', pack='%s'", soundId, soundData.name or "nil", soundData.packName or "nil"))
     
+    if soundData.hasVolumeVariants == nil and type(soundData.file) == "string" then
+        soundData.hasVolumeVariants = soundData.file:match("_(med|low|high)%.ogg$") ~= nil
+    end
+
     -- Store sound
     self.sounds[soundId] = soundData
     
@@ -341,10 +345,8 @@ function SoundRegistry:PlaySound(soundId, volume, options)
         BLU:PrintDebug("[Registry] Using file playback for '" .. tostring(soundId) .. "'")
         local fileToPlay = sound.file
         
-        -- Check if this is a BLU sound (all BLU sounds have _low, _med, _high variants)
-        if sound.isInternal or sound.source == "BLU" then
-            BLU:PrintDebug("[Registry] Sound is BLU source; resolving volume variant for category '" .. tostring(options.categoryOverride or sound.category) .. "'")
-            -- BLU sounds have _low, _med, _high variants
+        if sound.hasVolumeVariants then
+            BLU:PrintDebug("[Registry] Sound has volume variants; resolving variant for category '" .. tostring(options.categoryOverride or sound.category) .. "'")
             local category = options.categoryOverride or sound.category
             local volumeSetting = options.volumeSettingOverride or "medium"
             if not options.volumeSettingOverride and BLU.db and BLU.db.soundVolumes and BLU.db.soundVolumes[category] then
@@ -378,7 +380,7 @@ function SoundRegistry:PlaySound(soundId, volume, options)
                 willPlay, handle = PlaySoundFile(sound.file, channel)
             end
         else
-            BLU:PrintDebug("[Registry] Sound is external/non-internal; using direct file playback")
+            BLU:PrintDebug("[Registry] Sound has no volume variants; using direct file playback")
             -- External sounds, SoundPaks, or user custom sounds should already
             -- be normalized before they reach live playback.
             willPlay, handle = PlaySoundFile(sound.file, channel)

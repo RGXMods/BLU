@@ -32,24 +32,28 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
     local actualEventType = soundType or eventType
     BLU:PrintDebug("[Options/SoundPanel] Creating sound dropdown for '" .. tostring(actualEventType) .. "'")
 
-    local container = CreateFrame("Frame", nil, parent)
+    local container = CreateFrame("Frame", nil, parent, "BackdropTemplate")
     container:SetPoint("TOPLEFT", parent, "TOPLEFT", 0, yOffset)
     container:SetPoint("RIGHT", parent, "RIGHT", -10, 0)
     container:SetHeight(90)
+    container:SetBackdrop(BLU.Modules.design.Backdrops.Solid)
+    container:SetBackdropColor(0.08, 0.11, 0.15, 0.92)
+    container:SetBackdropBorderColor(0.14, 0.20, 0.28, 1)
 
     local dropdownLabel = container:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    dropdownLabel:SetPoint("TOPLEFT", 10, -5)
+    dropdownLabel:SetPoint("TOPLEFT", 10, -8)
+    dropdownLabel:SetTextColor(1.0, 0.82, 0.18)
     dropdownLabel:SetText(label)
 
     local currentLabel = container:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    currentLabel:SetPoint("TOPLEFT", dropdownLabel, "BOTTOMLEFT", 0, -5)
+    currentLabel:SetPoint("TOPLEFT", dropdownLabel, "BOTTOMLEFT", 0, -6)
     currentLabel:SetText("Currently selected: ")
-    currentLabel:SetTextColor(0.7, 0.7, 0.7)
+    currentLabel:SetTextColor(0.70, 0.78, 0.86)
 
     local currentSound = container:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     currentSound:SetPoint("LEFT", currentLabel, "RIGHT", 5, 0)
     currentSound:SetTextColor(0.02, 0.87, 0.98)
-    currentSound:SetWidth(400)
+    currentSound:SetWidth(280)
     currentSound:SetJustifyH("LEFT")
     currentSound:SetWordWrap(false)
     if currentSound.SetMaxLines then
@@ -75,8 +79,7 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
     end
 
     local volumeSlider = CreateFrame("Slider", nil, container, "OptionsSliderTemplate")
-    volumeSlider:SetPoint("TOP", container, "TOP", 70, -34)
-    volumeSlider:SetWidth(108)
+    volumeSlider:SetWidth(84)
     volumeSlider:SetMinMaxValues(1, 3)
     volumeSlider:SetValueStep(1)
     volumeSlider:SetObeyStepOnDrag(true)
@@ -149,11 +152,13 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
         if not soundInfo then
             return false
         end
-        return soundInfo.source == "BLU" or soundInfo.isInternal == true
+        return soundInfo.hasVolumeVariants == true
     end
 
     local function updateSoundControlMode(selectionValue)
-        if isBluVolumeSelection(selectionValue) then
+        local showVolume = isBluVolumeSelection(selectionValue)
+
+        if showVolume then
             local stored = (BLU.db and BLU.db.soundVolumes and BLU.db.soundVolumes[actualEventType]) or "medium"
             setVolumeSliderValue(stored)
             volumeSlider:Show()
@@ -162,10 +167,11 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
             volumeSlider:Hide()
             medLabel:Hide()
         end
+
+        return showVolume
     end
 
     local testBtn = BLU.Modules.design:CreateButton(container, "Test", 60, 22)
-    testBtn:SetPoint("TOPRIGHT", container, "TOPRIGHT", -12, -31)
     testBtn:SetScript("OnClick", function(self)
         BLU:PrintDebug("Test button clicked for event: " .. actualEventType)
         local selectedSound = BLU.db and BLU.db.selectedSounds and BLU.db.selectedSounds[actualEventType]
@@ -189,8 +195,61 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
     local dropdown = CreateFrame("Frame", "BLUDropdown_" .. actualEventType, container, "UIDropDownMenuTemplate")
     dropdown:SetPoint("TOPLEFT", currentLabel, "BOTTOMLEFT", -16, -5)
     UIDropDownMenu_SetWidth(dropdown, 220)
+    dropdown:SetAlpha(0)
+    dropdown:SetScale(0.01)
+
+    local dropdownButton = CreateFrame("Button", nil, container, "BackdropTemplate")
+    dropdownButton:SetPoint("TOPLEFT", currentLabel, "BOTTOMLEFT", 0, -7)
+    dropdownButton:SetHeight(22)
+    dropdownButton:SetWidth(220)
+    dropdownButton:SetBackdrop(BLU.Modules.design.Backdrops.Button)
+    dropdownButton:SetBackdropColor(0.10, 0.14, 0.19, 0.96)
+    dropdownButton:SetBackdropBorderColor(0.14, 0.20, 0.28, 1)
+    dropdownButton:RegisterForClicks("LeftButtonUp")
+
+    local dropdownButtonLabel = dropdownButton:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    dropdownButtonLabel:SetPoint("LEFT", 8, 0)
+    dropdownButtonLabel:SetPoint("RIGHT", -18, 0)
+    dropdownButtonLabel:SetJustifyH("LEFT")
+    dropdownButtonLabel:SetTextColor(0.84, 0.84, 0.84, 1)
+
+    local dropdownArrow = dropdownButton:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    dropdownArrow:SetPoint("RIGHT", -6, 0)
+    dropdownArrow:SetText("v")
+    dropdownArrow:SetTextColor(0.70, 0.78, 0.86, 1)
+
+    dropdownButton:SetScript("OnClick", function(self)
+        ToggleDropDownMenu(1, nil, dropdown, self, 0, 0)
+    end)
+    dropdownButton:SetScript("OnEnter", function(self)
+        self:SetBackdropBorderColor(unpack(BLU.Modules.design.Colors.Primary))
+    end)
+    dropdownButton:SetScript("OnLeave", function(self)
+        self:SetBackdropBorderColor(0.14, 0.20, 0.28, 1)
+    end)
+
+    local function LayoutControls(showVolume)
+        dropdownButton:ClearAllPoints()
+        volumeSlider:ClearAllPoints()
+        medLabel:ClearAllPoints()
+        testBtn:ClearAllPoints()
+
+        dropdownButton:SetPoint("TOPLEFT", currentLabel, "BOTTOMLEFT", 0, -7)
+        dropdownButton:SetWidth(220)
+
+        if showVolume then
+            volumeSlider:SetPoint("LEFT", dropdownButton, "RIGHT", 16, 0)
+            medLabel:SetPoint("TOP", volumeSlider, "BOTTOM", 0, 2)
+            testBtn:SetPoint("LEFT", volumeSlider, "RIGHT", 18, 0)
+        else
+            testBtn:SetPoint("LEFT", dropdownButton, "RIGHT", 18, 0)
+        end
+
+        UIDropDownMenu_SetWidth(dropdown, 220)
+    end
 
     dropdown.currentSound = currentSound
+    dropdown.currentButtonLabel = dropdownButtonLabel
     dropdown.eventId = actualEventType
 
     UIDropDownMenu_Initialize(dropdown, function(self, level, menuList)
@@ -276,9 +335,17 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
             })
         end
 
-        -- no-op stubs so existing call sites don't error
-        local function styleLastAddedButton(levelToUse, options) end
-        local function resetDropDownListFrame(levelToUse) end
+        local function styleLastAddedButton(levelToUse, options)
+            if dd and dd.StyleLastAddedButton then
+                dd:StyleLastAddedButton(levelToUse, options)
+            end
+        end
+
+        local function resetDropDownListFrame(levelToUse)
+            if dd and dd.ResetLevel then
+                dd:ResetLevel(levelToUse)
+            end
+        end
 
         local function hideInlinePreviewButtons(levelToUse)
             local listFrame = getDropDownListFrame(levelToUse)
@@ -387,6 +454,7 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
             countLabel:Show()
         end
 
+        resetDropDownListFrame(level)
         hideInlinePreviewButtons(level)
 
         local function hasEntries(groupData)
@@ -407,18 +475,35 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
             return false
         end
 
+        local function formatTopLevelGroupLabel(groupKey, count)
+            local text = tostring(groupKey or "")
+            if groupKey == "BLU Other Game Sounds" or groupKey == "Shared Media" then
+                text = "|cffffff00" .. text .. "|r"
+            end
+
+            return text .. " (" .. tostring(count or 0) .. ")"
+        end
+
         local function onSoundSelected(value, text)
             BLU.db.selectedSounds[self.eventId] = value
             UIDropDownMenu_SetText(self, text)
             self.currentSound:SetText(text)
-            updateSoundControlMode(value)
+            if self.currentButtonLabel then
+                self.currentButtonLabel:SetText(text)
+            end
+            LayoutControls(updateSoundControlMode(value))
             BLU:PrintDebug("[Options/SoundPanel] Selected sound '" .. tostring(value) .. "' for '" .. tostring(self.eventId) .. "'")
             CloseDropDownMenus()
         end
 
         local function addSoundSelectEntry(levelToUse, soundId, soundName, parentLabel)
             local trimmedSoundName = trimSoundNameForSubmenu(soundName, parentLabel)
-            local maxChars = levelToUse >= 2 and 60 or 46
+            local maxChars = 46
+            if levelToUse >= 3 then
+                maxChars = 120
+            elseif levelToUse >= 2 then
+                maxChars = 60
+            end
             local displayText, wasTruncated = shortenLabel(trimmedSoundName, maxChars)
                 local selectInfo = UIDropDownMenu_CreateInfo()
                 selectInfo.text = displayText
@@ -511,7 +596,7 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 
                     if count > 0 then
                         local info = UIDropDownMenu_CreateInfo()
-                        info.text = "|cffffff00" .. groupKey .. "|r (" .. count .. ")"
+                        info.text = formatTopLevelGroupLabel(groupKey, count)
                         info.value = groupKey
                         info.hasArrow = true
                         info.menuList = groupKey
@@ -626,7 +711,10 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
     end
     UIDropDownMenu_SetText(dropdown, selectedText)
     dropdown.currentSound:SetText(selectedText)
-    updateSoundControlMode(selectedValue)
+    if dropdown.currentButtonLabel then
+        dropdown.currentButtonLabel:SetText(selectedText)
+    end
+    LayoutControls(updateSoundControlMode(selectedValue))
 
     return container
 end

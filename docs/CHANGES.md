@@ -4,19 +4,20 @@
 
 ## Current Production Release
 
-### [v6.4.1](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.4.1.md) - 2026-04-10
+### [v6.5.0](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.5.0.md) - 2026-04-10
 
-- Profile loading now stays on `Default` until the user explicitly creates or chooses another profile.
-- Deleting the active profile now falls back to `Default` instead of auto-creating a character-keyed replacement.
-- Creating a new profile with a blank name now uses the current `Character-Realm` name and keeps it unique with a numeric suffix when needed.
-- Discord release notifications now use a condensed summary so the changelog content does not get cut off in the embed.
-- Fixed the `QUEST_TURNED_IN` playback error caused by a missing volume value hitting `string.format`.
+- Added a real `Combat` options page with the same module toggle header pattern used by the other panels.
+- Replaced the old mock combat layout with a compact 2-column trigger grid that supports 8 trigger cards per page.
+- Added real placeholder combat trigger rows with nested sound selection, compact volume control, and test playback buttons.
+- Added dedicated combat cue slots for `Combat Start`, `Combat End`, and `Combat Music Track`.
+- Cleaned up the Combat page layout by removing extra explanatory sections that were wasting vertical space.
 
 Full notes:
-- [v6.4.1 changelog](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.4.1.md)
+- [v6.5.0 changelog](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.5.0.md)
 
 ## Recent History
 
+- [v6.4.1](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.4.1.md)
 - [v6.4.0](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.4.0.md)
 - [v6.3.0](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.3.0.md)
 - [v6.2.5](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.2.5.md)

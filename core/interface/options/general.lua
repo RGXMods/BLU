@@ -26,8 +26,8 @@ local function EnsureProfileDefaults()
     return true
 end
 
-local function CreateCheckbox(parent, text, x, y, checked, onClick)
-    local checkbox = BLU.Modules.design:CreateCheckbox(parent, text)
+local function CreateCheckbox(parent, text, x, y, checked, onClick, tooltip)
+    local checkbox = BLU.Modules.design:CreateCheckbox(parent, text, tooltip)
     checkbox:SetPoint("TOPLEFT", x, y)
     checkbox.check:SetChecked(checked)
     checkbox.check:SetScript("OnClick", onClick)
@@ -96,11 +96,11 @@ function BLU.CreateGeneralPanel(panel)
         else
             if BLU.Disable then BLU:Disable() end
         end
-    end)
+    end, "Turn the addon on or off without changing your saved sound selections.")
 
     CreateCheckbox(coreSection.content, "Show welcome message", 4, -32, profile.showWelcomeMessage ~= false, function(self)
         profile.showWelcomeMessage = self:GetChecked()
-    end)
+    end, "Shows BLU's startup message after login or reload.")
 
     local behaviorSection = BLU.Modules.design:CreateSection(content, "Behavior", "Interface\\Icons\\INV_Misc_GroupLooking")
     behaviorSection:SetPoint("TOPLEFT", coreSection, "BOTTOMLEFT", 0, -12)
@@ -109,11 +109,11 @@ function BLU.CreateGeneralPanel(panel)
 
     CreateCheckbox(behaviorSection.content, "Mute in instances", 4, -6, profile.muteInInstances == true, function(self)
         profile.muteInInstances = self:GetChecked()
-    end)
+    end, "Suppresses BLU playback while you are inside instanced content.")
 
     CreateCheckbox(behaviorSection.content, "Mute in combat", 4, -34, profile.muteInCombat == true, function(self)
         profile.muteInCombat = self:GetChecked()
-    end)
+    end, "Suppresses BLU playback while your character is in combat.")
 
     -- Right column: Sound Output, anchored to top-right, same top as Core
     local soundSection = BLU.Modules.design:CreateSection(content, "Sound Output", "Interface\\Icons\\INV_Misc_Bell_01")
@@ -136,6 +136,13 @@ function BLU.CreateGeneralPanel(panel)
     local soundChannelDropdown = CreateFrame("Frame", nil, soundSection.content, "UIDropDownMenuTemplate")
     soundChannelDropdown:SetPoint("TOPLEFT", soundChannelLabel, "BOTTOMLEFT", -16, -2)
     UIDropDownMenu_SetWidth(soundChannelDropdown, 160)
+    soundChannelDropdown:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:SetText("Sound Channel", 1, 1, 1)
+        GameTooltip:AddLine("Pick which WoW audio channel BLU uses for playback. The volume slider below controls that same channel.", 0.82, 0.82, 0.82, true)
+        GameTooltip:Show()
+    end)
+    soundChannelDropdown:SetScript("OnLeave", GameTooltip_Hide)
 
     local volumeLabel = soundSection.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     volumeLabel:SetPoint("TOPLEFT", 8, -120)
@@ -145,7 +152,7 @@ function BLU.CreateGeneralPanel(panel)
     volumeValueText:SetPoint("LEFT", volumeLabel, "RIGHT", 8, 0)
     volumeValueText:SetTextColor(0.72, 0.78, 0.86)
 
-    local volumeSlider = BLU.Modules.widgets:CreateSlider(soundSection.content, "", 0, 100, 1)
+    local volumeSlider = BLU.Modules.widgets:CreateSlider(soundSection.content, "", 0, 100, 1, "Adjusts the selected WoW sound channel volume. This affects BLU because BLU plays through that channel.")
     volumeSlider:SetPoint("TOPLEFT", volumeLabel, "BOTTOMLEFT", 0, -10)
     volumeSlider:SetPoint("RIGHT", soundSection.content, "RIGHT", -12, 0)
     volumeSlider.Low:SetText("")
@@ -171,7 +178,13 @@ function BLU.CreateGeneralPanel(panel)
         RefreshVolumeSlider()
     end
 
-    UIDropDownMenu_Initialize(soundChannelDropdown, function()
+    UIDropDownMenu_Initialize(soundChannelDropdown, function(_, level)
+        level = level or 1
+        local dd = BLU.Modules and BLU.Modules.dropdown
+        if dd and dd.ResetLevel then
+            dd:ResetLevel(level)
+        end
+
         for _, channel in ipairs(SOUND_CHANNELS) do
             local info = UIDropDownMenu_CreateInfo()
             info.text = channel
@@ -179,6 +192,9 @@ function BLU.CreateGeneralPanel(panel)
             info.checked = (profile.soundChannel == channel)
             info.func = function() SetSelectedChannel(channel) end
             UIDropDownMenu_AddButton(info)
+            if dd and dd.StyleLastAddedButton then
+                dd:StyleLastAddedButton(level, {minWidth = 140})
+            end
         end
     end)
 

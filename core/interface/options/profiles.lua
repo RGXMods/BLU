@@ -138,11 +138,8 @@ local function GetSuggestedProfileCopyName(profileName)
     return candidate
 end
 
+-- Deep copy a table
 local function DeepCopyTable(value)
-    if BLU and BLU.Modules and BLU.Modules.utils and BLU.Modules.utils.DeepCopy then
-        return BLU.Modules.utils:DeepCopy(value)
-    end
-
     if type(value) ~= "table" then
         return value
     end
@@ -665,6 +662,18 @@ function BLU.CreateProfilesPanel(panel)
             return dd:GetListFrame(levelToUse)
         end
 
+        local function styleLastAddedButton(levelToUse, options)
+            if dd and dd.StyleLastAddedButton then
+                dd:StyleLastAddedButton(levelToUse, options)
+            end
+        end
+
+        local function resetDropDownListFrame(levelToUse)
+            if dd and dd.ResetLevel then
+                dd:ResetLevel(levelToUse)
+            end
+        end
+
         local BASE_MIN_WIDTH = math.floor(profileDropdown:GetWidth() or 200)
         if BASE_MIN_WIDTH < 100 then BASE_MIN_WIDTH = 200 end
 
@@ -694,6 +703,8 @@ function BLU.CreateProfilesPanel(panel)
         level = level or 1
         local activeProfileName = GetActiveProfileName() or "Default"
         if level == 1 then
+            resetDropDownListFrame(level)
+
             -- Hide stale delete buttons from previous open before adding new buttons
             local listFrame = getDropDownListFrame(level)
             if listFrame then
@@ -722,6 +733,7 @@ function BLU.CreateProfilesPanel(panel)
                     CloseDropDownMenus()
                 end
                 UIDropDownMenu_AddButton(info, level)
+                styleLastAddedButton(level, {minWidth = 140})
 
                 -- Attach inline delete button to non-Default profiles
                 -- Added safety check: only show if the open menu is the BLU Profiles dropdown
@@ -766,6 +778,7 @@ function BLU.CreateProfilesPanel(panel)
                             end
                             deleteButton.profileName = profileName
                             deleteButton:Show()
+                            styleLastAddedButton(level, {minWidth = 140})
                         end
                     end
                 end

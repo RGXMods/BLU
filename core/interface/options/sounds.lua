@@ -117,7 +117,15 @@ function BLU.CreateSoundsPanel(panel)
     header:SetPoint("TOPLEFT", 0, 0)
     header:SetPoint("RIGHT", 0, 0)
 
-    local startY = -40
+    local headerNote = content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    headerNote:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 10, -6)
+    headerNote:SetPoint("RIGHT", content, "RIGHT", -12, 0)
+    headerNote:SetJustifyH("LEFT")
+    headerNote:SetWordWrap(true)
+    headerNote:SetTextColor(0.78, 0.78, 0.78)
+    headerNote:SetText("BLU lists its built-in libraries, your manually added custom sounds, and any supported third-party sound packs detected from other addons.")
+
+    local startY = -72
     local rowsPerColumn = 12
     local maxColumns = 1
     local columnXStart = 10
@@ -144,6 +152,24 @@ function BLU.CreateSoundsPanel(panel)
         local status = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         status:SetPoint("TOPLEFT", name, "BOTTOMLEFT", 0, -2)
         status:SetText(pack.status or "|cff00ff00Loaded|r")
+
+        frame:SetScript("OnEnter", function(self)
+            GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+            GameTooltip:SetText(pack.name or "Unknown Pack", 1, 1, 1)
+            GameTooltip:AddLine((pack.status or "Status unavailable"):gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", ""), 0.02, 0.87, 0.98, true)
+            GameTooltip:AddLine("Registered sounds: " .. tostring(pack.soundCount or 0), 0.82, 0.82, 0.82, true)
+            if pack.id == "wow_default_blu" then
+                GameTooltip:AddLine("BLU's built-in Warcraft-style defaults.", 0.82, 0.82, 0.82, true)
+            elseif pack.id == "other_games_blu" then
+                GameTooltip:AddLine("BLU's built-in game sound library with low, medium, and high variants.", 0.82, 0.82, 0.82, true)
+            elseif pack.id == "user_custom_sounds" then
+                GameTooltip:AddLine("Sounds you added manually from the Sounds tab or slash commands.", 0.82, 0.82, 0.82, true)
+            else
+                GameTooltip:AddLine("Detected from a third-party addon or external media source.", 0.82, 0.82, 0.82, true)
+            end
+            GameTooltip:Show()
+        end)
+        frame:SetScript("OnLeave", GameTooltip_Hide)
 
         return frame
     end
@@ -269,10 +295,18 @@ function BLU.CreateSoundsPanel(panel)
     managerNote:SetPoint("TOPLEFT", managerHeader, "BOTTOMLEFT", 4, -8)
     managerNote:SetPoint("RIGHT", managerPanel, "RIGHT", -12, 0)
     managerNote:SetJustifyH("LEFT")
+    managerNote:SetWordWrap(true)
     managerNote:SetTextColor(0.78, 0.78, 0.78)
-    managerNote:SetText("Manage the sounds inside the User Custom Sounds pack here.")
+    managerNote:SetText("Add, review, and remove personal sound files for the active profile. BLU can resolve short file names or full AddOns paths and load the match into User Custom Sounds.")
 
-    local addButton = BLU.Modules.design:CreateButton(managerPanel, "Add Custom Sound", 140, 24)
+    local addButton = BLU.Modules.design:CreateActionButton(
+        managerPanel,
+        "Add Custom Sound",
+        140,
+        24,
+        "Add Custom Sound",
+        "Type a short file name like myfile or myfile.ogg.\nOr paste a full Interface\\\\AddOns path.\nBLU will search common custom-sound folders automatically."
+    )
     addButton:SetPoint("TOPLEFT", managerNote, "BOTTOMLEFT", 0, -10)
     addButton:SetScript("OnClick", function()
         BLU:PrintDebug("[Options/Sounds] Add Custom Sound button clicked")

@@ -63,9 +63,9 @@ end
 
 -- Handle faction updates
 function Reputation:OnUpdateFaction(event)
-    if not BLU.db or not BLU.db.profile or not BLU.db.profile.enabled then return end
-    if BLU.db.profile.enableReputation == false then return end
-    if BLU.db.profile.modules and BLU.db.profile.modules.reputation == false then return end
+    if not BLU.db or not BLU.db.enabled then return end
+    if BLU.db.enableReputation == false then return end
+    if BLU.db.modules and BLU.db.modules.reputation == false then return end
 
     if self.pendingScan then
         return
@@ -99,7 +99,7 @@ function Reputation:CheckReputationChanges()
             if oldData and factionData.reaction > oldData.standing then
                 playSound = true
                 
-                if BLU.db and BLU.db.profile and BLU.db.profile.debugMode then
+                if BLU.db and BLU.db.debugMode then
                     BLU:Print(BLU:Loc("DEBUG_REPUTATION_INCREASED",
                         factionData.name,
                         REPUTATION_RANKS[oldData.standing] or BLU:Loc("UNKNOWN"),

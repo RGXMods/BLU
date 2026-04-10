@@ -50,7 +50,7 @@ local wowDefaultSounds = {
 }
 
 function Sounds:MuteDefaultSounds()
-    if not BLU.db or not BLU.db.profile or not BLU.db.profile.enabled then return end
+    if not BLU.db or not BLU.db.enabled then return end
     BLU:PrintDebug("Muting default WoW sounds.")
     for _, soundId in ipairs(wowDefaultSounds) do
         MuteSoundFile(soundId)

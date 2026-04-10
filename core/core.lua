@@ -35,7 +35,7 @@ print("BLU: Core loading started.")
 BLU = {
     GetMetadata = GetAddOnMetadataSafe,
     name = addonName,
-    version = "v6.4.0-alpha.1",
+    version = "v6.4.0",
     author = GetAddOnMetadataSafe(addonName, "Author"),
     
     -- Core tables
@@ -128,7 +128,7 @@ function BLU:NormalizeDebugScope(scope)
 end
 
 function BLU:IsDebugScopeEnabled(scope)
-    local profile = self.db and self.db.profile
+    local profile = self.db
     if not profile then
         return true
     end
@@ -348,7 +348,7 @@ end
 
 -- Show welcome message
 function BLU:ShowWelcomeMessage()
-    if not (self.db and self.db.profile and self.db.profile.showWelcomeMessage ~= false) then
+    if not (self.db and self.db.showWelcomeMessage ~= false) then
         self:Trace("Welcome", "Skipped welcome message")
         return
     end
@@ -477,25 +477,22 @@ end
 -- Reset advanced settings
 function BLU:ResetAdvancedSettings()
     self:Trace("Advanced", "ResetAdvancedSettings called")
-    -- Reset only advanced settings to defaults
-    local profile = self.db.profile
-    if profile then
-        profile.soundPooling = false
-        profile.asyncLoading = false
-        profile.soundQueueSize = 3
-        profile.fadeTime = 200
-        profile.lazyLoading = true
-        profile.moduleTimeout = 5
-        profile.debugLevel = 0
-        profile.debugToConsole = true
-        profile.debugToFile = false
-        profile.profiling = false
-        profile.positionalAudio = false
-        profile.dynamicCompression = false
-        profile.aiSounds = false
-        profile.weakAurasIntegration = false
-        profile.discordIntegration = false
-    end
+    if not self.db then return end
+    self.db.soundPooling = false
+    self.db.asyncLoading = false
+    self.db.soundQueueSize = 3
+    self.db.fadeTime = 200
+    self.db.lazyLoading = true
+    self.db.moduleTimeout = 5
+    self.db.debugLevel = 0
+    self.db.debugToConsole = true
+    self.db.debugToFile = false
+    self.db.profiling = false
+    self.db.positionalAudio = false
+    self.db.dynamicCompression = false
+    self.db.aiSounds = false
+    self.db.weakAurasIntegration = false
+    self.db.discordIntegration = false
 end
 
 -- Rebuild database
@@ -519,7 +516,7 @@ function BLU:PlayTestSound(category, volume)
         }
         
         local soundFile = testSounds[category] or testSounds.levelup
-        local channel = self.db and self.db.profile and self.db.profile.soundChannel or "Master"
+        local channel = self.db and self.db.soundChannel or "Master"
         local vol = volume or 1.0
         
         PlaySoundFile(soundFile, channel)
@@ -532,8 +529,8 @@ end
 function BLU:EnableModule(moduleId)
     if self.Modules[moduleId] then
         -- Module is already loaded, just enable it
-        if self.db and self.db.profile and self.db.profile.modules then
-            self.db.profile.modules[moduleId] = true
+        if self.db and self.db.modules then
+            self.db.modules[moduleId] = true
         end
         self:PrintDebug("Enabled module: " .. moduleId)
         return true
@@ -542,8 +539,8 @@ function BLU:EnableModule(moduleId)
 end
 
 function BLU:DisableModule(moduleId)
-    if self.db and self.db.profile and self.db.profile.modules then
-        self.db.profile.modules[moduleId] = false
+    if self.db and self.db.modules then
+        self.db.modules[moduleId] = false
     end
     self:PrintDebug("Disabled module: " .. moduleId)
     return true

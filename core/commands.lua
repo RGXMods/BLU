@@ -49,17 +49,17 @@ SlashCmdList["BLU"] = function(msg)
         end
     elseif command == "debug" then
         BLU:PrintDebug("[Commands] Toggling debug mode")
-        if BLU.db and BLU.db.profile then
-            BLU.db.profile.debugMode = not BLU.db.profile.debugMode
-            BLU.debugMode = BLU.db.profile.debugMode
-            BLU:Print("|cff00ccffBLU:|r Debug mode " .. (BLU.db.profile.debugMode and "enabled" or "disabled"))
+        if BLU.db then
+            BLU.db.debugMode = not BLU.db.debugMode
+            BLU.debugMode = BLU.db.debugMode
+            BLU:Print("|cff00ccffBLU:|r Debug mode " .. (BLU.db.debugMode and "enabled" or "disabled"))
         else
             BLU:Print("|cff00ccffBLU:|r Database not loaded yet")
         end
     elseif command == "enable" then
         BLU:PrintDebug("[Commands] Enabling addon")
-        if BLU.db and BLU.db.profile then
-            BLU.db.profile.enabled = true
+        if BLU.db then
+            BLU.db.enabled = true
             if BLU.Enable then
                 BLU:Enable()
             end
@@ -67,8 +67,8 @@ SlashCmdList["BLU"] = function(msg)
         end
     elseif command == "disable" then
         BLU:PrintDebug("[Commands] Disabling addon")
-        if BLU.db and BLU.db.profile then
-            BLU.db.profile.enabled = false
+        if BLU.db then
+            BLU.db.enabled = false
             if BLU.Disable then
                 BLU:Disable()
             end
@@ -79,7 +79,7 @@ SlashCmdList["BLU"] = function(msg)
         BLU:Print("|cff00ccffBLU Status:|r")
         BLU:Print("  Database: " .. (BLU.db and "|cff00ff00Loaded|r" or "|cffff0000Not Loaded|r"))
         BLU:Print("  Options Panel: " .. (BLU.OptionsPanel and "|cff00ff00Created|r" or "|cffff9900Not Created|r"))
-        BLU:Print("  Enabled: " .. ((BLU.db and BLU.db.profile and BLU.db.profile.enabled) and "|cff00ff00Yes|r" or "|cffff0000No|r"))
+        BLU:Print("  Enabled: " .. ((BLU.db and BLU.db.enabled) and "|cff00ff00Yes|r" or "|cffff0000No|r"))
         BLU:Print("  Debug Mode: " .. (BLU.debugMode and "|cff00ff00On|r" or "|cff808080Off|r"))
     elseif command == "refresh" or command == "rescan" then
         BLU:PrintDebug("[Commands] Refreshing external sounds")

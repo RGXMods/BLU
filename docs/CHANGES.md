@@ -2,29 +2,25 @@
 
 `docs/CHANGES.md` is the canonical changelog summary for BLU.
 
-## Current Alpha
-
-### [v6.4.0-alpha.1](https://github.com/DonnieDice/BLU/blob/alpha/docs/changelogs/6.4.0-alpha.1.md) - 2026-04-10
-
-- Alpha branch opened for the next BLU release cycle.
-- The `v6.3.0` production release is now complete and archived in the versioned changelogs.
-- New `v6.4.0` work will be tracked from this point forward.
-
 ## Current Production Release
 
-### [v6.3.0](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.3.0.md) - 2026-04-10
+### [v6.4.0](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.4.0.md) - 2026-04-10
 
-- **Options tabs now support a true third row** - implementation in [tabs.lua](https://github.com/DonnieDice/BLU/blob/main/core/interface/options/tabs.lua).
-- **Profiles now have a dedicated management tab** - implementation in [profiles.lua](https://github.com/DonnieDice/BLU/blob/main/core/interface/options/profiles.lua) and [database.lua](https://github.com/DonnieDice/BLU/blob/main/core/systems/database.lua).
-- **Profile actions now update in real time** - covered by the live profile UI flow in [profiles.lua](https://github.com/DonnieDice/BLU/blob/main/core/interface/options/profiles.lua).
-- **Dropdown behavior is now finalized** - shared logic in [dropdown.lua](https://github.com/DonnieDice/BLU/blob/main/core/interface/dropdown.lua) and [sound_panel.lua](https://github.com/DonnieDice/BLU/blob/main/core/interface/options/sound_panel.lua).
-- **Debug now has a dedicated module and tab** - backed by [modules/Debug/Debug.lua](https://github.com/DonnieDice/BLU/blob/main/modules/Debug/Debug.lua).
+- Sound Output section on the General tab is now a self-contained card with a channel selector and a volume slider that reads/writes WoW's actual audio CVars.
+- Profile management overhauled: Default is permanent and always pinned at the top of the dropdown; new profiles start from clean defaults; copies are true independent deep copies; preset application and profile switches fully rebuild all option tab panels in real time.
+- Applying a preset now requires confirmation before overwriting profile settings.
+- All Profiles panel action buttons (Create, Rename, Reset, Copy, presets) use the same animated hover style as the tab buttons, with consistent tooltips.
+- Fixed welcome message, debug scopes, and module toggles all broken by stale nested `BLU.db.profile.*` schema references — standardized to flat `BLU.db.*` across the entire codebase.
+- Fixed ghost widget stacking on repeated profile switches.
+- Fixed `Slider:SetMinMaxValues` Lua error that blocked the General tab from rendering.
+- Fixed "Database not ready" error on every options panel open.
 
 Full notes:
-- [v6.3.0 production changelog](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.3.0.md)
+- [v6.4.0 changelog](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.4.0.md)
 
 ## Recent History
 
+- [v6.3.0](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.3.0.md)
 - [v6.2.5](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.2.5.md)
 - [v6.2.4](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.2.4.md)
 - [v6.2.3](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.2.3.md)

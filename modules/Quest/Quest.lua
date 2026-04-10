@@ -162,9 +162,9 @@ end
 
 -- Quest accepted handler
 function Quest:OnQuestAccepted(event, questId)
-    if not BLU.db or not BLU.db.profile then return end
-    if not BLU.db.profile.enabled then return end
-    if BLU.db.profile.modules and BLU.db.profile.modules.quest == false then return end
+    if not BLU.db then return end
+    if not BLU.db.enabled then return end
+    if BLU.db.modules and BLU.db.modules.quest == false then return end
     
     -- Play quest accept sound
     BLU:PlayCategorySound("questaccept")
@@ -172,7 +172,7 @@ function Quest:OnQuestAccepted(event, questId)
         self.objectiveProgressCache[questId] = BuildObjectiveProgressSnapshot(questId)
     end
     
-    if BLU.db.profile.debugMode then
+    if BLU.db.debugMode then
         local questTitle = C_QuestLog.GetTitleForQuestID(questId) or BLU:Loc("UNKNOWN")
         BLU:Print(BLU:Loc("DEBUG_QUEST_ACCEPTED", questTitle))
     end
@@ -180,9 +180,9 @@ end
 
 -- Quest turned in handler
 function Quest:OnQuestTurnedIn(event, questId, xpReward, moneyReward)
-    if not BLU.db or not BLU.db.profile then return end
-    if not BLU.db.profile.enabled then return end
-    if BLU.db.profile.modules and BLU.db.profile.modules.quest == false then return end
+    if not BLU.db then return end
+    if not BLU.db.enabled then return end
+    if BLU.db.modules and BLU.db.modules.quest == false then return end
     
     -- Play quest turn-in sound
     BLU:PlayCategorySound("questturnin")
@@ -191,7 +191,7 @@ function Quest:OnQuestTurnedIn(event, questId, xpReward, moneyReward)
         self.progressCooldowns[questId] = nil
     end
     
-    if BLU.db.profile.debugMode then
+    if BLU.db.debugMode then
         local questTitle = C_QuestLog.GetTitleForQuestID(questId) or BLU:Loc("UNKNOWN")
         BLU:Print(BLU:Loc("DEBUG_QUEST_COMPLETED", questTitle))
     end
@@ -199,9 +199,9 @@ end
 
 -- Quest complete handler (shows complete dialog)
 function Quest:OnQuestComplete(event)
-    if not BLU.db or not BLU.db.profile then return end
-    if not BLU.db.profile.enabled then return end
-    if BLU.db.profile.modules and BLU.db.profile.modules.quest == false then return end
+    if not BLU.db then return end
+    if not BLU.db.enabled then return end
+    if BLU.db.modules and BLU.db.modules.quest == false then return end
 
     -- This fires when you reach a quest giver with a completed quest
     self.atQuestGiver = true
@@ -214,9 +214,9 @@ function Quest:OnQuestComplete(event)
 end
 
 function Quest:OnQuestWatchUpdate(event, questID)
-    if not BLU.db or not BLU.db.profile then return end
-    if not BLU.db.profile.enabled then return end
-    if BLU.db.profile.modules and BLU.db.profile.modules.quest == false then return end
+    if not BLU.db then return end
+    if not BLU.db.enabled then return end
+    if BLU.db.modules and BLU.db.modules.quest == false then return end
     questID = ResolveQuestID(questID)
     if type(questID) ~= "number" or questID <= 0 then return end
 
@@ -230,16 +230,16 @@ function Quest:OnQuestWatchUpdate(event, questID)
     BLU:PlayCategorySound("questprogress")
     self.objectiveProgressCache[questID] = BuildObjectiveProgressSnapshot(questID) or self.objectiveProgressCache[questID]
 
-    if BLU.db.profile.debugMode then
+    if BLU.db.debugMode then
         local questTitle = C_QuestLog.GetTitleForQuestID and C_QuestLog.GetTitleForQuestID(questID) or BLU:Loc("UNKNOWN")
         BLU:Print(BLU:Loc("DEBUG_QUEST_PROGRESS", questTitle))
     end
 end
 
 function Quest:OnQuestLogUpdate()
-    if not BLU.db or not BLU.db.profile then return end
-    if not BLU.db.profile.enabled then return end
-    if BLU.db.profile.modules and BLU.db.profile.modules.quest == false then return end
+    if not BLU.db then return end
+    if not BLU.db.enabled then return end
+    if BLU.db.modules and BLU.db.modules.quest == false then return end
     if not (C_QuestLog and C_QuestLog.GetNumQuestLogEntries and C_QuestLog.GetInfo) then return end
 
     local numEntries = C_QuestLog.GetNumQuestLogEntries()

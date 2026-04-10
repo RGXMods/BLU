@@ -354,8 +354,8 @@ local function CollectEntries()
         end
     end
 
-    if BLU.db and BLU.db.profile and type(BLU.db.profile.userCustomSounds) == "table" then
-        for index, entry in ipairs(BLU.db.profile.userCustomSounds) do
+    if BLU.db and type(BLU.db.userCustomSounds) == "table" then
+        for index, entry in ipairs(BLU.db.userCustomSounds) do
             if type(entry) == "string" then
                 AddEntry(entries, seenPaths, entry, nil, false, true)
             elseif type(entry) == "table" then
@@ -454,7 +454,7 @@ end
 
 function UserSounds:AddCustomSound(soundPath, displayName)
     BLU:PrintDebug("[UserSounds] AddCustomSound called for '" .. tostring(soundPath) .. "'")
-    if not (BLU.db and BLU.db.profile) then
+    if not (BLU.db) then
         return false, "Database not ready"
     end
 
@@ -463,7 +463,7 @@ function UserSounds:AddCustomSound(soundPath, displayName)
         return false, "Could not find a compatible .ogg, .mp3, or .wav file for '" .. tostring(soundPath) .. "'"
     end
 
-    BLU.db.profile.userCustomSounds = BLU.db.profile.userCustomSounds or {}
+    BLU.db.userCustomSounds = BLU.db.userCustomSounds or {}
     local resolvedName = displayName
     if not resolvedName then
         local normalizedInput = NormalizeEntryPath(soundPath)
@@ -471,7 +471,7 @@ function UserSounds:AddCustomSound(soundPath, displayName)
             resolvedName = normalizedInput
         end
     end
-    table.insert(BLU.db.profile.userCustomSounds, {
+    table.insert(BLU.db.userCustomSounds, {
         file = resolvedPath,
         name = resolvedName,
         candidateFiles = candidateFiles,
@@ -486,7 +486,7 @@ end
 
 function UserSounds:PromoteResolvedCustomSound(previousPath, resolvedPath)
     BLU:PrintDebug("[UserSounds] PromoteResolvedCustomSound called for '" .. tostring(previousPath) .. "' => '" .. tostring(resolvedPath) .. "'")
-    if not (BLU.db and BLU.db.profile and type(BLU.db.profile.userCustomSounds) == "table") then
+    if not (BLU.db and type(BLU.db.userCustomSounds) == "table") then
         return false, "No profile custom sounds configured"
     end
 
@@ -496,7 +496,7 @@ function UserSounds:PromoteResolvedCustomSound(previousPath, resolvedPath)
         return false, "No custom sound update required"
     end
 
-    for _, entry in ipairs(BLU.db.profile.userCustomSounds) do
+    for _, entry in ipairs(BLU.db.userCustomSounds) do
         if type(entry) == "table" then
             local entryPath = NormalizeEntryPath(entry.file or entry.path)
             if entryPath == normalizedPrevious then
@@ -522,17 +522,17 @@ end
 
 function UserSounds:RemoveCustomSound(matchValue)
     BLU:PrintDebug("[UserSounds] RemoveCustomSound called for '" .. tostring(matchValue) .. "'")
-    if not (BLU.db and BLU.db.profile and type(BLU.db.profile.userCustomSounds) == "table") then
+    if not (BLU.db and type(BLU.db.userCustomSounds) == "table") then
         return false, "No profile custom sounds configured"
     end
 
     local normalizedMatch = NormalizeEntryPath(matchValue)
-    for index = #BLU.db.profile.userCustomSounds, 1, -1 do
-        local entry = BLU.db.profile.userCustomSounds[index]
+    for index = #BLU.db.userCustomSounds, 1, -1 do
+        local entry = BLU.db.userCustomSounds[index]
         local entryPath = type(entry) == "table" and NormalizeEntryPath(entry.file or entry.path) or NormalizeEntryPath(entry)
         local entryName = type(entry) == "table" and entry.name or nil
         if entryPath == normalizedMatch or entryName == matchValue then
-            table.remove(BLU.db.profile.userCustomSounds, index)
+            table.remove(BLU.db.userCustomSounds, index)
             if BLU.RefreshUserSounds then
                 BLU:RefreshUserSounds()
             end
@@ -547,11 +547,11 @@ function UserSounds:GetCustomSoundEntries()
     BLU:PrintDebug("[UserSounds] GetCustomSoundEntries called")
     local results = {}
 
-    if not (BLU.db and BLU.db.profile and type(BLU.db.profile.userCustomSounds) == "table") then
+    if not (BLU.db and type(BLU.db.userCustomSounds) == "table") then
         return results
     end
 
-    for index, entry in ipairs(BLU.db.profile.userCustomSounds) do
+    for index, entry in ipairs(BLU.db.userCustomSounds) do
         local filePath = type(entry) == "table" and (entry.file or entry.path) or entry
         local displayName = type(entry) == "table" and entry.name or nil
         local normalizedPath = NormalizeEntryPath(filePath)
@@ -573,11 +573,11 @@ end
 
 function UserSounds:ClearCustomSounds()
     BLU:PrintDebug("[UserSounds] ClearCustomSounds called")
-    if not (BLU.db and BLU.db.profile) then
+    if not (BLU.db) then
         return false, "Database not ready"
     end
 
-    BLU.db.profile.userCustomSounds = {}
+    BLU.db.userCustomSounds = {}
 
     if BLU.RefreshUserSounds then
         BLU:RefreshUserSounds()

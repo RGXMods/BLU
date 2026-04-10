@@ -112,29 +112,69 @@ end
 
 -- Helper function to create styled buttons
 function Design:CreateStyledButton(parent, text, width, height)
-    local button = CreateFrame("Button", nil, parent, "BackdropTemplate")
-    button:SetSize(width or 120, height or 30)
-    
-    button:SetBackdrop(Design.Backdrops.Button)
-    button:SetBackdropColor(0.08, 0.10, 0.13, 0.95)
-    button:SetBackdropBorderColor(0.14, 0.20, 0.28, 1)
-    
-    local label = button:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    label:SetPoint("CENTER")
+    return self:CreateActionButton(parent, text, width, height)
+end
+
+-- Action button — matches tab button visual system (bg texture + border frame + text)
+-- Optional tooltip: pass tooltipTitle and tooltipBody on the returned button, or call
+-- button:SetTooltip(title, body) after creation.
+function Design:CreateActionButton(parent, text, width, height, tooltipTitle, tooltipBody)
+    local button = CreateFrame("Button", nil, parent)
+    button:SetSize(width or 120, height or 22)
+
+    local bg = button:CreateTexture(nil, "BACKGROUND")
+    bg:SetAllPoints()
+    bg:SetColorTexture(0.08, 0.11, 0.15, 0.90)
+    button.bg = bg
+
+    local border = CreateFrame("Frame", nil, button, "BackdropTemplate")
+    border:SetAllPoints()
+    border:SetBackdrop({ edgeFile = "Interface\\Buttons\\WHITE8x8", edgeSize = 1 })
+    border:SetBackdropBorderColor(0.14, 0.20, 0.28, 1)
+    button.border = border
+
+    local label = button:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    label:SetPoint("CENTER", 0, 0)
     label:SetText(text or "Button")
+    label:SetTextColor(0.80, 0.80, 0.80, 1)
     button.label = label
-    
-    -- Hover effects
+
+    local function applyHover(self)
+        self.bg:SetColorTexture(0.11, 0.18, 0.24, 1)
+        self.border:SetBackdropBorderColor(unpack(Design.Colors.Primary))
+        self.label:SetTextColor(unpack(Design.Colors.Primary))
+    end
+    local function applyIdle(self)
+        self.bg:SetColorTexture(0.08, 0.11, 0.15, 0.90)
+        self.border:SetBackdropBorderColor(0.14, 0.20, 0.28, 1)
+        self.label:SetTextColor(0.80, 0.80, 0.80, 1)
+    end
+
     button:SetScript("OnEnter", function(self)
-        self:SetBackdropColor(0.12, 0.16, 0.22, 1)
-        self:SetBackdropBorderColor(unpack(Design.Colors.Primary))
+        applyHover(self)
+        if self._ttTitle then
+            GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+            GameTooltip:SetText(self._ttTitle, 1, 1, 1)
+            if self._ttBody then
+                GameTooltip:AddLine(self._ttBody, 0.82, 0.82, 0.82, true)
+            end
+            GameTooltip:Show()
+        end
     end)
-    
     button:SetScript("OnLeave", function(self)
-        self:SetBackdropColor(0.08, 0.10, 0.13, 0.95)
-        self:SetBackdropBorderColor(0.14, 0.20, 0.28, 1)
+        applyIdle(self)
+        GameTooltip:Hide()
     end)
-    
+
+    function button:SetTooltip(title, body)
+        self._ttTitle = title
+        self._ttBody = body
+    end
+
+    if tooltipTitle then
+        button:SetTooltip(tooltipTitle, tooltipBody)
+    end
+
     return button
 end
 

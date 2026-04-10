@@ -12,30 +12,68 @@ local Database = {}
 BLU.Modules = BLU.Modules or {}
 BLU.Modules["database"] = Database
 
+-- "Default" is the permanent baseline profile.
+-- It can be loaded, modified, and reset like any other profile.
+-- It cannot be deleted, renamed, or duplicated by name.
+local PROTECTED_PROFILE = "Default"
+
+-- Ensure the Default profile slot exists. Only creates it if absent — never
+-- overwrites user edits. Reset is handled explicitly via the Reset button.
+function Database:EnsureDefaultTemplate()
+    BLUDB.profiles = BLUDB.profiles or {}
+    if not BLUDB.profiles[PROTECTED_PROFILE] then
+        local tpl = {}
+        if BLU.Modules and BLU.Modules.config and BLU.Modules.config.defaults then
+            self:MergeDefaults(tpl, BLU.Modules.config.defaults.profile)
+        end
+        tpl.currentProfile = PROTECTED_PROFILE
+        BLUDB.profiles[PROTECTED_PROFILE] = tpl
+    end
+end
+
+-- Create (or return existing) the character-keyed working profile.
+function Database:EnsureCharProfile(charKey)
+    BLUDB.profiles = BLUDB.profiles or {}
+    if not BLUDB.profiles[charKey] then
+        local p = {}
+        if BLU.Modules and BLU.Modules.config and BLU.Modules.config.defaults then
+            self:MergeDefaults(p, BLU.Modules.config.defaults.profile)
+        end
+        p.currentProfile = charKey
+        BLUDB.profiles[charKey] = p
+    end
+    return charKey
+end
+
 -- Initialize database with defaults
 function Database:InitializeDatabase()
     BLU:PrintDebug("Database:InitializeDatabase called.")
     BLUDB = BLUDB or {}
     BLUDB.profiles = BLUDB.profiles or {}
     BLUDB.global = BLUDB.global or {}
-    
-    BLU:PrintDebug("BLUDB after initialization: " .. tostring(BLUDB))
-    
-    -- Character-specific database
+
+    -- Ensure the Default profile exists (creates it only if absent).
+    self:EnsureDefaultTemplate()
+
     local charKey = UnitName("player") .. "-" .. GetRealmName()
-    BLUDB.profiles[charKey] = BLUDB.profiles[charKey] or {}
-    
-    BLUDB.profiles[charKey] = BLUDB.profiles[charKey] or {}
-    
-    -- Set active database reference
-    BLU.db = BLUDB.profiles[charKey]
-    BLU.db.currentProfile = charKey
-    
-    -- Initialize with defaults
+    local activeProfile = BLUDB.activeProfile
+
+    -- Resolve active profile: must exist in the profiles table
+    if not activeProfile or not BLUDB.profiles[activeProfile] then
+        -- Fall back to character profile, creating it if needed
+        activeProfile = self:EnsureCharProfile(charKey)
+    end
+
+    -- Set active database reference and persist selection globally
+    BLU.db = BLUDB.profiles[activeProfile]
+    BLU.db.currentProfile = activeProfile
+    BLUDB.activeProfile = activeProfile
+
+    -- Fill in any missing defaults
     self:ApplyDefaults()
-    
+
     BLU:PrintDebug("BLU.db after setting: " .. tostring(BLU.db))
-    
+
     return BLU.db
 end
 
@@ -51,8 +89,7 @@ function Database:ApplyDefaults()
     
     -- Merge defaults into BLU.db
     if BLU.db then
-        BLU.db.profile = BLU.db.profile or {}
-        self:MergeDefaults(BLU.db.profile, defaults.profile)
+        self:MergeDefaults(BLU.db, defaults.profile)
     end
 end
 
@@ -198,88 +235,100 @@ end
 -- Profile management
 function Database:CreateProfile(name)
     BLU:PrintDebug("[Database] CreateProfile called for '" .. tostring(name) .. "'")
-    if not name or name == "" then
+    if not name or name == "" or name == PROTECTED_PROFILE then
         return false
     end
-    
+
     BLUDB.profiles = BLUDB.profiles or {}
-    BLUDB.profiles[name] = BLUDB.profiles[name] or {}
-    
-    -- Copy current settings to new profile
-    if BLU.db then
-        BLUDB.profiles[name] = BLU.Modules.utils:DeepCopy(BLU.db)
+
+    -- New profile always starts from clean defaults
+    local newProfile = {}
+    if BLU.Modules and BLU.Modules.config and BLU.Modules.config.defaults then
+        self:MergeDefaults(newProfile, BLU.Modules.config.defaults.profile)
     end
-    
-    -- Switch to new profile
-    self:SetDB("currentProfile", name)
+    newProfile.currentProfile = name
+    BLUDB.profiles[name] = newProfile
+
+    -- Switch to the new profile immediately
     self:LoadProfile(name)
-    
-    -- Refresh UI to show the new profile in lists
-    if BLU.RefreshOptions then
-        BLU:RefreshOptions()
-    end
-    if BLU.RefreshProfilesUI then
-        BLU:RefreshProfilesUI()
-    end
 
     return true
 end
 
 function Database:LoadProfile(name)
     BLU:PrintDebug("[Database] LoadProfile called for '" .. tostring(name) .. "'")
+
     if not name or not BLUDB.profiles[name] then
         return false
     end
-    
-    -- Save current profile first
+
     self:SaveSettings()
-    
-    -- Load new profile
+
     BLU.db = BLUDB.profiles[name]
-    self:SetDB("currentProfile", name)
-    self:ApplyDefaults()
-    
-    -- Refresh UI if needed
+    BLU.db.currentProfile = name
+    BLUDB.activeProfile = name
+
+    -- Fill any keys the saved profile is missing (never overwrites existing values)
+    if BLU.Modules and BLU.Modules.config and BLU.Modules.config.defaults then
+        self:MergeDefaults(BLU.db, BLU.Modules.config.defaults.profile)
+    end
+
+    -- Force all tabs to fully rebuild, then refresh whatever is currently visible
+    if BLU.InvalidateAllTabs then
+        BLU:InvalidateAllTabs()
+    end
     if BLU.RefreshOptions then
         BLU:RefreshOptions()
     end
     if BLU.RefreshProfilesUI then
         BLU:RefreshProfilesUI()
     end
-    
+
     return true
 end
 
 function Database:DeleteProfile(name)
     BLU:PrintDebug("[Database] DeleteProfile called for '" .. tostring(name) .. "'")
-    if not name or name == "Default" then
+    if not name or name == PROTECTED_PROFILE then
         return false
     end
-    
+
     if BLUDB.profiles and BLUDB.profiles[name] then
         BLUDB.profiles[name] = nil
-        
-        -- Switch to Default if we deleted current
-        if self:GetDB("currentProfile") == name then
-            self:LoadProfile("Default")
+
+        -- If we deleted the active profile, find another profile to switch to
+        if BLUDB.activeProfile == name then
+            -- Pick any existing non-Default profile as the fallback
+            local fallback = nil
+            for profileName in pairs(BLUDB.profiles) do
+                if profileName ~= PROTECTED_PROFILE then
+                    fallback = profileName
+                    break
+                end
+            end
+
+            -- No other profiles exist — create a fresh character-keyed one
+            if not fallback then
+                local charKey = UnitName("player") .. "-" .. GetRealmName()
+                fallback = self:EnsureCharProfile(charKey)
+            end
+
+            self:LoadProfile(fallback)
         else
-            if BLU.RefreshOptions then
-                BLU:RefreshOptions()
-            end
-            if BLU.RefreshProfilesUI then
-                BLU:RefreshProfilesUI()
-            end
+            if BLU.InvalidateAllTabs then BLU:InvalidateAllTabs() end
+            if BLU.RefreshOptions then BLU:RefreshOptions() end
+            if BLU.RefreshProfilesUI then BLU:RefreshProfilesUI() end
         end
-        
+
         return true
     end
-    
+
     return false
 end
 
 function Database:RenameProfile(oldName, newName)
     BLU:PrintDebug("[Database] RenameProfile called from '" .. tostring(oldName) .. "' to '" .. tostring(newName) .. "'")
-    if not oldName or not newName or oldName == "Default" then
+    if not oldName or not newName or oldName == PROTECTED_PROFILE or newName == PROTECTED_PROFILE then
         return false
     end
     
@@ -288,32 +337,30 @@ function Database:RenameProfile(oldName, newName)
         BLUDB.profiles[oldName] = nil
         
         -- Update current profile name if needed
-        if self:GetDB("currentProfile") == oldName then
-            self:SetDB("currentProfile", newName)
+        if BLUDB.activeProfile == oldName then
+            BLUDB.activeProfile = newName
             -- Re-link the active reference to the new database key
             BLU.db = BLUDB.profiles[newName]
             -- Synchronize the internal name key
             BLU.db.currentProfile = newName
         end
 
-        -- Trigger a global UI refresh to update labels and lists in realtime
-        if BLU.RefreshOptions then
-            BLU:RefreshOptions()
-        end
-        if BLU.RefreshProfilesUI then
-            BLU:RefreshProfilesUI()
-        end
+        -- Invalidate all tabs so label changes show immediately on the next view,
+        -- then refresh whatever is currently visible.
+        if BLU.InvalidateAllTabs then BLU:InvalidateAllTabs() end
+        if BLU.RefreshOptions then BLU:RefreshOptions() end
+        if BLU.RefreshProfilesUI then BLU:RefreshProfilesUI() end
 
         return true
     end
-    
+
     return false
 end
 
 -- Profile serialization for import/export
 function Database:SerializeProfile(name)
     BLU:PrintDebug("[Database] SerializeProfile called for '" .. tostring(name) .. "'")
-    local profile = BLUDB.profiles[name or self:GetDB("currentProfile")]
+    local profile = BLUDB.profiles[name or BLUDB.activeProfile]
     if not profile then
         return ""
     end

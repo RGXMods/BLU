@@ -118,15 +118,15 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
         local volume = stepToVolume(step)
         medLabel:SetText(volume:gsub("^%l", string.upper))
 
-        if not BLU.db or not BLU.db.profile then
+        if not BLU.db then
             return
         end
-        BLU.db.profile.soundVolumes = BLU.db.profile.soundVolumes or {}
-        BLU.db.profile.soundVolumes[actualEventType] = volume
+        BLU.db.soundVolumes = BLU.db.soundVolumes or {}
+        BLU.db.soundVolumes[actualEventType] = volume
         BLU:PrintDebug("[Options/SoundPanel] Set volume for '" .. tostring(actualEventType) .. "' to '" .. tostring(volume) .. "'")
     end)
 
-    local initialVolume = (BLU.db and BLU.db.profile and BLU.db.profile.soundVolumes and BLU.db.profile.soundVolumes[actualEventType]) or "medium"
+    local initialVolume = (BLU.db and BLU.db.soundVolumes and BLU.db.soundVolumes[actualEventType]) or "medium"
     setVolumeSliderValue(initialVolume)
 
     local function isBluVolumeSelection(selectionValue)
@@ -154,7 +154,7 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 
     local function updateSoundControlMode(selectionValue)
         if isBluVolumeSelection(selectionValue) then
-            local stored = (BLU.db and BLU.db.profile and BLU.db.profile.soundVolumes and BLU.db.profile.soundVolumes[actualEventType]) or "medium"
+            local stored = (BLU.db and BLU.db.soundVolumes and BLU.db.soundVolumes[actualEventType]) or "medium"
             setVolumeSliderValue(stored)
             volumeSlider:Show()
             medLabel:Show()
@@ -168,7 +168,7 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
     testBtn:SetPoint("TOPRIGHT", container, "TOPRIGHT", -12, -31)
     testBtn:SetScript("OnClick", function(self)
         BLU:PrintDebug("Test button clicked for event: " .. actualEventType)
-        local selectedSound = BLU.db and BLU.db.profile and BLU.db.profile.selectedSounds and BLU.db.profile.selectedSounds[actualEventType]
+        local selectedSound = BLU.db and BLU.db.selectedSounds and BLU.db.selectedSounds[actualEventType]
         BLU:PrintDebug("Selected sound is: " .. tostring(selectedSound))
 
         self:SetText("Playing...")
@@ -203,8 +203,8 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
         local MENU_RIGHT_PADDING = 8
         level = level or 1
 
-        if not BLU.db or not BLU.db.profile then return end
-        BLU.db.profile.selectedSounds = BLU.db.profile.selectedSounds or {}
+        if not BLU.db then return end
+        BLU.db.selectedSounds = BLU.db.selectedSounds or {}
 
         local dd = BLU.Modules.dropdown
 
@@ -408,7 +408,7 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
         end
 
         local function onSoundSelected(value, text)
-            BLU.db.profile.selectedSounds[self.eventId] = value
+            BLU.db.selectedSounds[self.eventId] = value
             UIDropDownMenu_SetText(self, text)
             self.currentSound:SetText(text)
             updateSoundControlMode(value)
@@ -426,7 +426,7 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
                 selectInfo.func = function()
                     onSoundSelected(soundId, trimmedSoundName)
             end
-            selectInfo.checked = BLU.db.profile.selectedSounds[dropdown.eventId] == soundId
+            selectInfo.checked = BLU.db.selectedSounds[dropdown.eventId] == soundId
                 if wasTruncated or trimmedSoundName ~= soundName then
                     selectInfo.tooltipTitle = soundName
                 end
@@ -479,7 +479,7 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
                 dInfo.text = info.text
                 dInfo.value = info.value
                 dInfo.func = function() onSoundSelected(info.value, info.text) end
-                dInfo.checked = BLU.db.profile.selectedSounds[self.eventId] == info.value
+                dInfo.checked = BLU.db.selectedSounds[self.eventId] == info.value
                 UIDropDownMenu_AddButton(dInfo, level)
                 styleLastAddedButton(level, {minWidth = 150})
             end
@@ -609,7 +609,7 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
         forceListFrameWidth(level)
     end)
 
-    local selectedValue = BLU.db and BLU.db.profile and BLU.db.profile.selectedSounds and BLU.db.profile.selectedSounds[actualEventType] or "default"
+    local selectedValue = BLU.db and BLU.db.selectedSounds and BLU.db.selectedSounds[actualEventType] or "default"
 
     local selectedText = selectedValue
     if selectedValue == "None" then
@@ -704,8 +704,8 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     end
 
     local function IsModuleEnabled()
-        if not BLU.db or not BLU.db.profile then return true end
-        local modules = BLU.db.profile.modules
+        if not BLU.db then return true end
+        local modules = BLU.db.modules
         if not modules then return true end
         if modules[moduleToggleKey] ~= nil then return modules[moduleToggleKey] ~= false end
         if moduleLoadName ~= moduleToggleKey and modules[moduleLoadName] ~= nil then
@@ -715,17 +715,17 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
     end
 
     local function SetModuleEnabledState(enabled)
-        BLU.db.profile.modules[moduleToggleKey] = enabled
+        BLU.db.modules[moduleToggleKey] = enabled
         if moduleLoadName ~= moduleToggleKey then
-            BLU.db.profile.modules[moduleLoadName] = enabled
+            BLU.db.modules[moduleLoadName] = enabled
         end
     end
 
     UpdateToggleState(IsModuleEnabled())
 
     toggle:SetScript("OnClick", function()
-        if not BLU.db or not BLU.db.profile then return end
-        BLU.db.profile.modules = BLU.db.profile.modules or {}
+        if not BLU.db then return end
+        BLU.db.modules = BLU.db.modules or {}
         local newState = not IsModuleEnabled()
         SetModuleEnabledState(newState)
         BLU:PrintDebug("[Options/SoundPanel] Toggled event module '" .. tostring(moduleLoadName) .. "' to " .. tostring(newState))
@@ -820,23 +820,23 @@ function BLU.CreateHousingPanel(panel)
     end
 
     local function IsModuleEnabled()
-        if not (BLU.db and BLU.db.profile) then return true end
-        local modules = BLU.db.profile.modules
+        if not (BLU.db) then return true end
+        local modules = BLU.db.modules
         if modules and modules.housing ~= nil then return modules.housing ~= false end
-        if BLU.db.profile.enableHousing ~= nil then return BLU.db.profile.enableHousing ~= false end
+        if BLU.db.enableHousing ~= nil then return BLU.db.enableHousing ~= false end
         return true
     end
 
     local function SetModuleEnabledState(enabled)
-        BLU.db.profile.modules = BLU.db.profile.modules or {}
-        BLU.db.profile.modules.housing = enabled
-        BLU.db.profile.enableHousing = enabled
+        BLU.db.modules = BLU.db.modules or {}
+        BLU.db.modules.housing = enabled
+        BLU.db.enableHousing = enabled
     end
 
     UpdateToggleState(IsModuleEnabled())
 
     toggle:SetScript("OnClick", function()
-        if not (BLU.db and BLU.db.profile) then return end
+        if not (BLU.db) then return end
         local newState = not IsModuleEnabled()
         SetModuleEnabledState(newState)
         BLU:PrintDebug("[Options/SoundPanel] Toggled Housing module to " .. tostring(newState))

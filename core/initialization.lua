@@ -32,11 +32,11 @@ local moduleLegacyToggleMap = {
 }
 
 function BLU:IsFeatureModuleEnabled(moduleName)
-    if not self.db or not self.db.profile then
+    if not self.db then
         return true
     end
 
-    local profile = self.db.profile
+    local profile = self.db
     local moduleKey = moduleSettingKeyMap[moduleName] or moduleName
     if profile.modules and profile.modules[moduleKey] == false then
         return false
@@ -210,14 +210,14 @@ function BLU:LoadSavedSettings()
     end
     
     -- Apply saved settings
-    if self.db and self.db.profile then
-        if self.db.profile.enabled == false then
+    if self.db then
+        if self.db.enabled == false then
             self:Print("|cffff0000BLU is currently disabled|r")
         end
         
         -- Sync debug mode
-        if self.db.profile.debugMode ~= nil then
-            self.debugMode = self.db.profile.debugMode
+        if self.db.debugMode ~= nil then
+            self.debugMode = self.db.debugMode
         end
     end
     

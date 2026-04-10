@@ -37,19 +37,19 @@ local function IsDecorItemType(itemType)
 end
 
 local function IsHousingEnabled()
-    if not (BLU.db and BLU.db.profile) then
+    if not (BLU.db) then
         return false
     end
 
-    if BLU.db.profile.enabled == false then
+    if BLU.db.enabled == false then
         return false
     end
 
-    if BLU.db.profile.enableHousing == false then
+    if BLU.db.enableHousing == false then
         return false
     end
 
-    if BLU.db.profile.modules and BLU.db.profile.modules.housing == false then
+    if BLU.db.modules and BLU.db.modules.housing == false then
         return false
     end
 
@@ -110,7 +110,7 @@ function Housing:OnHouseFavorUpdated(event, houseLevelFavor)
 
     if lastFavor ~= nil and newFavor > lastFavor then
         BLU:PlayCategorySound("housingxpgained")
-        if BLU.db and BLU.db.profile and BLU.db.profile.debugMode then
+        if BLU.db and BLU.db.debugMode then
             BLU:Print(BLU:Loc("DEBUG_HOUSING_FAVOR_GAINED", lastFavor, newFavor))
         end
     end
@@ -128,7 +128,7 @@ function Housing:OnHouseLevelChanged(event, newHouseLevelInfo)
 
     if lastLevel ~= nil and newLevel > lastLevel then
         BLU:PlayCategorySound("housingleveledup")
-        if BLU.db and BLU.db.profile and BLU.db.profile.debugMode then
+        if BLU.db and BLU.db.debugMode then
             BLU:Print(BLU:Loc("DEBUG_HOUSING_LEVEL_UP", lastLevel, newLevel))
         end
     end
@@ -140,7 +140,7 @@ function Housing:OnHouseRewardsReceived(event, level, rewards)
     end
 
     BLU:PlayCategorySound("housingrewardsreceived")
-    if BLU.db and BLU.db.profile and BLU.db.profile.debugMode then
+    if BLU.db and BLU.db.debugMode then
         BLU:Print(BLU:Loc("DEBUG_HOUSING_REWARDS_RECEIVED", tonumber(level) or 0))
     end
 end
@@ -165,7 +165,7 @@ function Housing:OnNewHousingItemAcquired(event, itemType, itemName, icon)
     end
 
     self:MarkDecorCollected()
-    if BLU.db and BLU.db.profile and BLU.db.profile.debugMode then
+    if BLU.db and BLU.db.debugMode then
         BLU:Print(BLU:Loc("DEBUG_HOUSING_DECOR_COLLECTED", tostring(itemName or BLU:Loc("UNKNOWN"))))
     end
 end

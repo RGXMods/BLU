@@ -55,6 +55,8 @@
 
 **<span style="color:#05dffa">🎮 </span> [<span style="color:#8B1538">R</span><span style="color:#7598b6">ealm </span> <span style="color:#8B1538">G</span><span style="color:#7598b6">amers e</span><span style="color:#8B1538">X</span><span style="color:#7598b6">treme</span>](https://realmgx.com) <span style="color:#3598db">-</span> <span style="color:#4ecdc4">Where WoW Enthusiasts Unite!</span>**
 
+</div>
+
 **<span style="color:#e67e23">✨ What awaits you in our Discord:</span>**
 - <span style="color:#2dc26b">🛠️ **Instant addon support**</span> <span style="color:#e67e23">from the</span> <span style="color:#8B1538">R</span><span style="color:#8B1538">G</span><span style="color:#8B1538">X</span> <span style="color:#4ecdc4">Mods</span> <span style="color:#e67e23">team</span>
 - <span style="color:#ff6b6b">🎯 **Feature requests**</span> <span style="color:#e67e23">and direct dev communication</span>
@@ -62,6 +64,8 @@
 - <span style="color:#4ecdc4">🤝 **Community of WoW players**</span> <span style="color:#e67e23">sharing tips and experiences</span>
 - <span style="color:#05dffa">📢 **First to know**</span> <span style="color:#e67e23">about new</span> <span style="color:#8B1538">R</span><span style="color:#8B1538">G</span><span style="color:#8B1538">X</span> <span style="color:#4ecdc4">Mods</span> <span style="color:#e67e23">releases</span>
 - <span style="color:#e67e23">🎉 **Events, giveaways**, and community activities</span>
+
+<div align="center">
 
 <img src="https://raw.githubusercontent.com/donniedice/SimpleQuestPlates/main/images/kiwi.gif" alt="RealmGX Kiwi" width="100">
 
@@ -160,13 +164,13 @@ _<span style="color:#e67e23">Every coffee helps fund new features and sound addi
 
 _`Note`: Each game includes Low, Medium, and High volume variants for all sound types._
 
+</div>
+
 ### <span style="color:#05dffa">🎯 Special Sound Collections</span>
 - **Elden Ring**: 6 unique variations
 - **Shining Force 3**: 11 different battle themes
 - **Warcraft 3**: Multiple unit acknowledgment sounds
 - **The Witcher 3**: Quest completion variations
-
-</div>
 
 ---
 
@@ -370,6 +374,8 @@ _<span style="color:#e67e23">"Make every level count with sounds that matter!"</
 
 **<span style="color:#2dc26b">The Kiwi Says:</span>** <span style="color:#b96ad9">"Bwwiiiee."</span>
 
+</div>
+
 ---
 
 ## Custom Sound Shortcuts
@@ -405,6 +411,10 @@ If you only provide a short file name, BLU will try these common locations autom
 - `Interface\AddOns\BLU\media\sounds\`
 
 The first compatible `.ogg`, `.mp3`, or `.wav` match gets registered and appears under `User Custom Sounds` in the nested dropdown and in the Sounds tab manager list.
+
+---
+
+<div align="center">
 
 ### <span style="color:#05dffa">Part of the RGX Mods Collection</span>
 

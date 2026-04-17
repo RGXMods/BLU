@@ -1,9 +1,9 @@
-# <img src="https://raw.githubusercontent.com/donniedice/BLU/main/media/Textures/logo.png" width="25" height="25"> <span style="color:#05dffa">B</span><span style="color:#05dffa">L</span><span style="color:#05dffa">U</span> <span style="color:#fff">|</span> <span style="color:#05dffa">B</span><span style="color:#fff">etter </span><span style="color:#05dffa">L</span><span style="color:#fff">evel-</span><span style="color:#05dffa">U</span><span style="color:#fff">p</span><span style="color:#05dffa">!</span>
+# <img src="media/Textures/logo.png" width="25" height="25"> <span style="color:#05dffa">B</span><span style="color:#05dffa">L</span><span style="color:#05dffa">U</span> <span style="color:#fff">|</span> <span style="color:#05dffa">B</span><span style="color:#fff">etter </span><span style="color:#05dffa">L</span><span style="color:#fff">evel-</span><span style="color:#05dffa">U</span><span style="color:#fff">p</span><span style="color:#05dffa">!</span>
 ## <img src="https://raw.githubusercontent.com/donniedice/SimpleQuestPlates/main/images/kiwi.gif" height="20"> <span style="color:#8B1538">R</span><span style="color:#8B1538">G</span><span style="color:#8B1538">X</span> <span style="color:#4ecdc4">Mods</span> <span style="color:#3598db">-</span> [<span style="color:#8B1538">R</span><span style="color:#7598b6">ealm</span><span style="color:#8B1538">G</span><span style="color:#8B1538">X</span>](https://realmgx.com) <span style="color:#05dffa">Community Project</span>
 
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/donniedice/BLU/main/media/Textures/logo.png" alt="BLU Logo" width="128" height="128">
+<img src="media/Textures/logo.png" alt="BLU Logo" width="128" height="128">
 
 [![BLU](https://img.shields.io/badge/BLU-Better%20Level%20Up!-05dffa?style=for-the-badge&logo=github&logoColor=white)](https://github.com/donniedice/BLU)
 [![RGX Mods](https://img.shields.io/badge/RGX-Mods%20Collection-8B1538?style=for-the-badge&logo=github&logoColor=white)](https://discord.gg/N7kdKAHVVF)
@@ -77,6 +77,7 @@
 
 ---
 
+<a id="support"></a>
 ## <span style="color:#05dffa">💖 Support </span> <span style="color:#8B1538">R</span><span style="color:#8B1538">G</span><span style="color:#8B1538">X</span> <span style="color:#4ecdc4">Mods</span>
 
 <div align="center">
@@ -109,6 +110,7 @@ _<span style="color:#e67e23">Every coffee helps fund new features and sound addi
 
 ---
 
+<a id="features"></a>
 ## <span style="color:#05dffa">✨ Features</span>
 
 <div align="center">
@@ -214,6 +216,7 @@ BLU:RegisterSoundPack("my_pack", "My Pack", {
 
 ---
 
+<a id="quick-start"></a>
 ## <span style="color:#05dffa">🚀 Quick Start</span>
 
 1. **<span style="color:#2dc26b">Install</span>** <span style="color:#05dffa">B</span><span style="color:#05dffa">L</span><span style="color:#05dffa">U</span> <span style="color:#e67e23">from your preferred platform</span>
@@ -224,6 +227,7 @@ BLU:RegisterSoundPack("my_pack", "My Pack", {
 
 ---
 
+<a id="command-reference"></a>
 ## <span style="color:#05dffa">📋 Command Reference</span>
 
 <span style="color:#e67e23">Use</span> <span style="color:#2dc26b">`/blu`</span> <span style="color:#e67e23">followed by</span><span style="color:#3598db">:</span>
@@ -247,6 +251,7 @@ BLU:RegisterSoundPack("my_pack", "My Pack", {
 
 ---
 
+<a id="compatibility"></a>
 ## <span style="color:#05dffa">📋 Compatibility</span>
 
 <div align="center">
@@ -263,6 +268,7 @@ BLU:RegisterSoundPack("my_pack", "My Pack", {
 
 ---
 
+<a id="installation"></a>
 ## <span style="color:#05dffa">📥 Installation</span>
 
 1. **<span style="color:#2dc26b">Download</span>** <span style="color:#e67e23">from your preferred platform</span><span style="color:#3598db">:</span>
@@ -280,8 +286,7 @@ BLU:RegisterSoundPack("my_pack", "My Pack", {
 
 ## <span style="color:#05dffa">🆕 What's New in v6.4.1</span>
 
-<details>
-<summary><strong><span style="color:#05dffa">🎉 Click to see the latest updates!</span></strong></summary>
+<span style="color:#05dffa">🎉 Click to see the latest updates!</span>
 
 ### <span style="color:#4ecdc4">🆕 Latest Updates</span>
 - <span style="color:#2dc26b">✅ **Sounds tab custom sound manager**</span> <span style="color:#e67e23">— add, view, and remove user custom sounds directly from the dedicated User Custom Sounds column</span>
@@ -289,7 +294,6 @@ BLU:RegisterSoundPack("my_pack", "My Pack", {
 - <span style="color:#ff6b6b">✅ **Cleaner custom sound playback flow**</span> <span style="color:#e67e23">— custom sound entries normalize earlier so UI, logs, and playback stay more consistent</span>
 - <span style="color:#4ecdc4">✅ **Header and Sounds tab polish**</span> <span style="color:#e67e23">— alignment, layout, and custom sound row sizing have been cleaned up across the updated options UI</span>
 
-</details>
 
 ---
 
@@ -420,6 +424,6 @@ The first compatible `.ogg`, `.mp3`, or `.wav` match gets registered and appears
 
 [<span style="color:#05dffa">BLU Classic</span>](https://github.com/donniedice/BLU_Classic) | [<span style="color:#9b59b6">CCU</span>](https://github.com/donniedice/CoordinationCloakUtility) | [<span style="color:#ffe568">FFLU</span>](https://github.com/donniedice/FFLU) | [<span style="color:#58be81">PetBuddy2</span>](https://github.com/donniedice/PetBuddy2) | [<span style="color:#e74c3c">RND</span>](https://github.com/donniedice/remove_nameplate_debuffs) | [<span style="color:#58be81">SQP</span>](https://github.com/donniedice/SimpleQuestPlates) | [<span style="color:#8B4513">SRLU</span>](https://github.com/donniedice/SRLU)
 
-**<span style="color:#8B1538">🎮</span> <span style="color:#8B1538">R</span><span style="color:#8B1538">G</span><span style="color:#8B1538">X</span> <span style="color:#4ecdc4">Mods</span> <span style="color:#3598db">-</span> <span style="color:#e67e23">Powered by</span> [<span style="color:#8B1538">R</span><span style="color:#7598b6">ealm</span><span style="color:#8B1538">G</span><span style="color:#8B1538">X</span>](https://realmgx.com) <span style="color:#e67e23">Community</span>**
+**<img src="https://raw.githubusercontent.com/donniedice/SimpleQuestPlates/main/images/kiwi.gif" width="18" height="18"> <span style="color:#8B1538">R</span><span style="color:#8B1538">G</span><span style="color:#8B1538">X</span> <span style="color:#4ecdc4">Mods</span> <span style="color:#3598db">-</span> <span style="color:#e67e23">Powered by</span> [<span style="color:#8B1538">R</span><span style="color:#7598b6">ealm</span><span style="color:#8B1538">G</span><span style="color:#8B1538">X</span>](https://realmgx.com) <span style="color:#e67e23">Community</span>**
 
 </div>

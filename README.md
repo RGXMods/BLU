@@ -1,5 +1,5 @@
 # <img src="media/Textures/logo.png" width="25" height="25"> <span style="color:#05dffa">B</span><span style="color:#05dffa">L</span><span style="color:#05dffa">U</span> <span style="color:#fff">|</span> <span style="color:#05dffa">B</span><span style="color:#fff">etter </span><span style="color:#05dffa">L</span><span style="color:#fff">evel-</span><span style="color:#05dffa">U</span><span style="color:#fff">p</span><span style="color:#05dffa">!</span>
-## <img src="https://raw.githubusercontent.com/donniedice/SimpleQuestPlates/main/images/kiwi.gif" height="20"> <span style="color:#8B1538">R</span><span style="color:#8B1538">G</span><span style="color:#8B1538">X</span> <span style="color:#4ecdc4">Mods</span> <span style="color:#3598db">-</span> [<span style="color:#8B1538">R</span><span style="color:#7598b6">ealm</span><span style="color:#8B1538">G</span><span style="color:#8B1538">X</span>](https://realmgx.com) <span style="color:#05dffa">Community Project</span>
+## <img src="media/Textures/logo.png" height="20" alt="BLU logo"> <span style="color:#8B1538">R</span><span style="color:#8B1538">G</span><span style="color:#8B1538">X</span> <span style="color:#4ecdc4">Mods</span> <span style="color:#3598db">-</span> [<span style="color:#8B1538">R</span><span style="color:#7598b6">ealm</span><span style="color:#8B1538">G</span><span style="color:#8B1538">X</span>](https://realmgx.com) <span style="color:#05dffa">Community Project</span>
 
 <div align="center">
 
@@ -67,7 +67,7 @@
 
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/donniedice/SimpleQuestPlates/main/images/kiwi.gif" alt="RealmGX Kiwi" width="100">
+<img src="media/Textures/logo.png" alt="BLU Logo" width="100">
 
 **<span style="color:#ff6b6b">⚠️ WARNING:</span>** <span style="color:#e67e23">May cause excessive nostalgia for your favorite games.</span>
 
@@ -374,7 +374,7 @@ _<span style="color:#e67e23">"Make every level count with sounds that matter!"</
 
 **<span style="color:#05dffa">⚠️ WARNING:</span>** <span style="color:#e67e23">May cause excessive nostalgia for your favorite games.</span>
 
-<img src="https://raw.githubusercontent.com/donniedice/SimpleQuestPlates/main/images/kiwi.gif" alt="RealmGX Kiwi" width="80">
+<img src="media/Textures/logo.png" alt="BLU Logo" width="80">
 
 **<span style="color:#2dc26b">The Kiwi Says:</span>** <span style="color:#b96ad9">"Bwwiiiee."</span>
 
@@ -424,6 +424,6 @@ The first compatible `.ogg`, `.mp3`, or `.wav` match gets registered and appears
 
 [<span style="color:#05dffa">BLU Classic</span>](https://github.com/donniedice/BLU_Classic) | [<span style="color:#9b59b6">CCU</span>](https://github.com/donniedice/CoordinationCloakUtility) | [<span style="color:#ffe568">FFLU</span>](https://github.com/donniedice/FinalFantasyLevelUp) | [<span style="color:#58be81">PetBuddy2</span>](https://github.com/donniedice/PetBuddy2) | [<span style="color:#e74c3c">RND</span>](https://github.com/DonnieDice/RemoveNameplateDebuffs) | [<span style="color:#58be81">SQP</span>](https://github.com/donniedice/SimpleQuestPlates) | [<span style="color:#8B4513">SRLU</span>](https://github.com/donniedice/SkyrimLevelUp)
 
-**<img src="https://raw.githubusercontent.com/donniedice/SimpleQuestPlates/main/images/kiwi.gif" width="18" height="18"> <span style="color:#8B1538">R</span><span style="color:#8B1538">G</span><span style="color:#8B1538">X</span> <span style="color:#4ecdc4">Mods</span> <span style="color:#3598db">-</span> <span style="color:#e67e23">Powered by</span> [<span style="color:#8B1538">R</span><span style="color:#7598b6">ealm</span><span style="color:#8B1538">G</span><span style="color:#8B1538">X</span>](https://realmgx.com) <span style="color:#e67e23">Community</span>**
+**<img src="media/Textures/logo.png" width="18" height="18" alt="BLU logo"> <span style="color:#8B1538">R</span><span style="color:#8B1538">G</span><span style="color:#8B1538">X</span> <span style="color:#4ecdc4">Mods</span> <span style="color:#3598db">-</span> <span style="color:#e67e23">Powered by</span> [<span style="color:#8B1538">R</span><span style="color:#7598b6">ealm</span><span style="color:#8B1538">G</span><span style="color:#8B1538">X</span>](https://realmgx.com) <span style="color:#e67e23">Community</span>**
 
 </div>

@@ -112,18 +112,28 @@ _<span style="color:#e67e23">Every coffee helps fund new features and sound addi
 | Feature | Description |
 |---------|-------------|
 | 🎵 **50+ Game Sounds** | Choose from iconic sounds from games like Final Fantasy, Zelda, Mario, and more |
-| 🎯 **Achievements** | Celebrate achievements with unique sounds |
-| 🐾 **Battle Pets** | Custom sounds when leveling battle pets |
-| ⚔️ **Delve Companion** | Sounds for Delve Companion level-ups |
-| 🏆 **Honor Ranks** | Audio feedback for honor rank gains |
-| ⭐ **Level-Up** | Replace default level-up sounds |
-| 👑 **Renown Ranks** | Sounds for renown reputation gains |
-| 📈 **Reputation** | Custom sounds for reputation increases |
-| 📜 **Quests** | Unique sounds for quest accept/turn-in |
-| 🛒 **Trading Post** | Sounds for Trading Post activities |
-| 🔊 **Volume Control** | 3-tier volume system for BLU sounds (low/med/high) |
-| 🎚️ **Sound Channels** | Choose which audio channel to use (Master, Sound, Music, etc.) |
-| 🎛️ **Per-Event Override** | Customize volume for specific events |
+| 🏆 **Achievement Earned** | Play a sound when you earn an Achievement |
+| 📊 **Achievement Progress** | Play a sound when you complete a criteria step toward an Achievement |
+| 🐾 **Battle-Pet Level-Up** | Play a sound when a Battle-Pet levels up |
+| 🥚 **Battle-Pet Captured** | Play a sound when you capture a Battle-Pet |
+| ⛏️ **Delve Companion Level-Up** | Play a sound when your Delve Companion levels up |
+| 💀 **Delve Life Lost** | Play a sound when you lose a life inside a Delve |
+| ❤️ **Delve Life Gained** | Play a sound when you gain a life inside a Delve |
+| ⚔️ **Honor Rank Up** | Play a sound when you gain an Honor Rank |
+| 🏠 **Housing XP Gained** | Play a sound when your house gains favor (XP) |
+| 🏠 **Housing Level-Up** | Play a sound when your house levels up |
+| 🏠 **Housing Rewards Received** | Play a sound when you receive housing level rewards |
+| 🏠 **Housing Decor Collected** | Play a sound when you collect a new Decor item |
+| 📈 **Character Level-Up** | Play a sound when your character levels up |
+| 📋 **Quest Accepted** | Play a sound when you accept a quest |
+| 📋 **Quest Turned In** | Play a sound when you turn in a quest |
+| 📋 **Quest Complete** | Play a sound when you reach a quest giver with a completed quest |
+| 📋 **Quest Objective Progress** | Play a sound when a tracked quest objective advances |
+| 🌟 **Renown Rank Up** | Play a sound when you gain a Renown rank with a major faction |
+| 👥 **Reputation Rank Up** | Play a sound when your standing with a faction increases |
+| 🏪 **Trading Post Activity** | Play a sound when you complete a Trading Post activity or purchase |
+| 🔇 **Granular Default Sound Muting** | Selectively mutes WoW's built-in sounds per-event so you never hear both at once |
+| 🔊 **Volume Control** | Per-event volume adjustment |
 | 📦 **Sound Pack Support** | Auto-discovers sounds from other addons — no dependencies required |
 | 🗂️ **User Custom Sounds** | Add your own `.ogg`/`.mp3`/`.wav` files from the Sounds tab or with `/blu addcustom` |
 | 🔌 **Third-Party API** | Addon devs can register BLU-compatible packs via `BLU:RegisterSoundPack()` or bridge simple single-file packs via `BLU:RegisterExternalSoundPack()` |
@@ -173,16 +183,44 @@ _`Note`: Each game includes Low, Medium, and High volume variants for all sound 
 ## <span style="color:#05dffa">🎮 Sound Events</span>
 
 ### <span style="color:#4ecdc4">Supported Events:</span>
-- **<span style="color:#2dc26b">Level-Up</span><span style="color:#3598db">:</span>** <span style="color:#e67e23">Play custom sounds when you gain a level</span>
-- **<span style="color:#05dffa">Achievements</span><span style="color:#3598db">:</span>** <span style="color:#e67e23">Celebrate achievements with unique sounds</span>
-- **<span style="color:#b96ad9">Quest Accept</span><span style="color:#3598db">:</span>** <span style="color:#e67e23">Custom sound when accepting quests</span>
-- **<span style="color:#ff6b6b">Quest Complete</span><span style="color:#3598db">:</span>** <span style="color:#e67e23">Rewarding sounds for quest turn-ins</span>
-- **<span style="color:#4ecdc4">Reputation Gains</span><span style="color:#3598db">:</span>** <span style="color:#e67e23">Audio feedback for reputation increases</span>
-- **<span style="color:#2dc26b">Battle Pet Level-Up</span><span style="color:#3598db">:</span>** <span style="color:#e67e23">Special sounds for pet leveling (Retail only)</span>
-- **<span style="color:#05dffa">Trading Post</span><span style="color:#3598db">:</span>** <span style="color:#e67e23">Completion sounds for activities (Retail only)</span>
-- **<span style="color:#b96ad9">Honor Ranks</span><span style="color:#3598db">:</span>** <span style="color:#e67e23">Recognition for PvP progression (Retail only)</span>
-- **<span style="color:#ff6b6b">Renown</span><span style="color:#3598db">:</span>** <span style="color:#e67e23">Sounds for renown reputation gains (Retail only)</span>
-- **<span style="color:#4ecdc4">Delve Companion</span><span style="color:#3598db">:</span>** <span style="color:#e67e23">Level-up sounds for your companion (Retail only)</span>
+
+**Achievements**
+- **<span style="color:#2dc26b">Achievement Earned</span>:** Play a sound when you earn an Achievement
+- **<span style="color:#2dc26b">Achievement Progress</span>:** Play a sound when you complete a criteria step toward an Achievement
+
+**Battle-Pets**
+- **<span style="color:#ff69b4">Battle-Pet Level-Up</span>:** Play a sound when a Battle-Pet levels up
+- **<span style="color:#ff69b4">Battle-Pet Captured</span>:** Play a sound when you capture a Battle-Pet
+
+**Delves**
+- **<span style="color:#b96ad9">Delve Companion Level-Up</span>:** Play a sound when your Delve Companion levels up
+- **<span style="color:#b96ad9">Delve Life Lost</span>:** Play a sound when you lose a life inside a Delve
+- **<span style="color:#b96ad9">Delve Life Gained</span>:** Play a sound when you gain a life inside a Delve
+
+**Honor**
+- **<span style="color:#ff6b6b">Honor Rank Up</span>:** Play a sound when you gain an Honor Rank
+
+**Housing**
+- **<span style="color:#4a90e2">Housing XP Gained</span>:** Play a sound when your house gains favor (XP)
+- **<span style="color:#4a90e2">Housing Level-Up</span>:** Play a sound when your house levels up
+- **<span style="color:#4a90e2">Housing Rewards Received</span>:** Play a sound when you receive housing level rewards
+- **<span style="color:#4a90e2">Housing Decor Collected</span>:** Play a sound when you collect a new Decor item
+
+**Level-Up**
+- **<span style="color:#ffe568">Character Level-Up</span>:** Play a sound when your character levels up
+
+**Quests**
+- **<span style="color:#ffe568">Quest Accepted</span>:** Play a sound when you accept a quest
+- **<span style="color:#ffe568">Quest Turned In</span>:** Play a sound when you turn in a quest
+- **<span style="color:#ffe568">Quest Complete</span>:** Play a sound when you reach a quest giver with a completed quest
+- **<span style="color:#ffe568">Quest Objective Progress</span>:** Play a sound when a tracked quest objective advances
+
+**Reputation**
+- **<span style="color:#4ecdc4">Renown Rank Up</span>:** Play a sound when you gain a Renown rank with a major faction
+- **<span style="color:#4ecdc4">Reputation Rank Up</span>:** Play a sound when your standing with a faction increases
+
+**Trading Post**
+- **<span style="color:#ff6b6b">Trading Post Activity</span>:** Play a sound when you complete a Trading Post activity or make a purchase
 
 ### <span style="color:#4ecdc4">Sound System:</span>
 **<span style="color:#05dffa">BLU uses a 3-tier sound system:</span>**

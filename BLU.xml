@@ -29,6 +29,8 @@
     <Script file="core/interface/options/general.lua"/>
     <Script file="core/interface/options/profiles.lua"/>
     <Script file="core/interface/options/sounds.lua"/>
+<Script file="core/interface/options/housing.lua"/>
+<Script file="core/interface/options/modules.lua"/>
     <Script file="core/interface/options/sound_panel.lua"/>
     <Script file="core/interface/options/main.lua"/>
 

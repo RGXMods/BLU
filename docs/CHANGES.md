@@ -4,6 +4,19 @@
 
 ## Current Production Release
 
+### [v6.5.1](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.5.1.md) - 2026-05-02
+
+- Fixed volume sliders not appearing for BLU game sounds (Lua pattern bug in registry).
+- Replaced OptionsSliderTemplate with consistent custom track-style volume control across all panels.
+- Volume label (Low/Medium/High) now shows below slider on hover only.
+- Single-column rows shrunk from 90px to 68px so 4 housing options fit without overlap.
+- Test buttons always align to the right side of the row.
+- Volume slider centered between dropdown and test button in both single and 2-column layouts.
+- Volume fill/thumb uses percentage-based positioning with deferred layout fix.
+
+Full notes:
+- [v6.5.1 changelog](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.5.1.md)
+
 ### [v6.5.0](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.5.0.md) - 2026-04-10
 
 - Added a real `Combat` options page with the same module toggle header pattern used by the other panels.

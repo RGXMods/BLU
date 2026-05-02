@@ -117,8 +117,8 @@ function BLU.CreateHousingPanel(panel)
         return
     end
 
-    BLU.CreateSoundDropdown(content, "housing", "House XP Gained Sound", -54, "housingxpgained")
-    BLU.CreateSoundDropdown(content, "housing", "House Leveled Up Sound", -144, "housingleveledup")
-    BLU.CreateSoundDropdown(content, "housing", "House Rewards Received Sound", -234, "housingrewardsreceived")
-    BLU.CreateSoundDropdown(content, "housing", "New Decor Collected Sound", -324, "housingdecorcollected")
+	BLU.CreateSoundDropdown(content, "housing", "House XP Gained Sound", -54, "housingxpgained")
+	BLU.CreateSoundDropdown(content, "housing", "House Leveled Up Sound", -124, "housingleveledup")
+	BLU.CreateSoundDropdown(content, "housing", "House Rewards Received Sound", -194, "housingrewardsreceived")
+	BLU.CreateSoundDropdown(content, "housing", "New Decor Collected Sound", -264, "housingdecorcollected")
 end

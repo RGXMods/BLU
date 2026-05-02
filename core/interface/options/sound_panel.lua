@@ -35,102 +35,136 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 	local container = CreateFrame("Frame", nil, parent, "BackdropTemplate")
 	container:SetPoint("TOPLEFT", parent, "TOPLEFT", 0, yOffset)
 	container:SetPoint("RIGHT", parent, "RIGHT", -10, 0)
-	container:SetHeight(90)
+	container:SetHeight(68)
 	container:SetBackdrop(BLU.Modules.design.Backdrops.Solid)
 	container:SetBackdropColor(0.08, 0.11, 0.15, 0.92)
 	container:SetBackdropBorderColor(0.14, 0.20, 0.28, 1)
 
 	local dropdownLabel = container:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	dropdownLabel:SetPoint("TOPLEFT", 10, -8)
+	dropdownLabel:SetPoint("TOPLEFT", 10, -6)
+	dropdownLabel:SetPoint("RIGHT", -10, 0)
+	dropdownLabel:SetJustifyH("LEFT")
 	dropdownLabel:SetTextColor(1.0, 0.82, 0.18)
 	dropdownLabel:SetText(label)
 
-	local currentLabel = container:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-	currentLabel:SetPoint("TOPLEFT", dropdownLabel, "BOTTOMLEFT", 0, -6)
-	currentLabel:SetText("Currently selected: ")
-	currentLabel:SetTextColor(0.70, 0.78, 0.86)
-
 	local currentSound = container:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-	currentSound:SetPoint("LEFT", currentLabel, "RIGHT", 5, 0)
-	currentSound:SetTextColor(0.02, 0.87, 0.98)
-	currentSound:SetWidth(280)
+	currentSound:SetPoint("TOPLEFT", dropdownLabel, "BOTTOMLEFT", 0, -2)
+	currentSound:SetPoint("RIGHT", -10, 0)
 	currentSound:SetJustifyH("LEFT")
+	currentSound:SetTextColor(0.02, 0.87, 0.98)
 	currentSound:SetWordWrap(false)
 	if currentSound.SetMaxLines then
 		currentSound:SetMaxLines(1)
 	end
 
-	local function volumeToStep(volume)
-		if volume == "low" then
-			return 1
-		elseif volume == "high" then
-			return 3
-		end
-		return 2
+	local function getVolume()
+		return (BLU.db and BLU.db.soundVolumes and BLU.db.soundVolumes[actualEventType]) or "medium"
 	end
 
-	local function stepToVolume(step)
-		if step <= 1 then
-			return "low"
-		elseif step >= 3 then
-			return "high"
-		end
-		return "medium"
-	end
-
-	local volumeSlider = CreateFrame("Slider", nil, container, "OptionsSliderTemplate")
-	volumeSlider:SetWidth(84)
-	volumeSlider:SetMinMaxValues(1, 3)
-	volumeSlider:SetValueStep(1)
-	volumeSlider:SetObeyStepOnDrag(true)
-	volumeSlider.Low:SetText("")
-	volumeSlider.High:SetText("")
-	volumeSlider.Text:SetText("")
-	volumeSlider.Low:Hide()
-	volumeSlider.High:Hide()
-
-	local medLabel = container:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-	medLabel:SetPoint("TOP", volumeSlider, "BOTTOM", 0, 2)
-	medLabel:SetText("Medium")
-	medLabel:SetTextColor(0.8, 0.8, 0.8)
-
-	local sliderUpdating = false
-	local function setVolumeSliderValue(volume)
-		local step = volumeToStep(volume)
-		sliderUpdating = true
-		volumeSlider:SetValue(step)
-		sliderUpdating = false
-		medLabel:SetText(volume:gsub("^%l", string.upper))
-	end
-
-	volumeSlider:SetScript("OnValueChanged", function(self, value)
-		if sliderUpdating then
-			return
-		end
-
-		local step = math.floor((value or 2) + 0.5)
-		if step < 1 then step = 1 end
-		if step > 3 then step = 3 end
-
-		if self:GetValue() ~= step then
-			sliderUpdating = true
-			self:SetValue(step)
-			sliderUpdating = false
-		end
-
-		local volume = stepToVolume(step)
-		medLabel:SetText(volume:gsub("^%l", string.upper))
-
-		if not BLU.db then
-			return
-		end
+	local function setVolume(volume)
+		if not BLU.db then return end
 		BLU.db.soundVolumes = BLU.db.soundVolumes or {}
 		BLU.db.soundVolumes[actualEventType] = volume
 		BLU:PrintDebug("[Options/SoundPanel] Set volume for '" .. tostring(actualEventType) .. "' to '" .. tostring(volume) .. "'")
+	end
+
+	local volumeControl = CreateFrame("Frame", nil, container)
+	volumeControl:SetHeight(18)
+
+	local volButton = CreateFrame("Button", nil, volumeControl)
+	volButton:SetAllPoints(volumeControl)
+	volButton:SetHeight(18)
+
+	local volLabel = volumeControl:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+	volLabel:SetTextColor(0.70, 0.78, 0.86)
+	volLabel:SetPoint("TOP", volButton, "BOTTOM", 0, 2)
+	volLabel:Hide()
+
+	volButton:SetScript("OnEnter", function() volLabel:Show() end)
+	volButton:SetScript("OnLeave", function() volLabel:Hide() end)
+
+	local volTrack = volumeControl:CreateTexture(nil, "ARTWORK")
+	volTrack:SetHeight(4)
+	volTrack:SetPoint("LEFT", volButton, "LEFT", 0, 0)
+	volTrack:SetPoint("RIGHT", volButton, "RIGHT", 0, 0)
+	volTrack:SetPoint("CENTER", volButton, "CENTER", 0, 0)
+	volTrack:SetColorTexture(0.14, 0.20, 0.28, 1)
+
+	local volFill = volumeControl:CreateTexture(nil, "ARTWORK")
+	volFill:SetHeight(4)
+	volFill:SetPoint("LEFT", volTrack, "LEFT", 0, 0)
+	volFill:SetColorTexture(unpack(BLU.Modules.design.Colors.Primary))
+
+	local volThumb = volumeControl:CreateTexture(nil, "ARTWORK")
+	volThumb:SetSize(8, 8)
+	volThumb:SetTexture("Interface\\Buttons\\WHITE8x8")
+	volThumb:SetVertexColor(1, 1, 1, 1)
+
+	local function applyVolume(volume)
+		if volume == "low" then
+			-- nothing
+		elseif volume == "high" then
+			-- nothing
+		else
+			volume = "medium"
+		end
+		setVolume(volume)
+
+		local function updateVisuals()
+			local trackWidth = volTrack:GetWidth()
+			if trackWidth < 1 then return false end
+			local pct = 0.50
+			if volume == "low" then
+				pct = 0.15
+			elseif volume == "high" then
+				pct = 0.85
+			end
+			local fillW = math.max(4, trackWidth * pct)
+			volFill:SetWidth(fillW)
+			volThumb:ClearAllPoints()
+			volThumb:SetPoint("CENTER", volTrack, "LEFT", fillW, 0)
+			volLabel:SetText(volume:gsub("^%l", string.upper))
+			return true
+		end
+
+		if not updateVisuals() then
+			volumeControl:SetScript("OnUpdate", function()
+				if updateVisuals() then
+					volumeControl:SetScript("OnUpdate", nil)
+				end
+			end)
+		end
+	end
+
+	volButton:SetScript("OnMouseDown", function(self)
+		local cursorX = GetCursorPosition()
+		local scale = self:GetEffectiveScale()
+		local left = self:GetLeft() and (self:GetLeft() * scale) or 0
+		local width = math.max(1, (self:GetWidth() or 1) * scale)
+		local percent = math.max(0, math.min(1, (cursorX - left) / width))
+		if percent < 0.34 then
+			applyVolume("low")
+		elseif percent > 0.66 then
+			applyVolume("high")
+		else
+			applyVolume("medium")
+		end
 	end)
 
-	local initialVolume = (BLU.db and BLU.db.soundVolumes and BLU.db.soundVolumes[actualEventType]) or "medium"
-	setVolumeSliderValue(initialVolume)
+	volButton:SetScript("OnMouseWheel", function()
+		local current = getVolume()
+		if current == "low" then
+			applyVolume("medium")
+		elseif current == "medium" then
+			applyVolume("high")
+		else
+			applyVolume("low")
+		end
+	end)
+	volButton:EnableMouseWheel(true)
+
+	applyVolume(getVolume())
+	volumeControl:Hide()
 
 	local function isBluVolumeSelection(selectionValue)
 		if selectionValue == "random" then
@@ -159,13 +193,10 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 		local showVolume = isBluVolumeSelection(selectionValue)
 
 		if showVolume then
-			local stored = (BLU.db and BLU.db.soundVolumes and BLU.db.soundVolumes[actualEventType]) or "medium"
-			setVolumeSliderValue(stored)
-			volumeSlider:Show()
-			medLabel:Show()
+			applyVolume(getVolume())
+			volumeControl:Show()
 		else
-			volumeSlider:Hide()
-			medLabel:Hide()
+			volumeControl:Hide()
 		end
 
 		return showVolume
@@ -193,13 +224,13 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 	end)
 
 	local dropdown = CreateFrame("Frame", "BLUDropdown_" .. actualEventType, container, "UIDropDownMenuTemplate")
-	dropdown:SetPoint("TOPLEFT", currentLabel, "BOTTOMLEFT", -16, -5)
+	dropdown:SetPoint("TOPLEFT", currentSound, "BOTTOMLEFT", -16, -5)
 	UIDropDownMenu_SetWidth(dropdown, 220)
 	dropdown:SetAlpha(0)
 	dropdown:SetScale(0.01)
 
 	local dropdownButton = CreateFrame("Button", nil, container, "BackdropTemplate")
-	dropdownButton:SetPoint("TOPLEFT", currentLabel, "BOTTOMLEFT", 0, -7)
+	dropdownButton:SetPoint("TOPLEFT", currentSound, "BOTTOMLEFT", 0, -5)
 	dropdownButton:SetHeight(22)
 	dropdownButton:SetWidth(220)
 	dropdownButton:SetBackdrop(BLU.Modules.design.Backdrops.Button)
@@ -230,19 +261,24 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 
 	local function LayoutControls(showVolume)
 		dropdownButton:ClearAllPoints()
-		volumeSlider:ClearAllPoints()
-		medLabel:ClearAllPoints()
+		volumeControl:ClearAllPoints()
 		testBtn:ClearAllPoints()
 
-		dropdownButton:SetPoint("TOPLEFT", currentLabel, "BOTTOMLEFT", 0, -7)
+		dropdownButton:SetPoint("LEFT", container, "LEFT", 10, 0)
+		dropdownButton:SetPoint("TOP", currentSound, "BOTTOM", 0, -5)
 		dropdownButton:SetWidth(220)
 
-		if showVolume then
-			volumeSlider:SetPoint("LEFT", dropdownButton, "RIGHT", 16, 0)
-			medLabel:SetPoint("TOP", volumeSlider, "BOTTOM", 0, 2)
-			testBtn:SetPoint("LEFT", volumeSlider, "RIGHT", 18, 0)
+		testBtn:SetPoint("RIGHT", container, "RIGHT", -10, 0)
+		testBtn:SetPoint("TOP", currentSound, "BOTTOM", 0, -5)
+
+	if showVolume then
+		volumeControl:SetPoint("CENTER", dropdownButton, "CENTER", 0, 0)
+		volumeControl:SetPoint("LEFT", dropdownButton, "RIGHT", 12, 0)
+		volumeControl:SetPoint("RIGHT", testBtn, "LEFT", -12, 0)
+		volumeControl:Show()
+		applyVolume(getVolume())
 		else
-			testBtn:SetPoint("LEFT", dropdownButton, "RIGHT", 18, 0)
+			volumeControl:Hide()
 		end
 
 		UIDropDownMenu_SetWidth(dropdown, 220)
@@ -832,19 +868,19 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
 	local dropY = -54
 	if eventType == "quest" then
 		CreateSoundDropdown(content, "quest", "Quest Turn-In Sound", dropY, "questturnin")
-		CreateSoundDropdown(content, "quest", "Quest Accept Sound", dropY - 90, "questaccept")
-		CreateSoundDropdown(content, "quest", "Quest Complete Sound", dropY - 180, "questcomplete")
-		CreateSoundDropdown(content, "quest", "Quest Progress Sound", dropY - 270, "questprogress")
+		CreateSoundDropdown(content, "quest", "Quest Accept Sound", dropY - 70, "questaccept")
+		CreateSoundDropdown(content, "quest", "Quest Complete Sound", dropY - 140, "questcomplete")
+		CreateSoundDropdown(content, "quest", "Quest Progress Sound", dropY - 210, "questprogress")
 	elseif eventType == "delvecompanion" then
 		CreateSoundDropdown(content, eventType, "Companion Level-Up Sound", dropY)
-		CreateSoundDropdown(content, eventType, "Delve Life Lost Sound", dropY - 90, "delvelifelost")
-		CreateSoundDropdown(content, eventType, "Delve Life Gained Sound", dropY - 180, "delvelifegained")
+		CreateSoundDropdown(content, eventType, "Delve Life Lost Sound", dropY - 70, "delvelifelost")
+		CreateSoundDropdown(content, eventType, "Delve Life Gained Sound", dropY - 140, "delvelifegained")
 	elseif eventType == "achievement" then
 		CreateSoundDropdown(content, eventType, eventName .. " Sound", dropY)
-		CreateSoundDropdown(content, eventType, "Achievement Progress Sound", dropY - 90, "achievementprogress")
+		CreateSoundDropdown(content, eventType, "Achievement Progress Sound", dropY - 70, "achievementprogress")
 	elseif eventType == "battlepet" then
 		CreateSoundDropdown(content, eventType, eventName .. " Level-Up Sound", dropY)
-		CreateSoundDropdown(content, eventType, "Pet Capture Sound", dropY - 90, "petcapture")
+		CreateSoundDropdown(content, eventType, "Pet Capture Sound", dropY - 70, "petcapture")
 	else
 		CreateSoundDropdown(content, eventType, eventName .. " Sound", dropY)
 	end
@@ -941,9 +977,9 @@ function BLU.CreateHousingPanel(panel)
 
 	-- Sound dropdowns directly below titleBar
 	CreateSoundDropdown(content, "housing", "House XP Gained Sound", -54, "housingxpgained")
-	CreateSoundDropdown(content, "housing", "House Leveled Up Sound", -144, "housingleveledup")
-	CreateSoundDropdown(content, "housing", "House Rewards Received Sound", -234, "housingrewardsreceived")
-	CreateSoundDropdown(content, "housing", "New Decor Collected Sound", -324, "housingdecorcollected")
+	CreateSoundDropdown(content, "housing", "House Leveled Up Sound", -124, "housingleveledup")
+	CreateSoundDropdown(content, "housing", "House Rewards Received Sound", -194, "housingrewardsreceived")
+	CreateSoundDropdown(content, "housing", "New Decor Collected Sound", -264, "housingdecorcollected")
 end
 
 

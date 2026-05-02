@@ -233,19 +233,22 @@ local function SelectionHasVolumeVariants(selectionValue)
     return soundInfo and soundInfo.hasVolumeVariants == true or false
 end
 
-local function BuildSoundButtonMenu(dropdownFrame, getTriggerId, labelFontString)
+local function BuildSoundButtonMenu(dropdownFrame, getTriggerId, labelFontString, onSelectionChanged)
     local hierarchy = GetCombatHierarchy()
 
-    local function onSelected(value)
-        local triggerId = getTriggerId()
-        if not triggerId then
-            return
-        end
+	local function onSelected(value)
+		local triggerId = getTriggerId()
+		if not triggerId then
+			return
+		end
 
-        SetSelectedSound(triggerId, value)
-        labelFontString:SetText(ResolveDisplayText(value, hierarchy))
-        CloseDropDownMenus()
-    end
+		SetSelectedSound(triggerId, value)
+		labelFontString:SetText(ResolveDisplayText(value, hierarchy))
+		if onSelectionChanged then
+			onSelectionChanged()
+		end
+		CloseDropDownMenus()
+	end
 
     dropdownFrame.initialize = function(_, level, menuList)
         local MAX_SOUNDS_PER_MENU_PAGE = 24
@@ -636,117 +639,142 @@ local function BuildSoundButtonMenu(dropdownFrame, getTriggerId, labelFontString
     end
 end
 
-local function CreateVolumeControl(parent, getTriggerId)
-    local frame = CreateFrame("Frame", nil, parent)
-    frame:SetSize(64, 28)
+	local function CreateVolumeControl(parent, getTriggerId)
+	local frame = CreateFrame("Frame", nil, parent)
+	frame:SetHeight(18)
 
-    local button = CreateFrame("Button", nil, frame)
-    button:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 0, 0)
-    button:SetSize(64, 18)
+	local button = CreateFrame("Button", nil, frame)
+	button:SetAllPoints(frame)
+	button:SetHeight(18)
 
-    local label = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    label:SetTextColor(0.70, 0.78, 0.86)
-    label:SetPoint("BOTTOMLEFT", button, "TOPLEFT", 0, 1)
+	local label = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+	label:SetTextColor(0.70, 0.78, 0.86)
+	label:SetPoint("TOP", button, "BOTTOM", 0, -2)
+	label:Hide()
 
-    local track = frame:CreateTexture(nil, "ARTWORK")
-    track:SetSize(64, 4)
-    track:SetPoint("CENTER", button, "CENTER", 0, 0)
-    track:SetColorTexture(0.14, 0.20, 0.28, 1)
+	button:SetScript("OnEnter", function() label:Show() end)
+	button:SetScript("OnLeave", function() label:Hide() end)
 
-    local fill = frame:CreateTexture(nil, "ARTWORK")
-    fill:SetHeight(4)
-    fill:SetPoint("LEFT", track, "LEFT", 0, 0)
-    fill:SetColorTexture(unpack(BLU.Modules.design.Colors.Primary))
+	local track = frame:CreateTexture(nil, "ARTWORK")
+	track:SetHeight(4)
+	track:SetPoint("LEFT", button, "LEFT", 0, 0)
+	track:SetPoint("RIGHT", button, "RIGHT", 0, 0)
+	track:SetPoint("CENTER", button, "CENTER", 0, 0)
+	track:SetColorTexture(0.14, 0.20, 0.28, 1)
 
-    local thumb = frame:CreateTexture(nil, "ARTWORK")
-    thumb:SetSize(8, 8)
-    thumb:SetTexture("Interface\\Buttons\\WHITE8x8")
-    thumb:SetVertexColor(1, 1, 1, 1)
+	local fill = frame:CreateTexture(nil, "ARTWORK")
+	fill:SetHeight(4)
+	fill:SetPoint("LEFT", track, "LEFT", 0, 0)
+	fill:SetColorTexture(unpack(BLU.Modules.design.Colors.Primary))
 
-    local function apply(volume)
-        local triggerId = getTriggerId()
-        if not triggerId then
-            return
-        end
+	local thumb = frame:CreateTexture(nil, "ARTWORK")
+	thumb:SetSize(8, 8)
+	thumb:SetTexture("Interface\\Buttons\\WHITE8x8")
+	thumb:SetVertexColor(1, 1, 1, 1)
 
-        local width = 28
-        if volume == "low" then
-            width = 18
-        elseif volume == "high" then
-            width = 56
-        else
-            volume = "medium"
-        end
+	local function apply(volume)
+		local triggerId = getTriggerId()
+		if not triggerId then
+			return
+		end
 
-        SetSelectedVolume(triggerId, volume)
-        fill:SetWidth(width)
-        thumb:ClearAllPoints()
-        thumb:SetPoint("CENTER", track, "LEFT", width, 0)
-        label:SetText(volume:gsub("^%l", string.upper))
-    end
+		if volume == "low" then
+			-- nothing
+		elseif volume == "high" then
+			-- nothing
+		else
+			volume = "medium"
+		end
 
-    button:SetScript("OnMouseDown", function(self)
-        local cursorX = GetCursorPosition()
-        local scale = self:GetEffectiveScale()
-        local left = self:GetLeft() and (self:GetLeft() * scale) or 0
-        local width = math.max(1, (self:GetWidth() or 1) * scale)
-        local percent = math.max(0, math.min(1, (cursorX - left) / width))
-        if percent < 0.34 then
-            apply("low")
-        elseif percent > 0.66 then
-            apply("high")
-        else
-            apply("medium")
-        end
-    end)
+		SetSelectedVolume(triggerId, volume)
 
-    button:SetScript("OnMouseWheel", function()
-        local triggerId = getTriggerId()
-        if not triggerId then
-            return
-        end
+		local function updateVisuals()
+			local trackWidth = track:GetWidth()
+			if trackWidth < 1 then return false end
+			local pct = 0.50
+			if volume == "low" then
+				pct = 0.15
+			elseif volume == "high" then
+				pct = 0.85
+			end
+			local fillW = math.max(4, trackWidth * pct)
+			fill:SetWidth(fillW)
+			thumb:ClearAllPoints()
+			thumb:SetPoint("CENTER", track, "LEFT", fillW, 0)
+			label:SetText(volume:gsub("^%l", string.upper))
+			return true
+		end
 
-        local current = GetSelectedVolume(triggerId)
-        if current == "low" then
-            apply("medium")
-        elseif current == "medium" then
-            apply("high")
-        else
-            apply("low")
-        end
-    end)
-    button:EnableMouseWheel(true)
+		if not updateVisuals() then
+			frame:SetScript("OnUpdate", function()
+				if updateVisuals() then
+					frame:SetScript("OnUpdate", nil)
+				end
+			end)
+		end
+	end
 
-    apply(GetSelectedVolume(getTriggerId()))
-    frame.Refresh = function()
-        local triggerId = getTriggerId()
-        if not triggerId then
-            return
-        end
+	button:SetScript("OnMouseDown", function(self)
+		local cursorX = GetCursorPosition()
+		local scale = self:GetEffectiveScale()
+		local left = self:GetLeft() and (self:GetLeft() * scale) or 0
+		local width = math.max(1, (self:GetWidth() or 1) * scale)
+		local percent = math.max(0, math.min(1, (cursorX - left) / width))
+		if percent < 0.34 then
+			apply("low")
+		elseif percent > 0.66 then
+			apply("high")
+		else
+			apply("medium")
+		end
+	end)
 
-        apply(GetSelectedVolume(triggerId))
-    end
+	button:SetScript("OnMouseWheel", function()
+		local triggerId = getTriggerId()
+		if not triggerId then
+			return
+		end
 
-    return frame
-end
+		local current = GetSelectedVolume(triggerId)
+		if current == "low" then
+			apply("medium")
+		elseif current == "medium" then
+			apply("high")
+		else
+			apply("low")
+		end
+	end)
+	button:EnableMouseWheel(true)
 
-local function CreateCombatRow(parent)
-    local row = CreateFrame("Frame", nil, parent, "BackdropTemplate")
-    row:SetHeight(72)
-    row:SetBackdrop(BLU.Modules.design.Backdrops.Solid)
-    row:SetBackdropColor(0.08, 0.11, 0.15, 0.92)
-    row:SetBackdropBorderColor(0.14, 0.20, 0.28, 1)
+	apply(GetSelectedVolume(getTriggerId()))
+	frame.Refresh = function()
+		local triggerId = getTriggerId()
+		if not triggerId then
+			return
+		end
+		apply(GetSelectedVolume(triggerId))
+	end
 
-    local title = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    title:SetPoint("TOPLEFT", 10, -6)
-    title:SetPoint("RIGHT", -10, 0)
-    title:SetJustifyH("LEFT")
-    title:SetTextColor(1.0, 0.82, 0.18)
+	return frame
+	end
 
-    local dropdownButton = CreateFrame("Button", nil, row, "BackdropTemplate")
-    dropdownButton:SetPoint("TOPLEFT", row, "TOPLEFT", 10, -28)
-    dropdownButton:SetHeight(22)
-    dropdownButton:SetWidth(146)
+	local function CreateCombatRow(parent)
+	local row = CreateFrame("Frame", nil, parent, "BackdropTemplate")
+	row:SetHeight(62)
+	row:SetBackdrop(BLU.Modules.design.Backdrops.Solid)
+	row:SetBackdropColor(0.08, 0.11, 0.15, 0.92)
+	row:SetBackdropBorderColor(0.14, 0.20, 0.28, 1)
+
+	local title = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	title:SetPoint("TOPLEFT", 8, -4)
+	title:SetPoint("RIGHT", -8, 0)
+	title:SetJustifyH("LEFT")
+	title:SetTextColor(1.0, 0.82, 0.18)
+
+	local dropdownButton = CreateFrame("Button", nil, row, "BackdropTemplate")
+	dropdownButton:SetPoint("TOPLEFT", row, "TOPLEFT", 8, -22)
+	dropdownButton:SetHeight(20)
+	dropdownButton:SetWidth(136)
     dropdownButton:SetBackdrop(BLU.Modules.design.Backdrops.Button)
     dropdownButton:SetBackdropColor(0.10, 0.14, 0.19, 0.96)
     dropdownButton:SetBackdropBorderColor(0.14, 0.20, 0.28, 1)
@@ -764,22 +792,22 @@ local function CreateCombatRow(parent)
     dropdownArrow:SetText("v")
     dropdownArrow:SetTextColor(0.70, 0.78, 0.86, 1)
 
-    local dropdownFrame = CreateFrame("Frame", nil, row, "UIDropDownMenuTemplate")
-    dropdownFrame.displayMode = "MENU"
-    BuildSoundButtonMenu(dropdownFrame, function()
-        return row._combatTriggerId
-    end, dropdownLabel)
+	local dropdownFrame = CreateFrame("Frame", nil, row, "UIDropDownMenuTemplate")
+	dropdownFrame.displayMode = "MENU"
+	BuildSoundButtonMenu(dropdownFrame, function()
+		return row._combatTriggerId
+	end, dropdownLabel, function() row:Refresh() end)
 
-    dropdownButton:SetScript("OnClick", function(self)
-        if not row._combatTriggerId then
-            return
-        end
+	dropdownButton:SetScript("OnClick", function(self)
+		if not row._combatTriggerId then
+			return
+		end
 
-        BuildSoundButtonMenu(dropdownFrame, function()
-            return row._combatTriggerId
-        end, dropdownLabel)
-        ToggleDropDownMenu(1, nil, dropdownFrame, self, 0, 0)
-    end)
+		BuildSoundButtonMenu(dropdownFrame, function()
+			return row._combatTriggerId
+		end, dropdownLabel, function() row:Refresh() end)
+		ToggleDropDownMenu(1, nil, dropdownFrame, self, 0, 0)
+	end)
     dropdownButton:SetScript("OnEnter", function(self)
         self:SetBackdropBorderColor(unpack(BLU.Modules.design.Colors.Primary))
     end)
@@ -791,61 +819,73 @@ local function CreateCombatRow(parent)
         return row._combatTriggerId
     end)
 
-    local testButton = BLU.Modules.design:CreateActionButton(
-        row,
-        "Test",
-        46,
-        20,
-        "Test Combat Trigger",
-        "Preview the currently selected sound for this trigger."
-    )
-    testButton:SetPoint("TOPRIGHT", row, "TOPRIGHT", -10, -31)
+	local testButton = BLU.Modules.design:CreateActionButton(
+		row,
+		"Test",
+		40,
+		18,
+		"Test Combat Trigger",
+		"Preview the currently selected sound for this trigger."
+	)
+	testButton:SetPoint("TOPRIGHT", row, "TOPRIGHT", -8, -24)
     testButton:SetScript("OnClick", function()
         if row._combatTriggerId then
             PlayCombatTriggerPreview(row._combatTriggerId)
         end
     end)
 
-    local function LayoutControls(showVolume)
-        dropdownButton:ClearAllPoints()
-        volumeControl:ClearAllPoints()
-        testButton:ClearAllPoints()
+	local function LayoutControls(showVolume)
+		dropdownButton:ClearAllPoints()
+		volumeControl:ClearAllPoints()
+		testButton:ClearAllPoints()
 
-        dropdownButton:SetPoint("TOPLEFT", row, "TOPLEFT", 10, -28)
-        dropdownButton:SetWidth(146)
+		dropdownButton:SetPoint("TOPLEFT", row, "TOPLEFT", 8, -22)
+		dropdownButton:SetWidth(136)
 
-        if showVolume then
-            volumeControl:SetPoint("LEFT", dropdownButton, "RIGHT", 12, 0)
-            testButton:SetPoint("LEFT", volumeControl, "RIGHT", 12, 0)
-        else
-            testButton:SetPoint("LEFT", dropdownButton, "RIGHT", 18, 0)
-        end
-    end
+		testButton:SetPoint("TOPRIGHT", row, "TOPRIGHT", -8, -24)
 
-    row.Refresh = function()
-        if not row._combatTriggerId then
-            title:SetText("")
-            dropdownLabel:SetText("Select Sound")
-            volumeControl:Hide()
-            LayoutControls(false)
-            return
-        end
+	if showVolume then
+		volumeControl:SetPoint("CENTER", dropdownButton, "CENTER", 0, 0)
+		volumeControl:SetPoint("LEFT", dropdownButton, "RIGHT", 8, 0)
+		volumeControl:SetPoint("RIGHT", testButton, "LEFT", -8, 0)
+		volumeControl:Show()
+		volumeControl.Refresh()
+		else
+			volumeControl:Hide()
+		end
+	end
 
-        local selectedSound = GetSelectedSound(row._combatTriggerId)
-        local showVolume = SelectionHasVolumeVariants(selectedSound)
+	row.Refresh = function()
+		if not row._combatTriggerId then
+			title:SetText("")
+			dropdownLabel:SetText("Select Sound")
+			volumeControl:Hide()
+			LayoutControls(false)
+			return
+		end
 
-        title:SetText(row._combatTriggerTitle or "")
-        dropdownLabel:SetText(ResolveDisplayText(selectedSound, GetCombatHierarchy()))
+		local selectedSound = GetSelectedSound(row._combatTriggerId)
+		local showVolume = SelectionHasVolumeVariants(selectedSound)
 
-        if showVolume then
-            volumeControl:Show()
-            volumeControl:Refresh()
-        else
-            volumeControl:Hide()
-        end
+		BLU:PrintDebug("[CombatRow] Refresh triggerId=" .. tostring(row._combatTriggerId) .. " selectedSound=" .. tostring(selectedSound) .. " showVolume=" .. tostring(showVolume))
 
-        LayoutControls(showVolume)
-    end
+		if selectedSound and BLU.SoundRegistry and BLU.SoundRegistry.GetSound then
+			local info = BLU.SoundRegistry:GetSound(selectedSound)
+			BLU:PrintDebug("[CombatRow] GetSound info=" .. tostring(info and "table" or "nil") .. " hasVolumeVariants=" .. tostring(info and info.hasVolumeVariants))
+		end
+
+		title:SetText(row._combatTriggerTitle or "")
+		dropdownLabel:SetText(ResolveDisplayText(selectedSound, GetCombatHierarchy()))
+
+		if showVolume then
+			volumeControl:Show()
+			volumeControl:Refresh()
+		else
+			volumeControl:Hide()
+		end
+
+		LayoutControls(showVolume)
+	end
 
     function row:SetTriggerInfo(triggerInfo)
         self._combatTriggerId = triggerInfo and triggerInfo.id or nil
@@ -950,41 +990,41 @@ function BLU.CreateCombatPanel(panel)
     triggerArea:SetPoint("BOTTOMLEFT", body, "BOTTOMLEFT", 6, 6)
     triggerArea:SetPoint("BOTTOMRIGHT", body, "BOTTOMRIGHT", -6, 6)
 
-    local triggerHeader = CreateFrame("Frame", nil, triggerArea)
-    triggerHeader:SetPoint("TOPLEFT", triggerArea, "TOPLEFT", 0, 0)
-    triggerHeader:SetPoint("TOPRIGHT", triggerArea, "TOPRIGHT", 0, 0)
-    triggerHeader:SetHeight(24)
+	local triggerHeader = CreateFrame("Frame", nil, triggerArea)
+	triggerHeader:SetPoint("TOPLEFT", triggerArea, "TOPLEFT", 0, 0)
+	triggerHeader:SetPoint("TOPRIGHT", triggerArea, "TOPRIGHT", 0, 0)
+	triggerHeader:SetHeight(18)
 
-    local pageLabel = triggerHeader:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    pageLabel:SetPoint("RIGHT", -126, -1)
-    pageLabel:SetTextColor(0.70, 0.78, 0.86)
+	local pageLabel = triggerHeader:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+	pageLabel:SetPoint("RIGHT", -88, 0)
+	pageLabel:SetTextColor(0.70, 0.78, 0.86)
 
-    local prevButton = BLU.Modules.design:CreateActionButton(triggerHeader, "Prev", 56, 20, "Previous Page", "Show the previous set of combat triggers.")
-    prevButton:SetPoint("RIGHT", -66, -1)
+	local prevButton = BLU.Modules.design:CreateActionButton(triggerHeader, "<", 20, 16, "Previous Page", "Show the previous set of combat triggers.")
+	prevButton:SetPoint("RIGHT", -62, 0)
 
-    local nextButton = BLU.Modules.design:CreateActionButton(triggerHeader, "Next", 56, 20, "Next Page", "Show the next set of combat triggers.")
-    nextButton:SetPoint("RIGHT", -6, -1)
+	local nextButton = BLU.Modules.design:CreateActionButton(triggerHeader, ">", 20, 16, "Next Page", "Show the next set of combat triggers.")
+	nextButton:SetPoint("RIGHT", -38, 0)
 
-    local triggerRows = {}
-    local rowStartY = -30
-    local rowHeight = 72
-    local rowGap = 8
+	local triggerRows = {}
+	local rowStartY = -22
+	local rowHeight = 62
+	local rowGap = 4
 
-    for index = 1, 8 do
-        local row = CreateCombatRow(triggerArea)
-        local column = ((index - 1) % 2)
-        local visualRow = math.floor((index - 1) / 2)
-        local y = rowStartY - (visualRow * (rowHeight + rowGap))
+	for index = 1, 8 do
+		local row = CreateCombatRow(triggerArea)
+		local column = ((index - 1) % 2)
+		local visualRow = math.floor((index - 1) / 2)
+		local y = rowStartY - (visualRow * (rowHeight + rowGap))
 
-        if column == 0 then
-            row:SetPoint("TOPLEFT", triggerArea, "TOPLEFT", 0, y)
-            row:SetPoint("TOPRIGHT", triggerArea, "TOP", -5, y)
-        else
-            row:SetPoint("TOPLEFT", triggerArea, "TOP", 5, y)
-            row:SetPoint("TOPRIGHT", triggerArea, "TOPRIGHT", 0, y)
-        end
+		if column == 0 then
+			row:SetPoint("TOPLEFT", triggerArea, "TOPLEFT", 0, y)
+			row:SetPoint("TOPRIGHT", triggerArea, "TOP", -4, y)
+		else
+			row:SetPoint("TOPLEFT", triggerArea, "TOP", 4, y)
+			row:SetPoint("TOPRIGHT", triggerArea, "TOPRIGHT", 0, y)
+		end
 
-        triggerRows[index] = row
+		triggerRows[index] = row
     end
 
     local function RenderPage()

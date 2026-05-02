@@ -108,9 +108,9 @@ function SoundRegistry:RegisterSound(soundId, soundData)
     end
     BLU:PrintDebug(string.format("SoundRegistry:RegisterSound: id='%s', name='%s', pack='%s'", soundId, soundData.name or "nil", soundData.packName or "nil"))
     
-    if soundData.hasVolumeVariants == nil and type(soundData.file) == "string" then
-        soundData.hasVolumeVariants = soundData.file:match("_(med|low|high)%.ogg$") ~= nil
-    end
+	if soundData.hasVolumeVariants == nil and type(soundData.file) == "string" then
+		soundData.hasVolumeVariants = (soundData.file:match("_med%.ogg$") or soundData.file:match("_low%.ogg$") or soundData.file:match("_high%.ogg$")) ~= nil
+	end
 
     -- Store sound
     self.sounds[soundId] = soundData

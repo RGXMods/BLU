@@ -152,8 +152,8 @@ _<span style="color:#e67e23">Every coffee helps fund new features and sound addi
 
 ### <span style="color:#05dffa">🎮 50+ Games Available!</span>
 
-| | | |
-|---|---|---|
+| | | | |
+|---|---|---|---|
 | Altered Beast | Fly For Fun | Old School Runescape |
 | Assassin's Creed | Fortnite | Palworld |
 | Castlevania | GTA - San Andreas | Path of Exile |

@@ -26,35 +26,34 @@
     <Script file="core/interface/dropdown.lua"/>
     <Script file="core/interface/options/combat.lua"/>
     <Script file="core/interface/options/tabs.lua"/>
-    <Script file="core/interface/options/general.lua"/>
-    <Script file="core/interface/options/profiles.lua"/>
-    <Script file="core/interface/options/sounds.lua"/>
+<Script file="core/interface/options/general.lua"/>
+<Script file="core/interface/options/profiles.lua"/>
+<Script file="core/interface/options/sounds.lua"/>
 <Script file="core/interface/options/housing.lua"/>
-<Script file="core/interface/options/modules.lua"/>
-    <Script file="core/interface/options/sound_panel.lua"/>
-    <Script file="core/interface/options/main.lua"/>
+<Script file="core/interface/options/sound_panel.lua"/>
+<Script file="core/interface/options/main.lua"/>
 
-    <!-- Feature Modules -->
-    <Script file="modules/Quest/Quest.lua"/>
-    <Script file="modules/Debug/Debug.lua"/>
-    <Script file="modules/Combat/Combat.lua"/>
-    <Script file="modules/LevelUp/LevelUp.lua"/>
-    <Script file="modules/Achievement/Achievement.lua"/>
-    <Script file="modules/Reputation/Reputation.lua"/>
-    <Script file="modules/BattlePet/BattlePet.lua"/>
-    <Script file="modules/Honor/Honor.lua"/>
-    <Script file="modules/Renown/Renown.lua"/>
-    <Script file="modules/TradingPost/TradingPost.lua"/>
-    <Script file="modules/Delve/Delve.lua"/>
-    <Script file="modules/Housing/Housing.lua"/>
-    <Script file="modules/Collectibles/Collectibles.lua"/>
-    <Script file="modules/Loot/Loot.lua"/>
-    <Script file="modules/Prey/Prey.lua"/>
-    
-    <!-- Commands MUST load after options module is registered -->
-    <Script file="core/commands.lua"/>
-    
-    <!-- Initialization MUST be LAST so all modules are registered -->
-    <Script file="core/initialization.lua"/>
+<!-- Feature Modules -->
+<Script file="modules/Quest/Quest.lua"/>
+<Script file="modules/Debug/Debug.lua"/>
+<Script file="modules/Combat/Combat.lua"/>
+<Script file="modules/LevelUp/LevelUp.lua"/>
+<Script file="modules/Achievement/Achievement.lua"/>
+<Script file="modules/Reputation/Reputation.lua"/>
+<Script file="modules/BattlePet/BattlePet.lua"/>
+<Script file="modules/Honor/Honor.lua"/>
+<Script file="modules/Renown/Renown.lua"/>
+<Script file="modules/TradingPost/TradingPost.lua"/>
+<Script file="modules/Delve/Delve.lua"/>
+<Script file="modules/Housing/Housing.lua"/>
+<Script file="modules/Collectibles/Collectibles.lua"/>
+<Script file="modules/Loot/Loot.lua"/>
+<Script file="modules/Prey/Prey.lua"/>
+
+<!-- Commands MUST load after options module is registered -->
+<Script file="core/commands.lua"/>
+
+<!-- Initialization MUST be LAST so all modules are registered -->
+<Script file="core/initialization.lua"/>
 
 </Ui>

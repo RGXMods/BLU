@@ -672,4 +672,3 @@ BLU:RegisterEvent("PLAYER_LOGOUT", function(event)
 end, CORE_EVENT_ID_LOGOUT)
 
 -- Copy all BLU functions to addon table so other files can access them via local addonName, addonTable = ...
-

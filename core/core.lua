@@ -35,8 +35,8 @@ print("BLU: Core loading started.")
 BLU = {
     GetMetadata = GetAddOnMetadataSafe,
     name = addonName,
-    version = "v6.4.1",
-    author = GetAddOnMetadataSafe(addonName, "Author"),
+	version = "v6.5.1",
+	author = GetAddOnMetadataSafe(addonName, "Author"),
     
     -- Core tables
     Modules = {},
@@ -672,4 +672,3 @@ BLU:RegisterEvent("PLAYER_LOGOUT", function(event)
 end, CORE_EVENT_ID_LOGOUT)
 
 -- Copy all BLU functions to addon table so other files can access them via local addonName, addonTable = ...
-

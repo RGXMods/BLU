@@ -154,9 +154,23 @@ function Design:CreateActionButton(parent, text, width, height, tooltipTitle, to
         applyHover(self)
         if self._ttTitle then
             GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-            GameTooltip:SetText(self._ttTitle, 1, 1, 1)
+            GameTooltip:SetText(self._ttTitle, unpack(Design.Colors.Primary))
             if self._ttBody then
-                GameTooltip:AddLine(self._ttBody, 0.82, 0.82, 0.82, true)
+                GameTooltip:AddLine(" ")
+                for line in tostring(self._ttBody):gmatch("[^\n]+") do
+                    local color = {0.88, 0.88, 0.88}
+                    local lower = string.lower(line)
+
+                    if string.find(lower, "type ", 1, true) or string.find(lower, "enter ", 1, true) then
+                        color = Design.Colors.Secondary
+                    elseif string.find(lower, "full interface", 1, true) or string.find(lower, "full path", 1, true) then
+                        color = {0.72, 0.84, 1.0}
+                    elseif string.find(lower, "automatically", 1, true) or string.find(lower, "search", 1, true) then
+                        color = {0.60, 0.88, 0.70}
+                    end
+
+                    GameTooltip:AddLine(line, color[1], color[2], color[3], true)
+                end
             end
             GameTooltip:Show()
         end
@@ -294,7 +308,13 @@ function Design:CreateDropdown(parent, label, values)
     dropdown:SetPoint("TOPLEFT", labelText, "BOTTOMLEFT", -16, -5)
     UIDropDownMenu_SetWidth(dropdown, 200)
 
-    UIDropDownMenu_Initialize(dropdown, function(self) 
+    UIDropDownMenu_Initialize(dropdown, function(self, level)
+        level = level or 1
+        local dd = BLU.Modules and BLU.Modules.dropdown
+        if dd and dd.ResetLevel then
+            dd:ResetLevel(level)
+        end
+
         for _, value in ipairs(values) do
             local info = UIDropDownMenu_CreateInfo()
             info.text = value
@@ -303,6 +323,9 @@ function Design:CreateDropdown(parent, label, values)
                 UIDropDownMenu_SetSelectedValue(dropdown, value)
             end
             UIDropDownMenu_AddButton(info)
+            if dd and dd.StyleLastAddedButton then
+                dd:StyleLastAddedButton(level, {minWidth = 140})
+            end
         end
     end)
 

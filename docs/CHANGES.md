@@ -4,19 +4,29 @@
 
 ## Current Production Release
 
-### [v6.4.2](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.4.2.md) - 2026-04-23
-- TOC bump for interface 120005.
+### [v6.5.1](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.5.1.md) - 2026-05-02
 
-### [v6.4.1](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.4.1.md) - 2026-04-10
-- Profile loading now stays on `Default` until the user explicitly creates or chooses another profile.
-- Deleting the active profile now falls back to `Default` instead of auto-creating a character-keyed replacement.
-- Creating a new profile with a blank name now uses the current `Character-Realm` name and keeps it unique with a numeric suffix when needed.
-- Discord release notifications now use a condensed summary so the changelog content does not get cut off in the embed.
-- Fixed the `QUEST_TURNED_IN` playback error caused by a missing volume value hitting `string.format`.
+- Fixed volume sliders not appearing for BLU game sounds (Lua pattern bug in registry).
+- Replaced OptionsSliderTemplate with consistent custom track-style volume control across all panels.
+- Volume label (Low/Medium/High) now shows below slider on hover only.
+- Single-column rows shrunk from 90px to 68px so 4 housing options fit without overlap.
+- Test buttons always align to the right side of the row.
+- Volume slider centered between dropdown and test button in both single and 2-column layouts.
+- Volume fill/thumb uses percentage-based positioning with deferred layout fix.
 
 Full notes:
-- [v6.4.2 changelog](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.4.2.md)
-- [v6.4.1 changelog](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.4.1.md)
+- [v6.5.1 changelog](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.5.1.md)
+
+### [v6.5.0](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.5.0.md) - 2026-04-10
+
+- Added a real `Combat` options page with the same module toggle header pattern used by the other panels.
+- Replaced the old mock combat layout with a compact 2-column trigger grid that supports 8 trigger cards per page.
+- Added real placeholder combat trigger rows with nested sound selection, compact volume control, and test playback buttons.
+- Added dedicated combat cue slots for `Combat Start`, `Combat End`, and `Combat Music Track`.
+- Cleaned up the Combat page layout by removing extra explanatory sections that were wasting vertical space.
+
+Full notes:
+- [v6.5.0 changelog](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.5.0.md)
 
 ## Recent History
 - [v6.4.1](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.4.1.md)

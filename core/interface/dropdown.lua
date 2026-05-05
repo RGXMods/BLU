@@ -36,6 +36,61 @@ function DropdownUtil:ShortenLabel(text, maxChars)
     return string.sub(text, 1, maxChars - 3) .. "...", true
 end
 
+function DropdownUtil:StyleButton(button, options)
+    if not button then
+        return
+    end
+
+    options = options or {}
+
+    if button.bluPreviewButton then
+        button.bluPreviewButton:SetFrameStrata("TOOLTIP")
+        button.bluPreviewButton:SetFrameLevel(button:GetFrameLevel() + 5)
+    end
+
+    if button.bluDeleteButton then
+        button.bluDeleteButton:SetFrameStrata("TOOLTIP")
+        button.bluDeleteButton:SetFrameLevel(button:GetFrameLevel() + 5)
+    end
+end
+
+function DropdownUtil:StyleLastAddedButton(level, options)
+    local listFrame = self:GetListFrame(level)
+    if not listFrame or not listFrame.numButtons then
+        return
+    end
+
+    local button = _G[listFrame:GetName() .. "Button" .. listFrame.numButtons]
+    self:StyleButton(button, options)
+end
+
+function DropdownUtil:ResetLevel(level)
+    local listFrame = self:GetListFrame(level)
+    if not listFrame then
+        return
+    end
+
+    local maxButtons = UIDROPDOWNMENU_MAXBUTTONS or 32
+    for index = 1, maxButtons do
+        local button = _G[listFrame:GetName() .. "Button" .. index]
+        if button then
+            if button.bluPreviewButton then
+                button.bluPreviewButton:Hide()
+            end
+            if button.bluDeleteButton then
+                button.bluDeleteButton:Hide()
+            end
+            if button.bluCountLabel then
+                button.bluCountLabel:Hide()
+            end
+
+            if button:IsShown() then
+                self:StyleButton(button)
+            end
+        end
+    end
+end
+
 --[[
   ForceWidth(level, minWidth, leftInset, opts)
     level      - dropdown level (1, 2, 3 …)
@@ -96,6 +151,7 @@ function DropdownUtil:ForceWidth(level, minWidth, leftInset, opts)
         for i = 1, maxButtons do
             local btn = _G[listFrame:GetName() .. "Button" .. i]
             if btn and btn:IsShown() then
+                util:StyleButton(btn)
                 btn:SetWidth(btnWidth)
                 local nt          = _G[btn:GetName() .. "NormalText"]
                 local expandArrow = _G[btn:GetName() .. "ExpandArrow"]
@@ -129,7 +185,15 @@ function DropdownUtil:ForceWidth(level, minWidth, leftInset, opts)
                     if nt then
                         nt:ClearAllPoints()
                         nt:SetPoint("LEFT",  btn, "LEFT",  leftInset, 0)
+                        nt:SetPoint("RIGHT", previewBtn, "LEFT", -6, 0)
                         nt:SetJustifyH("LEFT")
+                        nt:SetWordWrap(false)
+                        if nt.SetNonSpaceWrap then
+                            nt:SetNonSpaceWrap(false)
+                        end
+                        if nt.SetMaxLines then
+                            nt:SetMaxLines(1)
+                        end
                     end
                 -- Inline delete button (x)
                 elseif hasDelete then
@@ -142,7 +206,15 @@ function DropdownUtil:ForceWidth(level, minWidth, leftInset, opts)
                     if nt then
                         nt:ClearAllPoints()
                         nt:SetPoint("LEFT",  btn, "LEFT",  leftInset, 0)
+                        nt:SetPoint("RIGHT", deleteBtn, "LEFT", -6, 0)
                         nt:SetJustifyH("LEFT")
+                        nt:SetWordWrap(false)
+                        if nt.SetNonSpaceWrap then
+                            nt:SetNonSpaceWrap(false)
+                        end
+                        if nt.SetMaxLines then
+                            nt:SetMaxLines(1)
+                        end
                     end
                 -- Plain text (with or without expand arrow)
                 else
@@ -165,6 +237,13 @@ function DropdownUtil:ForceWidth(level, minWidth, leftInset, opts)
                             nt:SetPoint("RIGHT", btn, "RIGHT", hasArrow and -16 or -6, 0)
                         end
                         nt:SetJustifyH("LEFT")
+                        nt:SetWordWrap(false)
+                        if nt.SetNonSpaceWrap then
+                            nt:SetNonSpaceWrap(false)
+                        end
+                        if nt.SetMaxLines then
+                            nt:SetMaxLines(1)
+                        end
                     end
                 end
             end

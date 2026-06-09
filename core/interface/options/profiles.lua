@@ -138,16 +138,13 @@ local function GetSuggestedProfileCopyName(profileName)
     return candidate
 end
 
--- Deep copy a table
 local function DeepCopyTable(value)
-    if type(value) ~= "table" then
-        return value
-    end
-
+    local RGX = _G.RGXFramework
+    if RGX then return RGX:DeepCopy(value) end
+    -- Fallback: shallow copy only (should not reach here with RequiredDeps)
+    if type(value) ~= "table" then return value end
     local copy = {}
-    for key, entry in pairs(value) do
-        copy[key] = DeepCopyTable(entry)
-    end
+    for k, v in pairs(value) do copy[k] = v end
     return copy
 end
 
@@ -195,10 +192,10 @@ local function ApplyPresetToProfile(profileName, presetSettings)
     ApplyTable(targetProfile, DeepCopyTable(presetSettings or {}))
     targetProfile.currentProfile = profileName
 
-    -- Re-sync BLU.db if this profile is currently active (by reference or by name)
-    if BLU and (BLU.db == targetProfile or BLUDB.activeProfile == profileName) then
-        BLU.db = targetProfile
-        BLUDB.activeProfile = profileName
+    -- Re-sync BLU.db if this profile is currently active.
+    -- BLU.db is a proxy (RGX:NewDatabase); the data lives in BLUDB.profiles.
+    -- The proxy already reads from BLUDB.profiles[activeProfile] — no reassignment needed.
+    if BLU and BLUDB.activeProfile == profileName then
         if BLU.Modules and BLU.Modules.config and BLU.Modules.config.ApplySettings then
             BLU.Modules.config:ApplySettings()
         end
@@ -615,23 +612,12 @@ function BLU.CreateProfilesPanel(panel)
         local sourceProfileName = GetActiveProfileName() or "Default"
         local newProfileName = GetSuggestedProfileCopyName()
 
-        if not BLUDB or not BLUDB.profiles or not BLUDB.profiles[sourceProfileName] then
-            BLU:Print("Source profile not found: " .. tostring(sourceProfileName))
-            return
+        if BLU.CopyProfile and BLU:CopyProfile(sourceProfileName, newProfileName) then
+            BLU:PrintDebug("[Options/Profiles] Copied profile: " .. tostring(sourceProfileName) .. " -> " .. tostring(newProfileName))
+            RefreshProfileUI(newProfileName)
+        else
+            BLU:Print("Failed to copy profile: " .. tostring(sourceProfileName))
         end
-
-        -- Deep-copy the source profile into a new slot
-        BLUDB.profiles = BLUDB.profiles or {}
-        BLUDB.profiles[newProfileName] = DeepCopyTable(BLUDB.profiles[sourceProfileName])
-        BLUDB.profiles[newProfileName].currentProfile = newProfileName
-
-        -- Load the new copy as the active profile
-        if BLU.LoadProfile then
-            BLU:LoadProfile(newProfileName)
-        end
-
-        BLU:PrintDebug("[Options/Profiles] Copied profile: " .. tostring(sourceProfileName) .. " -> " .. tostring(newProfileName))
-        RefreshProfileUI(newProfileName)
     end)
 
     -- ── Presets section: full width bottom section ───────────────────────────

@@ -36,7 +36,7 @@
 <!-- Feature Modules -->
 <Script file="modules/Quest/Quest.lua"/>
 <Script file="modules/Debug/Debug.lua"/>
-<!-- <Script file="modules/Combat/Combat.lua"/> — dormant: depends on WIP framework.lua -->
+<Script file="modules/Combat/Combat.lua"/>
 <Script file="modules/LevelUp/LevelUp.lua"/>
 <Script file="modules/Achievement/Achievement.lua"/>
 <Script file="modules/Reputation/Reputation.lua"/>

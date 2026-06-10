@@ -165,17 +165,13 @@ BLU.eventFrame:SetScript("OnEvent", function(self, event, ...)
     BLU:FireEvent(event, ...)
 end)
 
--- Register event (early definition)
+-- Register event — delegates to RGX for safe combat-lockdown handling
 local function RegisterEvent(self, event, callback, id)
     id = id or "core"
-    
-    if not self.events[event] then
-        self.events[event] = {}
-        self.eventFrame:RegisterEvent(event)
+    local RGX = _G.RGXFramework
+    if RGX then
+        RGX:RegisterEvent(event, function(...) callback(event, ...) end, id)
     end
-    
-    self.events[event][id] = callback
-    self:PrintDebug("[Events] Registered event '" .. tostring(event) .. "' with id '" .. tostring(id) .. "'")
 end
 BLU.RegisterEvent = RegisterEvent
 

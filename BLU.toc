@@ -1,5 +1,5 @@
 ## Interface: 120005
-## Version: v7.1.0
+## Version: v7.1.1
 ## Title:  |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel-|r|cff05dffaU|r|cffffffffp|cff05dffa!|r
 ## Notes: |n|r  |cff05dffa/blu -|r Open options panel  |n|r   |cff05dffaBy DonnieDice|r
 ## Author: DonnieDice

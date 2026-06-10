@@ -58,25 +58,7 @@ function Utils:Init()
     BLU:PrintDebug("[Utils] Utils module initialized")
 end
 
-function Utils:DeepCopy(value, seen)
-    if type(value) ~= "table" then
-        return value
-    end
-
-    seen = seen or {}
-    if seen[value] then
-        return seen[value]
-    end
-
-    local copy = {}
-    seen[value] = copy
-
-    for k, v in pairs(value) do
-        copy[self:DeepCopy(k, seen)] = self:DeepCopy(v, seen)
-    end
-
-    return setmetatable(copy, getmetatable(value))
-end
+-- DeepCopy: removed — use RGX:DeepCopy() instead
 
 local function SafeToString(value)
     local ok, result = pcall(tostring, value)
@@ -203,30 +185,7 @@ function Utils:FormatDuration(seconds)
     end
 end
 
--- Throttle function calls
-Utils.throttleTimers = {}
-function Utils:Throttle(key, seconds, func)
-    local now = GetTime()
-    
-    if not self.throttleTimers[key] or (now - self.throttleTimers[key]) >= seconds then
-        self.throttleTimers[key] = now
-        BLU:PrintDebug("[Utils] Throttle executing key '" .. tostring(key) .. "'")
-        return func()
-    end
-    BLU:PrintDebug("[Utils] Throttle skipped key '" .. tostring(key) .. "'")
-end
-
--- Debounce function calls
-Utils.debounceTimers = {}
-function Utils:Debounce(key, seconds, func)
-    if self.debounceTimers[key] then
-        BLU:PrintDebug("[Utils] Debounce cancelling existing timer for key '" .. tostring(key) .. "'")
-        self.debounceTimers[key]:Cancel()
-    end
-    
-    BLU:PrintDebug("[Utils] Debounce scheduling key '" .. tostring(key) .. "' for " .. tostring(seconds) .. " seconds")
-    self.debounceTimers[key] = C_Timer.NewTimer(seconds, func)
-end
+-- Throttle/Debounce: removed — use RGX:Throttle() / RGX:Debounce() instead
 
 -- Get addon memory usage
 function Utils:GetMemoryUsage()
@@ -249,21 +208,7 @@ function Utils:IsInCombat()
     return InCombatLockdown()
 end
 
--- Safe function call (delays if in combat)
-function Utils:SafeCall(func)
-    if self:IsInCombat() then
-        BLU:PrintDebug("[Utils] SafeCall queued until combat ends")
-        local eventId = "utils_safe_call_" .. tostring(GetTime and GetTime() or 0) .. "_" .. tostring(math.random(100000, 999999))
-        BLU:RegisterEvent("PLAYER_REGEN_ENABLED", function()
-            BLU:UnregisterEvent("PLAYER_REGEN_ENABLED", eventId)
-            BLU:PrintDebug("[Utils] SafeCall executing deferred function")
-            func()
-        end, eventId)
-    else
-        BLU:PrintDebug("[Utils] SafeCall executing immediately")
-        func()
-    end
-end
+-- SafeCall: removed — use RGX:QueueForCombat() instead
 
 -- Color text with hex color
 function Utils:ColorText(text, color)

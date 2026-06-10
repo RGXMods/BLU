@@ -231,70 +231,19 @@ end
 BLU.FireEvent = FireEvent
 
 --=====================================================================================
--- Timer System
+-- Timer System — delegates to RGX
 --=====================================================================================
 
--- Create timer
-function BLU:CreateTimer(duration, callback, repeating)
-    self:Trace("Timer", "Creating timer (duration=" .. tostring(duration) .. ", repeating=" .. tostring(repeating == true) .. ")")
-    local timer = {
-        duration = duration,
-        callback = callback,
-        repeating = repeating,
-        elapsed = 0,
-        active = true
-    }
-    
-    table.insert(self.timers, timer)
-    
-    -- Start timer frame if needed
-    if not self.timerFrame then
-        self.timerFrame = CreateFrame("Frame")
-        self.timerFrame:SetScript("OnUpdate", function(_, elapsed) 
-            BLU:UpdateTimers(elapsed)
-        end)
-    end
-    
-    return timer
+function BLU:After(delay, callback)
+    local RGX = _G.RGXFramework
+    if RGX then return RGX:After(delay, callback) end
+    return self:CreateTimer(delay, callback, false)
 end
 
--- Update timers
-function BLU:UpdateTimers(elapsed)
-    for i = #self.timers, 1, -1 do
-        local timer = self.timers[i]
-        
-        if timer.active then
-            timer.elapsed = timer.elapsed + elapsed
-            
-            if timer.elapsed >= timer.duration then
-                -- Execute callback
-                local success, err = pcall(timer.callback)
-                if not success then
-                    self:PrintError("Timer error: " .. err)
-                end
-                
-                if timer.repeating then
-                    timer.elapsed = 0
-                else
-                    -- Remove one-time timer
-                    table.remove(self.timers, i)
-                end
-            end
-        end
-    end
-    
-    -- Stop timer frame if no active timers
-    if #self.timers == 0 and self.timerFrame then
-        self.timerFrame:SetScript("OnUpdate", nil)
-    end
-end
-
--- Cancel timer
 function BLU:CancelTimer(timer)
-    if timer then
-        timer.active = false
-        self:Trace("Timer", "Cancelled timer")
-    end
+    local RGX = _G.RGXFramework
+    if RGX then RGX:CancelTimer(timer); return end
+    if timer then timer.active = false end
 end
 
 --=====================================================================================

@@ -225,27 +225,32 @@ function CombatModule:UnregisterLegacyEvents()
 end
 
 function CombatModule:Init()
-    self.frameworkDisposers = {
-        BLU:RegisterFrameworkCallback("combat", "OnEnter", function() self:OnRegenDisabled() end),
-        BLU:RegisterFrameworkCallback("combat", "OnLeave", function() self:OnRegenEnabled() end),
-        BLU:RegisterFrameworkCallback("combat", "OnLowHealth", function() self:PlayTrigger("low_health") end),
-        BLU:RegisterFrameworkCallback("combat", "OnExecuteWindow", function() self:PlayTrigger("execute_window") end),
-        BLU:RegisterFrameworkCallback("combat", "OnResourceCapped", function() self:PlayTrigger("resource_capped") end),
-        BLU:RegisterFrameworkCallback("combat", "OnResourceLow", function() self:PlayTrigger("resource_low") end),
-        BLU:RegisterFrameworkCallback("combat", "OnTargetLost", function() self:PlayTrigger("target_lost") end),
-        BLU:RegisterFrameworkCallback("combat", "OnCrit", function() self:PlayTrigger("critical_hit") end),
-        BLU:RegisterFrameworkCallback("combat", "OnCritHeal", function() self:PlayTrigger("critical_heal") end),
-        BLU:RegisterFrameworkCallback("combat", "OnProc", function() self:PlayTrigger("proc_trigger") end),
-        BLU:RegisterFrameworkCallback("combat", "OnEncounterEnd", function() self:PlayTrigger("encounterend") end),
-        BLU:RegisterFrameworkCallback("combat", "OnEncounterVictory", function() self:PlayTrigger("encountervictory") end),
-        BLU:RegisterFrameworkCallback("combat", "OnPvPVictory", function() self:PlayTrigger("pvpvictory") end),
-    }
+    -- Only use framework path if RGXCombat is available and the bridge exists.
+    if BLU.RegisterFrameworkCallback then
+        self.frameworkDisposers = {
+            BLU:RegisterFrameworkCallback("combat", "OnEnter", function() self:OnRegenDisabled() end),
+            BLU:RegisterFrameworkCallback("combat", "OnLeave", function() self:OnRegenEnabled() end),
+            BLU:RegisterFrameworkCallback("combat", "OnLowHealth", function() self:PlayTrigger("low_health") end),
+            BLU:RegisterFrameworkCallback("combat", "OnExecuteWindow", function() self:PlayTrigger("execute_window") end),
+            BLU:RegisterFrameworkCallback("combat", "OnResourceCapped", function() self:PlayTrigger("resource_capped") end),
+            BLU:RegisterFrameworkCallback("combat", "OnResourceLow", function() self:PlayTrigger("resource_low") end),
+            BLU:RegisterFrameworkCallback("combat", "OnTargetLost", function() self:PlayTrigger("target_lost") end),
+            BLU:RegisterFrameworkCallback("combat", "OnCrit", function() self:PlayTrigger("critical_hit") end),
+            BLU:RegisterFrameworkCallback("combat", "OnCritHeal", function() self:PlayTrigger("critical_heal") end),
+            BLU:RegisterFrameworkCallback("combat", "OnProc", function() self:PlayTrigger("proc_trigger") end),
+            BLU:RegisterFrameworkCallback("combat", "OnEncounterEnd", function() self:PlayTrigger("encounterend") end),
+            BLU:RegisterFrameworkCallback("combat", "OnEncounterVictory", function() self:PlayTrigger("encountervictory") end),
+            BLU:RegisterFrameworkCallback("combat", "OnPvPVictory", function() self:PlayTrigger("pvpvictory") end),
+        }
+    end
 
-    local frameworkReady = true
-    for i = 1, 13 do
-        if type(self.frameworkDisposers[i]) ~= "function" then
-            frameworkReady = false
-            break
+    local frameworkReady = self.frameworkDisposers ~= nil
+    if frameworkReady then
+        for i = 1, 13 do
+            if type(self.frameworkDisposers[i]) ~= "function" then
+                frameworkReady = false
+                break
+            end
         end
     end
 

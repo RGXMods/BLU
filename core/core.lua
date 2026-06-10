@@ -5,7 +5,7 @@
 
 local addonName, addonTable = ...
 local RGX = _G.RGXFramework
-if not RGX then error("BLU requires RGX-Framework v2.0.0+") end
+if not RGX then return end
 
 local ADDON_PATH = "Interface\\AddOns\\" .. addonName .. "\\"
 

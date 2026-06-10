@@ -247,56 +247,26 @@ function BLU:CancelTimer(timer)
 end
 
 --=====================================================================================
--- Hook System
+-- Hook System — delegates to RGX (zero BLU callers, kept as compat shim)
 --=====================================================================================
 
--- Hook function
 function BLU:Hook(target, method, callback)
-    self:Trace("Hooks", "Hook request for method '" .. tostring(method) .. "'")
-    local original = target[method]
-    
-    if not original then
-        self:PrintError("Cannot hook non-existent method: " .. method)
-        return
-    end
-    
-    target[method] = function(...)
-        return callback(original, ...)
-    end
-    
-    -- Store for unhooking
-    self.hooks[target] = self.hooks[target] or {}
-    self.hooks[target][method] = original
-    self:Trace("Hooks", "Hooked method '" .. tostring(method) .. "'")
+    local RGX = _G.RGXFramework
+    if RGX and RGX.Hook then return RGX:Hook(target, method, callback) end
 end
 
--- Unhook function
 function BLU:Unhook(target, method)
-    if self.hooks[target] and self.hooks[target][method] then
-        target[method] = self.hooks[target][method]
-        self.hooks[target][method] = nil
-        self:Trace("Hooks", "Unhooked method '" .. tostring(method) .. "'")
-    end
+    local RGX = _G.RGXFramework
+    if RGX and RGX.Unhook then return RGX:Unhook(target, method) end
 end
 
 --=====================================================================================
--- Slash Commands
+-- Slash Commands — delegates to RGX (commands.lua uses raw SLASH_ vars directly)
 --=====================================================================================
 
--- Register slash command
 function BLU:RegisterSlashCommand(command, callback)
-    self:Trace("Slash", "Registering slash command(s): " .. tostring(type(command) == "table" and table.concat(command, ", ") or command))
-    -- Support multiple commands
-    local commands = type(command) == "table" and command or {command}
-    
-    -- Use a unique identifier for this addon's commands
-    local cmdName = addonName .. "CMD"
-    
-    for i, cmd in ipairs(commands) do
-        _G["SLASH_" .. cmdName .. i] = "/" .. cmd
-    end
-    
-    SlashCmdList[cmdName] = callback
+    local RGX = _G.RGXFramework
+    if RGX then return RGX:RegisterSlashCommand(command, callback) end
 end
 
 -- Show welcome message

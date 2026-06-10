@@ -23,15 +23,6 @@ local function getProfileDefaults()
     return {}
 end
 
--- Called by RGX:NewDatabase whenever the active profile changes.
--- BLU.db is the proxy itself; we only need to trigger UI refreshes.
-local function onProfileSwitch(name, profile)
-    -- UI hooks are not present during Phase 1 init — guard every call.
-    if BLU.InvalidateAllTabs then BLU:InvalidateAllTabs() end
-    if BLU.RefreshOptions     then BLU:RefreshOptions()    end
-    if BLU.RefreshProfilesUI  then BLU:RefreshProfilesUI() end
-end
-
 -- ── Init ──────────────────────────────────────────────────────────────────────
 
 function Database:Init()
@@ -43,18 +34,21 @@ function Database:Init()
         return
     end
 
-    -- BLU.db is the NewDatabase proxy: db.key reads from active profile,
-    -- db.key = v writes to active profile, db:CreateProfile(...) manages profiles.
-    BLU.db = RGX:NewDatabase("BLUDB", getProfileDefaults(), {
-        onSwitch = onProfileSwitch,
-    })
-
-    -- Backward-compat shim: anything calling BLU.InitializeDatabase() gets
-    -- the active profile without re-opening the database.
-    BLU.InitializeDatabase = function()
-        return BLU.db
+    -- RGX.Addon() in core.lua already created BLU.db.  Merge BLU defaults
+    -- and wire profile-switch callbacks without opening a second proxy.
+    if BLU.db then
+        local profile = BLU.db:GetProfile()
+        if profile then
+            RGX:DeepMergeDefaults(profile, getProfileDefaults())
+        end
+        BLU.db:OnProfileChanged(function(name, profile)
+            if BLU.InvalidateAllTabs then BLU:InvalidateAllTabs() end
+            if BLU.RefreshOptions     then BLU:RefreshOptions()    end
+            if BLU.RefreshProfilesUI  then BLU:RefreshProfilesUI() end
+        end)
     end
 
+    BLU.InitializeDatabase = function() return BLU.db end
     BLU:PrintDebug("Database module initialized. BLU.db is " .. tostring(BLU.db))
 end
 

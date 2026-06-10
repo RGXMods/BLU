@@ -105,7 +105,7 @@ function BLU:Initialize()
 	-- Phase 4: Feature Modules
 	self:InitializePhase("modules", {
 		"quest",
-		"combat",
+		-- "combat" — dormant: depends on WIP framework.lua
 		"levelup",
 		"achievement",
 		"reputation",

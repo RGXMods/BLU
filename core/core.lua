@@ -1,11 +1,10 @@
 --=====================================================================================
 -- BLU Framework
--- Our own lightweight addon framework (no external dependencies)
+-- Powered by RGX-Framework v2.0
 --=====================================================================================
 
--- Removed redundant BluPrint function - using BLU:Print() instead
-
 local addonName, addonTable = ...
+local RGX = _G.RGXFramework
 local ADDON_PATH = "Interface\\AddOns\\" .. addonName .. "\\"
 local CORE_EVENT_ID_LOGOUT = "core_player_logout"
 local CHAT_ICON = "|T" .. ADDON_PATH .. "media\\Textures\\icon.tga:16:16:0:0|t"
@@ -14,12 +13,10 @@ local CHAT_DEBUG_PREFIX = CHAT_PREFIX .. " |cffffffff[|r|cff808080DEBUG|r|cfffff
 local CHAT_ERROR_PREFIX = CHAT_PREFIX .. " |cffffffff[|r|cffff0000ERROR|r|cffffffff]|r"
 
 local function GetAddOnMetadataSafe(self, addonName, key)
-    -- Support both BLU:GetMetadata(name, key) and GetAddOnMetadataSafe(name, key)
     if type(self) == "string" and key == nil then
         key = addonName
         addonName = self
     end
-
     if C_AddOns and C_AddOns.GetAddOnMetadata then
         local ok, value = pcall(C_AddOns.GetAddOnMetadata, addonName, key)
         return ok and value or nil
@@ -29,26 +26,47 @@ local function GetAddOnMetadataSafe(self, addonName, key)
     end
     return nil
 end
+
 print("BLU: Core loading started.")
 
--- Create the main addon object (global)
-BLU = {
-    GetMetadata = GetAddOnMetadataSafe,
-    name = addonName,
-	version = "v6.5.1",
-	author = GetAddOnMetadataSafe(addonName, "Author"),
-    
-    -- Core tables
-    Modules = {},
-    LoadedModules = {},
-    events = {},
-    hooks = {},
-    timers = {},
-    
-    -- Settings
-    debugMode = false,
-    isInitialized = false
-}
+-- ── Bootstrap via RGX-Framework ──────────────────────────────────────────────
+
+if RGX then
+    BLU = RGX.Addon("BLU", {
+        db      = true,
+        dbName  = "BLUDB",
+        slash   = "blu",
+        minimap = ADDON_PATH .. "media\\Textures\\icon.tga",
+        brand   = "05dffa",
+        onInit  = function(self)
+            self:ShowWelcomeMessage()
+        end,
+    })
+end
+
+-- Fallback constructor if RGX-Framework is absent
+if not BLU then
+    BLU = {
+        name = addonName,
+        version = "v6.5.1",
+        Modules = {},
+        LoadedModules = {},
+        events = {},
+        debugMode = false,
+        isInitialized = false,
+    }
+end
+
+-- Shared tables (compat for modules that access these directly)
+BLU.Modules = BLU.Modules or {}
+BLU.LoadedModules = BLU.LoadedModules or {}
+BLU.events = BLU.events or {}
+BLU.hooks = BLU.hooks or {}
+BLU.timers = BLU.timers or {}
+BLU.debugMode = BLU.debugMode or false
+BLU.isInitialized = BLU.isInitialized or false
+BLU.GetMetadata = BLU.GetMetadata or GetAddOnMetadataSafe
+BLU.name = BLU.name or addonName
 
 -- Print message
 function BLU:Print(message)

@@ -201,27 +201,31 @@ end
 -- ── Lifecycle ────────────────────────────────────────────────────────────────
 
 function CombatModule:RegisterLegacyEvents()
-    BLU:RegisterEvent("PLAYER_REGEN_DISABLED",     function(e, ...) self:OnRegenDisabled() end,      EVT_REGEN_DISABLED)
-    BLU:RegisterEvent("PLAYER_REGEN_ENABLED",      function(e, ...) self:OnRegenEnabled() end,       EVT_REGEN_ENABLED)
-    BLU:RegisterEvent("UNIT_HEALTH",               function(e, ...) self:OnUnitHealth(e, ...) end,   EVT_UNIT_HEALTH)
-    BLU:RegisterEvent("PLAYER_TARGET_CHANGED",     function(e, ...) self:OnTargetChanged() end,      EVT_TARGET)
-    BLU:RegisterEvent("UNIT_POWER_UPDATE",         function(e, ...) self:OnUnitPower(e, ...) end,    EVT_POWER)
-    BLU:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", function() self:OnCombatLog() end,              EVT_COMBATLOG)
-    BLU:RegisterEvent("ENCOUNTER_END",             function(e, ...) self:OnEncounterEnd(e, ...) end, EVT_ENCOUNTER)
-    BLU:RegisterEvent("PVP_MATCH_COMPLETE",        function(e, ...) self:OnPvPMatchComplete() end,   EVT_PVP)
-    BLU:RegisterEvent("UNIT_AURA",                 function(e, ...) self:OnUnitAura(e, ...) end,     EVT_UNIT_AURA)
+    local RGX = _G.RGXFramework
+    if not RGX then return end
+    RGX:RegisterEvent("PLAYER_REGEN_DISABLED",     function(e, ...) self:OnRegenDisabled() end,      EVT_REGEN_DISABLED)
+    RGX:RegisterEvent("PLAYER_REGEN_ENABLED",      function(e, ...) self:OnRegenEnabled() end,       EVT_REGEN_ENABLED)
+    RGX:RegisterEvent("UNIT_HEALTH",               function(e, ...) self:OnUnitHealth(e, ...) end,   EVT_UNIT_HEALTH)
+    RGX:RegisterEvent("PLAYER_TARGET_CHANGED",     function(e, ...) self:OnTargetChanged() end,      EVT_TARGET)
+    RGX:RegisterEvent("UNIT_POWER_UPDATE",         function(e, ...) self:OnUnitPower(e, ...) end,    EVT_POWER)
+    RGX:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", function() self:OnCombatLog() end,              EVT_COMBATLOG)
+    RGX:RegisterEvent("ENCOUNTER_END",             function(e, ...) self:OnEncounterEnd(e, ...) end, EVT_ENCOUNTER)
+    RGX:RegisterEvent("PVP_MATCH_COMPLETE",        function(e, ...) self:OnPvPMatchComplete() end,   EVT_PVP)
+    RGX:RegisterEvent("UNIT_AURA",                 function(e, ...) self:OnUnitAura(e, ...) end,     EVT_UNIT_AURA)
 end
 
 function CombatModule:UnregisterLegacyEvents()
-    BLU:UnregisterEvent("PLAYER_REGEN_DISABLED",      EVT_REGEN_DISABLED)
-    BLU:UnregisterEvent("PLAYER_REGEN_ENABLED",       EVT_REGEN_ENABLED)
-    BLU:UnregisterEvent("UNIT_HEALTH",                EVT_UNIT_HEALTH)
-    BLU:UnregisterEvent("PLAYER_TARGET_CHANGED",      EVT_TARGET)
-    BLU:UnregisterEvent("UNIT_POWER_UPDATE",          EVT_POWER)
-    BLU:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", EVT_COMBATLOG)
-    BLU:UnregisterEvent("ENCOUNTER_END",              EVT_ENCOUNTER)
-    BLU:UnregisterEvent("PVP_MATCH_COMPLETE",         EVT_PVP)
-    BLU:UnregisterEvent("UNIT_AURA",                  EVT_UNIT_AURA)
+    local RGX = _G.RGXFramework
+    if not RGX then return end
+    RGX:UnregisterEvent("PLAYER_REGEN_DISABLED",      EVT_REGEN_DISABLED)
+    RGX:UnregisterEvent("PLAYER_REGEN_ENABLED",       EVT_REGEN_ENABLED)
+    RGX:UnregisterEvent("UNIT_HEALTH",                EVT_UNIT_HEALTH)
+    RGX:UnregisterEvent("PLAYER_TARGET_CHANGED",      EVT_TARGET)
+    RGX:UnregisterEvent("UNIT_POWER_UPDATE",          EVT_POWER)
+    RGX:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", EVT_COMBATLOG)
+    RGX:UnregisterEvent("ENCOUNTER_END",              EVT_ENCOUNTER)
+    RGX:UnregisterEvent("PVP_MATCH_COMPLETE",         EVT_PVP)
+    RGX:UnregisterEvent("UNIT_AURA",                  EVT_UNIT_AURA)
 end
 
 function CombatModule:Init()
@@ -263,9 +267,12 @@ function CombatModule:Init()
         -- loading screen into combat zones (battleground, arena, world PvP).
         C_Timer.After(0.5, function()
             if InCombatLockdown and InCombatLockdown() then
-                BLU:RegisterEvent("PLAYER_REGEN_ENABLED", function()
-                    self:RegisterLegacyEvents()
-                end, "BLUCombat_LegacyRetry")
+                local RGX = _G.RGXFramework
+                if RGX then
+                    RGX:RegisterEvent("PLAYER_REGEN_ENABLED", function()
+                        self:RegisterLegacyEvents()
+                    end, "BLUCombat_LegacyRetry")
+                end
                 return
             end
             self:RegisterLegacyEvents()
@@ -273,11 +280,11 @@ function CombatModule:Init()
     end
 
     BLU:PrintDebug("[Combat] Combat module initialized")
-    BLU:Emit("blu:moduleReady", "combat")
+    if BLU.Emit then BLU:Emit("blu:moduleReady", "combat") end
 end
 
 function CombatModule:Cleanup()
-    if self.frameworkDisposers then
+    if self.frameworkDisposers and BLU.DisposeFrameworkCallbacks then
         BLU:DisposeFrameworkCallbacks(self.frameworkDisposers)
         self.frameworkDisposers = nil
     else

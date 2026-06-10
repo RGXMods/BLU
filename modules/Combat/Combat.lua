@@ -229,7 +229,8 @@ function CombatModule:UnregisterLegacyEvents()
 end
 
 function CombatModule:Init()
-    -- Only use framework path if RGXCombat is available and the bridge exists.
+    -- Events registered at file scope (safe during addon load).
+    -- Framework bridge reserved for future RGXCombat re-enable.
     if BLU.RegisterFrameworkCallback then
         self.frameworkDisposers = {
             BLU:RegisterFrameworkCallback("combat", "OnEnter", function() self:OnRegenDisabled() end),
@@ -248,37 +249,6 @@ function CombatModule:Init()
         }
     end
 
-    local frameworkReady = self.frameworkDisposers ~= nil
-    if frameworkReady then
-        for i = 1, 13 do
-            if type(self.frameworkDisposers[i]) ~= "function" then
-                frameworkReady = false
-                break
-            end
-        end
-    end
-
-    if not frameworkReady then
-        if BLU.DisposeFrameworkCallbacks and self.frameworkDisposers then
-            BLU:DisposeFrameworkCallbacks(self.frameworkDisposers)
-        end
-        self.frameworkDisposers = nil
-        -- Defer legacy event registration: RegisterEvent is blocked during
-        -- loading screen into combat zones (battleground, arena, world PvP).
-        C_Timer.After(0.5, function()
-            if InCombatLockdown and InCombatLockdown() then
-                local RGX = _G.RGXFramework
-                if RGX then
-                    RGX:RegisterEvent("PLAYER_REGEN_ENABLED", function()
-                        self:RegisterLegacyEvents()
-                    end, "BLUCombat_LegacyRetry")
-                end
-                return
-            end
-            self:RegisterLegacyEvents()
-        end)
-    end
-
     BLU:PrintDebug("[Combat] Combat module initialized")
     if BLU.Emit then BLU:Emit("blu:moduleReady", "combat") end
 end
@@ -286,11 +256,8 @@ end
 function CombatModule:Cleanup()
     if self.frameworkDisposers and BLU.DisposeFrameworkCallbacks then
         BLU:DisposeFrameworkCallbacks(self.frameworkDisposers)
-        self.frameworkDisposers = nil
-    else
-        self:UnregisterLegacyEvents()
     end
-
+    self.frameworkDisposers = nil
     self.lastSoundAt   = {}
     self.prevHealthPct = {}
     self.inCombat      = false
@@ -299,5 +266,20 @@ end
 
 BLU.Modules = BLU.Modules or {}
 BLU.Modules["combat"] = CombatModule
+
+-- Wire events at file scope — safe during addon load, avoids combat lockdown.
+-- Init() is called later for callbacks; events are already registered.
+local RGX = _G.RGXFramework
+if RGX then
+    RGX:RegisterEvent("PLAYER_REGEN_DISABLED",     function(e, ...) CombatModule:OnRegenDisabled(e, ...) end,      EVT_REGEN_DISABLED)
+    RGX:RegisterEvent("PLAYER_REGEN_ENABLED",      function(e, ...) CombatModule:OnRegenEnabled(e, ...) end,       EVT_REGEN_ENABLED)
+    RGX:RegisterEvent("UNIT_HEALTH",               function(e, ...) CombatModule:OnUnitHealth(e, ...) end,        EVT_UNIT_HEALTH)
+    RGX:RegisterEvent("PLAYER_TARGET_CHANGED",     function(e, ...) CombatModule:OnTargetChanged(e, ...) end,      EVT_TARGET)
+    RGX:RegisterEvent("UNIT_POWER_UPDATE",         function(e, ...) CombatModule:OnUnitPower(e, ...) end,         EVT_POWER)
+    RGX:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", function() CombatModule:OnCombatLog() end,                   EVT_COMBATLOG)
+    RGX:RegisterEvent("ENCOUNTER_END",             function(e, ...) CombatModule:OnEncounterEnd(e, ...) end,      EVT_ENCOUNTER)
+    RGX:RegisterEvent("PVP_MATCH_COMPLETE",        function(e, ...) CombatModule:OnPvPMatchComplete(e, ...) end,  EVT_PVP)
+    RGX:RegisterEvent("UNIT_AURA",                 function(e, ...) CombatModule:OnUnitAura(e, ...) end,          EVT_UNIT_AURA)
+end
 
 return CombatModule

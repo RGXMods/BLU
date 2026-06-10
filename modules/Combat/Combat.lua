@@ -255,7 +255,9 @@ function CombatModule:Init()
     end
 
     if not frameworkReady then
-        BLU:DisposeFrameworkCallbacks(self.frameworkDisposers)
+        if BLU.DisposeFrameworkCallbacks and self.frameworkDisposers then
+            BLU:DisposeFrameworkCallbacks(self.frameworkDisposers)
+        end
         self.frameworkDisposers = nil
         -- Defer legacy event registration: RegisterEvent is blocked during
         -- loading screen into combat zones (battleground, arena, world PvP).

@@ -310,10 +310,9 @@ function Design:CreateDropdown(parent, label, values)
 
     UIDropDownMenu_Initialize(dropdown, function(self, level)
         level = level or 1
-        local dd = BLU.Modules and BLU.Modules.dropdown
-        if dd and dd.ResetLevel then
-            dd:ResetLevel(level)
-        end
+        local RGX = _G.RGXFramework
+        local Drops = RGX:GetDropdowns()
+        Drops:HideInlineButtons(level, "bluDeleteButton")
 
         for _, value in ipairs(values) do
             local info = UIDropDownMenu_CreateInfo()
@@ -323,9 +322,6 @@ function Design:CreateDropdown(parent, label, values)
                 UIDropDownMenu_SetSelectedValue(dropdown, value)
             end
             UIDropDownMenu_AddButton(info)
-            if dd and dd.StyleLastAddedButton then
-                dd:StyleLastAddedButton(level, {minWidth = 140})
-            end
         end
     end)
 

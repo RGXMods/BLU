@@ -67,7 +67,6 @@ function BLU:Initialize()
 		"config", -- Configuration system (MUST be first for defaults)
 		"database", -- Database (needs config.defaults)
 		"utils", -- Utility functions
-		"combat_protection", -- Combat lockdown protection
 		"sound_muter" -- Sound muting/unmuting
 	})
 

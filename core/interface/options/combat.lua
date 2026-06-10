@@ -253,19 +253,11 @@ local function BuildSoundButtonMenu(dropdownFrame, getTriggerId, labelFontString
     dropdownFrame.initialize = function(_, level, menuList)
         local MAX_SOUNDS_PER_MENU_PAGE = 24
         level = level or 1
-        local dd = BLU.Modules.dropdown
+        local RGX = _G.RGXFramework
+        local Drops = RGX:GetDropdowns()
 
         local function shortenLabel(text, maxChars)
-            if dd and dd.ShortenLabel then
-                return dd:ShortenLabel(text, maxChars)
-            end
-
-            text = tostring(text or "")
-            if #text <= maxChars then
-                return text, false
-            end
-
-            return string.sub(text, 1, math.max(1, maxChars - 3)) .. "...", true
+            return Drops:ShortenLabel(text, maxChars)
         end
 
         local function trimSoundNameForSubmenu(soundName, parentLabel)
@@ -292,11 +284,7 @@ local function BuildSoundButtonMenu(dropdownFrame, getTriggerId, labelFontString
         end
 
         local function getDropDownListFrame(levelToUse)
-            if dd and dd.GetListFrame then
-                return dd:GetListFrame(levelToUse)
-            end
-
-            return _G["DropDownList" .. tostring(levelToUse or 1)]
+            return Drops:GetListFrame(levelToUse)
         end
 
         local baseMinWidth = 220
@@ -326,25 +314,16 @@ local function BuildSoundButtonMenu(dropdownFrame, getTriggerId, labelFontString
         end
 
         local function forceListFrameWidth(levelToUse)
-            if dd and dd.ForceWidth then
-                dd:ForceWidth(levelToUse, getMinWidthForLevel(levelToUse), getLeftInsetForLevel(levelToUse), {
-                    countKey = "bluCountLabel",
-                    previewKey = "bluPreviewButton",
-                    compactRightControl = shouldCompactRightControl(levelToUse),
-                })
-            end
-        end
-
-        local function styleLastAddedButton(levelToUse, options)
-            if dd and dd.StyleLastAddedButton then
-                dd:StyleLastAddedButton(levelToUse, options)
-            end
+            Drops:ForceWidth(levelToUse, getMinWidthForLevel(levelToUse), getLeftInsetForLevel(levelToUse), {
+                countKey = "bluCountLabel",
+                inlineKeys = {"bluPreviewButton"},
+                compactRight = shouldCompactRightControl(levelToUse),
+            })
         end
 
         local function resetDropDownListFrame(levelToUse)
-            if dd and dd.ResetLevel then
-                dd:ResetLevel(levelToUse)
-            end
+            Drops:HideInlineButtons(levelToUse, "bluPreviewButton")
+            Drops:HideInlineButtons(levelToUse, "bluDeleteButton")
         end
 
         local function hideInlinePreviewButtons(levelToUse)
@@ -484,7 +463,6 @@ local function BuildSoundButtonMenu(dropdownFrame, getTriggerId, labelFontString
                 info.tooltipTitle = soundName
             end
             UIDropDownMenu_AddButton(info, levelToUse)
-            styleLastAddedButton(levelToUse, {hasPreview = true, minWidth = (levelToUse >= 3 and 220 or nil)})
             attachInlinePreviewButton(levelToUse, soundId)
         end
 
@@ -522,20 +500,17 @@ local function BuildSoundButtonMenu(dropdownFrame, getTriggerId, labelFontString
             noneInfo.checked = GetSelectedSound(getTriggerId()) == "None"
             noneInfo.func = function() onSelected("None") end
             UIDropDownMenu_AddButton(noneInfo, level)
-            styleLastAddedButton(level, {minWidth = 150})
 
             local randomInfo = UIDropDownMenu_CreateInfo()
             randomInfo.text = "|cff66ff66Random|r"
             randomInfo.checked = GetSelectedSound(getTriggerId()) == "random"
             randomInfo.func = function() onSelected("random") end
             UIDropDownMenu_AddButton(randomInfo, level)
-            styleLastAddedButton(level, {minWidth = 150})
 
             local spacer = UIDropDownMenu_CreateInfo()
             spacer.notClickable = true
             spacer.notCheckable = true
             UIDropDownMenu_AddButton(spacer, level)
-            styleLastAddedButton(level, {minWidth = 150})
 
             for _, groupKey in ipairs({"BLU WoW Defaults", "BLU Other Game Sounds", "User Custom Sounds", "Shared Media"}) do
                 if HasEntries(hierarchy[groupKey]) then
@@ -547,7 +522,6 @@ local function BuildSoundButtonMenu(dropdownFrame, getTriggerId, labelFontString
                         info.hasArrow = true
                         info.menuList = groupKey
                         UIDropDownMenu_AddButton(info, level)
-                        styleLastAddedButton(level, {hasArrow = true, notCheckable = true})
                     end
                 end
             end
@@ -588,7 +562,6 @@ local function BuildSoundButtonMenu(dropdownFrame, getTriggerId, labelFontString
                     end
                     UIDropDownMenu_AddButton(info, level)
                     attachInlineCountLabel(level, "(" .. #sounds .. ")")
-                    styleLastAddedButton(level, {hasArrow = true, notCheckable = true})
                 end
             end
         elseif level == 3 then
@@ -616,7 +589,6 @@ local function BuildSoundButtonMenu(dropdownFrame, getTriggerId, labelFontString
                     info.menuList = {group = groupKey, sub = subKey, type = "pack", page = pageIndex}
                     info.text = string.format("Page %d (%d-%d)", pageIndex, firstEntry, lastEntry)
                     UIDropDownMenu_AddButton(info, level)
-                    styleLastAddedButton(level, {hasArrow = true, notCheckable = true})
                 end
             else
                 renderPagedSoundList(level, soundsToDisplay, menuList.page or 1, subKey)

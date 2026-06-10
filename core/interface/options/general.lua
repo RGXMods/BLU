@@ -180,10 +180,9 @@ function BLU.CreateGeneralPanel(panel)
 
     UIDropDownMenu_Initialize(soundChannelDropdown, function(_, level)
         level = level or 1
-        local dd = BLU.Modules and BLU.Modules.dropdown
-        if dd and dd.ResetLevel then
-            dd:ResetLevel(level)
-        end
+        local RGX = _G.RGXFramework
+        local Drops = RGX:GetDropdowns()
+        Drops:HideInlineButtons(level, "bluDeleteButton")
 
         for _, channel in ipairs(SOUND_CHANNELS) do
             local info = UIDropDownMenu_CreateInfo()
@@ -192,9 +191,6 @@ function BLU.CreateGeneralPanel(panel)
             info.checked = (profile.soundChannel == channel)
             info.func = function() SetSelectedChannel(channel) end
             UIDropDownMenu_AddButton(info)
-            if dd and dd.StyleLastAddedButton then
-                dd:StyleLastAddedButton(level, {minWidth = 140})
-            end
         end
     end)
 

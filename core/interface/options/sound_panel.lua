@@ -301,14 +301,15 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 		if not BLU.db then return end
 		BLU.db.selectedSounds = BLU.db.selectedSounds or {}
 
-		local dd = BLU.Modules.dropdown
+		local RGX = _G.RGXFramework
+		local Drops = RGX:GetDropdowns()
 
 		local function getDropDownListFrame(levelToUse)
-			return dd:GetListFrame(levelToUse)
+			return Drops:GetListFrame(levelToUse)
 		end
 
 		local function shortenLabel(text, maxChars)
-			return dd:ShortenLabel(text, maxChars)
+			return Drops:ShortenLabel(text, maxChars)
 		end
 
 		local function trimSoundNameForSubmenu(soundName, parentLabel)
@@ -364,23 +365,16 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 		end
 
 		local function forceListFrameWidth(levelToUse)
-			dd:ForceWidth(levelToUse, getMinWidthForLevel(levelToUse), getLeftInsetForLevel(levelToUse), {
+			Drops:ForceWidth(levelToUse, getMinWidthForLevel(levelToUse), getLeftInsetForLevel(levelToUse), {
 				countKey = "bluCountLabel",
-				previewKey = "bluPreviewButton",
-				compactRightControl = shouldCompactRightControl(levelToUse),
+				inlineKeys = {"bluPreviewButton"},
+				compactRight = shouldCompactRightControl(levelToUse),
 			})
 		end
 
-		local function styleLastAddedButton(levelToUse, options)
-			if dd and dd.StyleLastAddedButton then
-				dd:StyleLastAddedButton(levelToUse, options)
-			end
-		end
-
 		local function resetDropDownListFrame(levelToUse)
-			if dd and dd.ResetLevel then
-				dd:ResetLevel(levelToUse)
-			end
+			Drops:HideInlineButtons(levelToUse, "bluPreviewButton")
+			Drops:HideInlineButtons(levelToUse, "bluDeleteButton")
 		end
 
 		local function hideInlinePreviewButtons(levelToUse)
@@ -552,7 +546,6 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 				selectInfo.tooltipTitle = soundName
 			end
 			UIDropDownMenu_AddButton(selectInfo, levelToUse)
-			styleLastAddedButton(levelToUse, {hasPreview = true, minWidth = (levelToUse >= 3 and 220 or nil)})
 			attachInlinePreviewButton(levelToUse, soundId)
 		end
 
@@ -571,7 +564,6 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 				pageInfo.isTitle = true
 				pageInfo.notCheckable = true
 				UIDropDownMenu_AddButton(pageInfo, levelToUse)
-				styleLastAddedButton(levelToUse, {minWidth = 120})
 			end
 
 			for i = startIndex, endIndex do
@@ -602,14 +594,12 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 				dInfo.func = function() onSoundSelected(info.value, info.text) end
 				dInfo.checked = BLU.db.selectedSounds[self.eventId] == info.value
 				UIDropDownMenu_AddButton(dInfo, level)
-				styleLastAddedButton(level, {minWidth = 150})
 			end
 
 			local sep = UIDropDownMenu_CreateInfo()
 			sep.notClickable = true
 			sep.notCheckable = true
 			UIDropDownMenu_AddButton(sep, level)
-			styleLastAddedButton(level, {minWidth = 150})
 
 			local sortedTopLevelKeys = {"BLU WoW Defaults", "BLU Other Game Sounds", "User Custom Sounds", "Shared Media"}
 
@@ -638,7 +628,7 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 						info.menuList = groupKey
 						info.notCheckable = true
 						UIDropDownMenu_AddButton(info, level)
-						styleLastAddedButton(level, {hasArrow = true, notCheckable = true})
+					end
 					end
 				end
 			end
@@ -680,7 +670,6 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 					end
 					UIDropDownMenu_AddButton(info, level)
 					attachInlineCountLabel(level, "(" .. #sounds .. ")")
-					styleLastAddedButton(level, {hasArrow = true, notCheckable = true})
 				end
 			end
 		elseif level == 3 then
@@ -706,7 +695,6 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 						pageInfo.menuList = {group = groupKey, sub = subKey, type = "pack", page = pageIndex}
 						pageInfo.text = string.format("Page %d (%d-%d)", pageIndex, firstEntry, lastEntry)
 						UIDropDownMenu_AddButton(pageInfo, level)
-						styleLastAddedButton(level, {hasArrow = true, notCheckable = true})
 					end
 				else
 					renderPagedSoundList(level, soundsToDisplay, menuList.page or 1, subKey)

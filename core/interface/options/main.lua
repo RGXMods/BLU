@@ -322,8 +322,9 @@ function Options:OpenOptions()
         if not BLU._queuedOpenOptions then
             BLU._queuedOpenOptions = true
             BLU:Print("|cff00ccffBLU:|r Options cannot be opened in combat. Queued to open after combat.")
-            if BLU.QueueForCombat then
-                BLU:QueueForCombat(function()
+            local RGX = _G.RGXFramework
+            if RGX and RGX.QueueForCombat then
+                RGX:QueueForCombat(function()
                     BLU._queuedOpenOptions = nil
                     if BLU.OpenOptions then
                         BLU:OpenOptions()

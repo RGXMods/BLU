@@ -643,21 +643,14 @@ function BLU.CreateProfilesPanel(panel)
 
     -- ── DROPDOWN INIT ────────────────────────────────────────────────────────
     local function profileDropdown_OnInitialize(self, level, menuList)
-        local dd = BLU.Modules.dropdown
+        local RGX = _G.RGXFramework
+        local Drops = RGX:GetDropdowns()
         local function getDropDownListFrame(levelToUse)
-            return dd:GetListFrame(levelToUse)
-        end
-
-        local function styleLastAddedButton(levelToUse, options)
-            if dd and dd.StyleLastAddedButton then
-                dd:StyleLastAddedButton(levelToUse, options)
-            end
+            return Drops:GetListFrame(levelToUse)
         end
 
         local function resetDropDownListFrame(levelToUse)
-            if dd and dd.ResetLevel then
-                dd:ResetLevel(levelToUse)
-            end
+            Drops:HideInlineButtons(levelToUse, "bluDeleteButton")
         end
 
         local BASE_MIN_WIDTH = math.floor(profileDropdown:GetWidth() or 200)
@@ -680,9 +673,9 @@ function BLU.CreateProfilesPanel(panel)
         end
 
         local function forceListFrameWidth(levelToUse)
-            dd:ForceWidth(levelToUse, getMinWidthForLevel(levelToUse), getLeftInsetForLevel(levelToUse), {
-                deleteKey = "bluDeleteButton",
-                compactRightControl = false,
+            Drops:ForceWidth(levelToUse, getMinWidthForLevel(levelToUse), getLeftInsetForLevel(levelToUse), {
+                inlineKeys = {"bluDeleteButton"},
+                compactRight = false,
             })
         end
 
@@ -719,7 +712,6 @@ function BLU.CreateProfilesPanel(panel)
                     CloseDropDownMenus()
                 end
                 UIDropDownMenu_AddButton(info, level)
-                styleLastAddedButton(level, {minWidth = 140})
 
                 -- Attach inline delete button to non-Default profiles
                 -- Added safety check: only show if the open menu is the BLU Profiles dropdown
@@ -764,7 +756,6 @@ function BLU.CreateProfilesPanel(panel)
                             end
                             deleteButton.profileName = profileName
                             deleteButton:Show()
-                            styleLastAddedButton(level, {minWidth = 140})
                         end
                     end
                 end

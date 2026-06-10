@@ -3,7 +3,7 @@
     <!-- Core Systems (Load Order Matters) -->
     <Script file="core/core.lua"/>
     <Script file="core/systems/database.lua"/>
-    <Script file="core/systems/combat_protection.lua"/>
+    <!-- <Script file="core/systems/combat_protection.lua"/> — replaced by RGX-Framework runtime -->
     <Script file="core/sounds/sounds.lua"/>
     <Script file="core/systems/config.lua"/>
     <Script file="core/systems/utils.lua"/>
@@ -23,7 +23,7 @@
     <!-- Interface: design helpers, then each options panel, then tab wiring -->
     <Script file="core/interface/design.lua"/>
     <Script file="core/interface/widgets.lua"/>
-    <Script file="core/interface/dropdown.lua"/>
+    <!-- <Script file="core/interface/dropdown.lua"/> — replaced by RGX-Framework dropdowns -->
     <Script file="core/interface/options/combat.lua"/>
     <Script file="core/interface/options/tabs.lua"/>
 <Script file="core/interface/options/general.lua"/>

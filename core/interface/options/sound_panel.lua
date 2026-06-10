@@ -631,7 +631,6 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 					end
 					end
 				end
-			end
 		elseif level == 2 then
 			local groupKey = menuList
 			local subgroups = customHierarchy[groupKey]

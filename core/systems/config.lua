@@ -200,55 +200,6 @@ function Config:ResetToDefaults()
     BLU.db:ResetProfile()
 end
 
--- Export/Import functionality
-function Config:ExportSettings()
-    BLU:PrintDebug("[Config] ExportSettings called")
-    -- Simple export without compression for now
-    local settings = BLU.db
-    -- Convert to string representation
-    local str = "BLU_SETTINGS:"
-    for k, v in pairs(settings) do
-        if type(v) == "string" or type(v) == "number" or type(v) == "boolean" then
-            str = str .. k .. "=" .. tostring(v) .. ";"
-        end
-    end
-    return str
-end
-
-function Config:ImportSettings(importString)
-    BLU:PrintDebug("[Config] ImportSettings called")
-    -- Simple import for now
-    if not importString:match("^BLU_SETTINGS:") then
-        return false, "Invalid import string"
-    end
-    
-    -- Parse settings
-    local settings = {}
-    for k, v in importString:gmatch("(%w+)=([^;]+);") do
-        if v == "true" then
-            settings[k] = true
-        elseif v == "false" then
-            settings[k] = false
-        elseif tonumber(v) then
-            settings[k] = tonumber(v)
-        else
-            settings[k] = v
-        end
-    end
-    
-    -- Apply imported settings
-    for key, value in pairs(settings) do
-        BLU.db[key] = value
-    end
-    
-    self:ApplySettings()
-    if BLU.ReloadAllModules then
-        BLU:ReloadAllModules()
-    end
-    
-    return true
-end
-
 function Config:MigrateVolumeSettings()
     BLU:PrintDebug("[Config] MigrateVolumeSettings called")
     if not BLU.db or not BLU.db.soundVolumes then return end

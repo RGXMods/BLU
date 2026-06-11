@@ -24,10 +24,9 @@ local function getProfileDefaults()
 end
 
 local function onProfileSwitch(name, profile)
-    BLU.db = profile
-    if BLU.InvalidateAllTabs then BLU:InvalidateAllTabs() end
-    if BLU.RefreshOptions     then BLU:RefreshOptions()    end
-    if BLU.RefreshProfilesUI  then BLU:RefreshProfilesUI() end
+ if BLU.InvalidateAllTabs then BLU:InvalidateAllTabs() end
+ if BLU.RefreshOptions then BLU:RefreshOptions() end
+ if BLU.RefreshProfilesUI then BLU:RefreshProfilesUI() end
 end
 
 -- ── Init ──────────────────────────────────────────────────────────────────────
@@ -44,21 +43,17 @@ function Database:Init()
     -- RGX.Addon() in core.lua may have already created BLU.db.  If so,
     -- merge BLU defaults and wire profile-switch callbacks.  If not,
     -- create the proxy here (backward compat / load-order safety).
-    if BLU.db then
-        local profile = BLU.db:GetProfile()
-        if profile then
-            RGX:DeepMergeDefaults(profile, getProfileDefaults())
-        end
-        BLU.db:OnProfileChanged(function(name, profile)
-            if BLU.InvalidateAllTabs then BLU:InvalidateAllTabs() end
-            if BLU.RefreshOptions     then BLU:RefreshOptions()    end
-            if BLU.RefreshProfilesUI  then BLU:RefreshProfilesUI() end
-        end)
-    else
-        BLU.db = RGX:NewDatabase("BLUDB", getProfileDefaults(), {
-            onSwitch = onProfileSwitch,
-        })
-    end
+ if BLU.db then
+ local profile = BLU.db:GetProfile()
+ if profile then
+ RGX:MergeTable(profile, getProfileDefaults())
+ end
+ BLU.db:OnProfileChanged(onProfileSwitch)
+ else
+ BLU.db = RGX:NewDatabase("BLUDB", getProfileDefaults(), {
+ onSwitch = onProfileSwitch,
+ })
+ end
 
     BLU.InitializeDatabase = function() return BLU.db end
     BLU:PrintDebug("Database module initialized. BLU.db is " .. tostring(BLU.db))

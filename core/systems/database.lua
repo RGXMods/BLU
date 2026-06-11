@@ -55,8 +55,7 @@ function Database:Init()
  })
  end
 
-    BLU.InitializeDatabase = function() return BLU.db end
-    BLU:PrintDebug("Database module initialized. BLU.db is " .. tostring(BLU.db))
+ BLU:PrintDebug("Database module initialized. BLU.db is " .. tostring(BLU.db))
 end
 
 -- ── Save settings ─────────────────────────────────────────────────────────────
@@ -118,22 +117,6 @@ function Database:GetProfileName()
 end
 
 -- ── Path accessors ────────────────────────────────────────────────────────────
-
-function Database:GetDB(path, default)
-    BLU:PrintDebug("[Database] GetDB called for path '" .. tostring(path) .. "'")
-    if not BLU.db then return default end
-    if not path then return BLU.db end
-    return BLU.db:Get(path, default)
-end
-
-function Database:SetDB(path, value)
-    BLU:PrintDebug("[Database] SetDB called for path '" .. tostring(path) .. "'")
-    if not BLU.db then return false end
-    return BLU.db:Set(path, value)
-end
-
-BLU.GetDB = function(path, default) return Database:GetDB(path, default) end
-BLU.SetDB = function(path, value)   return Database:SetDB(path, value)   end
 
 -- ── Serialization ─────────────────────────────────────────────────────────────
 

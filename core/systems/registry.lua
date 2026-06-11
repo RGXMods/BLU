@@ -553,30 +553,6 @@ function SoundRegistry:GetSoundInfo(soundId)
     }
 end
 
--- Test/preview functions
-function BLU:PlayTestSound(category, volume)
-    self:PrintDebug("[Registry] BLU:PlayTestSound helper called for '" .. tostring(category) .. "'")
-    if not BLU.Registry then
-        self:PrintDebug("Registry not available")
-        return false
-    end
-    
-    -- Use selected sound for category or default
-    local selectedSound = self:GetDB({"selectedSounds", category})
-    if not selectedSound then
-        -- Try to play first available sound for category
-        local sounds = BLU.Registry:GetSoundsByCategory(category)
-        if sounds and next(sounds) then
-            local firstId = next(sounds)
-            return BLU.Registry:PlaySound(firstId, volume)
-        end
-    else
-        return BLU.Registry:PlayCategorySound(category, volume)
-    end
-    
-    return false
-end
-
 function BLU:PlayCategorySound(category, volume)
     self:PrintDebug("[Registry] BLU:PlayCategorySound helper called for '" .. tostring(category) .. "'")
     if BLU.Registry then

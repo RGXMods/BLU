@@ -341,26 +341,6 @@ function BLU:ClearSoundCache()
     end
 end
 
--- Test sound function
-function BLU:PlayTestSound(category, volume)
-    self:Trace("Sound", "PlayTestSound called for category '" .. tostring(category) .. "' at volume '" .. tostring(volume or 1.0) .. "'")
-    if self.Modules.registry then
-        local testSounds = {
-            levelup = ADDON_PATH .. "media\\sounds\\level_default.ogg",
-            achievement = ADDON_PATH .. "media\\sounds\\achievement_default.ogg",
-            quest = ADDON_PATH .. "media\\sounds\\quest_default.ogg"
-        }
-        
-        local soundFile = testSounds[category] or testSounds.levelup
-        local channel = self.db and self.db.soundChannel or "Master"
-        local vol = volume or 1.0
-        
-        PlaySoundFile(soundFile, channel)
-        return true
-    end
-    return false
-end
-
 -- Module enable/disable functions
 function BLU:EnableModule(moduleId)
     if self.Modules[moduleId] then

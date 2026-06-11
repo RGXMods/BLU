@@ -197,15 +197,15 @@ function BLU:LoadSavedSettings()
 		return
 	end
 
-	-- Ensure database exists
-	if not self.db then
-		if self.Modules and self.Modules.database and self.Modules.database.InitializeDatabase then
-			self.Modules.database:InitializeDatabase()
-		else
-			self:PrintError("[Init] Cannot load settings - database not available")
-			return
-		end
-	end
+ -- Ensure database exists
+ if not self.db then
+ if self.Modules and self.Modules.database and self.Modules.database.Init then
+ self.Modules.database:Init()
+ else
+ self:PrintError("[Init] Cannot load settings - database not available")
+ return
+ end
+ end
 
 	-- Apply saved settings
 	if self.db then

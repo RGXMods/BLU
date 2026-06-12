@@ -7,32 +7,37 @@ This file gives repository-specific guidance to Claude Code and similar coding a
 BLU (Better Level-Up!) is a Retail World of Warcraft addon that replaces milestone and progression sounds with curated audio from many other games.
 
 Current release target:
-- Version: `v6.4.0-alpha.1`
-- WoW interface: `120001`
+- Version: `v8.0.0-alpha.1`
+- WoW interface: `120005`
 - Addon type: Retail-only UI/sound customization addon
 - Branding: RGX Mods / RealmGX community project
+- Framework dependency: RGX-Framework v2.0.0-alpha.1
 
 ## Current Structure
 
 ```text
 blu/
-|- core/                         # Framework, database, registry, loader, UI plumbing
-|- modules/                      # Feature modules and dedicated panels
+|- core/                     # Framework, database, registry, loader, UI plumbing
+|- modules/                  # Feature modules and dedicated panels
 |  |- Achievement/
 |  |- BattlePet/
+|  |- Collectibles/
+|  |- Combat/
 |  |- Debug/
 |  |- Delve/
 |  |- Honor/
 |  |- Housing/
 |  |- LevelUp/
+|  |- Loot/
+|  |- Prey/
 |  |- Quest/
 |  |- Renown/
 |  |- Reputation/
 |  `- TradingPost/
-|- media/                        # Sounds and textures
-|- Localization/                 # Localized strings
-|- docs/                         # Release notes and changelogs
-|- user/                         # User-defined sound helpers / persisted assets
+|- media/                    # Sounds and textures
+|- Localization/             # Localized strings
+|- docs/                     # Release notes and changelogs
+|- user/                     # User-defined sound helpers / persisted assets
 |- BLU.toc
 |- BLU.xml
 |- README.md
@@ -47,12 +52,14 @@ Loading flow:
 - `core/initialization.lua` handles staged setup after files are available
 
 Important core files:
-- `core/core.lua`: addon object, chat output, debug scope filtering, helpers
+- `core/core.lua`: addon object, chat output, debug scope filtering, helpers, RGX.Addon() bootstrap
 - `core/config.lua`: defaults and profile defaults
-- `core/database.lua`: SavedVariables and profile persistence
-- `core/loader.lua`: feature/module toggles and init helpers
-- `core/registry.lua`: sound registration and event category mapping
+- `core/systems/database.lua`: thin adapter over `RGX:NewDatabase()` — profile CRUD, serialization, export/import dialogs delegate to framework proxy
+- `core/systems/utils.lua`: sound queue, channel routing, interrupt-music logic (DeepCopy/Throttle/Debounce removed — use RGX)
+- `core/systems/registry.lua`: sound registration, mute system (delegated to RGX Sound), event category mapping
+- `core/systems/loader.lua`: feature/module toggles and init helpers
 - `core/interface/options/`: options UI shell and tab layout
+- `core/interface/options/profiles.lua`: profile management panel — uses `GetRawDB()` helper and `BLU.db:GetActiveProfile()` for proxy-safe access
 
 Important current UI panels:
 - `core/interface/options/general.lua`
@@ -69,7 +76,28 @@ The addon now includes:
 - Sounds-style grouped UI sections for larger management panels
 - Support for event-based sounds across level up, achievements, quests, pets, delve, renown, honor, reputation, trading post, and housing-related triggers
 
-## Development Expectations
+## RGX-Framework Migration Status
+
+BLU is progressively migrating to RGX-Framework. The following systems now delegate to RGX:
+
+| BLU System | RGX Replacement | Status |
+|---|---|---|
+| Event system | `RGX:RegisterEvent` (delegation with fallback) | Done |
+| Timer system | `RGX:After` / `RGX:Every` | Done |
+| Hooks + slash | `RGX:RegisterHook` / `RGX:RegisterSlashCommand` | Done |
+| Addon bootstrap | `RGX.Addon()` with full fallback | Done |
+| Database / profiles | `RGX:NewDatabase()` proxy (`BLU.db`) | Done |
+| Combat protection | `RGX:QueueForCombat()` | Removed (was 344 lines) |
+| Dropdowns | `RGX:GetDropdowns()` | Removed (was 252 lines) |
+| Utility (DeepCopy, Throttle, Debounce, SafeCall) | `RGX:DeepCopy` / `RGX:Throttle` / `RGX:Debounce` / `RGX:QueueForCombat` | Removed |
+| Sound muting | `RGX:GetSound():MuteList(ids)` | Delegated |
+| SharedMedia scanning | `sharedmedia.lua` (local) | **Not yet migrated** |
+
+Key proxy rules:
+- `BLU.db` must never be overwritten — it is the proxy table with `__index`/`__newindex`
+- Internal proxy fields (`_guard`, `_raw`, `_defaults`, `_callbacks`, `_onSwitch`) use `rawget`/`rawset`
+- Direct `_G.BLUDB` access should go through `GetRawDB()` (in profiles.lua) or `BLU.db._raw`
+- `BLU.db:GetActiveProfile()` replaces `BLU.db.currentProfile`
 
 When making changes:
 - Keep `BLU.toc` and `core/core.lua` version strings aligned
@@ -77,11 +105,16 @@ When making changes:
 - Use `scripts/release-alpha.ps1` for alpha cuts so branch push is the default and tag push is opt-in
 - Add or update the matching file in `docs/changelogs/`
 - Prefer keeping options panels compact and visually consistent with the existing BLU UI
-- Use the existing BLU APIs for profile work:
-  - `BLU.CreateProfile`
-  - `BLU.LoadProfile`
-  - `BLU.DeleteProfile`
-  - `BLU.RenameProfile`
+- Use the proxy API for profile work:
+  - `BLU.db:CreateProfile(name)` / `BLU.CreateProfile(name)`
+  - `BLU.db:LoadProfile(name)` / `BLU.LoadProfile(name)`
+  - `BLU.db:DeleteProfile(name)` / `BLU.DeleteProfile(name)`
+  - `BLU.db:RenameProfile(old, new)` / `BLU.RenameProfile(old, new)`
+  - `BLU.db:GetActiveProfile()` — current profile name (not `BLU.db.currentProfile`)
+  - `BLU.db:ResetProfile()` — reset active profile to defaults (works on "Default" too)
+  - `BLU.db:OnProfileChanged(fn)` — register switch callback
+- Never assign `BLU.db = <anything>` — the proxy must not be overwritten
+- For direct profile table access (CRUD on raw profile data), use `BLU.db._raw` or `GetRawDB()`
 
 ## Naming And File Conventions
 

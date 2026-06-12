@@ -2,7 +2,39 @@
 
 `docs/CHANGES.md` is the canonical changelog summary for BLU.
 
-## Current Production Release
+## Current Development Release
+
+### [v8.0.0-alpha.1](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/8.0.0-alpha.1.md) - 2026-06-11
+
+- **Framework Migration — Stages 1-5 complete.** BLU now delegates events, timers, hooks, slash commands, and database to RGX-Framework.
+- Database proxy stabilization: fixed `__newindex`/`__index` metamethod guards so internal fields (`_guard`, `_raw`, `_defaults`, `_callbacks`, `_onSwitch`) never leak into profile SavedVars.
+- `BLU.db` proxy must never be overwritten — removed `BLU.db = profile` from `onProfileSwitch`.
+- Fixed `MergeDefaults` → `MergeTable`, `Database:InitializeDatabase()` → `Database:Init()`, `BLU.db.currentProfile` → `BLU.db:GetActiveProfile()`.
+- `ResetProfile("Default")` now works — removed incorrect `PROTECTED_PROFILE` block from Reset.
+- Dead code purge: removed `ResetAdvancedSettings`, `RebuildDatabase`, `GetDB`/`SetDB` shims, shadowed `ShowExportDialog`/`ShowImportDialog`/`ShowCharacterCopyDialog`, broken `ExportSettings`/`ImportSettings` (iterated proxy methods, not data), triple `PlayTestSound` definitions, shadowed `CreateHousingPanel`, empty `housing.lua`.
+- All 16 direct `_G.BLUDB` references in profiles.lua now route through `GetRawDB()` helper.
+- `RGX.Addon()` bootstrap passes `opts.onSwitch` through to `NewDatabase`.
+- Version string in `core/core.lua` synced to `v8.0.0-alpha.1`.
+
+Full notes:
+- [v8.0.0-alpha.1 changelog](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/8.0.0-alpha.1.md)
+
+## Production Releases
+
+### [v7.1.1](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/7.1.1.md) - 2026-06-10
+
+- Utility deduplication: removed local DeepCopy, Throttle, Debounce, SafeCall — use RGX equivalents.
+- Sound muter rewritten to use `RGX:GetSound():MuteList(ids)`.
+
+### [v7.1.0](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/7.1.0.md) - 2026-06-10
+
+- Removed local `combat_protection.lua` (344 lines) → `RGX:QueueForCombat()`.
+- Removed local `dropdown.lua` (252 lines) → `RGX:GetDropdowns()`.
+
+### [v7.0.0](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/7.0.0.md) - 2026-06-09
+
+- Migrated from `RGX:OpenDB` to `RGX:NewDatabase` proxy (`BLU.db`).
+- Combat load screen safety — deferred registration with `C_Timer.After` + `PLAYER_REGEN_ENABLED` retry.
 
 ### [v6.5.1](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.5.1.md) - 2026-05-02
 

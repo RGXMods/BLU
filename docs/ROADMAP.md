@@ -1,3 +1,24 @@
+## RGX-Framework Migration Status
+
+BLU v8.0.0-alpha.1 delegates the following systems to RGX-Framework:
+
+| BLU System | RGX Replacement | Status |
+|---|---|---|
+| Event system | `RGX:RegisterEvent` | Done |
+| Timer system | `RGX:After` / `RGX:Every` | Done |
+| Hooks + slash | RGX delegation shims | Done |
+| Addon bootstrap | `RGX.Addon()` | Done |
+| Database / profiles | `RGX:NewDatabase()` proxy | Done |
+| Combat protection | `RGX:QueueForCombat()` | Removed (was 344 lines) |
+| Dropdowns | `RGX:GetDropdowns()` | Removed (was 252 lines) |
+| Utility (DeepCopy, Throttle, Debounce, SafeCall) | RGX equivalents | Removed |
+| Sound muting | `RGX:GetSound():MuteList()` | Delegated |
+| SharedMedia scanning | `sharedmedia.lua` (local) | **Not yet migrated** |
+
+Next migration target: move `sharedmedia.lua` sound pack scanning into `RGXSharedMedia` once the RGX SharedMedia Drop-In is built (see RGX-Framework ROADMAP).
+
+---
+
 ## Planned Triggers
 
 ---

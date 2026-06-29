@@ -39,6 +39,7 @@ local CUSTOM_SOUND_SEARCH_PATHS = {
     "Interface\\AddOns\\" .. addonName .. "\\media\\sounds\\%s",
 }
 local CanLoadSoundFile
+local ResolveCustomSoundPath
 
 local function NormalizeEntryPath(soundPath)
     if type(soundPath) ~= "string" then
@@ -215,11 +216,27 @@ local function CollectConfiguredEntries(entries, seenPaths, globalName, sourceLa
         return
     end
 
+    local function addConfiguredPath(rawPath, displayName, candidateFiles)
+        local resolvedPath = rawPath
+        local resolvedCandidates = candidateFiles
+
+        if type(rawPath) == "string" and ResolveCustomSoundPath then
+            local candidatePath, candidateList = ResolveCustomSoundPath(rawPath)
+            if candidatePath then
+                resolvedPath = candidatePath
+                resolvedCandidates = candidateList or candidateFiles
+                BLU:PrintDebug("[UserSounds] Resolved configured custom sound '" .. tostring(rawPath) .. "' to '" .. tostring(candidatePath) .. "'")
+            end
+        end
+
+        AddEntry(entries, seenPaths, resolvedPath, displayName, false, true, resolvedCandidates)
+    end
+
     for index, entry in ipairs(configured) do
         if type(entry) == "string" then
-            AddEntry(entries, seenPaths, entry, nil, false, true)
+            addConfiguredPath(entry, nil, nil)
         elseif type(entry) == "table" then
-            AddEntry(entries, seenPaths, entry.file or entry.path, entry.name, false, true, entry.candidateFiles)
+            addConfiguredPath(entry.file or entry.path, entry.name, entry.candidateFiles)
         else
             BLU:PrintDebug("[UserSounds] Skipped unsupported " .. tostring(sourceLabel) .. " entry at index " .. tostring(index))
         end
@@ -252,7 +269,7 @@ local function NormalizeStoredProfileEntry(entry)
     return entry
 end
 
-local function ResolveCustomSoundPath(soundInput)
+ResolveCustomSoundPath = function(soundInput)
     local normalizedInput = NormalizeEntryPath(soundInput)
     if not normalizedInput then
         return nil
@@ -357,10 +374,13 @@ local function CollectEntries()
     if BLU.db and type(BLU.db.userCustomSounds) == "table" then
         for index, entry in ipairs(BLU.db.userCustomSounds) do
             if type(entry) == "string" then
-                AddEntry(entries, seenPaths, entry, nil, false, true)
+                local resolvedPath, candidateFiles = ResolveCustomSoundPath(entry)
+                AddEntry(entries, seenPaths, resolvedPath or entry, nil, false, true, candidateFiles)
             elseif type(entry) == "table" then
                 entry = NormalizeStoredProfileEntry(entry)
-                AddEntry(entries, seenPaths, entry.file or entry.path, entry.name, false, true, entry.candidateFiles)
+                local rawPath = entry.file or entry.path
+                local resolvedPath, candidateFiles = ResolveCustomSoundPath(rawPath)
+                AddEntry(entries, seenPaths, resolvedPath or rawPath, entry.name, false, true, candidateFiles or entry.candidateFiles)
             else
                 BLU:PrintDebug("[UserSounds] Skipped unsupported profile custom sound entry at index " .. tostring(index))
             end

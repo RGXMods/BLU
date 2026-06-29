@@ -4,6 +4,15 @@
 
 ## Current Development Release
 
+### [v8.0.0-alpha.2](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/8.0.0-alpha.2.md) - 2026-06-28
+
+- User custom sound manifests now resolve through the same filename/path resolver as `/blu addcustom`.
+- Short custom filenames in `BLU\\media` and `BLU\\media\\sounds` now register correctly in the combat picker.
+- Profile-stored custom sound entries are normalized through the same resolver on refresh.
+
+Full notes:
+- [v8.0.0-alpha.2 changelog](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/8.0.0-alpha.2.md)
+
 ### [v8.0.0-alpha.1](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/8.0.0-alpha.1.md) - 2026-06-11
 
 - **Framework Migration — Stages 1-5 complete.** BLU now delegates events, timers, hooks, slash commands, and database to RGX-Framework.

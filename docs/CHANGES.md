@@ -15,6 +15,8 @@
 - All 16 direct `_G.BLUDB` references in profiles.lua now route through `GetRawDB()` helper.
 - `RGX.Addon()` bootstrap passes `opts.onSwitch` through to `NewDatabase`.
 - Version string in `core/core.lua` synced to `v8.0.0-alpha.1`.
+- Combat panel stripped to 3 launch-ready triggers (Combat Start / Combat End / Combat Music); removed 11 placeholder triggers and paging UI.
+- Quest debug-mode handlers guarded against nil/invalid quest IDs (was crashing on `QUEST_ACCEPTED`/`QUEST_TURNED_IN`).
 
 Full notes:
 - [v8.0.0-alpha.1 changelog](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/8.0.0-alpha.1.md)

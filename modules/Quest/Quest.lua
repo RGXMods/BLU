@@ -172,7 +172,7 @@ function Quest:OnQuestAccepted(event, questId)
         self.objectiveProgressCache[questId] = BuildObjectiveProgressSnapshot(questId)
     end
     
-    if BLU.db.debugMode then
+    if BLU.db.debugMode and type(questId) == "number" and questId > 0 then
         local questTitle = C_QuestLog.GetTitleForQuestID(questId) or BLU:Loc("UNKNOWN")
         BLU:Print(BLU:Loc("DEBUG_QUEST_ACCEPTED", questTitle))
     end
@@ -191,7 +191,7 @@ function Quest:OnQuestTurnedIn(event, questId, xpReward, moneyReward)
         self.progressCooldowns[questId] = nil
     end
     
-    if BLU.db.debugMode then
+    if BLU.db.debugMode and type(questId) == "number" and questId > 0 then
         local questTitle = C_QuestLog.GetTitleForQuestID(questId) or BLU:Loc("UNKNOWN")
         BLU:Print(BLU:Loc("DEBUG_QUEST_COMPLETED", questTitle))
     end

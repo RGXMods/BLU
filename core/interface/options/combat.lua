@@ -11,19 +11,6 @@ local COMBAT_TRIGGER_PAGES = {
         { id = "combat_start_sound", title = "Combat Start Sound" },
         { id = "combat_end_sound", title = "Combat End Sound" },
         { id = "combat_music_track", title = "Combat Music Track" },
-        { id = "low_health", title = "Low Health" },
-        { id = "execute_window", title = "Execute Window" },
-        { id = "interrupt_ready", title = "Interrupt Ready" },
-        { id = "major_cooldown_ready", title = "Major Cooldown Ready" },
-        { id = "defensive_ready", title = "Defensive Ready" },
-    },
-    {
-        { id = "proc_trigger", title = "Proc Trigger" },
-        { id = "critical_hit", title = "Critical Hit" },
-        { id = "critical_heal", title = "Critical Heal" },
-        { id = "resource_capped", title = "Resource Capped" },
-        { id = "resource_low", title = "Resource Low" },
-        { id = "target_lost", title = "Target Lost" },
     },
 }
 
@@ -33,7 +20,6 @@ local function EnsureCombatDB()
     end
 
     BLU.db.combat = BLU.db.combat or {}
-    BLU.db.combat.page = tonumber(BLU.db.combat.page) or 1
     BLU.db.combat.selectedSounds = BLU.db.combat.selectedSounds or {}
     BLU.db.combat.soundVolumes = BLU.db.combat.soundVolumes or {}
     BLU.db.modules = BLU.db.modules or {}
@@ -882,7 +868,6 @@ function BLU.CreateCombatPanel(panel)
     if not combat then
         return
     end
-    local totalPages = #COMBAT_TRIGGER_PAGES
 
     local titleBar = CreateFrame("Frame", nil, content, "BackdropTemplate")
     titleBar:SetPoint("TOPLEFT", 0, 0)
@@ -967,16 +952,6 @@ function BLU.CreateCombatPanel(panel)
 	triggerHeader:SetPoint("TOPRIGHT", triggerArea, "TOPRIGHT", 0, 0)
 	triggerHeader:SetHeight(18)
 
-	local pageLabel = triggerHeader:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-	pageLabel:SetPoint("RIGHT", -88, 0)
-	pageLabel:SetTextColor(0.70, 0.78, 0.86)
-
-	local prevButton = BLU.Modules.design:CreateActionButton(triggerHeader, "<", 20, 16, "Previous Page", "Show the previous set of combat triggers.")
-	prevButton:SetPoint("RIGHT", -62, 0)
-
-	local nextButton = BLU.Modules.design:CreateActionButton(triggerHeader, ">", 20, 16, "Next Page", "Show the next set of combat triggers.")
-	nextButton:SetPoint("RIGHT", -38, 0)
-
 	local triggerRows = {}
 	local rowStartY = -22
 	local rowHeight = 62
@@ -1000,10 +975,7 @@ function BLU.CreateCombatPanel(panel)
     end
 
     local function RenderPage()
-        combat.page = math.max(1, math.min(totalPages, combat.page))
-        pageLabel:SetText(string.format("Page %d of %d", combat.page, totalPages))
-
-        local page = COMBAT_TRIGGER_PAGES[combat.page] or {}
+        local page = COMBAT_TRIGGER_PAGES[1] or {}
         for index, row in ipairs(triggerRows) do
             local triggerInfo = page[index]
             if triggerInfo then
@@ -1014,20 +986,7 @@ function BLU.CreateCombatPanel(panel)
                 row:Hide()
             end
         end
-
-        prevButton:SetEnabled(combat.page > 1)
-        nextButton:SetEnabled(combat.page < totalPages)
     end
-
-    prevButton:SetScript("OnClick", function()
-        combat.page = combat.page - 1
-        RenderPage()
-    end)
-
-    nextButton:SetScript("OnClick", function()
-        combat.page = combat.page + 1
-        RenderPage()
-    end)
 
     RenderPage()
 end

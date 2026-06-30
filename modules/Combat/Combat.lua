@@ -42,12 +42,11 @@ local LOW_HEALTH_PCT       = 0.35
 local EXECUTE_PCT          = 0.20
 local RESOURCE_LOW_PCT     = 0.20
 
-CombatModule.lastSoundAt    = {}
-CombatModule.inCombat       = false
-CombatModule.prevHealthPct  = {}  -- ["player"|"target"] = last pct that triggered low/execute
-CombatModule.musicHandle    = nil
+CombatModule.lastSoundAt          = {}
+CombatModule.inCombat             = false
+CombatModule.prevHealthPct        = {}  -- ["player"|"target"] = last pct that triggered low/execute
 CombatModule.savedAmbienceEnabled = nil
-CombatModule.legacyRegistered = false
+CombatModule.legacyRegistered     = false
 
 local function IsEnabled()
     if not BLU.db or BLU.db.enabled == false then return false end
@@ -133,16 +132,15 @@ function CombatModule:RestoreAmbientAfterCombatMusic()
 end
 
 function CombatModule:StopCombatMusic()
-    if self.musicHandle and StopSound then
-        pcall(StopSound, self.musicHandle)
+    if StopMusic then
+        pcall(StopMusic)
     end
-
-    self.musicHandle = nil
-
     self:RestoreAmbientAfterCombatMusic()
 end
 
 function CombatModule:PlayCombatMusic()
+    if not IsEnabled() then return end
+
     local combat = BLU.db and BLU.db.combat
     if not combat then return end
 
@@ -152,24 +150,18 @@ function CombatModule:PlayCombatMusic()
         return
     end
 
-    local volume = (combat.soundVolumes and combat.soundVolumes["combat_music_track"]) or "medium"
     local registry = BLU.Modules and BLU.Modules.registry
-    if not (registry and registry.PlaySound and registry.GetSound) then return end
+    if not (registry and registry.GetSound) then return end
+
+    local soundInfo = registry:GetSound(selected)
+    local filePath  = soundInfo and (soundInfo.file or soundInfo.path)
+    if not filePath then return end
 
     self:StopCombatMusic()
     self:MuteAmbientForCombatMusic()
 
-    local willPlay, handle = registry:PlaySound(selected, nil, {
-        categoryOverride = "combat",
-        volumeSettingOverride = volume,
-        triggerIdOverride = "combat_music_track",
-        stopMusic = true,
-    })
-
-    if willPlay then
-        self.musicHandle = handle
-    else
-        self:RestoreAmbientAfterCombatMusic()
+    if PlayMusic then
+        pcall(PlayMusic, filePath)
     end
 end
 

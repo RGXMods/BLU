@@ -1,11 +1,10 @@
 --=====================================================================================
 -- BLU Framework
--- Our own lightweight addon framework (no external dependencies)
+-- Powered by RGX-Framework v2.0
 --=====================================================================================
 
--- Removed redundant BluPrint function - using BLU:Print() instead
-
 local addonName, addonTable = ...
+local RGX = _G.RGXFramework
 local ADDON_PATH = "Interface\\AddOns\\" .. addonName .. "\\"
 local CORE_EVENT_ID_LOGOUT = "core_player_logout"
 local CHAT_ICON = "|T" .. ADDON_PATH .. "media\\Textures\\icon.tga:16:16:0:0|t"
@@ -14,12 +13,10 @@ local CHAT_DEBUG_PREFIX = CHAT_PREFIX .. " |cffffffff[|r|cff808080DEBUG|r|cfffff
 local CHAT_ERROR_PREFIX = CHAT_PREFIX .. " |cffffffff[|r|cffff0000ERROR|r|cffffffff]|r"
 
 local function GetAddOnMetadataSafe(self, addonName, key)
-    -- Support both BLU:GetMetadata(name, key) and GetAddOnMetadataSafe(name, key)
     if type(self) == "string" and key == nil then
         key = addonName
         addonName = self
     end
-
     if C_AddOns and C_AddOns.GetAddOnMetadata then
         local ok, value = pcall(C_AddOns.GetAddOnMetadata, addonName, key)
         return ok and value or nil
@@ -29,26 +26,52 @@ local function GetAddOnMetadataSafe(self, addonName, key)
     end
     return nil
 end
-print("BLU: Core loading started.")
 
--- Create the main addon object (global)
-BLU = {
-    GetMetadata = GetAddOnMetadataSafe,
-    name = addonName,
-	version = "v6.5.1",
-	author = GetAddOnMetadataSafe(addonName, "Author"),
-    
-    -- Core tables
-    Modules = {},
-    LoadedModules = {},
-    events = {},
-    hooks = {},
-    timers = {},
-    
-    -- Settings
-    debugMode = false,
-    isInitialized = false
-}
+-- ── Bootstrap via RGX-Framework ──────────────────────────────────────────────
+
+if RGX and type(RGX.Addon) == "function" then
+    local ok, addonOrErr = pcall(RGX.Addon, "BLU", {
+        db      = true,
+        dbName  = "BLUDB",
+        slash   = "blu",
+        minimap = ADDON_PATH .. "media\\Textures\\icon.tga",
+        brand   = "05dffa",
+        onInit  = function(self)
+            self:ShowWelcomeMessage()
+        end,
+    })
+    if ok then
+        BLU = addonOrErr
+    else
+        print("BLU: RGX.Addon bootstrap failed: " .. tostring(addonOrErr))
+    end
+end
+
+-- Fallback constructor if RGX-Framework is absent
+if not BLU then
+    BLU = {
+        name = addonName,
+        version = "v8.0.0",
+        Modules = {},
+        LoadedModules = {},
+        events = {},
+        debugMode = false,
+        isInitialized = false,
+    }
+end
+
+_G.BLU = BLU
+
+-- Shared tables (compat for modules that access these directly)
+BLU.Modules = BLU.Modules or {}
+BLU.LoadedModules = BLU.LoadedModules or {}
+BLU.events = BLU.events or {}
+BLU.hooks = BLU.hooks or {}
+BLU.timers = BLU.timers or {}
+BLU.debugMode = BLU.debugMode or false
+BLU.isInitialized = BLU.isInitialized or false
+BLU.GetMetadata = BLU.GetMetadata or GetAddOnMetadataSafe
+BLU.name = BLU.name or addonName
 
 -- Print message
 function BLU:Print(message)
@@ -165,9 +188,21 @@ BLU.eventFrame:SetScript("OnEvent", function(self, event, ...)
     BLU:FireEvent(event, ...)
 end)
 
+local FrameworkRegisterEvent = BLU.RegisterEvent
+local FrameworkUnregisterEvent = BLU.UnregisterEvent
+
 -- Register event (early definition)
 local function RegisterEvent(self, event, callback, id)
     id = id or "core"
+    if FrameworkRegisterEvent and FrameworkRegisterEvent ~= RegisterEvent then
+        return FrameworkRegisterEvent(self, event, callback, id)
+    end
+
+    local RGX = _G.RGXFramework
+    if RGX then
+        RGX:RegisterEvent(event, callback, id, self)
+        return
+    end
     
     if not self.events[event] then
         self.events[event] = {}
@@ -175,7 +210,6 @@ local function RegisterEvent(self, event, callback, id)
     end
     
     self.events[event][id] = callback
-    self:PrintDebug("[Events] Registered event '" .. tostring(event) .. "' with id '" .. tostring(id) .. "'")
 end
 BLU.RegisterEvent = RegisterEvent
 
@@ -191,6 +225,15 @@ BLU.RegisterEvent = RegisterEvent
 -- Unregister event
 local function UnregisterEvent(self, event, id)
     id = id or "core"
+    if FrameworkUnregisterEvent and FrameworkUnregisterEvent ~= UnregisterEvent then
+        return FrameworkUnregisterEvent(self, event, id)
+    end
+
+    local RGX = _G.RGXFramework
+    if RGX then
+        RGX:UnregisterEvent(event, id)
+        return
+    end
     
     if self.events[event] then
         self.events[event][id] = nil
@@ -227,127 +270,51 @@ end
 BLU.FireEvent = FireEvent
 
 --=====================================================================================
--- Timer System
+-- Timer System — delegates to RGX
 --=====================================================================================
 
--- Create timer
-function BLU:CreateTimer(duration, callback, repeating)
-    self:Trace("Timer", "Creating timer (duration=" .. tostring(duration) .. ", repeating=" .. tostring(repeating == true) .. ")")
-    local timer = {
-        duration = duration,
-        callback = callback,
-        repeating = repeating,
-        elapsed = 0,
-        active = true
-    }
-    
-    table.insert(self.timers, timer)
-    
-    -- Start timer frame if needed
-    if not self.timerFrame then
-        self.timerFrame = CreateFrame("Frame")
-        self.timerFrame:SetScript("OnUpdate", function(_, elapsed) 
-            BLU:UpdateTimers(elapsed)
-        end)
-    end
-    
-    return timer
+function BLU:After(delay, callback)
+    local RGX = _G.RGXFramework
+    if RGX then return RGX:After(delay, callback) end
+    return self:CreateTimer(delay, callback, false)
 end
 
--- Update timers
-function BLU:UpdateTimers(elapsed)
-    for i = #self.timers, 1, -1 do
-        local timer = self.timers[i]
-        
-        if timer.active then
-            timer.elapsed = timer.elapsed + elapsed
-            
-            if timer.elapsed >= timer.duration then
-                -- Execute callback
-                local success, err = pcall(timer.callback)
-                if not success then
-                    self:PrintError("Timer error: " .. err)
-                end
-                
-                if timer.repeating then
-                    timer.elapsed = 0
-                else
-                    -- Remove one-time timer
-                    table.remove(self.timers, i)
-                end
-            end
-        end
-    end
-    
-    -- Stop timer frame if no active timers
-    if #self.timers == 0 and self.timerFrame then
-        self.timerFrame:SetScript("OnUpdate", nil)
-    end
-end
-
--- Cancel timer
 function BLU:CancelTimer(timer)
-    if timer then
-        timer.active = false
-        self:Trace("Timer", "Cancelled timer")
-    end
+    local RGX = _G.RGXFramework
+    if RGX then RGX:CancelTimer(timer); return end
+    if timer then timer.active = false end
 end
 
 --=====================================================================================
--- Hook System
+-- Hook System — delegates to RGX (zero BLU callers, kept as compat shim)
 --=====================================================================================
 
--- Hook function
 function BLU:Hook(target, method, callback)
-    self:Trace("Hooks", "Hook request for method '" .. tostring(method) .. "'")
-    local original = target[method]
-    
-    if not original then
-        self:PrintError("Cannot hook non-existent method: " .. method)
-        return
-    end
-    
-    target[method] = function(...)
-        return callback(original, ...)
-    end
-    
-    -- Store for unhooking
-    self.hooks[target] = self.hooks[target] or {}
-    self.hooks[target][method] = original
-    self:Trace("Hooks", "Hooked method '" .. tostring(method) .. "'")
+    local RGX = _G.RGXFramework
+    if RGX and RGX.Hook then return RGX:Hook(target, method, callback) end
 end
 
--- Unhook function
 function BLU:Unhook(target, method)
-    if self.hooks[target] and self.hooks[target][method] then
-        target[method] = self.hooks[target][method]
-        self.hooks[target][method] = nil
-        self:Trace("Hooks", "Unhooked method '" .. tostring(method) .. "'")
-    end
+    local RGX = _G.RGXFramework
+    if RGX and RGX.Unhook then return RGX:Unhook(target, method) end
 end
 
 --=====================================================================================
--- Slash Commands
+-- Slash Commands — delegates to RGX (commands.lua uses raw SLASH_ vars directly)
 --=====================================================================================
 
--- Register slash command
 function BLU:RegisterSlashCommand(command, callback)
-    self:Trace("Slash", "Registering slash command(s): " .. tostring(type(command) == "table" and table.concat(command, ", ") or command))
-    -- Support multiple commands
-    local commands = type(command) == "table" and command or {command}
-    
-    -- Use a unique identifier for this addon's commands
-    local cmdName = addonName .. "CMD"
-    
-    for i, cmd in ipairs(commands) do
-        _G["SLASH_" .. cmdName .. i] = "/" .. cmd
-    end
-    
-    SlashCmdList[cmdName] = callback
+    local RGX = _G.RGXFramework
+    if RGX then return RGX:RegisterSlashCommand(command, callback) end
 end
 
 -- Show welcome message
 function BLU:ShowWelcomeMessage()
+    if self._welcomeMessageShown then
+        self:Trace("Welcome", "Skipped duplicate welcome message")
+        return
+    end
+
     if not (self.db and self.db.showWelcomeMessage ~= false) then
         self:Trace("Welcome", "Skipped welcome message")
         return
@@ -356,6 +323,7 @@ function BLU:ShowWelcomeMessage()
     local version = self.GetMetadata(addonName, "Version") or self.version or "Unknown"
     print(CHAT_PREFIX .. " Welcome. Use |cff05dffa/blu|r to open the options panel or |cff05dffa/blu help|r for more commands.")
     print(CHAT_PREFIX .. " |cffffff00Version:|r |cff8080ff" .. version .. "|r")
+    self._welcomeMessageShown = true
     self:Trace("Welcome", "Displayed welcome message for version " .. tostring(version))
 end
 
@@ -388,80 +356,6 @@ function BLU:GetModule(name)
 end
 
 --=====================================================================================
--- Profile Management Functions
---=====================================================================================
-
--- Create profile
--- Serialize profile for export
-function BLU:SerializeProfile(profileName)
-    self:Trace("Profiles", "SerializeProfile called for '" .. tostring(profileName) .. "'")
-    if not BLUDB or not BLUDB.profiles or not BLUDB.profiles[profileName] then
-        self:PrintError("Profile not found: " .. tostring(profileName))
-        return nil
-    end
-    
-    local profile = BLUDB.profiles[profileName]
-    local serialized = {
-        name = profileName,
-        version = self.version,
-        exportDate = date("%Y-%m-%d %H:%M:%S"),
-        settings = profile
-    }
-    
-    return self:TableToString(serialized)
-end
-
--- Import profile from string
-function BLU:ImportProfile(dataString, profileName)
-    self:Trace("Profiles", "ImportProfile called for target '" .. tostring(profileName or "auto") .. "'")
-    local success, data = pcall(loadstring("return " .. dataString))
-    if not success or type(data) ~= "table" then
-        self:PrintError("Invalid import data")
-        return false
-    end
-    
-    if not data.settings then
-        self:PrintError("Import data missing settings")
-        return false
-    end
-    
-    local name = profileName or data.name or "Imported Profile"
-    BLUDB.profiles[name] = self.Database:CopyTable(data.settings)
-    
-    self:Print("Profile imported: " .. name)
-    return true
-end
-
--- Table to string helper
-function BLU:TableToString(t, indent)
-    indent = indent or ""
-    local str = "{\n"
-    
-    for k, v in pairs(t) do
-        str = str .. indent .. "  "
-        
-        if type(k) == "string" then
-            str = str .. "[\"" .. k .. "\"] = "
-        else
-            str = str .. "[" .. tostring(k) .. "] = "
-        end
-        
-        if type(v) == "table" then
-            str = str .. self:TableToString(v, indent .. "  ")
-        elseif type(v) == "string" then
-            str = str .. "\"" .. v .. "\""
-        else
-            str = str .. tostring(v)
-        end
-        
-        str = str .. ",\n"
-    end
-    
-    str = str .. indent .. "}"
-    return str
-end
-
---=====================================================================================
 -- Advanced Settings Functions
 --=====================================================================================
 
@@ -472,57 +366,6 @@ function BLU:ClearSoundCache()
         self.Modules.registry.soundCache = {}
         self:Print("Sound cache cleared")
     end
-end
-
--- Reset advanced settings
-function BLU:ResetAdvancedSettings()
-    self:Trace("Advanced", "ResetAdvancedSettings called")
-    if not self.db then return end
-    self.db.soundPooling = false
-    self.db.asyncLoading = false
-    self.db.soundQueueSize = 3
-    self.db.fadeTime = 200
-    self.db.lazyLoading = true
-    self.db.moduleTimeout = 5
-    self.db.debugLevel = 0
-    self.db.debugToConsole = true
-    self.db.debugToFile = false
-    self.db.profiling = false
-    self.db.positionalAudio = false
-    self.db.dynamicCompression = false
-    self.db.aiSounds = false
-    self.db.weakAurasIntegration = false
-    self.db.discordIntegration = false
-end
-
--- Rebuild database
-function BLU:RebuildDatabase()
-    self:Trace("Advanced", "RebuildDatabase called")
-    if self.Database then
-        -- Force reload saved variables
-        self.Database:LoadSavedVariables()
-        self:Print("Database rebuilt")
-    end
-end
-
--- Test sound function
-function BLU:PlayTestSound(category, volume)
-    self:Trace("Sound", "PlayTestSound called for category '" .. tostring(category) .. "' at volume '" .. tostring(volume or 1.0) .. "'")
-    if self.Modules.registry then
-        local testSounds = {
-            levelup = ADDON_PATH .. "media\\sounds\\level_default.ogg",
-            achievement = ADDON_PATH .. "media\\sounds\\achievement_default.ogg",
-            quest = ADDON_PATH .. "media\\sounds\\quest_default.ogg"
-        }
-        
-        local soundFile = testSounds[category] or testSounds.levelup
-        local channel = self.db and self.db.soundChannel or "Master"
-        local vol = volume or 1.0
-        
-        PlaySoundFile(soundFile, channel)
-        return true
-    end
-    return false
 end
 
 -- Module enable/disable functions
@@ -552,100 +395,6 @@ function BLU:ReloadModules()
     if self.Modules.loader and self.Modules.loader.LoadModulesFromSettings then
         self.Modules.loader:LoadModulesFromSettings()
     end
-end
-
--- Show export dialog
-function BLU:ShowExportDialog(profileData)
-    self:Trace("Profiles", "ShowExportDialog opened")
-    -- Create a simple text display dialog
-    local frame = CreateFrame("Frame", "BLUExportDialog", UIParent, "BasicFrameTemplateWithInset")
-    frame:SetSize(500, 400)
-    frame:SetPoint("CENTER")
-    frame:SetMovable(true)
-    frame:EnableMouse(true)
-    frame:RegisterForDrag("LeftButton")
-    frame:SetScript("OnDragStart", frame.StartMoving)
-    frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
-    
-    frame.title = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    frame.title:SetPoint("LEFT", frame.TitleBg, "LEFT", 5, 0)
-    frame.title:SetText("Export Profile")
-    
-    local scrollFrame = CreateFrame("ScrollFrame", nil, frame, "UIPanelScrollFrameTemplate")
-    scrollFrame:SetPoint("TOPLEFT", frame, "TOPLEFT", 10, -30)
-    scrollFrame:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -30, 40)
-    
-    local editBox = CreateFrame("EditBox", nil, scrollFrame)
-    editBox:SetMultiLine(true)
-    editBox:SetMaxLetters(0)
-    editBox:SetWidth(scrollFrame:GetWidth() - 20)
-    editBox:SetAutoFocus(false)
-    editBox:SetFontObject(ChatFontNormal)
-    editBox:SetText(profileData)
-    scrollFrame:SetScrollChild(editBox)
-    
-    local closeBtn = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
-    closeBtn:SetSize(80, 22)
-    closeBtn:SetPoint("BOTTOMRIGHT", -10, 10)
-    closeBtn:SetText("Close")
-    closeBtn:SetScript("OnClick", function() frame:Hide() end)
-    
-    frame:Show()
-end
-
--- Show import dialog
-function BLU:ShowImportDialog()
-    self:Trace("Profiles", "ShowImportDialog opened")
-    local frame = CreateFrame("Frame", "BLUImportDialog", UIParent, "BasicFrameTemplateWithInset")
-    frame:SetSize(500, 400)
-    frame:SetPoint("CENTER")
-    frame:SetMovable(true)
-    frame:EnableMouse(true)
-    frame:RegisterForDrag("LeftButton")
-    frame:SetScript("OnDragStart", frame.StartMoving)
-    frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
-    
-    frame.title = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    frame.title:SetPoint("LEFT", frame.TitleBg, "LEFT", 5, 0)
-    frame.title:SetText("Import Profile")
-    
-    local scrollFrame = CreateFrame("ScrollFrame", nil, frame, "UIPanelScrollFrameTemplate")
-    scrollFrame:SetPoint("TOPLEFT", frame, "TOPLEFT", 10, -30)
-    scrollFrame:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -30, 40)
-    
-    local editBox = CreateFrame("EditBox", nil, scrollFrame)
-    editBox:SetMultiLine(true)
-    editBox:SetMaxLetters(0)
-    editBox:SetWidth(scrollFrame:GetWidth() - 20)
-    editBox:SetAutoFocus(true)
-    editBox:SetFontObject(ChatFontNormal)
-    scrollFrame:SetScrollChild(editBox)
-    
-    local importBtn = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
-    importBtn:SetSize(80, 22)
-    importBtn:SetPoint("BOTTOMLEFT", 10, 10)
-    importBtn:SetText("Import")
-    importBtn:SetScript("OnClick", function()
-        local data = editBox:GetText()
-        if data and data ~= "" then
-            BLU:ImportProfile(data)
-            frame:Hide()
-        end
-    end)
-    
-    local closeBtn = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
-    closeBtn:SetSize(80, 22)
-    closeBtn:SetPoint("BOTTOMRIGHT", -10, 10)
-    closeBtn:SetText("Cancel")
-    closeBtn:SetScript("OnClick", function() frame:Hide() end)
-    
-    frame:Show()
-end
-
--- Show character copy dialog
-function BLU:ShowCharacterCopyDialog()
-    self:Trace("Profiles", "ShowCharacterCopyDialog opened")
-    self:Print("Character copy functionality not yet implemented")
 end
 
 function BLU:Enable()

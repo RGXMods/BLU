@@ -21,6 +21,51 @@ local function ParseCommandInput(msg)
     return (command or ""):lower(), rest or ""
 end
 
+local function EnsureReadyForOptions()
+    if not BLU then
+        return false
+    end
+
+    if not BLU.db and BLU.Modules and BLU.Modules.database and BLU.Modules.database.Init then
+        local ok, err = pcall(function()
+            BLU.Modules.database:Init()
+        end)
+        if not ok then
+            BLU:PrintError("[Commands] Database recovery failed: " .. tostring(err))
+        end
+    end
+
+    if (not BLU.OpenOptions or not BLU.CreateOptionsPanel) and BLU.Initialize then
+        local ok, err = pcall(function()
+            BLU:Initialize()
+        end)
+        if not ok then
+            BLU:PrintError("[Commands] Initialization recovery failed: " .. tostring(err))
+        end
+    end
+
+    if (not BLU.OpenOptions or not BLU.CreateOptionsPanel)
+        and BLU.Modules and BLU.Modules.options and BLU.Modules.options.Init then
+        local ok, err = pcall(function()
+            BLU.Modules.options:Init()
+        end)
+        if not ok then
+            BLU:PrintError("[Commands] Options recovery failed: " .. tostring(err))
+        end
+    end
+
+    if BLU.CreateOptionsPanel and not BLU.OptionsPanel then
+        local ok, err = pcall(function()
+            BLU:CreateOptionsPanel()
+        end)
+        if not ok then
+            BLU:PrintError("[Commands] Options panel recovery failed: " .. tostring(err))
+        end
+    end
+
+    return BLU.db ~= nil and BLU.OpenOptions ~= nil
+end
+
 -- Register slash commands
 SLASH_BLU1 = "/blu"
 SLASH_BLU2 = "/bluesound"
@@ -30,8 +75,8 @@ SlashCmdList["BLU"] = function(msg)
     local command, rest = ParseCommandInput(msg)
     BLU:PrintDebug("[Commands] Parsed /blu command to command='" .. tostring(command) .. "', rest='" .. tostring(rest) .. "'")
     
-    -- Check if database is ready
-    if not BLU.db then
+    -- Recover if the normal login/world initialization path did not complete.
+    if not EnsureReadyForOptions() then
         BLU:Print("|cffff9900BLU is still loading...|r")
         BLU:Print("Please wait a moment and try again.")
         BLU:PrintDebug("Database not ready. BLU.db is " .. tostring(BLU.db))

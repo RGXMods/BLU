@@ -45,6 +45,9 @@ local RESOURCE_LOW_PCT     = 0.20
 CombatModule.lastSoundAt    = {}
 CombatModule.inCombat       = false
 CombatModule.prevHealthPct  = {}  -- ["player"|"target"] = last pct that triggered low/execute
+CombatModule.musicHandle    = nil
+CombatModule.savedAmbienceEnabled = nil
+CombatModule.legacyRegistered = false
 
 local function IsEnabled()
     if not BLU.db or BLU.db.enabled == false then return false end
@@ -95,7 +98,7 @@ function CombatModule:PlayTrigger(triggerId)
     if not combat then return end
 
     local selected = combat.selectedSounds and combat.selectedSounds[triggerId]
-    if not selected or selected == "None" then return end
+    if not selected or selected == "None" or selected == "none" then return end
 
     local volume   = (combat.soundVolumes and combat.soundVolumes[triggerId]) or "medium"
     local registry = BLU.Modules and BLU.Modules.registry
@@ -103,7 +106,70 @@ function CombatModule:PlayTrigger(triggerId)
         registry:PlaySound(selected, nil, {
             categoryOverride = "combat",
             volumeSettingOverride = volume,
+            triggerIdOverride = triggerId,
         })
+    end
+end
+
+function CombatModule:MuteAmbientForCombatMusic()
+    if type(GetCVar) ~= "function" or type(SetCVar) ~= "function" then
+        return
+    end
+
+    if self.savedAmbienceEnabled == nil then
+        self.savedAmbienceEnabled = GetCVar("Sound_EnableAmbience")
+    end
+
+    SetCVar("Sound_EnableAmbience", "0")
+end
+
+function CombatModule:RestoreAmbientAfterCombatMusic()
+    if self.savedAmbienceEnabled == nil or type(SetCVar) ~= "function" then
+        return
+    end
+
+    SetCVar("Sound_EnableAmbience", self.savedAmbienceEnabled)
+    self.savedAmbienceEnabled = nil
+end
+
+function CombatModule:StopCombatMusic()
+    if self.musicHandle and StopSound then
+        pcall(StopSound, self.musicHandle)
+    end
+
+    self.musicHandle = nil
+
+    self:RestoreAmbientAfterCombatMusic()
+end
+
+function CombatModule:PlayCombatMusic()
+    local combat = BLU.db and BLU.db.combat
+    if not combat then return end
+
+    local selected = combat.selectedSounds and combat.selectedSounds["combat_music_track"]
+    if not selected or selected == "None" or selected == "none" then
+        self:RestoreAmbientAfterCombatMusic()
+        return
+    end
+
+    local volume = (combat.soundVolumes and combat.soundVolumes["combat_music_track"]) or "medium"
+    local registry = BLU.Modules and BLU.Modules.registry
+    if not (registry and registry.PlaySound and registry.GetSound) then return end
+
+    self:StopCombatMusic()
+    self:MuteAmbientForCombatMusic()
+
+    local willPlay, handle = registry:PlaySound(selected, nil, {
+        categoryOverride = "combat",
+        volumeSettingOverride = volume,
+        triggerIdOverride = "combat_music_track",
+        stopMusic = true,
+    })
+
+    if willPlay then
+        self.musicHandle = handle
+    else
+        self:RestoreAmbientAfterCombatMusic()
     end
 end
 
@@ -112,12 +178,13 @@ end
 function CombatModule:OnRegenDisabled()
     CombatModule.inCombat = true
     self:PlayTrigger("combat_start_sound")
-    self:PlayTrigger("combat_music_track")
+    self:PlayCombatMusic()
     CombatModule.prevHealthPct = {}
 end
 
 function CombatModule:OnRegenEnabled()
     CombatModule.inCombat = false
+    self:StopCombatMusic()
     self:PlayTrigger("combat_end_sound")
     CombatModule.prevHealthPct = {}
 end
@@ -201,87 +268,60 @@ end
 -- ── Lifecycle ────────────────────────────────────────────────────────────────
 
 function CombatModule:RegisterLegacyEvents()
-    BLU:RegisterEvent("PLAYER_REGEN_DISABLED",     function(e, ...) self:OnRegenDisabled() end,      EVT_REGEN_DISABLED)
-    BLU:RegisterEvent("PLAYER_REGEN_ENABLED",      function(e, ...) self:OnRegenEnabled() end,       EVT_REGEN_ENABLED)
-    BLU:RegisterEvent("UNIT_HEALTH",               function(e, ...) self:OnUnitHealth(e, ...) end,   EVT_UNIT_HEALTH)
-    BLU:RegisterEvent("PLAYER_TARGET_CHANGED",     function(e, ...) self:OnTargetChanged() end,      EVT_TARGET)
-    BLU:RegisterEvent("UNIT_POWER_UPDATE",         function(e, ...) self:OnUnitPower(e, ...) end,    EVT_POWER)
-    BLU:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", function() self:OnCombatLog() end,              EVT_COMBATLOG)
-    BLU:RegisterEvent("ENCOUNTER_END",             function(e, ...) self:OnEncounterEnd(e, ...) end, EVT_ENCOUNTER)
-    BLU:RegisterEvent("PVP_MATCH_COMPLETE",        function(e, ...) self:OnPvPMatchComplete() end,   EVT_PVP)
-    BLU:RegisterEvent("UNIT_AURA",                 function(e, ...) self:OnUnitAura(e, ...) end,     EVT_UNIT_AURA)
+    if self.legacyRegistered then return end
+    BLU:RegisterEvent("PLAYER_REGEN_DISABLED", function(event, ...)
+        self:OnRegenDisabled(event, ...)
+    end, EVT_REGEN_DISABLED)
+    BLU:RegisterEvent("PLAYER_REGEN_ENABLED", function(event, ...)
+        self:OnRegenEnabled(event, ...)
+    end, EVT_REGEN_ENABLED)
+    BLU:RegisterEvent("UNIT_HEALTH", function(event, ...)
+        self:OnUnitHealth(event, ...)
+    end, EVT_UNIT_HEALTH)
+    BLU:RegisterEvent("PLAYER_TARGET_CHANGED", function(event, ...)
+        self:OnTargetChanged(event, ...)
+    end, EVT_TARGET)
+    BLU:RegisterEvent("UNIT_POWER_UPDATE", function(event, ...)
+        self:OnUnitPower(event, ...)
+    end, EVT_POWER)
+    BLU:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", function(event, ...)
+        self:OnCombatLog(event, ...)
+    end, EVT_COMBATLOG)
+    BLU:RegisterEvent("ENCOUNTER_END", function(event, ...)
+        self:OnEncounterEnd(event, ...)
+    end, EVT_ENCOUNTER)
+    BLU:RegisterEvent("PVP_MATCH_COMPLETE", function(event, ...)
+        self:OnPvPMatchComplete(event, ...)
+    end, EVT_PVP)
+    BLU:RegisterEvent("UNIT_AURA", function(event, ...)
+        self:OnUnitAura(event, ...)
+    end, EVT_UNIT_AURA)
+    self.legacyRegistered = true
 end
 
 function CombatModule:UnregisterLegacyEvents()
-    BLU:UnregisterEvent("PLAYER_REGEN_DISABLED",      EVT_REGEN_DISABLED)
-    BLU:UnregisterEvent("PLAYER_REGEN_ENABLED",       EVT_REGEN_ENABLED)
-    BLU:UnregisterEvent("UNIT_HEALTH",                EVT_UNIT_HEALTH)
-    BLU:UnregisterEvent("PLAYER_TARGET_CHANGED",      EVT_TARGET)
-    BLU:UnregisterEvent("UNIT_POWER_UPDATE",          EVT_POWER)
+    if not self.legacyRegistered then return end
+    BLU:UnregisterEvent("PLAYER_REGEN_DISABLED", EVT_REGEN_DISABLED)
+    BLU:UnregisterEvent("PLAYER_REGEN_ENABLED", EVT_REGEN_ENABLED)
+    BLU:UnregisterEvent("UNIT_HEALTH", EVT_UNIT_HEALTH)
+    BLU:UnregisterEvent("PLAYER_TARGET_CHANGED", EVT_TARGET)
+    BLU:UnregisterEvent("UNIT_POWER_UPDATE", EVT_POWER)
     BLU:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", EVT_COMBATLOG)
-    BLU:UnregisterEvent("ENCOUNTER_END",              EVT_ENCOUNTER)
-    BLU:UnregisterEvent("PVP_MATCH_COMPLETE",         EVT_PVP)
-    BLU:UnregisterEvent("UNIT_AURA",                  EVT_UNIT_AURA)
+    BLU:UnregisterEvent("ENCOUNTER_END", EVT_ENCOUNTER)
+    BLU:UnregisterEvent("PVP_MATCH_COMPLETE", EVT_PVP)
+    BLU:UnregisterEvent("UNIT_AURA", EVT_UNIT_AURA)
+    self.legacyRegistered = false
 end
 
 function CombatModule:Init()
-    -- Only use framework path if RGXCombat is available and the bridge exists.
-    if BLU.RegisterFrameworkCallback then
-        self.frameworkDisposers = {
-            BLU:RegisterFrameworkCallback("combat", "OnEnter", function() self:OnRegenDisabled() end),
-            BLU:RegisterFrameworkCallback("combat", "OnLeave", function() self:OnRegenEnabled() end),
-            BLU:RegisterFrameworkCallback("combat", "OnLowHealth", function() self:PlayTrigger("low_health") end),
-            BLU:RegisterFrameworkCallback("combat", "OnExecuteWindow", function() self:PlayTrigger("execute_window") end),
-            BLU:RegisterFrameworkCallback("combat", "OnResourceCapped", function() self:PlayTrigger("resource_capped") end),
-            BLU:RegisterFrameworkCallback("combat", "OnResourceLow", function() self:PlayTrigger("resource_low") end),
-            BLU:RegisterFrameworkCallback("combat", "OnTargetLost", function() self:PlayTrigger("target_lost") end),
-            BLU:RegisterFrameworkCallback("combat", "OnCrit", function() self:PlayTrigger("critical_hit") end),
-            BLU:RegisterFrameworkCallback("combat", "OnCritHeal", function() self:PlayTrigger("critical_heal") end),
-            BLU:RegisterFrameworkCallback("combat", "OnProc", function() self:PlayTrigger("proc_trigger") end),
-            BLU:RegisterFrameworkCallback("combat", "OnEncounterEnd", function() self:PlayTrigger("encounterend") end),
-            BLU:RegisterFrameworkCallback("combat", "OnEncounterVictory", function() self:PlayTrigger("encountervictory") end),
-            BLU:RegisterFrameworkCallback("combat", "OnPvPVictory", function() self:PlayTrigger("pvpvictory") end),
-        }
-    end
-
-    local frameworkReady = self.frameworkDisposers ~= nil
-    if frameworkReady then
-        for i = 1, 13 do
-            if type(self.frameworkDisposers[i]) ~= "function" then
-                frameworkReady = false
-                break
-            end
-        end
-    end
-
-    if not frameworkReady then
-        BLU:DisposeFrameworkCallbacks(self.frameworkDisposers)
-        self.frameworkDisposers = nil
-        -- Defer legacy event registration: RegisterEvent is blocked during
-        -- loading screen into combat zones (battleground, arena, world PvP).
-        C_Timer.After(0.5, function()
-            if InCombatLockdown and InCombatLockdown() then
-                BLU:RegisterEvent("PLAYER_REGEN_ENABLED", function()
-                    self:RegisterLegacyEvents()
-                end, "BLUCombat_LegacyRetry")
-                return
-            end
-            self:RegisterLegacyEvents()
-        end)
-    end
-
+    self:RegisterLegacyEvents()
     BLU:PrintDebug("[Combat] Combat module initialized")
-    BLU:Emit("blu:moduleReady", "combat")
+    if BLU.Emit then BLU:Emit("blu:moduleReady", "combat") end
 end
 
 function CombatModule:Cleanup()
-    if self.frameworkDisposers then
-        BLU:DisposeFrameworkCallbacks(self.frameworkDisposers)
-        self.frameworkDisposers = nil
-    else
-        self:UnregisterLegacyEvents()
-    end
-
+    self:StopCombatMusic()
+    self:UnregisterLegacyEvents()
     self.lastSoundAt   = {}
     self.prevHealthPct = {}
     self.inCombat      = false

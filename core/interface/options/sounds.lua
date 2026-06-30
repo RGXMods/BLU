@@ -356,7 +356,7 @@ function BLU.CreateSoundsPanel(panel)
         emptyText:SetPoint("RIGHT", -4, 0)
         emptyText:SetJustifyH("LEFT")
         emptyText:SetTextColor(0.65, 0.65, 0.65)
-        emptyText:SetText("No manually added user custom sounds are loaded.")
+        emptyText:SetText("No user custom sounds are loaded.")
         listContent:SetHeight(40)
     else
         local rowHeight = 48
@@ -380,29 +380,37 @@ function BLU.CreateSoundsPanel(panel)
             soundPath:SetPoint("RIGHT", -88, 0)
             soundPath:SetJustifyH("LEFT")
             soundPath:SetTextColor(0.65, 0.65, 0.65)
-            soundPath:SetText(entry.file or "")
+            local sourceLabel = entry.source and ("  |cff777777[" .. tostring(entry.source) .. "]|r") or ""
+            soundPath:SetText((entry.file or "") .. sourceLabel)
 
-            local removeButton = BLU.Modules.design:CreateButton(row, "Remove", 68, 22)
-            removeButton:SetPoint("TOPRIGHT", row, "TOPRIGHT", -6, -11)
-            removeButton:SetFrameStrata("HIGH")
-            removeButton:Show()
-            if removeButton.label then
-                removeButton.label:SetTextColor(1.0, 0.35, 0.35)
-            end
-            removeButton:SetScript("OnClick", function()
-                local soundsModule = BLU.Modules and BLU.Modules["usersounds"]
-                if soundsModule and soundsModule.RemoveCustomSound then
-                    local ok, err = soundsModule:RemoveCustomSound(entry.file)
-                    if ok then
-                        BLU:Print("|cff00ccffBLU:|r Removed custom sound: " .. tostring(entry.name))
-                        if BLU.RefreshSoundPackUI then
-                            BLU.RefreshSoundPackUI()
-                        end
-                    else
-                        BLU:Print("|cff00ccffBLU:|r Failed to remove custom sound: " .. tostring(err))
-                    end
+            if entry.removable then
+                local removeButton = BLU.Modules.design:CreateButton(row, "Remove", 68, 22)
+                removeButton:SetPoint("TOPRIGHT", row, "TOPRIGHT", -6, -11)
+                removeButton:SetFrameStrata("HIGH")
+                removeButton:Show()
+                if removeButton.label then
+                    removeButton.label:SetTextColor(1.0, 0.35, 0.35)
                 end
-            end)
+                removeButton:SetScript("OnClick", function()
+                    local soundsModule = BLU.Modules and BLU.Modules["usersounds"]
+                    if soundsModule and soundsModule.RemoveCustomSound then
+                        local ok, err = soundsModule:RemoveCustomSound(entry.file)
+                        if ok then
+                            BLU:Print("|cff00ccffBLU:|r Removed custom sound: " .. tostring(entry.name))
+                            if BLU.RefreshSoundPackUI then
+                                BLU.RefreshSoundPackUI()
+                            end
+                        else
+                            BLU:Print("|cff00ccffBLU:|r Failed to remove custom sound: " .. tostring(err))
+                        end
+                    end
+                end)
+            else
+                local loadedLabel = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+                loadedLabel:SetPoint("TOPRIGHT", row, "TOPRIGHT", -8, -15)
+                loadedLabel:SetTextColor(0.36, 0.88, 0.52)
+                loadedLabel:SetText("Loaded")
+            end
         end
 
         listContent:SetHeight((#customEntries * (rowHeight + 6)) + 4)

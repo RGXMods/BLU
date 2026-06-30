@@ -11,19 +11,6 @@ local COMBAT_TRIGGER_PAGES = {
         { id = "combat_start_sound", title = "Combat Start Sound" },
         { id = "combat_end_sound", title = "Combat End Sound" },
         { id = "combat_music_track", title = "Combat Music Track" },
-        { id = "low_health", title = "Low Health" },
-        { id = "execute_window", title = "Execute Window" },
-        { id = "interrupt_ready", title = "Interrupt Ready" },
-        { id = "major_cooldown_ready", title = "Major Cooldown Ready" },
-        { id = "defensive_ready", title = "Defensive Ready" },
-    },
-    {
-        { id = "proc_trigger", title = "Proc Trigger" },
-        { id = "critical_hit", title = "Critical Hit" },
-        { id = "critical_heal", title = "Critical Heal" },
-        { id = "resource_capped", title = "Resource Capped" },
-        { id = "resource_low", title = "Resource Low" },
-        { id = "target_lost", title = "Target Lost" },
     },
 }
 
@@ -33,7 +20,6 @@ local function EnsureCombatDB()
     end
 
     BLU.db.combat = BLU.db.combat or {}
-    BLU.db.combat.page = tonumber(BLU.db.combat.page) or 1
     BLU.db.combat.selectedSounds = BLU.db.combat.selectedSounds or {}
     BLU.db.combat.soundVolumes = BLU.db.combat.soundVolumes or {}
     BLU.db.modules = BLU.db.modules or {}
@@ -212,10 +198,13 @@ local function PlayCombatTriggerPreview(triggerId)
         selected = pool[math.random(#pool)].id
     end
 
-    if BLU.SoundRegistry and BLU.SoundRegistry.PlaySound then
-        BLU.SoundRegistry:PlaySound(selected, nil, {
+    if BLU.SoundRegistry and BLU.SoundRegistry.PreviewSound then
+        BLU.SoundRegistry:PreviewSound(selected, {
             categoryOverride = "combat",
             volumeSettingOverride = volume,
+            triggerIdOverride = triggerId,
+            forceMusicPreview = triggerId == "combat_music_track",
+            previewKey = "combat:" .. tostring(triggerId),
         })
     end
 end
@@ -375,19 +364,38 @@ local function BuildSoundButtonMenu(dropdownFrame, getTriggerId, labelFontString
                 previewButton:SetBackdropBorderColor(0.14, 0.20, 0.28, 1)
                 previewButton:RegisterForClicks("LeftButtonUp")
                 previewButton:SetScript("OnClick", function(btn)
-                    if btn.soundId and BLU.SoundRegistry and BLU.SoundRegistry.PlaySound then
-                        BLU.SoundRegistry:PlaySound(btn.soundId, nil, {
+                    if btn.soundId and BLU.SoundRegistry and BLU.SoundRegistry.PreviewSound then
+                        local playing, status = BLU.SoundRegistry:PreviewSound(btn.soundId, {
                             categoryOverride = "combat",
                             volumeSettingOverride = GetSelectedVolume(getTriggerId()),
+                            triggerIdOverride = getTriggerId(),
+                            forceMusicPreview = getTriggerId() == "combat_music_track",
+                            previewKey = "combat:inline:" .. tostring(getTriggerId()) .. ":" .. tostring(btn.soundId),
                         })
+                        if btn.label then
+                            btn.label:SetText((playing and status == "playing") and "Stop" or "Play")
+                        end
+                        if dropdownFrame._refreshInlinePreviewButtons then
+                            dropdownFrame:_refreshInlinePreviewButtons()
+                        end
+                        if C_Timer and C_Timer.After then
+                            C_Timer.After(0, function()
+                                if dropdownFrame and dropdownFrame._refreshInlinePreviewButtons then
+                                    dropdownFrame:_refreshInlinePreviewButtons()
+                                end
+                            end)
+                        end
                     end
                 end)
                 previewButton:SetScript("OnEnter", function(btn)
                     btn:SetBackdropColor(0.12, 0.16, 0.22, 1)
                     btn:SetBackdropBorderColor(unpack(BLU.Modules.design.Colors.Primary))
                     GameTooltip:SetOwner(btn, "ANCHOR_RIGHT")
-                    GameTooltip:SetText("Play")
-                    GameTooltip:AddLine("Click to preview this sound.", 0.7, 0.7, 0.7, true)
+                    local isPlaying = BLU.SoundRegistry
+                        and BLU.SoundRegistry.IsPreviewPlaying
+                        and BLU.SoundRegistry:IsPreviewPlaying(btn.soundId, btn.previewKey)
+                    GameTooltip:SetText(isPlaying and "Stop" or "Play")
+                    GameTooltip:AddLine(isPlaying and "Click to stop this preview." or "Click to preview this sound.", 0.7, 0.7, 0.7, true)
                     GameTooltip:Show()
                 end)
                 previewButton:SetScript("OnLeave", function(btn)
@@ -404,7 +412,13 @@ local function BuildSoundButtonMenu(dropdownFrame, getTriggerId, labelFontString
                 button.bluPreviewButton = previewButton
             end
 
+            previewButton.previewKey = "combat:inline:" .. tostring(getTriggerId()) .. ":" .. tostring(soundId)
             previewButton.soundId = soundId
+            if previewButton.label and BLU.SoundRegistry and BLU.SoundRegistry.IsPreviewPlaying and BLU.SoundRegistry:IsPreviewPlaying(soundId, previewButton.previewKey) then
+                previewButton.label:SetText("Stop")
+            elseif previewButton.label then
+                previewButton.label:SetText("Play")
+            end
             previewButton:Show()
 
             local normalText = _G[button:GetName() .. "NormalText"]
@@ -418,6 +432,28 @@ local function BuildSoundButtonMenu(dropdownFrame, getTriggerId, labelFontString
                 normalText:SetJustifyH("LEFT")
             end
         end
+
+        local function refreshVisibleInlinePreviewButtons()
+            local maxLevels = UIDROPDOWNMENU_MAXLEVELS or 3
+            local maxButtons = UIDROPDOWNMENU_MAXBUTTONS or 32
+            for levelToUse = 1, maxLevels do
+                local listFrame = getDropDownListFrame(levelToUse)
+                if listFrame then
+                    for index = 1, maxButtons do
+                        local button = _G[listFrame:GetName() .. "Button" .. index]
+                        local previewButton = button and button.bluPreviewButton
+                        if previewButton and previewButton.label then
+                            local isPlaying = BLU.SoundRegistry
+                                and BLU.SoundRegistry.IsPreviewPlaying
+                                and BLU.SoundRegistry:IsPreviewPlaying(previewButton.soundId, previewButton.previewKey)
+                            previewButton.label:SetText(isPlaying and "Stop" or "Play")
+                        end
+                    end
+                end
+            end
+        end
+
+        dropdownFrame._refreshInlinePreviewButtons = refreshVisibleInlinePreviewButtons
 
         local function attachInlineCountLabel(levelToUse, text)
             local listFrame = getDropDownListFrame(levelToUse)
@@ -493,6 +529,7 @@ local function BuildSoundButtonMenu(dropdownFrame, getTriggerId, labelFontString
 
         resetDropDownListFrame(level)
         hideInlinePreviewButtons(level)
+        refreshVisibleInlinePreviewButtons()
 
         if level == 1 then
             local noneInfo = UIDropDownMenu_CreateInfo()
@@ -608,6 +645,32 @@ local function BuildSoundButtonMenu(dropdownFrame, getTriggerId, labelFontString
         end
 
         forceListFrameWidth(level)
+    end
+end
+
+BLU._combatInlinePreviewListenerRegistered = BLU._combatInlinePreviewListenerRegistered or false
+if not BLU._combatInlinePreviewListenerRegistered then
+    BLU._combatInlinePreviewListenerRegistered = true
+    if BLU.SoundRegistry and BLU.SoundRegistry.RegisterPreviewListener then
+        BLU.SoundRegistry:RegisterPreviewListener(function()
+            local maxLevels = UIDROPDOWNMENU_MAXLEVELS or 3
+            local maxButtons = UIDROPDOWNMENU_MAXBUTTONS or 32
+            for level = 1, maxLevels do
+                local listFrame = _G["DropDownList" .. level]
+                if listFrame then
+                    for index = 1, maxButtons do
+                        local button = _G[listFrame:GetName() .. "Button" .. index]
+                        local previewButton = button and button.bluPreviewButton
+                        if previewButton and previewButton.label then
+                            local isPlaying = BLU.SoundRegistry
+                                and BLU.SoundRegistry.IsPreviewPlaying
+                                and BLU.SoundRegistry:IsPreviewPlaying(previewButton.soundId, previewButton.previewKey)
+                            previewButton.label:SetText(isPlaying and "Stop" or "Play")
+                        end
+                    end
+                end
+            end
+        end)
     end
 end
 
@@ -806,6 +869,22 @@ end
         end
     end)
 
+    local function RefreshTestButtonState()
+        local isPlaying = row._combatTriggerId
+            and BLU.SoundRegistry
+            and BLU.SoundRegistry.IsPreviewPlaying
+            and BLU.SoundRegistry:IsPreviewPlaying(GetSelectedSound(row._combatTriggerId), "combat:" .. tostring(row._combatTriggerId))
+        testButton:SetText(isPlaying and "Stop" or "Test")
+    end
+
+    if BLU.SoundRegistry and BLU.SoundRegistry.RegisterPreviewListener then
+        BLU.SoundRegistry:RegisterPreviewListener(function()
+            if testButton and testButton:IsVisible() then
+                RefreshTestButtonState()
+            end
+        end)
+    end
+
 	local function LayoutControls(showVolume)
 		dropdownButton:ClearAllPoints()
 		volumeControl:ClearAllPoints()
@@ -857,6 +936,7 @@ end
 		end
 
 		LayoutControls(showVolume)
+        RefreshTestButtonState()
 	end
 
     function row:SetTriggerInfo(triggerInfo)
@@ -882,7 +962,6 @@ function BLU.CreateCombatPanel(panel)
     if not combat then
         return
     end
-    local totalPages = #COMBAT_TRIGGER_PAGES
 
     local titleBar = CreateFrame("Frame", nil, content, "BackdropTemplate")
     titleBar:SetPoint("TOPLEFT", 0, 0)
@@ -967,16 +1046,6 @@ function BLU.CreateCombatPanel(panel)
 	triggerHeader:SetPoint("TOPRIGHT", triggerArea, "TOPRIGHT", 0, 0)
 	triggerHeader:SetHeight(18)
 
-	local pageLabel = triggerHeader:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-	pageLabel:SetPoint("RIGHT", -88, 0)
-	pageLabel:SetTextColor(0.70, 0.78, 0.86)
-
-	local prevButton = BLU.Modules.design:CreateActionButton(triggerHeader, "<", 20, 16, "Previous Page", "Show the previous set of combat triggers.")
-	prevButton:SetPoint("RIGHT", -62, 0)
-
-	local nextButton = BLU.Modules.design:CreateActionButton(triggerHeader, ">", 20, 16, "Next Page", "Show the next set of combat triggers.")
-	nextButton:SetPoint("RIGHT", -38, 0)
-
 	local triggerRows = {}
 	local rowStartY = -22
 	local rowHeight = 62
@@ -1000,10 +1069,7 @@ function BLU.CreateCombatPanel(panel)
     end
 
     local function RenderPage()
-        combat.page = math.max(1, math.min(totalPages, combat.page))
-        pageLabel:SetText(string.format("Page %d of %d", combat.page, totalPages))
-
-        local page = COMBAT_TRIGGER_PAGES[combat.page] or {}
+        local page = COMBAT_TRIGGER_PAGES[1] or {}
         for index, row in ipairs(triggerRows) do
             local triggerInfo = page[index]
             if triggerInfo then
@@ -1014,20 +1080,7 @@ function BLU.CreateCombatPanel(panel)
                 row:Hide()
             end
         end
-
-        prevButton:SetEnabled(combat.page > 1)
-        nextButton:SetEnabled(combat.page < totalPages)
     end
-
-    prevButton:SetScript("OnClick", function()
-        combat.page = combat.page - 1
-        RenderPage()
-    end)
-
-    nextButton:SetScript("OnClick", function()
-        combat.page = combat.page + 1
-        RenderPage()
-    end)
 
     RenderPage()
 end

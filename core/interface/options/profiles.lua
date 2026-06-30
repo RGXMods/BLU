@@ -6,6 +6,11 @@
 local addonName = ...
 local BLU = _G["BLU"]
 
+local function GetRawDB()
+ if BLU and BLU.db and BLU.db._raw then return BLU.db._raw end
+ return _G.BLUDB or {}
+end
+
 local Profiles = {}
 BLU.Modules = BLU.Modules or {}
 BLU.Modules["profiles"] = Profiles
@@ -31,15 +36,16 @@ local function GetCharacterProfileName()
 end
 
 local function GetActiveProfileName()
-    if BLUDB and BLUDB.activeProfile then
-        return BLUDB.activeProfile
-    end
+ if BLU and BLU.db and BLU.db.GetActiveProfile then
+ return BLU.db:GetActiveProfile()
+ end
 
-    if BLU and BLU.db then
-        return BLU.db.currentProfile
-    end
+ local raw = GetRawDB()
+ if raw.activeProfile then
+ return raw.activeProfile
+ end
 
-    return nil
+ return nil
 end
 
 local function RefreshProfileUI(selectedProfile)
@@ -130,7 +136,7 @@ local function GetSuggestedProfileCopyName(profileName)
     local candidate = baseName
     local suffix = 2
 
-    while BLUDB and BLUDB.profiles and BLUDB.profiles[candidate] do
+    while GetRawDB().profiles and GetRawDB().profiles[candidate] do
         candidate = baseName .. " " .. tostring(suffix)
         suffix = suffix + 1
     end
@@ -164,43 +170,35 @@ local function ApplyTable(target, source)
 end
 
 local function ApplyPresetToProfile(profileName, presetSettings)
-    if type(profileName) ~= "string" or profileName == "" then
-        return false, "Select a profile first."
-    end
+ if type(profileName) ~= "string" or profileName == "" then
+ return false, "Select a profile first."
+ end
 
-    if not BLUDB then
-        return false, "Profile database is not ready yet."
-    end
+ local raw = GetRawDB()
+ raw.profiles = raw.profiles or {}
+ raw.profiles[profileName] = raw.profiles[profileName] or {}
 
-    BLUDB.profiles = BLUDB.profiles or {}
-    BLUDB.profiles[profileName] = BLUDB.profiles[profileName] or {}
+ local targetProfile = raw.profiles[profileName]
+ local defaults = BLU.Modules and BLU.Modules.config and BLU.Modules.config.defaults and BLU.Modules.config.defaults.profile
 
-    local targetProfile = BLUDB.profiles[profileName]
-    local defaults = BLU.Modules and BLU.Modules.config and BLU.Modules.config.defaults and BLU.Modules.config.defaults.profile
+ for k in pairs(targetProfile) do
+ if k ~= "currentProfile" then
+ targetProfile[k] = nil
+ end
+ end
 
-    -- Wipe all settings keys (preserve only the profile name key)
-    for k in pairs(targetProfile) do
-        if k ~= "currentProfile" then
-            targetProfile[k] = nil
-        end
-    end
+ if defaults then
+ ApplyTable(targetProfile, DeepCopyTable(defaults))
+ end
+ ApplyTable(targetProfile, DeepCopyTable(presetSettings or {}))
+ targetProfile.currentProfile = profileName
 
-    -- Apply defaults first, then overlay preset on top
-    if defaults then
-        ApplyTable(targetProfile, DeepCopyTable(defaults))
-    end
-    ApplyTable(targetProfile, DeepCopyTable(presetSettings or {}))
-    targetProfile.currentProfile = profileName
-
-    -- Re-sync BLU.db if this profile is currently active.
-    -- BLU.db is a proxy (RGX:NewDatabase); the data lives in BLUDB.profiles.
-    -- The proxy already reads from BLUDB.profiles[activeProfile] — no reassignment needed.
-    if BLU and BLUDB.activeProfile == profileName then
-        if BLU.Modules and BLU.Modules.config and BLU.Modules.config.ApplySettings then
-            BLU.Modules.config:ApplySettings()
-        end
-        if BLU.InvalidateAllTabs then
-            BLU:InvalidateAllTabs()
+ if BLU and raw.activeProfile == profileName then
+ if BLU.Modules and BLU.Modules.config and BLU.Modules.config.ApplySettings then
+ BLU.Modules.config:ApplySettings()
+ end
+ if BLU.InvalidateAllTabs then
+ BLU:InvalidateAllTabs()
         end
         if BLU.RefreshOptions then
             BLU:RefreshOptions()
@@ -287,7 +285,7 @@ local PROFILE_PRESETS = {
 
 local function GetOrderedProfiles()
     local profiles = {}
-    local source = BLUDB and BLUDB.profiles or {}
+    local source = GetRawDB().profiles or {}
 
     for profileName in pairs(source) do
         profiles[#profiles + 1] = profileName
@@ -336,9 +334,9 @@ local function EnsurePopupConfig(targetPanel)
             if profileName == "" then
                 local charName = GetCharacterProfileName()
                 -- If that name already exists, append a suffix to keep it unique
-                if BLUDB and BLUDB.profiles and BLUDB.profiles[charName] then
+                if GetRawDB().profiles and GetRawDB().profiles[charName] then
                     local suffix = 2
-                    while BLUDB.profiles[charName .. " " .. suffix] do
+                    while GetRawDB().profiles[charName .. " " .. suffix] do
                         suffix = suffix + 1
                     end
                     profileName = charName .. " " .. suffix
@@ -352,7 +350,8 @@ local function EnsurePopupConfig(targetPanel)
                 return
             end
 
-            if BLUDB and BLUDB.profiles and BLUDB.profiles[profileName] then
+            local raw = GetRawDB()
+ if raw.profiles and raw.profiles[profileName] then
                 BLU:Print("Profile already exists: " .. tostring(profileName))
                 return
             end
@@ -410,7 +409,7 @@ local function EnsurePopupConfig(targetPanel)
                 return
             end
 
-            if BLUDB and BLUDB.profiles and BLUDB.profiles[newName] then
+            if GetRawDB().profiles and GetRawDB().profiles[newName] then
                 BLU:Print("Profile already exists: " .. tostring(newName))
                 return
             end
@@ -470,7 +469,7 @@ local function EnsurePopupConfig(targetPanel)
                 BLU:Print("[Profiles] Preset apply: missing data.")
                 return
             end
-            BLU:Print("[Profiles] Applying preset '" .. tostring(data.preset.name) .. "' to profile: '" .. tostring(data.profileName) .. "' (active: '" .. tostring(BLUDB and BLUDB.activeProfile) .. "')")
+            BLU:Print("[Profiles] Applying preset '" .. tostring(data.preset.name) .. "' to profile: '" .. tostring(data.profileName) .. "' (active: '" .. tostring(GetActiveProfileName()) .. "')")
             local ok, err = ApplyPresetToProfile(data.profileName, data.preset.settings)
             if ok then
                 BLU:Print("[Profiles] Preset applied successfully.")
@@ -774,7 +773,7 @@ function BLU.CreateProfilesPanel(panel)
         local profileNames        = GetOrderedProfiles()
         local characterProfileName = GetCharacterProfileName()
 
-        if not selectedProfile or not (BLUDB and BLUDB.profiles and BLUDB.profiles[selectedProfile]) then
+        if not selectedProfile or not (GetRawDB().profiles and GetRawDB().profiles[selectedProfile]) then
             selectedProfile = activeProfileName
         end
         self.profileState.selectedProfile = selectedProfile

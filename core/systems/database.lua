@@ -23,13 +23,10 @@ local function getProfileDefaults()
     return {}
 end
 
--- Called by RGX:NewDatabase whenever the active profile changes.
--- BLU.db is the proxy itself; we only need to trigger UI refreshes.
 local function onProfileSwitch(name, profile)
-    -- UI hooks are not present during Phase 1 init — guard every call.
-    if BLU.InvalidateAllTabs then BLU:InvalidateAllTabs() end
-    if BLU.RefreshOptions     then BLU:RefreshOptions()    end
-    if BLU.RefreshProfilesUI  then BLU:RefreshProfilesUI() end
+ if BLU.InvalidateAllTabs then BLU:InvalidateAllTabs() end
+ if BLU.RefreshOptions then BLU:RefreshOptions() end
+ if BLU.RefreshProfilesUI then BLU:RefreshProfilesUI() end
 end
 
 -- ── Init ──────────────────────────────────────────────────────────────────────
@@ -43,19 +40,22 @@ function Database:Init()
         return
     end
 
-    -- BLU.db is the NewDatabase proxy: db.key reads from active profile,
-    -- db.key = v writes to active profile, db:CreateProfile(...) manages profiles.
-    BLU.db = RGX:NewDatabase("BLUDB", getProfileDefaults(), {
-        onSwitch = onProfileSwitch,
-    })
+    -- RGX.Addon() in core.lua may have already created BLU.db.  If so,
+    -- merge BLU defaults and wire profile-switch callbacks.  If not,
+    -- create the proxy here (backward compat / load-order safety).
+ if BLU.db then
+ local profile = BLU.db:GetProfile()
+ if profile then
+ RGX:MergeTable(profile, getProfileDefaults())
+ end
+ BLU.db:OnProfileChanged(onProfileSwitch)
+ else
+ BLU.db = RGX:NewDatabase("BLUDB", getProfileDefaults(), {
+ onSwitch = onProfileSwitch,
+ })
+ end
 
-    -- Backward-compat shim: anything calling BLU.InitializeDatabase() gets
-    -- the active profile without re-opening the database.
-    BLU.InitializeDatabase = function()
-        return BLU.db
-    end
-
-    BLU:PrintDebug("Database module initialized. BLU.db is " .. tostring(BLU.db))
+ BLU:PrintDebug("Database module initialized. BLU.db is " .. tostring(BLU.db))
 end
 
 -- ── Save settings ─────────────────────────────────────────────────────────────
@@ -117,22 +117,6 @@ function Database:GetProfileName()
 end
 
 -- ── Path accessors ────────────────────────────────────────────────────────────
-
-function Database:GetDB(path, default)
-    BLU:PrintDebug("[Database] GetDB called for path '" .. tostring(path) .. "'")
-    if not BLU.db then return default end
-    if not path then return BLU.db end
-    return BLU.db:Get(path, default)
-end
-
-function Database:SetDB(path, value)
-    BLU:PrintDebug("[Database] SetDB called for path '" .. tostring(path) .. "'")
-    if not BLU.db then return false end
-    return BLU.db:Set(path, value)
-end
-
-BLU.GetDB = function(path, default) return Database:GetDB(path, default) end
-BLU.SetDB = function(path, value)   return Database:SetDB(path, value)   end
 
 -- ── Serialization ─────────────────────────────────────────────────────────────
 

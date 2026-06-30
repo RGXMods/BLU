@@ -2,6 +2,7 @@ wiki/
 nul
 .claude/
 .claude-code-router/
+graphify-out/
 *.bat
 *.ps1
 

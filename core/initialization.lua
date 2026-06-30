@@ -7,6 +7,7 @@
 local addonName = ...
 local BLU = _G["BLU"]
 local INIT_EVENT_ID_ENTERING_WORLD = "init_player_entering_world"
+local INIT_EVENT_ID_PLAYER_LOGIN = "init_player_login"
 
 -- Track what's been initialized
 BLU.initialized = {}
@@ -242,18 +243,29 @@ function BLU:PlayTestSound(eventType)
 	end
 end
 
--- Hook into PLAYER_ENTERING_WORLD
-BLU:RegisterEvent("PLAYER_ENTERING_WORLD", function()
-	BLU:PrintDebug("[Init] PLAYER_ENTERING_WORLD event fired for BLU. Initializing...")
+local function BootstrapFromWorldEvent(event)
+	BLU:PrintDebug("[Init] " .. tostring(event) .. " event fired for BLU. Initializing...")
 	BLU:Initialize()
 
 	-- Create the options panel so it's available in the interface options
-	if BLU.CreateOptionsPanel then
+	if BLU.CreateOptionsPanel and not BLU.OptionsPanel then
 		BLU:CreateOptionsPanel()
-	else
+	elseif not BLU.CreateOptionsPanel then
 		BLU:PrintError("[Init] CreateOptionsPanel not available after initialization!")
 	end
 
 	-- Unregister this event as it only needs to fire once
 	BLU:UnregisterEvent("PLAYER_ENTERING_WORLD", INIT_EVENT_ID_ENTERING_WORLD)
-end, INIT_EVENT_ID_ENTERING_WORLD)
+	BLU:UnregisterEvent("PLAYER_LOGIN", INIT_EVENT_ID_PLAYER_LOGIN)
+end
+
+-- Hook into both events. Some reload/login orders can miss one path when the
+-- framework defers frame event registration during protected dispatch.
+BLU:RegisterEvent("PLAYER_LOGIN", BootstrapFromWorldEvent, INIT_EVENT_ID_PLAYER_LOGIN)
+BLU:RegisterEvent("PLAYER_ENTERING_WORLD", BootstrapFromWorldEvent, INIT_EVENT_ID_ENTERING_WORLD)
+
+if IsLoggedIn and IsLoggedIn() then
+	BLU:After(0, function()
+		BootstrapFromWorldEvent("deferred_login_state")
+	end)
+end

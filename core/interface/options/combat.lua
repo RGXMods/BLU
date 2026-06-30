@@ -198,10 +198,13 @@ local function PlayCombatTriggerPreview(triggerId)
         selected = pool[math.random(#pool)].id
     end
 
-    if BLU.SoundRegistry and BLU.SoundRegistry.PlaySound then
-        BLU.SoundRegistry:PlaySound(selected, nil, {
+    if BLU.SoundRegistry and BLU.SoundRegistry.PreviewSound then
+        BLU.SoundRegistry:PreviewSound(selected, {
             categoryOverride = "combat",
             volumeSettingOverride = volume,
+            triggerIdOverride = triggerId,
+            forceMusicPreview = triggerId == "combat_music_track",
+            previewKey = "combat:" .. tostring(triggerId),
         })
     end
 end
@@ -361,19 +364,38 @@ local function BuildSoundButtonMenu(dropdownFrame, getTriggerId, labelFontString
                 previewButton:SetBackdropBorderColor(0.14, 0.20, 0.28, 1)
                 previewButton:RegisterForClicks("LeftButtonUp")
                 previewButton:SetScript("OnClick", function(btn)
-                    if btn.soundId and BLU.SoundRegistry and BLU.SoundRegistry.PlaySound then
-                        BLU.SoundRegistry:PlaySound(btn.soundId, nil, {
+                    if btn.soundId and BLU.SoundRegistry and BLU.SoundRegistry.PreviewSound then
+                        local playing, status = BLU.SoundRegistry:PreviewSound(btn.soundId, {
                             categoryOverride = "combat",
                             volumeSettingOverride = GetSelectedVolume(getTriggerId()),
+                            triggerIdOverride = getTriggerId(),
+                            forceMusicPreview = getTriggerId() == "combat_music_track",
+                            previewKey = "combat:inline:" .. tostring(getTriggerId()) .. ":" .. tostring(btn.soundId),
                         })
+                        if btn.label then
+                            btn.label:SetText((playing and status == "playing") and "Stop" or "Play")
+                        end
+                        if dropdownFrame._refreshInlinePreviewButtons then
+                            dropdownFrame:_refreshInlinePreviewButtons()
+                        end
+                        if C_Timer and C_Timer.After then
+                            C_Timer.After(0, function()
+                                if dropdownFrame and dropdownFrame._refreshInlinePreviewButtons then
+                                    dropdownFrame:_refreshInlinePreviewButtons()
+                                end
+                            end)
+                        end
                     end
                 end)
                 previewButton:SetScript("OnEnter", function(btn)
                     btn:SetBackdropColor(0.12, 0.16, 0.22, 1)
                     btn:SetBackdropBorderColor(unpack(BLU.Modules.design.Colors.Primary))
                     GameTooltip:SetOwner(btn, "ANCHOR_RIGHT")
-                    GameTooltip:SetText("Play")
-                    GameTooltip:AddLine("Click to preview this sound.", 0.7, 0.7, 0.7, true)
+                    local isPlaying = BLU.SoundRegistry
+                        and BLU.SoundRegistry.IsPreviewPlaying
+                        and BLU.SoundRegistry:IsPreviewPlaying(btn.soundId, btn.previewKey)
+                    GameTooltip:SetText(isPlaying and "Stop" or "Play")
+                    GameTooltip:AddLine(isPlaying and "Click to stop this preview." or "Click to preview this sound.", 0.7, 0.7, 0.7, true)
                     GameTooltip:Show()
                 end)
                 previewButton:SetScript("OnLeave", function(btn)
@@ -390,7 +412,13 @@ local function BuildSoundButtonMenu(dropdownFrame, getTriggerId, labelFontString
                 button.bluPreviewButton = previewButton
             end
 
+            previewButton.previewKey = "combat:inline:" .. tostring(getTriggerId()) .. ":" .. tostring(soundId)
             previewButton.soundId = soundId
+            if previewButton.label and BLU.SoundRegistry and BLU.SoundRegistry.IsPreviewPlaying and BLU.SoundRegistry:IsPreviewPlaying(soundId, previewButton.previewKey) then
+                previewButton.label:SetText("Stop")
+            elseif previewButton.label then
+                previewButton.label:SetText("Play")
+            end
             previewButton:Show()
 
             local normalText = _G[button:GetName() .. "NormalText"]
@@ -404,6 +432,28 @@ local function BuildSoundButtonMenu(dropdownFrame, getTriggerId, labelFontString
                 normalText:SetJustifyH("LEFT")
             end
         end
+
+        local function refreshVisibleInlinePreviewButtons()
+            local maxLevels = UIDROPDOWNMENU_MAXLEVELS or 3
+            local maxButtons = UIDROPDOWNMENU_MAXBUTTONS or 32
+            for levelToUse = 1, maxLevels do
+                local listFrame = getDropDownListFrame(levelToUse)
+                if listFrame then
+                    for index = 1, maxButtons do
+                        local button = _G[listFrame:GetName() .. "Button" .. index]
+                        local previewButton = button and button.bluPreviewButton
+                        if previewButton and previewButton.label then
+                            local isPlaying = BLU.SoundRegistry
+                                and BLU.SoundRegistry.IsPreviewPlaying
+                                and BLU.SoundRegistry:IsPreviewPlaying(previewButton.soundId, previewButton.previewKey)
+                            previewButton.label:SetText(isPlaying and "Stop" or "Play")
+                        end
+                    end
+                end
+            end
+        end
+
+        dropdownFrame._refreshInlinePreviewButtons = refreshVisibleInlinePreviewButtons
 
         local function attachInlineCountLabel(levelToUse, text)
             local listFrame = getDropDownListFrame(levelToUse)
@@ -479,6 +529,7 @@ local function BuildSoundButtonMenu(dropdownFrame, getTriggerId, labelFontString
 
         resetDropDownListFrame(level)
         hideInlinePreviewButtons(level)
+        refreshVisibleInlinePreviewButtons()
 
         if level == 1 then
             local noneInfo = UIDropDownMenu_CreateInfo()
@@ -594,6 +645,32 @@ local function BuildSoundButtonMenu(dropdownFrame, getTriggerId, labelFontString
         end
 
         forceListFrameWidth(level)
+    end
+end
+
+BLU._combatInlinePreviewListenerRegistered = BLU._combatInlinePreviewListenerRegistered or false
+if not BLU._combatInlinePreviewListenerRegistered then
+    BLU._combatInlinePreviewListenerRegistered = true
+    if BLU.SoundRegistry and BLU.SoundRegistry.RegisterPreviewListener then
+        BLU.SoundRegistry:RegisterPreviewListener(function()
+            local maxLevels = UIDROPDOWNMENU_MAXLEVELS or 3
+            local maxButtons = UIDROPDOWNMENU_MAXBUTTONS or 32
+            for level = 1, maxLevels do
+                local listFrame = _G["DropDownList" .. level]
+                if listFrame then
+                    for index = 1, maxButtons do
+                        local button = _G[listFrame:GetName() .. "Button" .. index]
+                        local previewButton = button and button.bluPreviewButton
+                        if previewButton and previewButton.label then
+                            local isPlaying = BLU.SoundRegistry
+                                and BLU.SoundRegistry.IsPreviewPlaying
+                                and BLU.SoundRegistry:IsPreviewPlaying(previewButton.soundId, previewButton.previewKey)
+                            previewButton.label:SetText(isPlaying and "Stop" or "Play")
+                        end
+                    end
+                end
+            end
+        end)
     end
 end
 
@@ -792,6 +869,22 @@ end
         end
     end)
 
+    local function RefreshTestButtonState()
+        local isPlaying = row._combatTriggerId
+            and BLU.SoundRegistry
+            and BLU.SoundRegistry.IsPreviewPlaying
+            and BLU.SoundRegistry:IsPreviewPlaying(GetSelectedSound(row._combatTriggerId), "combat:" .. tostring(row._combatTriggerId))
+        testButton:SetText(isPlaying and "Stop" or "Test")
+    end
+
+    if BLU.SoundRegistry and BLU.SoundRegistry.RegisterPreviewListener then
+        BLU.SoundRegistry:RegisterPreviewListener(function()
+            if testButton and testButton:IsVisible() then
+                RefreshTestButtonState()
+            end
+        end)
+    end
+
 	local function LayoutControls(showVolume)
 		dropdownButton:ClearAllPoints()
 		volumeControl:ClearAllPoints()
@@ -843,6 +936,7 @@ end
 		end
 
 		LayoutControls(showVolume)
+        RefreshTestButtonState()
 	end
 
     function row:SetTriggerInfo(triggerInfo)

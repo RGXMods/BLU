@@ -208,20 +208,37 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 		local selectedSound = BLU.db and BLU.db.selectedSounds and BLU.db.selectedSounds[actualEventType]
 		BLU:PrintDebug("Selected sound is: " .. tostring(selectedSound))
 
-		self:SetText("Playing...")
-		self:Disable()
-
-		if BLU.PlayCategorySound then
+		if selectedSound and selectedSound ~= "default" and selectedSound ~= "None"
+			and BLU.SoundRegistry and BLU.SoundRegistry.PreviewSound then
+			BLU.SoundRegistry:PreviewSound(selectedSound, {
+				categoryOverride = actualEventType,
+				previewKey = "event:" .. tostring(actualEventType),
+			})
+		elseif BLU.PlayCategorySound then
 			BLU:PlayCategorySound(actualEventType)
 		elseif BLU.Modules.registry and BLU.Modules.registry.PlayCategorySound then
 			BLU.Modules.registry:PlayCategorySound(actualEventType)
 		end
-
-		C_Timer.After(2, function()
-			self:SetText("Test")
-			self:Enable()
-		end)
 	end)
+
+	local function RefreshTestButtonState()
+		local selectedSound = BLU.db and BLU.db.selectedSounds and BLU.db.selectedSounds[actualEventType]
+		local isPlaying = selectedSound
+			and selectedSound ~= "default"
+			and selectedSound ~= "None"
+			and BLU.SoundRegistry
+			and BLU.SoundRegistry.IsPreviewPlaying
+			and BLU.SoundRegistry:IsPreviewPlaying(selectedSound, "event:" .. tostring(actualEventType))
+		testBtn:SetText(isPlaying and "Stop" or "Test")
+	end
+
+	if BLU.SoundRegistry and BLU.SoundRegistry.RegisterPreviewListener then
+		BLU.SoundRegistry:RegisterPreviewListener(function()
+			if testBtn and testBtn:IsVisible() then
+				RefreshTestButtonState()
+			end
+		end)
+	end
 
 	local dropdown = CreateFrame("Frame", "BLUDropdown_" .. actualEventType, container, "UIDropDownMenuTemplate")
 	dropdown:SetPoint("TOPLEFT", currentSound, "BOTTOMLEFT", -16, -5)
@@ -271,12 +288,12 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 		testBtn:SetPoint("RIGHT", container, "RIGHT", -10, 0)
 		testBtn:SetPoint("TOP", currentSound, "BOTTOM", 0, -5)
 
-	if showVolume then
-		volumeControl:SetPoint("CENTER", dropdownButton, "CENTER", 0, 0)
-		volumeControl:SetPoint("LEFT", dropdownButton, "RIGHT", 12, 0)
-		volumeControl:SetPoint("RIGHT", testBtn, "LEFT", -12, 0)
-		volumeControl:Show()
-		applyVolume(getVolume())
+		if showVolume then
+			volumeControl:SetPoint("CENTER", dropdownButton, "CENTER", 0, 0)
+			volumeControl:SetPoint("LEFT", dropdownButton, "RIGHT", 12, 0)
+			volumeControl:SetPoint("RIGHT", testBtn, "LEFT", -12, 0)
+			volumeControl:Show()
+			applyVolume(getVolume())
 		else
 			volumeControl:Hide()
 		end
@@ -420,16 +437,35 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 				previewButton:SetBackdropBorderColor(0.14, 0.20, 0.28, 1)
 				previewButton:RegisterForClicks("LeftButtonUp")
 				previewButton:SetScript("OnClick", function(btn)
-					if btn.soundId and BLU.SoundRegistry and BLU.SoundRegistry.PlaySound then
-						BLU.SoundRegistry:PlaySound(btn.soundId)
+					if btn.soundId and BLU.SoundRegistry and BLU.SoundRegistry.PreviewSound then
+						local playing, status = BLU.SoundRegistry:PreviewSound(btn.soundId, {
+							categoryOverride = actualEventType,
+							previewKey = "soundpanel:inline:" .. tostring(actualEventType) .. ":" .. tostring(btn.soundId),
+						})
+						if btn.label then
+							btn.label:SetText((playing and status == "playing") and "Stop" or "Play")
+						end
+						if dropdown._refreshInlinePreviewButtons then
+							dropdown:_refreshInlinePreviewButtons()
+						end
+						if C_Timer and C_Timer.After then
+							C_Timer.After(0, function()
+								if dropdown and dropdown._refreshInlinePreviewButtons then
+									dropdown:_refreshInlinePreviewButtons()
+								end
+							end)
+						end
 					end
 				end)
 				previewButton:SetScript("OnEnter", function(btn)
 					btn:SetBackdropColor(0.12, 0.16, 0.22, 1)
 					btn:SetBackdropBorderColor(unpack(BLU.Modules.design.Colors.Primary))
 					GameTooltip:SetOwner(btn, "ANCHOR_RIGHT")
-					GameTooltip:SetText("Play")
-					GameTooltip:AddLine("Click to play this sound.", 0.7, 0.7, 0.7, true)
+					local isPlaying = BLU.SoundRegistry
+						and BLU.SoundRegistry.IsPreviewPlaying
+						and BLU.SoundRegistry:IsPreviewPlaying(btn.soundId, btn.previewKey)
+					GameTooltip:SetText(isPlaying and "Stop" or "Play")
+					GameTooltip:AddLine(isPlaying and "Click to stop this preview." or "Click to play this sound.", 0.7, 0.7, 0.7, true)
 					GameTooltip:Show()
 				end)
 				previewButton:SetScript("OnLeave", function(btn)
@@ -446,7 +482,13 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 				button.bluPreviewButton = previewButton
 			end
 
+			previewButton.previewKey = "soundpanel:inline:" .. tostring(actualEventType) .. ":" .. tostring(soundId)
 			previewButton.soundId = soundId
+			if previewButton.label and BLU.SoundRegistry and BLU.SoundRegistry.IsPreviewPlaying and BLU.SoundRegistry:IsPreviewPlaying(soundId, previewButton.previewKey) then
+				previewButton.label:SetText("Stop")
+			elseif previewButton.label then
+				previewButton.label:SetText("Play")
+			end
 			previewButton:Show()
 
 			local normalText = _G[button:GetName() .. "NormalText"]
@@ -460,6 +502,28 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 				normalText:SetJustifyH("LEFT")
 			end
 		end
+
+		local function refreshVisibleInlinePreviewButtons()
+			local maxLevels = UIDROPDOWNMENU_MAXLEVELS or 3
+			local maxButtons = UIDROPDOWNMENU_MAXBUTTONS or 32
+			for levelToUse = 1, maxLevels do
+				local listFrame = getDropDownListFrame(levelToUse)
+				if listFrame then
+					for index = 1, maxButtons do
+						local button = _G[listFrame:GetName() .. "Button" .. index]
+						local previewButton = button and button.bluPreviewButton
+						if previewButton and previewButton.label then
+							local isPlaying = BLU.SoundRegistry
+								and BLU.SoundRegistry.IsPreviewPlaying
+								and BLU.SoundRegistry:IsPreviewPlaying(previewButton.soundId, previewButton.previewKey)
+							previewButton.label:SetText(isPlaying and "Stop" or "Play")
+						end
+					end
+				end
+			end
+		end
+
+		dropdown._refreshInlinePreviewButtons = refreshVisibleInlinePreviewButtons
 
 		local function attachInlineCountLabel(levelToUse, text)
 			local listFrame = getDropDownListFrame(levelToUse)
@@ -486,6 +550,7 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 
 		resetDropDownListFrame(level)
 		hideInlinePreviewButtons(level)
+		refreshVisibleInlinePreviewButtons()
 
 		local function hasEntries(groupData)
 			if type(groupData) ~= "table" then
@@ -629,8 +694,8 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 						info.notCheckable = true
 						UIDropDownMenu_AddButton(info, level)
 					end
-					end
 				end
+			end
 		elseif level == 2 then
 			local groupKey = menuList
 			local subgroups = customHierarchy[groupKey]
@@ -717,6 +782,29 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 		forceListFrameWidth(level)
 	end)
 
+	if not dropdown._previewListenerRegistered and BLU.SoundRegistry and BLU.SoundRegistry.RegisterPreviewListener then
+		dropdown._previewListenerRegistered = true
+		BLU.SoundRegistry:RegisterPreviewListener(function()
+			local maxLevels = UIDROPDOWNMENU_MAXLEVELS or 3
+			local maxButtons = UIDROPDOWNMENU_MAXBUTTONS or 32
+			for level = 1, maxLevels do
+				local listFrame = _G["DropDownList" .. level]
+				if listFrame then
+					for index = 1, maxButtons do
+						local button = _G[listFrame:GetName() .. "Button" .. index]
+						local previewButton = button and button.bluPreviewButton
+						if previewButton and previewButton.label then
+							local isPlaying = BLU.SoundRegistry
+								and BLU.SoundRegistry.IsPreviewPlaying
+								and BLU.SoundRegistry:IsPreviewPlaying(previewButton.soundId, previewButton.previewKey)
+							previewButton.label:SetText(isPlaying and "Stop" or "Play")
+						end
+					end
+				end
+			end
+		end)
+	end
+
 	local selectedValue = BLU.db and BLU.db.selectedSounds and BLU.db.selectedSounds[actualEventType] or "default"
 
 	local selectedText = selectedValue
@@ -738,6 +826,7 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 		dropdown.currentButtonLabel:SetText(selectedText)
 	end
 	LayoutControls(updateSoundControlMode(selectedValue))
+	RefreshTestButtonState()
 
 	return container
 end

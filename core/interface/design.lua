@@ -139,6 +139,19 @@ function Design:CreateActionButton(parent, text, width, height, tooltipTitle, to
     label:SetTextColor(0.80, 0.80, 0.80, 1)
     button.label = label
 
+    function button:SetText(value)
+        if self.label then
+            self.label:SetText(value or "")
+        end
+    end
+
+    function button:GetText()
+        if self.label and self.label.GetText then
+            return self.label:GetText()
+        end
+        return nil
+    end
+
     local function applyHover(self)
         self.bg:SetColorTexture(0.11, 0.18, 0.24, 1)
         self.border:SetBackdropBorderColor(unpack(Design.Colors.Primary))

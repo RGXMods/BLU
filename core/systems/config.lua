@@ -98,6 +98,9 @@ Config.defaults = {
             housingleveledup = "medium",
             housingrewardsreceived = "medium",
             housingdecorcollected = "medium",
+            combat_start_sound = "medium",
+            combat_end_sound = "medium",
+            combat_music_track = "medium",
         },
 
         -- Per-event sound channel (Master / SFX / Music / Ambience).
@@ -124,6 +127,9 @@ Config.defaults = {
             housingleveledup = "Master",
             housingrewardsreceived = "Master",
             housingdecorcollected = "Master",
+            combat_start_sound = "Master",
+            combat_end_sound = "Master",
+            combat_music_track = "Music",
         },
 
         -- Advanced settings

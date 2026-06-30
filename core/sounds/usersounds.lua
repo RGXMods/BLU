@@ -58,6 +58,41 @@ local function BuildDisplayNameFromPath(filePath, fallbackName)
     return string.match(filePath or "", "([^\\]+)%.[^%.]+$") or fallbackName
 end
 
+local function NormalizeSearchToken(value)
+    if type(value) ~= "string" then
+        return nil
+    end
+
+    local token = value:lower()
+    token = token:gsub("^interface\\addons\\", "")
+    token = token:gsub("%.[^%.\\]+$", "")
+    token = token:gsub("[_%-%s]+", "")
+    token = token:gsub("[^%w]", "")
+    if token == "" then
+        return nil
+    end
+
+    return token
+end
+
+local function IsSubsequence(needle, haystack)
+    if type(needle) ~= "string" or type(haystack) ~= "string" then
+        return false
+    end
+
+    local pos = 1
+    for i = 1, #needle do
+        local char = needle:sub(i, i)
+        pos = string.find(haystack, char, pos, true)
+        if not pos then
+            return false
+        end
+        pos = pos + 1
+    end
+
+    return true
+end
+
 local function HasSupportedExtension(soundPath)
     if type(soundPath) ~= "string" then
         return false
@@ -243,6 +278,26 @@ local function CollectConfiguredEntries(entries, seenPaths, globalName, sourceLa
     end
 end
 
+local function CollectGeneratedManifestEntries(entries, seenPaths)
+    BLU:PrintDebug("[UserSounds] CollectGeneratedManifestEntries called")
+    local manifest = _G.BLU_UserCustomSoundManifest
+    if type(manifest) ~= "table" then
+        BLU:PrintDebug("[UserSounds] No generated custom sound manifest found")
+        return
+    end
+
+    for index, entry in ipairs(manifest) do
+        if type(entry) == "string" then
+            AddEntry(entries, seenPaths, entry, nil, true, true, {entry})
+        elseif type(entry) == "table" then
+            local filePath = entry.file or entry.path
+            AddEntry(entries, seenPaths, filePath, entry.name, true, true, entry.candidateFiles or {filePath})
+        else
+            BLU:PrintDebug("[UserSounds] Skipped unsupported generated manifest entry at index " .. tostring(index))
+        end
+    end
+end
+
 local function NormalizeStoredProfileEntry(entry)
     if type(entry) ~= "table" then
         return entry
@@ -269,6 +324,82 @@ local function NormalizeStoredProfileEntry(entry)
     return entry
 end
 
+local function FindKnownCustomSoundMatch(soundInput)
+    local wanted = NormalizeSearchToken(soundInput)
+    if not wanted then
+        return nil
+    end
+
+    local function collectKnownEntries(results, source)
+        if type(source) ~= "table" then
+            return
+        end
+
+        for _, entry in ipairs(source) do
+            if type(entry) == "string" then
+                results[#results + 1] = {
+                    name = BuildDisplayNameFromPath(entry),
+                    file = entry,
+                }
+            elseif type(entry) == "table" then
+                results[#results + 1] = {
+                    name = entry.name or BuildDisplayNameFromPath(entry.file or entry.path),
+                    file = entry.file or entry.path,
+                }
+            end
+        end
+    end
+
+    local candidates = {}
+    if BLU.db and type(BLU.db.userCustomSounds) == "table" then
+        collectKnownEntries(candidates, BLU.db.userCustomSounds)
+    end
+    collectKnownEntries(candidates, _G.BLU_UserCustomSounds)
+    collectKnownEntries(candidates, _G.BLU_UserCustomSoundManifest)
+
+    local bestPath
+    local bestScore = math.huge
+    local bestCandidates
+
+    for _, candidate in ipairs(candidates) do
+        local filePath = NormalizeEntryPath(candidate.file)
+        if filePath and filePath ~= "" then
+            local baseName = BuildDisplayNameFromPath(filePath, candidate.name)
+            local nameToken = NormalizeSearchToken(candidate.name)
+            local baseToken = NormalizeSearchToken(baseName)
+            local pathToken = NormalizeSearchToken(filePath)
+
+            local function scoreToken(token)
+                if not token then
+                    return
+                end
+                local startIndex = string.find(token, wanted, 1, true)
+                if startIndex then
+                    local score = (#token - #wanted) + startIndex
+                    if score < bestScore then
+                        bestScore = score
+                        bestPath = filePath
+                        bestCandidates = {filePath}
+                    end
+                elseif #wanted >= 4 and IsSubsequence(wanted, token) then
+                    local score = (#token - #wanted) + 50
+                    if score < bestScore then
+                        bestScore = score
+                        bestPath = filePath
+                        bestCandidates = {filePath}
+                    end
+                end
+            end
+
+            scoreToken(nameToken)
+            scoreToken(baseToken)
+            scoreToken(pathToken)
+        end
+    end
+
+    return bestPath, bestCandidates
+end
+
 ResolveCustomSoundPath = function(soundInput)
     local normalizedInput = NormalizeEntryPath(soundInput)
     if not normalizedInput then
@@ -293,6 +424,12 @@ ResolveCustomSoundPath = function(soundInput)
     local filename = normalizedInput:gsub("^%s+", ""):gsub("%s+$", "")
     if filename == "" then
         return nil
+    end
+
+    local knownPath, knownCandidates = FindKnownCustomSoundMatch(filename)
+    if knownPath then
+        BLU:PrintDebug("[UserSounds] Resolved fuzzy custom sound input '" .. tostring(soundInput) .. "' to known file '" .. tostring(knownPath) .. "'")
+        return knownPath, knownCandidates
     end
 
     if not explicitExtension then
@@ -389,6 +526,7 @@ local function CollectEntries()
         BLU:PrintDebug("[UserSounds] No profile custom sounds configured")
     end
 
+    CollectGeneratedManifestEntries(entries, seenPaths)
     CollectConfiguredEntries(entries, seenPaths, "BLU_UserCustomSounds", "manual")
     BLU:PrintDebug("[UserSounds] Total custom sound candidates after configured merge: " .. tostring(#entries))
     return entries
@@ -566,21 +704,63 @@ end
 function UserSounds:GetCustomSoundEntries()
     BLU:PrintDebug("[UserSounds] GetCustomSoundEntries called")
     local results = {}
+    local seen = {}
 
-    if not (BLU.db and type(BLU.db.userCustomSounds) == "table") then
-        return results
+    local function addResult(entry)
+        if type(entry) ~= "table" then
+            return
+        end
+
+        local normalizedPath = NormalizeEntryPath(entry.file)
+        if not normalizedPath then
+            return
+        end
+
+        local key = normalizedPath:lower()
+        if seen[key] then
+            if entry.removable and not seen[key].removable then
+                seen[key].removable = true
+                seen[key].index = entry.index
+                seen[key].source = entry.source or seen[key].source
+            end
+            return
+        end
+
+        entry.file = normalizedPath
+        entry.name = entry.name or BuildDisplayNameFromPath(normalizedPath)
+        results[#results + 1] = entry
+        seen[key] = entry
     end
 
-    for index, entry in ipairs(BLU.db.userCustomSounds) do
-        local filePath = type(entry) == "table" and (entry.file or entry.path) or entry
-        local displayName = type(entry) == "table" and entry.name or nil
-        local normalizedPath = NormalizeEntryPath(filePath)
-        if normalizedPath then
-            table.insert(results, {
+    if BLU.db and type(BLU.db.userCustomSounds) == "table" then
+        for index, entry in ipairs(BLU.db.userCustomSounds) do
+            local filePath = type(entry) == "table" and (entry.file or entry.path) or entry
+            local displayName = type(entry) == "table" and entry.name or nil
+            addResult({
                 index = index,
-                file = normalizedPath,
-                name = displayName or BuildDisplayNameFromPath(normalizedPath),
+                file = filePath,
+                name = displayName,
+                source = "Profile",
+                removable = true,
             })
+        end
+    end
+
+    if BLU.SoundRegistry and BLU.SoundRegistry.GetAllSounds then
+        for soundId, soundData in pairs(BLU.SoundRegistry:GetAllSounds()) do
+            if type(soundData) == "table" and (
+                soundData.source == "UserCustom"
+                or soundData.packId == PACK_ID
+                or soundData.packName == PACK_NAME
+            ) then
+                addResult({
+                    id = soundId,
+                    file = soundData.file,
+                    name = soundData.name,
+                    source = "Loaded",
+                    removable = false,
+                })
+            end
         end
     end
 

@@ -15,6 +15,7 @@
 
     <!-- User Custom Sounds (user-editable table in core/sounds/user_sounds.lua) -->
     <Script file="core/sounds/user_sounds.lua"/>
+    <Script file="core/sounds/user_sounds_generated.lua"/>
     <Script file="core/sounds/usersounds.lua"/>
 
     <!-- Localization -->

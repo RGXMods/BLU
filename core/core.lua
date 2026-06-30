@@ -27,12 +27,10 @@ local function GetAddOnMetadataSafe(self, addonName, key)
     return nil
 end
 
-print("BLU: Core loading started.")
-
 -- ── Bootstrap via RGX-Framework ──────────────────────────────────────────────
 
-if RGX then
-    BLU = RGX.Addon("BLU", {
+if RGX and type(RGX.Addon) == "function" then
+    local ok, addonOrErr = pcall(RGX.Addon, "BLU", {
         db      = true,
         dbName  = "BLUDB",
         slash   = "blu",
@@ -42,13 +40,18 @@ if RGX then
             self:ShowWelcomeMessage()
         end,
     })
+    if ok then
+        BLU = addonOrErr
+    else
+        print("BLU: RGX.Addon bootstrap failed: " .. tostring(addonOrErr))
+    end
 end
 
 -- Fallback constructor if RGX-Framework is absent
 if not BLU then
     BLU = {
         name = addonName,
-        version = "v8.0.0-alpha.2",
+        version = "v8.0.0",
         Modules = {},
         LoadedModules = {},
         events = {},
@@ -56,6 +59,8 @@ if not BLU then
         isInitialized = false,
     }
 end
+
+_G.BLU = BLU
 
 -- Shared tables (compat for modules that access these directly)
 BLU.Modules = BLU.Modules or {}
@@ -183,12 +188,19 @@ BLU.eventFrame:SetScript("OnEvent", function(self, event, ...)
     BLU:FireEvent(event, ...)
 end)
 
+local FrameworkRegisterEvent = BLU.RegisterEvent
+local FrameworkUnregisterEvent = BLU.UnregisterEvent
+
 -- Register event (early definition)
 local function RegisterEvent(self, event, callback, id)
     id = id or "core"
+    if FrameworkRegisterEvent and FrameworkRegisterEvent ~= RegisterEvent then
+        return FrameworkRegisterEvent(self, event, callback, id)
+    end
+
     local RGX = _G.RGXFramework
     if RGX then
-        RGX:RegisterEvent(event, function(...) callback(event, ...) end, id)
+        RGX:RegisterEvent(event, callback, id, self)
         return
     end
     
@@ -213,6 +225,15 @@ BLU.RegisterEvent = RegisterEvent
 -- Unregister event
 local function UnregisterEvent(self, event, id)
     id = id or "core"
+    if FrameworkUnregisterEvent and FrameworkUnregisterEvent ~= UnregisterEvent then
+        return FrameworkUnregisterEvent(self, event, id)
+    end
+
+    local RGX = _G.RGXFramework
+    if RGX then
+        RGX:UnregisterEvent(event, id)
+        return
+    end
     
     if self.events[event] then
         self.events[event][id] = nil
@@ -289,6 +310,11 @@ end
 
 -- Show welcome message
 function BLU:ShowWelcomeMessage()
+    if self._welcomeMessageShown then
+        self:Trace("Welcome", "Skipped duplicate welcome message")
+        return
+    end
+
     if not (self.db and self.db.showWelcomeMessage ~= false) then
         self:Trace("Welcome", "Skipped welcome message")
         return
@@ -297,6 +323,7 @@ function BLU:ShowWelcomeMessage()
     local version = self.GetMetadata(addonName, "Version") or self.version or "Unknown"
     print(CHAT_PREFIX .. " Welcome. Use |cff05dffa/blu|r to open the options panel or |cff05dffa/blu help|r for more commands.")
     print(CHAT_PREFIX .. " |cffffff00Version:|r |cff8080ff" .. version .. "|r")
+    self._welcomeMessageShown = true
     self:Trace("Welcome", "Displayed welcome message for version " .. tostring(version))
 end
 

@@ -61,6 +61,8 @@ SoundRegistry.lastCacheUpdate = 0
 SoundRegistry.uiSoundCache = {} -- Cache for UI dropdowns
 SoundRegistry.lastCategoryPlayAt = {}
 SoundRegistry.lastAnyPlayAt = 0
+SoundRegistry.previewState = { soundId = nil, handle = nil, mode = nil, key = nil }
+SoundRegistry.previewListeners = {}
 
 -- Initialize
 function SoundRegistry:Init()
@@ -151,6 +153,86 @@ function SoundRegistry:GetSound(soundId)
     return self.sounds[soundId]
 end
 
+function SoundRegistry:RegisterPreviewListener(callback)
+    if type(callback) ~= "function" then
+        return function() end
+    end
+
+    table.insert(self.previewListeners, callback)
+    return function()
+        for i = #self.previewListeners, 1, -1 do
+            if self.previewListeners[i] == callback then
+                table.remove(self.previewListeners, i)
+                break
+            end
+        end
+    end
+end
+
+function SoundRegistry:NotifyPreviewChanged()
+    for _, callback in ipairs(self.previewListeners) do
+        pcall(callback, self.previewState)
+    end
+end
+
+function SoundRegistry:IsPreviewPlaying(soundId, previewKey)
+    if not self.previewState or not self.previewState.soundId then
+        return false
+    end
+
+    if previewKey and self.previewState.key ~= previewKey then
+        return false
+    end
+
+    if soundId and self.previewState.soundId ~= soundId then
+        return false
+    end
+
+    return true
+end
+
+function SoundRegistry:StopPreview()
+    local state = self.previewState or {}
+
+    if state.handle and StopSound then
+        pcall(StopSound, state.handle)
+    end
+
+    self.previewState = { soundId = nil, handle = nil, mode = nil, key = nil }
+    self:NotifyPreviewChanged()
+end
+
+function SoundRegistry:PreviewSound(soundId, options)
+    options = options or {}
+    local previewKey = options.previewKey
+
+    if self:IsPreviewPlaying(soundId, previewKey) then
+        self:StopPreview()
+        return false, "stopped"
+    end
+
+    self:StopPreview()
+
+    local sound = self:GetSound(soundId)
+    if not sound then
+        return false, "missing"
+    end
+
+    local willPlay, handle = self:PlaySound(soundId, nil, options)
+    if willPlay then
+        self.previewState = {
+            soundId = soundId,
+            handle = handle,
+            mode = options.forceMusicPreview and "music-preview" or "sound",
+            key = previewKey,
+        }
+        self:NotifyPreviewChanged()
+        return true, "playing"
+    end
+
+    return false, "failed"
+end
+
 -- Get sounds by category
 function SoundRegistry:GetSoundsByCategory(category)
     BLU:PrintDebug("[Registry] GetSoundsByCategory called for '" .. tostring(category) .. "'")
@@ -168,6 +250,61 @@ end
 -- Get all sounds
 function SoundRegistry:GetAllSounds()
     return self.sounds
+end
+
+local function ResolveChannelForPlayback(options)
+    options = options or {}
+
+    if type(options.channelOverride) == "string" and options.channelOverride ~= "" then
+        return options.channelOverride
+    end
+
+    local triggerId = options.triggerIdOverride
+    if BLU.db and BLU.db.combat and BLU.db.combat.soundChannels and triggerId then
+        local combatChannel = BLU.db.combat.soundChannels[triggerId]
+        if type(combatChannel) == "string" and combatChannel ~= "" then
+            return combatChannel
+        end
+    end
+
+    local category = options.categoryOverride
+    if BLU.db and BLU.db.soundChannels and category then
+        local categoryChannel = BLU.db.soundChannels[category]
+        if type(categoryChannel) == "string" and categoryChannel ~= "" then
+            return categoryChannel
+        end
+    end
+
+    if BLU.db and BLU.db.soundChannel then
+        return BLU.db.soundChannel
+    end
+
+    return "Master"
+end
+
+local function ResolveVolumeSetting(sound, options)
+    if not sound or not sound.hasVolumeVariants then
+        return nil
+    end
+
+    if options and options.volumeSettingOverride then
+        return options.volumeSettingOverride
+    end
+
+    local triggerId = options and options.triggerIdOverride
+    if BLU.db and BLU.db.combat and BLU.db.combat.soundVolumes and triggerId then
+        local triggerVolume = BLU.db.combat.soundVolumes[triggerId]
+        if triggerVolume then
+            return triggerVolume
+        end
+    end
+
+    local category = options and options.categoryOverride or sound.category
+    if BLU.db and BLU.db.soundVolumes and category and BLU.db.soundVolumes[category] then
+        return BLU.db.soundVolumes[category]
+    end
+
+    return "medium"
 end
 
 -- Register a sound pack
@@ -328,10 +465,7 @@ function SoundRegistry:PlaySound(soundId, volume, options)
     local resolvedVolume = tonumber(volume) or 1
     BLU:PrintDebug("[Registry] PlaySound options categoryOverride='" .. tostring(options.categoryOverride) .. "', volumeOverride='" .. tostring(options.volumeSettingOverride) .. "'")
     
-    local channel = "Master"
-    if BLU.db and BLU.db.soundChannel then
-        channel = BLU.db.soundChannel
-    end
+    local channel = ResolveChannelForPlayback(options)
     
     -- Play the sound based on type
     local willPlay, handle
@@ -339,8 +473,7 @@ function SoundRegistry:PlaySound(soundId, volume, options)
     if sound.soundKit then
         BLU:PrintDebug("[Registry] Using soundKit playback for '" .. tostring(soundId) .. "'")
         -- Use PlaySound for built-in WoW sounds
-        willPlay = PlaySound(sound.soundKit, channel)
-        handle = sound.soundKit
+        willPlay, handle = PlaySound(sound.soundKit, channel)
     elseif sound.file then
         BLU:PrintDebug("[Registry] Using file playback for '" .. tostring(soundId) .. "'")
         local fileToPlay = sound.file
@@ -348,10 +481,7 @@ function SoundRegistry:PlaySound(soundId, volume, options)
         if sound.hasVolumeVariants then
             BLU:PrintDebug("[Registry] Sound has volume variants; resolving variant for category '" .. tostring(options.categoryOverride or sound.category) .. "'")
             local category = options.categoryOverride or sound.category
-            local volumeSetting = options.volumeSettingOverride or "medium"
-            if not options.volumeSettingOverride and BLU.db and BLU.db.soundVolumes and BLU.db.soundVolumes[category] then
-                volumeSetting = BLU.db.soundVolumes[category]
-            end
+            local volumeSetting = ResolveVolumeSetting(sound, options) or "medium"
 
             if volumeSetting == "none" then
                 BLU:PrintDebug("Sound muted for category: " .. category)
@@ -372,17 +502,26 @@ function SoundRegistry:PlaySound(soundId, volume, options)
             fileToPlay = variantFile
             BLU:PrintDebug("Attempting to play sound: " .. fileToPlay)
             
+            if options.stopMusic and StopMusic then
+                StopMusic()
+            end
             willPlay, handle = PlaySoundFile(variantFile, channel)
             
             if not willPlay then
                 -- Fallback to base file if variant not found
                 BLU:PrintDebug("Failed to play variant, falling back to base file: " .. sound.file)
+                if options.stopMusic and StopMusic then
+                    StopMusic()
+                end
                 willPlay, handle = PlaySoundFile(sound.file, channel)
             end
         else
             BLU:PrintDebug("[Registry] Sound has no volume variants; using direct file playback")
             -- External sounds, SoundPaks, or user custom sounds should already
             -- be normalized before they reach live playback.
+            if options.stopMusic and StopMusic then
+                StopMusic()
+            end
             willPlay, handle = PlaySoundFile(sound.file, channel)
         end
     else
@@ -403,10 +542,10 @@ function SoundRegistry:PlaySound(soundId, volume, options)
             sound.onPlay(soundId, resolvedVolume)
         end
         
-        return true
+        return true, handle, channel
     else
         BLU:PrintError("Failed to play sound: " .. soundId)
-        return false
+        return false, nil, channel
     end
 end
 

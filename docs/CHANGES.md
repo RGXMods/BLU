@@ -4,6 +4,16 @@
 
 ## Current Development Release
 
+### [v8.0.0](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/8.0.0.md) - 2026-06-30
+
+- Stable BLU v8 release for WoW Retail 12.0.7.
+- Ships the RGX-Framework migration for events, timers, hooks, slash commands, database/profiles, dropdowns, and combat-safe runtime paths.
+- Keeps the v8 launch Combat tab focused on Combat Start, Combat End, and Combat Music.
+- Fixes user custom sound discovery, fuzzy custom sound matching, User Custom Sounds table display, and combat music playback routing.
+
+Full notes:
+- [v8.0.0 changelog](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/8.0.0.md)
+
 ### [v8.0.0-alpha.2](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/8.0.0-alpha.2.md) - 2026-06-28
 
 - User custom sound manifests now resolve through the same filename/path resolver as `/blu addcustom`.

@@ -11,7 +11,7 @@ Current release target:
 - WoW interface: `120007`
 - Addon type: Retail-only UI/sound customization addon
 - Branding: RGX Mods / RealmGX community project
-- Framework dependency: RGX-Framework v2.0.0
+- Framework dependency: RGX-Framework v2.1.0
 
 ## Current Structure
 
@@ -91,7 +91,7 @@ BLU is progressively migrating to RGX-Framework. The following systems now deleg
 | Dropdowns | `RGX:GetDropdowns()` | Removed (was 252 lines) |
 | Utility (DeepCopy, Throttle, Debounce, SafeCall) | `RGX:DeepCopy` / `RGX:Throttle` / `RGX:Debounce` / `RGX:QueueForCombat` | Removed |
 | Sound muting | `RGX:GetSound():MuteList(ids)` | Delegated |
-| SharedMedia scanning | `sharedmedia.lua` (local) | **Not yet migrated** — will move to `RGXSharedMedia` when that module is enabled in RGX |
+| SharedMedia scanning | `sharedmedia.lua` (local, ~830 lines after dead Kitty-API removal) | **Ready to migrate** — `RGXSharedMedia` is enabled in RGX (v2.0.0); local file can be dropped and replaced with a thin bridge that imports RGXSharedMedia scan results into `BLU.SoundRegistry` |
 
 Key proxy rules:
 - `BLU.db` must never be overwritten — it is the proxy table with `__index`/`__newindex`

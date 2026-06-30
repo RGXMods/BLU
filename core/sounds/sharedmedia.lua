@@ -17,7 +17,6 @@ SharedMedia.soundCategories = {}
 SharedMedia.manualBridgePaths = {}
 SharedMedia.eventsRegistered = false
 SharedMedia.pendingRescan = false
-SharedMedia.kittyHookInstalled = false
 SharedMedia._invokedDBMPackFunctions = {}
 SharedMedia.enableGenericFallbackScan = true
 
@@ -539,15 +538,6 @@ function SharedMedia:ScanGenericBridgeSources()
     local foundPaths = {}
     local scanState = { totalFound = 0, sourceTableCount = 0 }
 
-    -- Scan known pack-returning global APIs if available.
-    if type(_G.KittyGetSoundPacks) == "function" then
-        local ok, kittyPacks = pcall(_G.KittyGetSoundPacks)
-        if ok and type(kittyPacks) == "table" then
-            scanState.sourceTableCount = 0
-            CollectPathsFromValue(kittyPacks, foundPaths, {}, scanState, 0)
-        end
-    end
-
     -- Scan DBM-specific registries when present.
     if type(_G.DBM) == "table" then
         local dbm = _G.DBM
@@ -669,61 +659,6 @@ function SharedMedia:RegisterExternalSoundPack(packName, soundEntries)
     return self:RegisterExternalSoundEntries(packName, soundEntries, true)
 end
 
-function SharedMedia:EnsureKittyBridgeHook()
-    BLU:PrintDebug("[SharedMedia] EnsureKittyBridgeHook called")
-    if self.kittyHookInstalled then
-        return
-    end
-
-    local originalRegister = _G.KittyRegisterSoundPack
-    if type(originalRegister) ~= "function" then
-        return
-    end
-
-    self.kittyHookInstalled = true
-
-    _G.KittyRegisterSoundPack = function(name, options, ...)
-        local result = {pcall(originalRegister, name, options, ...)}
-        local ok = table.remove(result, 1)
-        if not ok then
-            error(result[1])
-        end
-
-        if type(options) == "table" then
-            -- Use addon-folder grouping for pack identity so UI groups by source addon.
-            self:RegisterExternalSoundEntries(nil, options, false)
-            self:NotifyExternalSoundsUpdated()
-        end
-
-        self:QueueRescan(0.05)
-        return SafeUnpack(result)
-    end
-
-    BLU:PrintDebug("SharedMedia bridge hooked KittyRegisterSoundPack.")
-end
-
-function SharedMedia:ScanKittySoundPacks()
-    BLU:PrintDebug("[SharedMedia] ScanKittySoundPacks called")
-    if type(_G.KittyGetSoundPacks) ~= "function" then
-        return 0
-    end
-
-    local ok, kittyPacks = pcall(_G.KittyGetSoundPacks)
-    if not ok or type(kittyPacks) ~= "table" then
-        return 0
-    end
-
-    local registered = 0
-    ForEachTableEntrySafe(kittyPacks, function(_, packData)
-        if type(packData) == "table" then
-            -- Group HearKitty sounds by addon folder derived from their file path.
-            registered = registered + self:RegisterExternalSoundEntries(nil, packData, false)
-        end
-    end)
-
-    return registered
-end
-
 function SharedMedia:InvokeDBMPackRegistrars()
     BLU:PrintDebug("[SharedMedia] InvokeDBMPackRegistrars called")
     if type(_G.DBM) ~= "table" then
@@ -760,7 +695,6 @@ end
 
 function SharedMedia:Init()
     BLU:PrintDebug("SharedMedia:Init() called.")
-    self:EnsureKittyBridgeHook()
 
     if not self.eventsRegistered then
         BLU:RegisterEvent("ADDON_LOADED", function(event, loadedAddonName)
@@ -805,10 +739,8 @@ function SharedMedia:ScanExternalSounds()
     wipe(self.externalSounds)
     wipe(self.soundCategories)
     self._registeredBridgePaths = {}
-    self:EnsureKittyBridgeHook()
     self:ClearExternalFromRegistry()
 
-    local kittyBridgeCount = self:ScanKittySoundPacks()
     local dbmRegistrarCount = self:InvokeDBMPackRegistrars()
     local compatibilityBridgeCount = self:RegisterKnownAddonCompatibilitySounds()
     local bridgeCount = self:ScanGenericBridgeSources()
@@ -816,8 +748,7 @@ function SharedMedia:ScanExternalSounds()
     self:NotifyExternalSoundsUpdated()
 
     BLU:PrintDebug(string.format(
-        "SharedMedia scan complete: %d Kitty sounds, %d DBM registrar hooks, %d compatibility bridge sounds, %d generic bridged sounds, %d manual bridge sounds.",
-        kittyBridgeCount,
+        "SharedMedia scan complete: %d DBM registrar hooks, %d compatibility bridge sounds, %d generic bridged sounds, %d manual bridge sounds.",
         dbmRegistrarCount,
         compatibilityBridgeCount,
         bridgeCount,
@@ -871,8 +802,6 @@ function SharedMedia:OnAddonLoaded(loadedAddonName)
         return
     end
 
-    -- Rescan after likely media-provider addons load so late registrations are captured.
-    self:EnsureKittyBridgeHook()
     self:QueueRescan(0.25)
 end
 

@@ -25,3 +25,6 @@ config/api_keys.json
 /user/sounds/*.ogg
 /user/sounds/*.mp3
 /user/sounds/*.wav
+
+# Locally generated user-sound manifest (per-machine; built by tools/GenerateUserSoundManifest.ps1)
+core/sounds/user_sounds_generated.lua

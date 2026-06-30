@@ -7,11 +7,11 @@ This file gives repository-specific guidance to Claude Code and similar coding a
 BLU (Better Level-Up!) is a Retail World of Warcraft addon that replaces milestone and progression sounds with curated audio from many other games.
 
 Current release target:
-- Version: `v8.0.0-alpha.1`
-- WoW interface: `120005`
+- Version: `v8.0.1`
+- WoW interface: `120007`
 - Addon type: Retail-only UI/sound customization addon
 - Branding: RGX Mods / RealmGX community project
-- Framework dependency: RGX-Framework v2.0.0-alpha.1
+- Framework dependency: RGX-Framework v2.0.0
 
 ## Current Structure
 
@@ -91,7 +91,7 @@ BLU is progressively migrating to RGX-Framework. The following systems now deleg
 | Dropdowns | `RGX:GetDropdowns()` | Removed (was 252 lines) |
 | Utility (DeepCopy, Throttle, Debounce, SafeCall) | `RGX:DeepCopy` / `RGX:Throttle` / `RGX:Debounce` / `RGX:QueueForCombat` | Removed |
 | Sound muting | `RGX:GetSound():MuteList(ids)` | Delegated |
-| SharedMedia scanning | `sharedmedia.lua` (local) | **Not yet migrated** |
+| SharedMedia scanning | `sharedmedia.lua` (local) | **Not yet migrated** — will move to `RGXSharedMedia` when that module is enabled in RGX |
 
 Key proxy rules:
 - `BLU.db` must never be overwritten — it is the proxy table with `__index`/`__newindex`
@@ -132,7 +132,7 @@ Primary local test path:
 Common sync command:
 
 ```powershell
-robocopy 'c:\Users\Admin\projects\blu' 'E:\World of Warcraft\_retail_\Interface\AddOns\BLU' /MIR /XD .git .claude .claude-code-router .github /XF CLAUDE.md *.tmp *.bak
+robocopy 'C:\Users\Joey\Projects\warcraft\wow-addons\BLU' 'C:\Program Files (x86)\World of Warcraft\_retail_\Interface\AddOns\BLU' /MIR /XD .git .claude .claude-code-router .github /XF CLAUDE.md *.tmp *.bak
 ```
 
 After syncing:

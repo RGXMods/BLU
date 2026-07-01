@@ -26,19 +26,6 @@ local function GetRGX()
     return _G.RGXFramework
 end
 
--- BLU manages every sound under its own AddOn folder directly (bundled game
--- sounds via internal_sounds / user_sounds, and personal files via usersounds).
--- The shared RGXSharedMedia generic scan cannot know that, so it would re-bridge
--- BLU's own paths back in as duplicate "SharedMedia" entries — colliding with the
--- real registrations (e.g. user_custom_sounds:N). Skip anything under our folder
--- on import; only genuinely-external addon sounds should be bridged in. This
--- restores the guard the former local scanner enforced.
-local function IsOwnBluPath(path)
-    if type(path) ~= "string" then return false end
-    local lower = path:lower():gsub("/", "\\")
-    return lower:find("interface\\addons\\blu\\", 1, true) ~= nil
-end
-
 local function GetSM()
     local RGX = GetRGX()
     if RGX and type(RGX.GetSharedMedia) == "function" then
@@ -80,7 +67,7 @@ function SharedMedia:ImportFromRGX()
 
     local imported = 0
     for _, entry in ipairs(SM:List("sound")) do
-        if entry and entry.path and not IsOwnBluPath(entry.path) then
+        if entry and entry.path then
             local soundId = entry.id
             local record = {
                 name = entry.name,
@@ -176,6 +163,15 @@ function SharedMedia:Init()
     if not RGX then
         BLU:PrintDebug("[SharedMedia] RGXFramework not present — external sound bridge disabled.")
         return
+    end
+
+    -- BLU manages every sound under Interface\AddOns\BLU\ directly (bundled sounds
+    -- via internal_sounds/user_sounds, personal files via usersounds). Tell the
+    -- shared media scanner to skip our folder so its generic addon-global crawl
+    -- does not re-bridge our own paths back in as duplicate entries.
+    local SM = GetSM()
+    if SM and type(SM.ExcludeFolder) == "function" then
+        SM:ExcludeFolder("BLU")
     end
 
     -- Import whenever RGXSharedMedia finishes a scan.

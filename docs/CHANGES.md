@@ -4,6 +4,10 @@
 
 ## Current Development Release
 
+### Unreleased (on `rgxsharedmedia-migration` branch, pending in-game test)
+
+- Migrated external-sound discovery to the shared `RGXSharedMedia` framework module. `core/sounds/sharedmedia.lua` is now a ~190-line bridge that imports the framework's scan results into `BLU.SoundRegistry` (on the `RGX_SHAREDMEDIA_UPDATED` message) and re-exports the public bridge API. Removes ~640 lines of duplicated local scanning (DBM registrars, known-addon compatibility, generic addon-global scan) that now lives once in the framework.
+
 ### [v8.0.0](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/8.0.0.md) - 2026-06-30
 
 - Stable BLU v8 release for WoW Retail 12.0.7.

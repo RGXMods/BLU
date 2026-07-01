@@ -91,7 +91,7 @@ BLU is progressively migrating to RGX-Framework. The following systems now deleg
 | Dropdowns | `RGX:GetDropdowns()` | Removed (was 252 lines) |
 | Utility (DeepCopy, Throttle, Debounce, SafeCall) | `RGX:DeepCopy` / `RGX:Throttle` / `RGX:Debounce` / `RGX:QueueForCombat` | Removed |
 | Sound muting | `RGX:GetSound():MuteList(ids)` | Delegated |
-| SharedMedia scanning | `sharedmedia.lua` (local, ~830 lines after dead Kitty-API removal) | **Ready to migrate** — `RGXSharedMedia` is enabled in RGX (v2.0.0); local file can be dropped and replaced with a thin bridge that imports RGXSharedMedia scan results into `BLU.SoundRegistry` |
+| SharedMedia scanning | `sharedmedia.lua` (thin bridge, ~190 lines) | **Migrated** — all scanning lives in `RGXSharedMedia`; `sharedmedia.lua` now just imports scan results into `BLU.SoundRegistry` (on `RGX_SHAREDMEDIA_UPDATED`) and re-exports the public bridge API. Dropped ~640 lines of local scanner. |
 
 Key proxy rules:
 - `BLU.db` must never be overwritten — it is the proxy table with `__index`/`__newindex`

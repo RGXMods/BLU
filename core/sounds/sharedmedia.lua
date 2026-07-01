@@ -1,351 +1,50 @@
 --=====================================================================================
 -- BLU - sharedmedia.lua
--- Integration with LibSharedMedia and generic external sound pack bridging
+-- Thin bridge over RGXSharedMedia. All external sound scanning (DBM registrars,
+-- known-addon compatibility, generic addon-global scan) now lives in the shared
+-- framework module RGXSharedMedia. This file only imports the framework's scan
+-- results into BLU.SoundRegistry and re-exports BLU's public sound-bridge API.
+--
+-- Replaces the former 830-line local scanner. See RGX-Framework
+-- modules/sharedmedia/sharedmedia.lua for the scanning implementation.
 --=====================================================================================
 
 local addonName, _ = ...
 local BLU = _G["BLU"]
 
--- Create SharedMedia module
 local SharedMedia = {}
 BLU.Modules = BLU.Modules or {}
 BLU.Modules["sharedmedia"] = SharedMedia
 
--- Storage for external sounds
+-- Mirror of imported entries, keyed by sound id, for compat with callers that
+-- read BLU.GetExternalSounds().
 SharedMedia.externalSounds = {}
 SharedMedia.soundCategories = {}
-SharedMedia.manualBridgePaths = {}
-SharedMedia.eventsRegistered = false
-SharedMedia.pendingRescan = false
-SharedMedia._invokedDBMPackFunctions = {}
-SharedMedia.enableGenericFallbackScan = true
+SharedMedia._listenerRegistered = false
 
-local SHARED_MEDIA_ADDON_EVENT_ID = "sharedmedia_addon_loaded"
-local SHARED_MEDIA_LOGIN_EVENT_ID = "sharedmedia_player_login"
-local MAX_BRIDGED_SOUNDS_PER_SCAN = 3000
-local MAX_TABLES_PER_SOURCE_SCAN = 1500
-local MAX_SCAN_DEPTH = 8
-local IGNORED_GLOBALS = {
-    ["_G"] = true,
-    ["BLU"] = true,
-    ["math"] = true,
-    ["string"] = true,
-    ["table"] = true,
-    ["coroutine"] = true,
-    ["debug"] = true,
-    ["bit"] = true,
-    ["bit32"] = true,
-    ["utf8"] = true,
-    ["io"] = true,
-    ["os"] = true,
-    ["package"] = true,
-}
-local KNOWN_ADDON_SOUND_COMPATIBILITY = {
-    ["Prat-3.0"] = {
-        packName = "Prat",
-        sounds = {
-            { name = "Bell",    path = "Interface\\AddOns\\Prat-3.0\\sounds\\Bell.ogg" },
-            { name = "Chime",   path = "Interface\\AddOns\\Prat-3.0\\Sounds\\Chime.ogg" },
-            { name = "Heart",   path = "Interface\\AddOns\\Prat-3.0\\Sounds\\Heart.ogg" },
-            { name = "IM",      path = "Interface\\AddOns\\Prat-3.0\\Sounds\\IM.ogg" },
-            { name = "Info",    path = "Interface\\AddOns\\Prat-3.0\\Sounds\\Info.ogg" },
-            { name = "Kachink", path = "Interface\\AddOns\\Prat-3.0\\Sounds\\Kachink.ogg" },
-            { name = "Popup",   path = "Interface\\AddOns\\Prat-3.0\\Sounds\\Link.ogg" },
-            { name = "Text1",   path = "Interface\\AddOns\\Prat-3.0\\Sounds\\Text1.ogg" },
-            { name = "Text2",   path = "Interface\\AddOns\\Prat-3.0\\Sounds\\Text2.ogg" },
-            { name = "Xylo",    path = "Interface\\AddOns\\Prat-3.0\\Sounds\\Xylo.ogg" },
-        },
-    },
-    ["TradeSkillMaster"] = {
-        packName = "TradeSkillMaster",
-        sounds = {
-            { name = "Cash Register", path = "Interface\\AddOns\\TradeSkillMaster\\Media\\register.mp3" },
-        },
-    },
-}
-
-local function SortCaseInsensitive(a, b)
-    return string.lower(a) < string.lower(b)
+local function GetRGX()
+    return _G.RGXFramework
 end
 
-local function SafeUnpack(values)
-    if unpack then
-        return unpack(values)
+local function GetSM()
+    local RGX = GetRGX()
+    if RGX and type(RGX.GetSharedMedia) == "function" then
+        return RGX:GetSharedMedia()
     end
-
-    return table.unpack(values)
+    return _G.RGXSharedMedia
 end
 
-local function ForEachTableEntrySafe(tbl, callback)
-    if type(tbl) ~= "table" then
-        return false
-    end
-
-    local key = nil
-    while true do
-        local ok, nextKey, nextValue = pcall(next, tbl, key)
-        if not ok then
-            return false
-        end
-
-        if nextKey == nil then
-            return true
-        end
-
-        local continue = callback(nextKey, nextValue)
-        if continue == false then
-            return true
-        end
-
-        key = nextKey
-    end
-end
-
-local function NormalizePath(path)
-    if type(path) ~= "string" then
-        return nil
-    end
-
-    local ok, normalized = pcall(string.gsub, path, "/", "\\")
-    if not ok or type(normalized) ~= "string" then
-        return nil
-    end
-
-    return normalized
-end
-
-local function IsAudioPath(path)
-    local normalized = NormalizePath(path)
-    if not normalized then
-        return false
-    end
-
-    local lower = string.lower(normalized)
-    if not string.find(lower, "interface\\addons\\", 1, true) then
-        return false
-    end
-
-    return string.match(lower, "%.ogg$")
-        or string.match(lower, "%.mp3$")
-        or string.match(lower, "%.wav$")
-end
-
-local function ExtractAddonNameFromPath(path)
-    local normalized = NormalizePath(path)
-    if not normalized then
-        return "SharedMedia"
-    end
-
-    local addonFolder = string.match(normalized, "[Ii]nterface\\[Aa]dd[oO]ns\\([^\\]+)")
-    if addonFolder and addonFolder ~= "" then
-        return addonFolder
-    end
-
-    return "SharedMedia"
-end
-
-local function IsLooseUserCustomPath(path)
-    local normalized = NormalizePath(path)
-    if not normalized then
-        return false
-    end
-
-    local lower = string.lower(normalized)
-    if string.match(lower, "^interface\\addons\\[^\\]+%.[^\\]+$") then
-        return true
-    end
-
-    if string.match(lower, "^interface\\addons\\sounds\\[^\\]+%.[^\\]+$") then
-        return true
-    end
-
-    if string.match(lower, "^interface\\addons\\blu\\user\\[^\\]+%.[^\\]+$") then
-        return true
-    end
-
-    if string.match(lower, "^interface\\addons\\blu\\user\\sounds\\[^\\]+%.[^\\]+$") then
-        return true
-    end
-
-    return false
-end
-
-local function BuildBridgeDisplayName(addonFolder, normalizedPath, preferredDisplayName)
-    if type(preferredDisplayName) == "string" and preferredDisplayName ~= "" then
-        return preferredDisplayName
-    end
-
-    local fileName = string.match(normalizedPath, "([^\\]+)%.[^%.]+$") or normalizedPath
-    return fileName
-end
-
-local function HashString(input)
-    local hash = 5381
-    for i = 1, #input do
-        hash = (hash * 33 + string.byte(input, i)) % 4294967295
-    end
-    return hash
-end
-
-local function ShouldIgnoreGlobal(name)
-    if type(name) ~= "string" then
-        return true
-    end
-
-    if IGNORED_GLOBALS[name] then
-        return true
-    end
-
-    if string.match(name, "^C_%u")
-        or string.match(name, "^Enum")
-        or string.match(name, "^LE_")
-        or string.match(name, "^SLASH_")
-        or string.match(name, "^BINDING_")
-        or string.match(name, "^CHAT_")
-        or string.match(name, "^ERR_")
-        or string.match(name, "^ITEM_") then
-        return true
-    end
-
-    return false
-end
-
-local function IsLikelySoundContainerName(name)
-    if type(name) ~= "string" or name == "" then
-        return false
-    end
-
-    local lower = string.lower(name)
-    return string.find(lower, "sound", 1, true)
-        or string.find(lower, "media", 1, true)
-        or string.find(lower, "pack", 1, true)
-        or string.find(lower, "audio", 1, true)
-        or string.find(lower, "voice", 1, true)
-        or string.find(lower, "music", 1, true)
-        or string.find(lower, "kitty", 1, true)
-        or string.find(lower, "dbm", 1, true)
-end
-
-local function IsLikelyMediaProviderName(name)
-    if type(name) ~= "string" or name == "" then
-        return false
-    end
-
-    local lower = string.lower(name)
-    return string.find(lower, "sharedmedia", 1, true)
-        or string.find(lower, "sound", 1, true)
-        or string.find(lower, "audio", 1, true)
-        or string.find(lower, "voice", 1, true)
-        or string.find(lower, "music", 1, true)
-        or string.find(lower, "kitty", 1, true)
-        or string.find(lower, "dbm", 1, true)
-        or string.find(lower, "media", 1, true)
-        or string.find(lower, "pack", 1, true)
-end
-
-local function IsAddOnLoadedByName(addonName)
-    if type(addonName) ~= "string" or addonName == "" then
-        return false
-    end
-
-    if C_AddOns and C_AddOns.IsAddOnLoaded then
-        local ok, isLoaded = pcall(C_AddOns.IsAddOnLoaded, addonName)
-        if ok then
-            return isLoaded == true
-        end
-    elseif IsAddOnLoaded then
-        local ok, isLoaded = pcall(IsAddOnLoaded, addonName)
-        if ok then
-            return isLoaded == true
-        end
-    end
-
-    return false
-end
-
-local function AddAddonGlobalCandidate(candidateSet, candidateName)
-    if type(candidateName) ~= "string" or candidateName == "" then
-        return
-    end
-
-    candidateSet[candidateName] = true
-    candidateSet[string.gsub(candidateName, "%-", "_")] = true
-    candidateSet[string.gsub(candidateName, "[^%w_]", "_")] = true
-end
-
-local function GetAddonGlobalCandidates()
-    local candidateSet = {}
-
-    if C_AddOns and C_AddOns.GetNumAddOns and C_AddOns.GetAddOnInfo then
-        for i = 1, C_AddOns.GetNumAddOns() do
-            local info = C_AddOns.GetAddOnInfo(i)
-            if type(info) == "table" then
-                AddAddonGlobalCandidate(candidateSet, info.name)
-            elseif type(info) == "string" then
-                AddAddonGlobalCandidate(candidateSet, info)
-            end
-        end
-    elseif GetNumAddOns and GetAddOnInfo then
-        for i = 1, GetNumAddOns() do
-            local name = GetAddOnInfo(i)
-            AddAddonGlobalCandidate(candidateSet, name)
-        end
-    end
-
-    local candidates = {}
-    for name in pairs(candidateSet) do
-        local value = _G[name]
-        if type(value) == "table" then
-            table.insert(candidates, value)
-        end
-    end
-
-    return candidates
-end
-
-local function GetAddOnCount()
-    if C_AddOns and C_AddOns.GetNumAddOns then
-        return C_AddOns.GetNumAddOns()
-    end
-
-    if GetNumAddOns then
-        return GetNumAddOns()
-    end
-
-    return 0
-end
-
-local function GetAddOnMetadataValue(index, key)
-    if C_AddOns and C_AddOns.GetAddOnMetadata then
-        local ok, value = pcall(C_AddOns.GetAddOnMetadata, index, key)
-        if ok then
-            return value
-        end
-    elseif GetAddOnMetadata then
-        local ok, value = pcall(GetAddOnMetadata, index, key)
-        if ok then
-            return value
-        end
-    end
-
-    return nil
-end
-
-function SharedMedia:TryBindLSM()
-    -- BLU uses its own internal bridge scanner; no external LibStub/LibSharedMedia dependency.
-    return false
-end
-
-function SharedMedia:ClearExternalFromRegistry()
-    BLU:PrintDebug("[SharedMedia] ClearExternalFromRegistry called")
-    if not BLU.SoundRegistry or not BLU.SoundRegistry.GetAllSounds or not BLU.SoundRegistry.UnregisterSound then
+-- Remove all sounds previously imported from the shared media registry so a
+-- re-import starts clean. Mirrors the old ClearExternalFromRegistry behavior.
+function SharedMedia:ClearImported()
+    if not BLU.SoundRegistry or type(BLU.SoundRegistry.GetAllSounds) ~= "function" then
         return
     end
 
     local removeIds = {}
     for soundId, soundData in pairs(BLU.SoundRegistry:GetAllSounds()) do
         if soundData and soundData.source == "SharedMedia" then
-            table.insert(removeIds, soundId)
+            removeIds[#removeIds + 1] = soundId
         end
     end
 
@@ -354,440 +53,101 @@ function SharedMedia:ClearExternalFromRegistry()
     end
 end
 
-function SharedMedia:QueueRescan(delaySeconds)
-    BLU:PrintDebug("[SharedMedia] QueueRescan called with delay " .. tostring(delaySeconds or 0))
-    if self.pendingRescan then
-        BLU:PrintDebug("[SharedMedia] Rescan already pending")
+-- Pull the current sound entries from RGXSharedMedia and register them into
+-- BLU.SoundRegistry as source="SharedMedia" bridge sounds.
+function SharedMedia:ImportFromRGX()
+    local SM = GetSM()
+    if not SM or type(SM.List) ~= "function" then
         return
     end
 
-    self.pendingRescan = true
+    wipe(self.externalSounds)
+    wipe(self.soundCategories)
+    self:ClearImported()
 
-    local function runRescan()
-        self.pendingRescan = false
+    local imported = 0
+    for _, entry in ipairs(SM:List("sound")) do
+        if entry and entry.path then
+            local soundId = entry.id
+            local record = {
+                name = entry.name,
+                file = entry.path,
+                category = "all",
+                source = "SharedMedia",
+                packId = entry.packId,
+                packName = entry.packName,
+                isBridge = true,
+            }
 
-        local ok, err = pcall(function()
-            self:ScanExternalSounds()
-        end)
+            if BLU.SoundRegistry and type(BLU.SoundRegistry.RegisterSound) == "function" then
+                BLU.SoundRegistry:RegisterSound(soundId, record)
+            end
 
-        if not ok then
-            BLU:PrintError("SharedMedia rescan failed: " .. tostring(err))
+            self.externalSounds[soundId] = record
+            imported = imported + 1
         end
     end
 
-    if C_Timer and C_Timer.After then
-        C_Timer.After(delaySeconds or 0, runRescan)
-    else
-        runRescan()
-    end
-end
-
-function SharedMedia:NotifyExternalSoundsUpdated()
-    BLU:PrintDebug("[SharedMedia] NotifyExternalSoundsUpdated called")
+    -- Invalidate UI cache and refresh the Sounds panel if it is open.
     if BLU.SoundRegistry then
         BLU.SoundRegistry.uiSoundCache = {}
     end
-
     if type(BLU.RefreshSoundPackUI) == "function" then
         local ok, err = pcall(BLU.RefreshSoundPackUI)
         if not ok then
-            BLU:PrintDebug("Failed to refresh Sounds panel after media update: " .. tostring(err))
+            BLU:PrintDebug("Failed to refresh Sounds panel after media import: " .. tostring(err))
         end
+    end
+
+    BLU:PrintDebug(string.format("[SharedMedia] Imported %d sound(s) from RGXSharedMedia.", imported))
+end
+
+-- Ask RGXSharedMedia to (re)scan. Its scan fires RGX_SHAREDMEDIA_UPDATED, which
+-- triggers ImportFromRGX via the message listener.
+function SharedMedia:QueueRescan(delay)
+    local SM = GetSM()
+    if SM and type(SM.QueueScan) == "function" then
+        SM:QueueScan(delay or 0, false)
     end
 end
 
-function SharedMedia:RegisterBridgePath(path, preferredPackName, preferredDisplayName)
-    BLU:PrintDebug("[SharedMedia] RegisterBridgePath called for '" .. tostring(path) .. "'")
-    if not IsAudioPath(path) then
-        return false
-    end
-
-    local normalizedPath = NormalizePath(path)
-    local lowerPath = string.lower(normalizedPath)
-
-    if string.find(lowerPath, "interface\\addons\\blu\\", 1, true) then
-        return false
-    end
-
-    if IsLooseUserCustomPath(normalizedPath) then
-        BLU:PrintDebug("[SharedMedia] Skipping loose user-custom path '" .. tostring(normalizedPath) .. "'")
-        return false
-    end
-
-    self._registeredBridgePaths = self._registeredBridgePaths or {}
-    if self._registeredBridgePaths[lowerPath] then
-        return false
-    end
-
-    local packName = preferredPackName or ExtractAddonNameFromPath(normalizedPath)
-    local lowerPack = string.lower(packName or "")
-    if lowerPack == "sharedmedia" or lowerPack == "blizzard" then
-        return false
-    end
-
-    local displayName = BuildBridgeDisplayName(packName, normalizedPath, preferredDisplayName)
-    local soundId = string.format("bridge:%s:%08x", string.gsub(lowerPack, "[^%w]", "_"), HashString(lowerPath))
-
-    if BLU.SoundRegistry and BLU.SoundRegistry.RegisterSound then
-        BLU.SoundRegistry:RegisterSound(soundId, {
-            name = displayName,
-            file = normalizedPath,
-            category = "all",
-            source = "SharedMedia",
-            packId = packName,
-            packName = packName,
-            isBridge = true,
-        })
-    end
-
-    self.externalSounds[soundId] = {
-        name = displayName,
-        file = normalizedPath,
-        packId = packName,
-        packName = packName,
-        isBridge = true,
-    }
-
-    self._registeredBridgePaths[lowerPath] = true
-    BLU:PrintDebug("[SharedMedia] Registered bridge sound '" .. tostring(soundId) .. "' from pack '" .. tostring(packName) .. "'")
-    return true
-end
-
-function SharedMedia:RegisterKnownAddonCompatibilitySounds()
-    BLU:PrintDebug("[SharedMedia] RegisterKnownAddonCompatibilitySounds called")
-    local registered = 0
-
-    for addonName, compatData in pairs(KNOWN_ADDON_SOUND_COMPATIBILITY) do
-        if IsAddOnLoadedByName(addonName) and type(compatData) == "table" and type(compatData.sounds) == "table" then
-            BLU:PrintDebug("[SharedMedia] Applying known compatibility bridge for '" .. tostring(addonName) .. "'")
-            for _, soundData in ipairs(compatData.sounds) do
-                if type(soundData) == "table" and type(soundData.path) == "string" then
-                    if self:RegisterBridgePath(soundData.path, compatData.packName or addonName, soundData.name) then
-                        registered = registered + 1
-                    end
-                end
-            end
-        end
-    end
-
-    return registered
-end
-
-local function CollectPathsFromValue(value, foundPaths, visitedTables, scanState, depth)
-    if scanState.totalFound >= MAX_BRIDGED_SOUNDS_PER_SCAN then
-        return
-    end
-
-    local valueType = type(value)
-
-    if valueType == "string" then
-        if IsAudioPath(value) then
-            local normalizedPath = NormalizePath(value)
-            local lowerPath = string.lower(normalizedPath)
-            if not foundPaths[lowerPath] then
-                foundPaths[lowerPath] = normalizedPath
-                scanState.totalFound = scanState.totalFound + 1
-            end
-        end
-        return
-    end
-
-    if valueType ~= "table" then
-        return
-    end
-
-    if depth > MAX_SCAN_DEPTH then
-        return
-    end
-
-    if visitedTables[value] then
-        return
-    end
-
-    if scanState.sourceTableCount >= MAX_TABLES_PER_SOURCE_SCAN then
-        return
-    end
-
-    visitedTables[value] = true
-    scanState.sourceTableCount = scanState.sourceTableCount + 1
-
-    local iterated = ForEachTableEntrySafe(value, function(key, nestedValue)
-        if type(key) == "string" and IsAudioPath(key) then
-            local normalizedPath = NormalizePath(key)
-            local lowerPath = string.lower(normalizedPath)
-            if not foundPaths[lowerPath] then
-                foundPaths[lowerPath] = normalizedPath
-                scanState.totalFound = scanState.totalFound + 1
-            end
-        end
-
-        CollectPathsFromValue(nestedValue, foundPaths, visitedTables, scanState, depth + 1)
-
-        if scanState.totalFound >= MAX_BRIDGED_SOUNDS_PER_SCAN then
-            return false
-        end
-    end)
-
-    if not iterated then
-        scanState.forbiddenTables = (scanState.forbiddenTables or 0) + 1
-    end
-end
-
-function SharedMedia:ScanGenericBridgeSources()
-    BLU:PrintDebug("[SharedMedia] ScanGenericBridgeSources called")
-    local foundPaths = {}
-    local scanState = { totalFound = 0, sourceTableCount = 0 }
-
-    -- Scan DBM-specific registries when present.
-    if type(_G.DBM) == "table" then
-        local dbm = _G.DBM
-        local dbmLists = {"Victory", "Defeat", "Music", "DungeonMusic", "BattleMusic"}
-        for _, listName in ipairs(dbmLists) do
-            if type(dbm[listName]) == "table" then
-                scanState.sourceTableCount = 0
-                CollectPathsFromValue(dbm[listName], foundPaths, {}, scanState, 0)
-            end
-
-            if scanState.totalFound >= MAX_BRIDGED_SOUNDS_PER_SCAN then
-                break
-            end
-        end
-    end
-
-    -- Scan loaded addon globals derived from addon names. This keeps the
-    -- search focused on addon-owned root tables without broad _G crawling.
-    if scanState.totalFound < MAX_BRIDGED_SOUNDS_PER_SCAN then
-        local addonCandidates = GetAddonGlobalCandidates()
-        for _, candidateTable in ipairs(addonCandidates) do
-            if type(candidateTable) == "table" then
-                scanState.sourceTableCount = 0
-                CollectPathsFromValue(candidateTable, foundPaths, {}, scanState, 0)
-
-                if scanState.totalFound >= MAX_BRIDGED_SOUNDS_PER_SCAN then
-                    break
-                end
-            end
-        end
-    end
-
-    -- Conservative fallback: only scan globals whose names strongly suggest
-    -- they are media/sound pack containers. Broad _G crawling can hit WoW's
-    -- script execution limit on large addon stacks, so keep this disabled
-    -- for normal startup unless explicitly enabled.
-    if self.enableGenericFallbackScan and scanState.totalFound < MAX_BRIDGED_SOUNDS_PER_SCAN then
-        ForEachTableEntrySafe(_G, function(globalName, globalValue)
-            if not ShouldIgnoreGlobal(globalName)
-                and IsLikelySoundContainerName(globalName)
-                and type(globalValue) == "table" then
-                scanState.sourceTableCount = 0
-                CollectPathsFromValue(globalValue, foundPaths, {}, scanState, 0)
-
-                if scanState.totalFound >= MAX_BRIDGED_SOUNDS_PER_SCAN then
-                    return false
-                end
-            end
-        end)
-    end
-
-    local registeredBridgeCount = 0
-    for _, normalizedPath in pairs(foundPaths) do
-        if self:RegisterBridgePath(normalizedPath) then
-            registeredBridgeCount = registeredBridgeCount + 1
-        end
-    end
-
-    return registeredBridgeCount
-end
-
-function SharedMedia:ApplyManualBridgePaths()
-    BLU:PrintDebug("[SharedMedia] ApplyManualBridgePaths called")
-    local registered = 0
-
-    for _, entry in pairs(self.manualBridgePaths) do
-        if type(entry) == "table" and type(entry.path) == "string" then
-            if self:RegisterBridgePath(entry.path, entry.packName) then
-                registered = registered + 1
-            end
-        end
-    end
-
-    return registered
-end
-
-function SharedMedia:RegisterExternalSoundEntries(packName, soundEntries, persistManual)
-    BLU:PrintDebug("[SharedMedia] RegisterExternalSoundEntries called for pack '" .. tostring(packName) .. "'")
-    if type(soundEntries) ~= "table" then
-        return 0
-    end
-
-    local registered = 0
-
-    ForEachTableEntrySafe(soundEntries, function(key, value)
-        local candidatePath = nil
-
-        if type(value) == "string" then
-            candidatePath = value
-        elseif type(value) == "table" then
-            candidatePath = value.path or value.file or value.sound
-        elseif type(key) == "string" and type(value) == "boolean" and value then
-            candidatePath = key
-        end
-
-        if type(candidatePath) == "string" and IsAudioPath(candidatePath) then
-            local normalizedPath = NormalizePath(candidatePath)
-            if normalizedPath then
-                local lowerPath = string.lower(normalizedPath)
-                if persistManual then
-                    self.manualBridgePaths[lowerPath] = {
-                        path = normalizedPath,
-                        packName = packName,
-                    }
-                end
-
-                if self:RegisterBridgePath(normalizedPath, packName, value.name) then
-                    registered = registered + 1
-                end
-            end
-        end
-    end)
-
-    return registered
-end
-
+-- Public bridge API for non-LSM addons: forward to RGXSharedMedia's pack
+-- registration, then re-import so the entries appear in BLU immediately.
 function SharedMedia:RegisterExternalSoundPack(packName, soundEntries)
-    BLU:PrintDebug("[SharedMedia] RegisterExternalSoundPack called for pack '" .. tostring(packName) .. "'")
-    return self:RegisterExternalSoundEntries(packName, soundEntries, true)
-end
-
-function SharedMedia:InvokeDBMPackRegistrars()
-    BLU:PrintDebug("[SharedMedia] InvokeDBMPackRegistrars called")
-    if type(_G.DBM) ~= "table" then
+    local SM = GetSM()
+    if not SM or type(SM.RegisterSoundPack) ~= "function" then
         return 0
     end
 
-    local metadataKeys = {
-        "X-DBM-CountPack-GlobalName",
-        "X-DBM-VictoryPack-GlobalName",
-        "X-DBM-DefeatPack-GlobalName",
-        "X-DBM-MusicPack-GlobalName",
-    }
-
-    local invoked = 0
-    local addonCount = GetAddOnCount()
-    for index = 1, addonCount do
-        for _, metadataKey in ipairs(metadataKeys) do
-            local globalFunctionName = GetAddOnMetadataValue(index, metadataKey)
-            if type(globalFunctionName) == "string" and globalFunctionName ~= "" and not self._invokedDBMPackFunctions[globalFunctionName] then
-                local insertFunction = _G[globalFunctionName]
-                if type(insertFunction) == "function" then
-                    local ok = pcall(insertFunction)
-                    if ok then
-                        self._invokedDBMPackFunctions[globalFunctionName] = true
-                        invoked = invoked + 1
-                    end
-                end
-            end
-        end
-    end
-
-    return invoked
-end
-
-function SharedMedia:Init()
-    BLU:PrintDebug("SharedMedia:Init() called.")
-
-    if not self.eventsRegistered then
-        BLU:RegisterEvent("ADDON_LOADED", function(event, loadedAddonName)
-            self:OnAddonLoaded(loadedAddonName)
-        end, SHARED_MEDIA_ADDON_EVENT_ID)
-
-        BLU:RegisterEvent("PLAYER_LOGIN", function()
-            self:OnPlayerLogin()
-        end, SHARED_MEDIA_LOGIN_EVENT_ID)
-
-        self.eventsRegistered = true
-    end
-
-    self:ScanExternalSounds()
-
-    BLU.GetExternalSounds = function()
-        return self:GetExternalSounds()
-    end
-
-    BLU.GetSoundCategories = function()
-        return self:GetSoundCategories()
-    end
-
-    BLU.PlayExternalSound = function(_, name)
-        return self:PlayExternalSound(name)
-    end
-
-    BLU.RefreshExternalSounds = function()
-        self:QueueRescan(0)
-    end
-
-    -- Public bridge API for non-LSM addons.
-    BLU.RegisterExternalSoundPack = function(_, packName, soundEntries)
-        return self:RegisterExternalSoundPack(packName, soundEntries)
-    end
-
-    BLU:PrintDebug("SharedMedia integration initialized")
-end
-
-function SharedMedia:ScanExternalSounds()
-    BLU:PrintDebug("[SharedMedia] ScanExternalSounds called")
-    wipe(self.externalSounds)
-    wipe(self.soundCategories)
-    self._registeredBridgePaths = {}
-    self:ClearExternalFromRegistry()
-
-    local dbmRegistrarCount = self:InvokeDBMPackRegistrars()
-    local compatibilityBridgeCount = self:RegisterKnownAddonCompatibilitySounds()
-    local bridgeCount = self:ScanGenericBridgeSources()
-    local manualBridgeCount = self:ApplyManualBridgePaths()
-    self:NotifyExternalSoundsUpdated()
-
-    BLU:PrintDebug(string.format(
-        "SharedMedia scan complete: %d DBM registrar hooks, %d compatibility bridge sounds, %d generic bridged sounds, %d manual bridge sounds.",
-        dbmRegistrarCount,
-        compatibilityBridgeCount,
-        bridgeCount,
-        manualBridgeCount
-    ))
+    local registered = SM:RegisterSoundPack(packName or "External", soundEntries)
+    self:ImportFromRGX()
+    return registered
 end
 
 function SharedMedia:GetExternalSounds()
-    BLU:PrintDebug("[SharedMedia] GetExternalSounds called")
     return self.externalSounds
 end
 
 function SharedMedia:GetSoundCategories()
-    BLU:PrintDebug("[SharedMedia] GetSoundCategories called")
     return self.soundCategories
 end
 
 function SharedMedia:PlayExternalSound(name)
-    BLU:PrintDebug("[SharedMedia] PlayExternalSound called for '" .. tostring(name) .. "'")
-
-    -- Try registry lookup first (covers both "external:name" and bridge IDs)
+    -- Preserves the original bridge behavior exactly: try the "external:<name>"
+    -- registry id first, then the imported mirror keyed by id.
     if BLU.SoundRegistry then
         local soundId = "external:" .. tostring(name)
         local sound = BLU.SoundRegistry.sounds and BLU.SoundRegistry.sounds[soundId]
         if sound and sound.file then
-            local willPlay = PlaySoundFile(sound.file, "Master")
-            if willPlay then
-                BLU:PrintDebug("[SharedMedia] Played external sound from registry: " .. soundId)
+            if PlaySoundFile(sound.file, "Master") then
                 return true
             end
         end
     end
 
-    -- Fallback: check externalSounds table populated by bridge scanner
     local entry = self.externalSounds[name]
     if entry and entry.file then
-        local willPlay = PlaySoundFile(entry.file, "Master")
-        if willPlay then
-            BLU:PrintDebug("[SharedMedia] Played external sound from bridge table: " .. tostring(name))
+        if PlaySoundFile(entry.file, "Master") then
             return true
         end
     end
@@ -796,35 +156,36 @@ function SharedMedia:PlayExternalSound(name)
     return false
 end
 
-function SharedMedia:OnAddonLoaded(loadedAddonName)
-    BLU:PrintDebug("[SharedMedia] OnAddonLoaded called for '" .. tostring(loadedAddonName) .. "'")
-    if not IsLikelyMediaProviderName(loadedAddonName) then
+function SharedMedia:Init()
+    BLU:PrintDebug("SharedMedia bridge:Init() called.")
+
+    local RGX = GetRGX()
+    if not RGX then
+        BLU:PrintDebug("[SharedMedia] RGXFramework not present — external sound bridge disabled.")
         return
     end
 
+    -- Import whenever RGXSharedMedia finishes a scan.
+    if not self._listenerRegistered and type(RGX.RegisterMessage) == "function" then
+        RGX:RegisterMessage("RGX_SHAREDMEDIA_UPDATED", function()
+            self:ImportFromRGX()
+        end, "BLU_SharedMedia_Import")
+        self._listenerRegistered = true
+    end
+
+    -- Public API forwarded to this bridge.
+    BLU.GetExternalSounds       = function() return self:GetExternalSounds() end
+    BLU.GetSoundCategories      = function() return self:GetSoundCategories() end
+    BLU.PlayExternalSound       = function(_, name) return self:PlayExternalSound(name) end
+    BLU.RefreshExternalSounds   = function() self:QueueRescan(0) end
+    BLU.RegisterExternalSoundPack = function(_, packName, soundEntries)
+        return self:RegisterExternalSoundPack(packName, soundEntries)
+    end
+
+    -- Import whatever RGXSharedMedia already discovered, then nudge a rescan so
+    -- late-loading providers are picked up (the scan fires the import again).
+    self:ImportFromRGX()
     self:QueueRescan(0.25)
-end
 
-function SharedMedia:OnPlayerLogin()
-    BLU:PrintDebug("[SharedMedia] OnPlayerLogin called")
-    self:QueueRescan(1.0)
-end
-
-function SharedMedia:OnMediaRegistered(event, mediatype, key)
-    BLU:PrintDebug("[SharedMedia] OnMediaRegistered called for mediatype='" .. tostring(mediatype) .. "', key='" .. tostring(key) .. "'")
-    if mediatype ~= "sound" then
-        return
-    end
-
-    BLU:PrintDebug("New shared media sound registered: " .. tostring(key))
-    self:QueueRescan(0.1)
-end
-
-function SharedMedia:OnMediaSetGlobal(event, mediatype, key)
-    BLU:PrintDebug("[SharedMedia] OnMediaSetGlobal called for mediatype='" .. tostring(mediatype) .. "', key='" .. tostring(key) .. "'")
-    if mediatype ~= "sound" then
-        return
-    end
-
-    self:QueueRescan(0.1)
+    BLU:PrintDebug("SharedMedia bridge initialized")
 end

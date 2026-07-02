@@ -53,8 +53,20 @@ function SharedMedia:ClearImported()
     end
 end
 
+local function NormalizeLowerPath(path)
+    if type(path) ~= "string" then return nil end
+    return path:lower():gsub("/", "\\")
+end
+
 -- Pull the current sound entries from RGXSharedMedia and register them into
 -- BLU.SoundRegistry as source="SharedMedia" bridge sounds.
+--
+-- Dedup rule: the framework registry intentionally scans ALL folders —
+-- including BLU's own — so that other consumers can see BLU's media too.
+-- BLU already registers its bundled and user-custom sounds directly, so on
+-- import we skip any entry whose file path is already present in
+-- BLU.SoundRegistry under a non-SharedMedia source. This keeps BLU free of
+-- duplicates without hiding anything from the shared registry.
 function SharedMedia:ImportFromRGX()
     local SM = GetSM()
     if not SM or type(SM.List) ~= "function" then
@@ -65,9 +77,19 @@ function SharedMedia:ImportFromRGX()
     wipe(self.soundCategories)
     self:ClearImported()
 
+    -- Snapshot paths BLU already owns (internal, user custom, packs) AFTER
+    -- clearing prior imports, so stale bridge entries never block a re-import.
+    local ownedPaths = {}
+    if BLU.SoundRegistry and type(BLU.SoundRegistry.GetAllSounds) == "function" then
+        for _, soundData in pairs(BLU.SoundRegistry:GetAllSounds()) do
+            local p = NormalizeLowerPath(soundData and soundData.file)
+            if p then ownedPaths[p] = true end
+        end
+    end
+
     local imported = 0
     for _, entry in ipairs(SM:List("sound")) do
-        if entry and entry.path then
+        if entry and entry.path and not ownedPaths[NormalizeLowerPath(entry.path)] then
             local soundId = entry.id
             local record = {
                 name = entry.name,
@@ -165,14 +187,9 @@ function SharedMedia:Init()
         return
     end
 
-    -- BLU manages every sound under Interface\AddOns\BLU\ directly (bundled sounds
-    -- via internal_sounds/user_sounds, personal files via usersounds). Tell the
-    -- shared media scanner to skip our folder so its generic addon-global crawl
-    -- does not re-bridge our own paths back in as duplicate entries.
-    local SM = GetSM()
-    if SM and type(SM.ExcludeFolder) == "function" then
-        SM:ExcludeFolder("BLU")
-    end
+    -- Note: we deliberately do NOT exclude BLU's folder from the shared scan.
+    -- The framework registry should carry BLU's media so other consumers can
+    -- use it; ImportFromRGX dedups against paths BLU already registered.
 
     -- Import whenever RGXSharedMedia finishes a scan.
     if not self._listenerRegistered and type(RGX.RegisterMessage) == "function" then

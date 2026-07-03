@@ -4,6 +4,10 @@
 
 ## Current Development Release
 
+### [v8.0.3](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/8.0.3.md) - 2026-07-03
+
+- **New combat trigger: Lust / Heroism Sound.** Plays a dedicated sound (configurable in the Combat tab, separate from the generic proc trigger) when Bloodlust, Heroism, Time Warp, Ancient Hysteria, or Primal Rage lands on you — matched by spell ID via the `UNIT_AURA` event's `updateInfo.addedAuras` payload, not name (locale-independent).
+
 ### [v8.0.2](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/8.0.2.md) - 2026-07-03
 
 - Fixed `LUA_WARNING: Error loading core/sounds/user_sounds_generated.lua` — the file was gitignored and never shipped in any package, so every player hit this on login.

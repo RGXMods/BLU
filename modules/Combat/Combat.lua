@@ -15,6 +15,8 @@
 --
 -- Panel page 2 triggers:
 --   proc_trigger    -> UNIT_AURA on player (aura gained — generic)
+--   lust_sound      -> UNIT_AURA on player, Bloodlust/Heroism/Time Warp/
+--                       Ancient Hysteria/Primal Rage specifically gained
 --   critical_hit    -> COMBAT_LOG SPELL_DAMAGE/SWING_DAMAGE + crit, source = player
 --   critical_heal   -> COMBAT_LOG SPELL_HEAL + crit, source = player
 --   resource_capped -> UNIT_POWER_UPDATE player at 100%
@@ -41,6 +43,16 @@ local PER_TRIGGER_COOLDOWN = 1.0   -- seconds between same trigger fires
 local LOW_HEALTH_PCT       = 0.35
 local EXECUTE_PCT          = 0.20
 local RESOURCE_LOW_PCT     = 0.20
+
+-- Spell IDs for the current bloodlust-class raid buffs. Matched by ID
+-- (locale-independent) rather than name.
+local LUST_SPELL_IDS = {
+    [2825]   = true, -- Bloodlust (Shaman)
+    [32182]  = true, -- Heroism (Shaman)
+    [80353]  = true, -- Time Warp (Mage)
+    [90355]  = true, -- Ancient Hysteria (Hunter exotic pet ability)
+    [264667] = true, -- Primal Rage (Evoker)
+}
 
 CombatModule.lastSoundAt          = {}
 CombatModule.inCombat             = false
@@ -234,9 +246,18 @@ function CombatModule:OnCombatLog()
     end
 end
 
-function CombatModule:OnUnitAura(_, unit)
+function CombatModule:OnUnitAura(_, unit, updateInfo)
     if unit ~= "player" then return end
     self:PlayTrigger("proc_trigger")
+
+    if updateInfo and updateInfo.addedAuras then
+        for _, aura in ipairs(updateInfo.addedAuras) do
+            if aura.spellId and LUST_SPELL_IDS[aura.spellId] then
+                self:PlayTrigger("lust_sound")
+                break
+            end
+        end
+    end
 end
 
 function CombatModule:OnEncounterEnd(_, encounterID, encounterName, difficultyID, groupSize, success)

@@ -163,7 +163,11 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 	end)
 	volButton:EnableMouseWheel(true)
 
-	applyVolume(getVolume())
+	-- Real initial show/position/restore happens once via LayoutControls(),
+	-- called after real anchors exist (see the bottom of this function).
+	-- An early applyVolume() here would run before volumeControl has any
+	-- SetPoint, then get hidden immediately, so its OnUpdate retry can never
+	-- tick — dead work.
 	volumeControl:Hide()
 
 	local function isBluVolumeSelection(selectionValue)
@@ -438,12 +442,18 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 				previewButton:RegisterForClicks("LeftButtonUp")
 				previewButton:SetScript("OnClick", function(btn)
 					if btn.soundId and BLU.SoundRegistry and BLU.SoundRegistry.PreviewSound then
-						local playing, status = BLU.SoundRegistry:PreviewSound(btn.soundId, {
+						BLU.SoundRegistry:PreviewSound(btn.soundId, {
 							categoryOverride = actualEventType,
-							previewKey = "soundpanel:inline:" .. tostring(actualEventType) .. ":" .. tostring(btn.soundId),
+							previewKey = btn.previewKey,
 						})
-						if btn.label then
-							btn.label:SetText((playing and status == "playing") and "Stop" or "Play")
+						-- Read the button's own label state back from the single
+						-- authoritative source (IsPreviewPlaying) rather than the
+						-- PreviewSound return tuple, matching every other place in
+						-- this file that displays Play/Stop state. This is what
+						-- made the label lag a click behind actual playback.
+						if btn.label and BLU.SoundRegistry.IsPreviewPlaying then
+							local isPlaying = BLU.SoundRegistry:IsPreviewPlaying(btn.soundId, btn.previewKey)
+							btn.label:SetText(isPlaying and "Stop" or "Play")
 						end
 						if dropdown._refreshInlinePreviewButtons then
 							dropdown:_refreshInlinePreviewButtons()

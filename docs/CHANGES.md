@@ -4,9 +4,12 @@
 
 ## Current Development Release
 
-### Unreleased (on `rgxsharedmedia-migration` branch, pending in-game test)
+### [v8.0.2](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/8.0.2.md) - 2026-07-03
 
-- Migrated external-sound discovery to the shared `RGXSharedMedia` framework module. `core/sounds/sharedmedia.lua` is now a ~190-line bridge that imports the framework's scan results into `BLU.SoundRegistry` (on the `RGX_SHAREDMEDIA_UPDATED` message) and re-exports the public bridge API. Removes ~640 lines of duplicated local scanning (DBM registrars, known-addon compatibility, generic addon-global scan) that now lives once in the framework.
+- Fixed `LUA_WARNING: Error loading core/sounds/user_sounds_generated.lua` — the file was gitignored and never shipped in any package, so every player hit this on login.
+- Fixed the Channel Volume slider not reliably restoring its visual position and looking inconsistent with the rest of the options UI — migrated to `RGX-Framework`'s `UI:CreateSlider`.
+- Fixed nested-dropdown Play buttons not flipping to Stop on the first click (playback was correct; only the label lagged).
+- Migrated external-sound discovery to the shared `RGXSharedMedia` framework module. `core/sounds/sharedmedia.lua` is now a ~217-line bridge that imports the framework's scan results into `BLU.SoundRegistry` and re-exports the public bridge API, with dedup-on-import so the shared registry can scan every addon folder (including BLU's own) without duplicating entries. Removes ~640 lines of duplicated local scanning.
 
 ### [v8.0.0](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/8.0.0.md) - 2026-06-30
 

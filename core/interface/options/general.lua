@@ -144,32 +144,42 @@ function BLU.CreateGeneralPanel(panel)
     end)
     soundChannelDropdown:SetScript("OnLeave", GameTooltip_Hide)
 
-    local volumeLabel = soundSection.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    volumeLabel:SetPoint("TOPLEFT", 8, -120)
-    volumeLabel:SetText("Channel Volume")
+    -- Proxy so the framework slider's storage[key] read/write routes straight
+    -- to the WoW CVar behind the selected channel, instead of a flat db field.
+    local volumeStorage = setmetatable({}, {
+        __index = function(_, k)
+            if k == "volume" then return GetChannelVolume(profile) end
+        end,
+        __newindex = function(_, k, v)
+            if k == "volume" then SetChannelVolume(profile, v) end
+        end,
+    })
 
-    local volumeValueText = soundSection.content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    volumeValueText:SetPoint("LEFT", volumeLabel, "RIGHT", 8, 0)
-    volumeValueText:SetTextColor(0.72, 0.78, 0.86)
-
-    local volumeSlider = BLU.Modules.widgets:CreateSlider(soundSection.content, "", 0, 100, 1, "Adjusts the selected WoW sound channel volume. This affects BLU because BLU plays through that channel.")
-    volumeSlider:SetPoint("TOPLEFT", volumeLabel, "BOTTOMLEFT", 0, -10)
-    volumeSlider:SetPoint("RIGHT", soundSection.content, "RIGHT", -12, 0)
-    volumeSlider.Low:SetText("")
-    volumeSlider.High:SetText("")
-    volumeSlider.value:SetPoint("TOP", volumeSlider, "BOTTOM", 0, -200)
+    local RGX = _G.RGXFramework
+    local volumeSlider = RGX:GetUI():CreateSlider(soundSection.content, {
+        key = "volume",
+        label = "Channel Volume",
+        storage = volumeStorage,
+        min = 0,
+        max = 100,
+        step = 1,
+        default = 100,
+        suffix = "%",
+        width = 260,
+    })
+    volumeSlider:SetPoint("TOPLEFT", 8, -120)
+    volumeSlider:EnableMouse(true)
+    volumeSlider:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:SetText("Channel Volume", 1, 1, 1)
+        GameTooltip:AddLine("Adjusts the selected WoW sound channel volume. This affects BLU because BLU plays through that channel.", 0.82, 0.82, 0.82, true)
+        GameTooltip:Show()
+    end)
+    volumeSlider:SetScript("OnLeave", GameTooltip_Hide)
 
     local function RefreshVolumeSlider()
-        local vol = GetChannelVolume(profile)
-        volumeSlider:SetValue(vol)
-        volumeValueText:SetText(vol .. "%")
+        volumeSlider.SetValue(GetChannelVolume(profile))
     end
-
-    volumeSlider:SetScript("OnValueChanged", function(self, value)
-        value = math.floor(value)
-        SetChannelVolume(profile, value)
-        volumeValueText:SetText(value .. "%")
-    end)
 
     local function SetSelectedChannel(channel)
         profile.soundChannel = channel or "Master"

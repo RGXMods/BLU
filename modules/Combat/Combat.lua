@@ -57,6 +57,7 @@ local LUST_SPELL_IDS = {
 CombatModule.lastSoundAt          = {}
 CombatModule.inCombat             = false
 CombatModule.prevHealthPct        = {}  -- ["player"|"target"] = last pct that triggered low/execute
+CombatModule.hadLust              = false -- edge-detect Bloodlust-class buffs on player
 CombatModule.savedAmbienceEnabled = nil
 CombatModule.legacyRegistered     = false
 
@@ -246,17 +247,59 @@ function CombatModule:OnCombatLog()
     end
 end
 
+-- Player lust presence via C_UnitAuras.GetPlayerAuraBySpellID (AllowedWhenTainted).
+-- Avoids UNIT_AURA updateInfo.addedAuras, which is ConditionalSecretContents and
+-- errors under addon taint: "ipairs (table expected, got secret)".
+local function PlayerHasLustAura()
+    if not C_UnitAuras or type(C_UnitAuras.GetPlayerAuraBySpellID) ~= "function" then
+        return false
+    end
+    for spellId in pairs(LUST_SPELL_IDS) do
+        local ok, aura = pcall(C_UnitAuras.GetPlayerAuraBySpellID, spellId)
+        if ok and aura then
+            return true
+        end
+    end
+    return false
+end
+
 function CombatModule:OnUnitAura(_, unit, updateInfo)
     if unit ~= "player" then return end
     self:PlayTrigger("proc_trigger")
 
-    if updateInfo and updateInfo.addedAuras then
-        for _, aura in ipairs(updateInfo.addedAuras) do
-            if aura.spellId and LUST_SPELL_IDS[aura.spellId] then
-                self:PlayTrigger("lust_sound")
+    -- Prefer incremental addedAuras when the table is accessible; otherwise
+    -- edge-detect via the player aura fast path (never secret for self).
+    local lustGained = false
+    local added = updateInfo and updateInfo.addedAuras
+    local addedReadable = added ~= nil
+        and type(added) == "table"
+        and (type(canaccesstable) ~= "function" or canaccesstable(added))
+        and (type(issecrettable) ~= "function" or not issecrettable(added))
+
+    if addedReadable then
+        for _, aura in ipairs(added) do
+            local spellId = aura and aura.spellId
+            if type(spellId) == "number" and LUST_SPELL_IDS[spellId] then
+                lustGained = true
                 break
             end
         end
+        -- Keep hadLust in sync so a later secret update does not re-fire.
+        if lustGained then
+            self.hadLust = true
+        elseif updateInfo and updateInfo.removedAuraInstanceIDs then
+            self.hadLust = PlayerHasLustAura()
+        end
+    else
+        local hasLust = PlayerHasLustAura()
+        if hasLust and not self.hadLust then
+            lustGained = true
+        end
+        self.hadLust = hasLust
+    end
+
+    if lustGained then
+        self:PlayTrigger("lust_sound")
     end
 end
 
@@ -337,6 +380,7 @@ function CombatModule:Cleanup()
     self:UnregisterLegacyEvents()
     self.lastSoundAt   = {}
     self.prevHealthPct = {}
+    self.hadLust       = false
     self.inCombat      = false
     BLU:PrintDebug("[Combat] Combat module cleaned up")
 end

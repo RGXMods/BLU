@@ -27,22 +27,10 @@
 
 local addonName = ...
 local BLU = _G["BLU"]
+local Combat = _G.RGXCombat
 local CombatModule = {}
 
-local EVT_REGEN_DISABLED = "combat_regen_disabled"
-local EVT_REGEN_ENABLED  = "combat_regen_enabled"
-local EVT_UNIT_HEALTH    = "combat_unit_health"
-local EVT_TARGET         = "combat_target_changed"
-local EVT_POWER          = "combat_unit_power"
-local EVT_COMBATLOG      = "combat_log_event"
-local EVT_ENCOUNTER      = "combat_encounter_end"
-local EVT_PVP            = "combat_pvp_match"
-local EVT_UNIT_AURA      = "combat_unit_aura"
-
 local PER_TRIGGER_COOLDOWN = 1.0   -- seconds between same trigger fires
-local LOW_HEALTH_PCT       = 0.35
-local EXECUTE_PCT          = 0.20
-local RESOURCE_LOW_PCT     = 0.20
 
 -- Spell IDs for the current bloodlust-class raid buffs. Matched by ID
 -- (locale-independent) rather than name.
@@ -55,11 +43,8 @@ local LUST_SPELL_IDS = {
 }
 
 CombatModule.lastSoundAt          = {}
-CombatModule.inCombat             = false
-CombatModule.prevHealthPct        = {}  -- ["player"|"target"] = last pct that triggered low/execute
 CombatModule.hadLust              = false -- edge-detect Bloodlust-class buffs on player
 CombatModule.savedAmbienceEnabled = nil
-CombatModule.legacyRegistered     = false
 
 local function IsEnabled()
     if not BLU.db or BLU.db.enabled == false then return false end
@@ -73,33 +58,6 @@ local function CanPlayTrigger(triggerId)
     if (now - last) < PER_TRIGGER_COOLDOWN then return false end
     CombatModule.lastSoundAt[triggerId] = now
     return true
-end
-
-local function IsUnitBelowThreshold(unit, valueFunc, maxFunc, threshold)
-    local ok, isBelow = pcall(function()
-        if type(valueFunc) ~= "function" or type(maxFunc) ~= "function" then return nil end
-        local max = maxFunc(unit)
-        if not max or max <= 0 then return nil end
-        return ((valueFunc(unit) or 0) / max) < threshold
-    end)
-    if ok and type(isBelow) == "boolean" then
-        return isBelow
-    end
-    return nil
-end
-
-local function GetUnitPowerState(unit)
-    local ok, capped, low = pcall(function()
-        if type(UnitPower) ~= "function" or type(UnitPowerMax) ~= "function" then return nil, nil end
-        local max = UnitPowerMax(unit)
-        if not max or max <= 0 then return nil, nil end
-        local pct = (UnitPower(unit) or 0) / max
-        return pct >= 1.0, pct < RESOURCE_LOW_PCT
-    end)
-    if ok then
-        return capped, low
-    end
-    return nil, nil
 end
 
 function CombatModule:PlayTrigger(triggerId)
@@ -178,75 +136,6 @@ function CombatModule:PlayCombatMusic()
     end
 end
 
--- ── Event handlers ──────────────────────────────────────────────────────────
-
-function CombatModule:OnRegenDisabled()
-    CombatModule.inCombat = true
-    self:PlayTrigger("combat_start_sound")
-    self:PlayCombatMusic()
-    CombatModule.prevHealthPct = {}
-end
-
-function CombatModule:OnRegenEnabled()
-    CombatModule.inCombat = false
-    self:StopCombatMusic()
-    self:PlayTrigger("combat_end_sound")
-    CombatModule.prevHealthPct = {}
-end
-
-function CombatModule:OnUnitHealth(_, unit)
-    if unit ~= "player" and unit ~= "target" then return end
-
-    if unit == "player" then
-        local isBelow = IsUnitBelowThreshold("player", UnitHealth, UnitHealthMax, LOW_HEALTH_PCT)
-        if isBelow == nil then return end
-        local prev = self.prevHealthPct["player"]
-        if isBelow and prev ~= true then
-            self:PlayTrigger("low_health")
-        end
-        self.prevHealthPct["player"] = isBelow
-
-    elseif unit == "target" then
-        local isBelow = IsUnitBelowThreshold("target", UnitHealth, UnitHealthMax, EXECUTE_PCT)
-        if isBelow == nil then return end
-        local prev = self.prevHealthPct["target"]
-        if isBelow and prev ~= true then
-            self:PlayTrigger("execute_window")
-        end
-        self.prevHealthPct["target"] = isBelow
-    end
-end
-
-function CombatModule:OnTargetChanged()
-    if not UnitExists("target") then
-        self:PlayTrigger("target_lost")
-        self.prevHealthPct["target"] = nil
-    else
-        self.prevHealthPct["target"] = nil
-    end
-end
-
-function CombatModule:OnUnitPower(_, unit)
-    if unit ~= "player" then return end
-    local capped, low = GetUnitPowerState("player")
-    if capped then
-        self:PlayTrigger("resource_capped")
-    elseif low then
-        self:PlayTrigger("resource_low")
-    end
-end
-
-function CombatModule:OnCombatLog()
-    local _, event, _, sourceGUID, _, _, _, _, _, _, _, _, _, _, _, _, crit = CombatLogGetCurrentEventInfo()
-    if not sourceGUID or sourceGUID ~= UnitGUID("player") then return end
-
-    if (event == "SPELL_DAMAGE" or event == "SWING_DAMAGE") and crit then
-        self:PlayTrigger("critical_hit")
-    elseif event == "SPELL_HEAL" and crit then
-        self:PlayTrigger("critical_heal")
-    end
-end
-
 -- Player lust presence via C_UnitAuras.GetPlayerAuraBySpellID (AllowedWhenTainted).
 -- Avoids UNIT_AURA updateInfo.addedAuras, which is ConditionalSecretContents and
 -- errors under addon taint: "ipairs (table expected, got secret)".
@@ -265,10 +154,7 @@ end
 
 function CombatModule:OnUnitAura(_, unit, updateInfo)
     if unit ~= "player" then return end
-    self:PlayTrigger("proc_trigger")
-
-    -- Prefer incremental addedAuras when the table is accessible; otherwise
-    -- edge-detect via the player aura fast path (never secret for self).
+    -- Lust detection via safe C_UnitAuras fallback when addedAuras is secret.
     local lustGained = false
     local added = updateInfo and updateInfo.addedAuras
     local addedReadable = added ~= nil
@@ -303,85 +189,78 @@ function CombatModule:OnUnitAura(_, unit, updateInfo)
     end
 end
 
-function CombatModule:OnEncounterEnd(_, encounterID, encounterName, difficultyID, groupSize, success)
-    self:PlayTrigger("encounterend")
-    if success == 1 then
-        self:PlayTrigger("encountervictory")
-    end
-end
-
-function CombatModule:OnPvPMatchComplete()
-    -- PVP_MATCH_COMPLETE fires for all players; we check if we were on the winning side
-    local winner = C_PvP and C_PvP.GetActiveMatchResults and C_PvP.GetActiveMatchResults()
-    if winner and winner.isWinner then
-        self:PlayTrigger("pvpvictory")
-    else
-        -- Fallback: always fire (user can mute if not desired)
-        self:PlayTrigger("pvpvictory")
-    end
-end
-
 -- ── Lifecycle ────────────────────────────────────────────────────────────────
 
-function CombatModule:RegisterLegacyEvents()
-    if self.legacyRegistered then return end
-    BLU:RegisterEvent("PLAYER_REGEN_DISABLED", function(event, ...)
-        self:OnRegenDisabled(event, ...)
-    end, EVT_REGEN_DISABLED)
-    BLU:RegisterEvent("PLAYER_REGEN_ENABLED", function(event, ...)
-        self:OnRegenEnabled(event, ...)
-    end, EVT_REGEN_ENABLED)
-    BLU:RegisterEvent("UNIT_HEALTH", function(event, ...)
-        self:OnUnitHealth(event, ...)
-    end, EVT_UNIT_HEALTH)
-    BLU:RegisterEvent("PLAYER_TARGET_CHANGED", function(event, ...)
-        self:OnTargetChanged(event, ...)
-    end, EVT_TARGET)
-    BLU:RegisterEvent("UNIT_POWER_UPDATE", function(event, ...)
-        self:OnUnitPower(event, ...)
-    end, EVT_POWER)
-    BLU:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", function(event, ...)
-        self:OnCombatLog(event, ...)
-    end, EVT_COMBATLOG)
-    BLU:RegisterEvent("ENCOUNTER_END", function(event, ...)
-        self:OnEncounterEnd(event, ...)
-    end, EVT_ENCOUNTER)
-    BLU:RegisterEvent("PVP_MATCH_COMPLETE", function(event, ...)
-        self:OnPvPMatchComplete(event, ...)
-    end, EVT_PVP)
-    BLU:RegisterEvent("UNIT_AURA", function(event, ...)
-        self:OnUnitAura(event, ...)
-    end, EVT_UNIT_AURA)
-    self.legacyRegistered = true
-end
-
-function CombatModule:UnregisterLegacyEvents()
-    if not self.legacyRegistered then return end
-    BLU:UnregisterEvent("PLAYER_REGEN_DISABLED", EVT_REGEN_DISABLED)
-    BLU:UnregisterEvent("PLAYER_REGEN_ENABLED", EVT_REGEN_ENABLED)
-    BLU:UnregisterEvent("UNIT_HEALTH", EVT_UNIT_HEALTH)
-    BLU:UnregisterEvent("PLAYER_TARGET_CHANGED", EVT_TARGET)
-    BLU:UnregisterEvent("UNIT_POWER_UPDATE", EVT_POWER)
-    BLU:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", EVT_COMBATLOG)
-    BLU:UnregisterEvent("ENCOUNTER_END", EVT_ENCOUNTER)
-    BLU:UnregisterEvent("PVP_MATCH_COMPLETE", EVT_PVP)
-    BLU:UnregisterEvent("UNIT_AURA", EVT_UNIT_AURA)
-    self.legacyRegistered = false
-end
-
 function CombatModule:Init()
-    self:RegisterLegacyEvents()
+    if not Combat then return end
+
+    Combat:OnEnter(function()
+        self:PlayTrigger("combat_start_sound")
+        self:PlayCombatMusic()
+    end)
+
+    Combat:OnLeave(function()
+        self:StopCombatMusic()
+        self:PlayTrigger("combat_end_sound")
+    end)
+
+    Combat:OnLowHealth(function()
+        self:PlayTrigger("low_health")
+    end)
+
+    Combat:OnExecuteWindow(function()
+        self:PlayTrigger("execute_window")
+    end)
+
+    Combat:OnTargetLost(function()
+        self:PlayTrigger("target_lost")
+    end)
+
+    Combat:OnResourceCapped(function()
+        self:PlayTrigger("resource_capped")
+    end)
+
+    Combat:OnResourceLow(function()
+        self:PlayTrigger("resource_low")
+    end)
+
+    Combat:OnCrit(function(amount, spellName, isMelee)
+        self:PlayTrigger("critical_hit")
+    end)
+
+    Combat:OnCritHeal(function(amount, spellName)
+        self:PlayTrigger("critical_heal")
+    end)
+
+    Combat:OnProc(function()
+        self:PlayTrigger("proc_trigger")
+    end)
+
+    Combat:OnEncounterEnd(function(encounterID, encounterName, difficultyID, groupSize, success)
+        self:PlayTrigger("encounterend")
+        if success == 1 then
+            self:PlayTrigger("encountervictory")
+        end
+    end)
+
+    Combat:OnPvPVictory(function()
+        self:PlayTrigger("pvpvictory")
+    end)
+
+    -- Lust detection still needs UNIT_AURA because OnProc does not expose
+    -- aura data; guard against secret addedAuras.
+    BLU:RegisterEvent("UNIT_AURA", function(_, unit, updateInfo)
+        self:OnUnitAura(_, unit, updateInfo)
+    end, "combat_unit_aura")
+
     BLU:PrintDebug("[Combat] Combat module initialized")
     if BLU.Emit then BLU:Emit("blu:moduleReady", "combat") end
 end
 
 function CombatModule:Cleanup()
     self:StopCombatMusic()
-    self:UnregisterLegacyEvents()
-    self.lastSoundAt   = {}
-    self.prevHealthPct = {}
-    self.hadLust       = false
-    self.inCombat      = false
+    self.lastSoundAt = {}
+    self.hadLust = false
     BLU:PrintDebug("[Combat] Combat module cleaned up")
 end
 

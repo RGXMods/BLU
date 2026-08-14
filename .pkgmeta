@@ -7,4 +7,5 @@ ignore:
   - docs/changelogs
   - docs/description.html
   - images
+  - tests
   - .github

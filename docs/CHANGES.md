@@ -4,6 +4,11 @@
 
 ## Current Development Release
 
+### [v8.0.4](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/8.0.4.md) - 2026-08-13
+
+- Fixed repeated `UNIT_AURA` errors on Midnight when `updateInfo.addedAuras` is secret. BLU no longer reads the raw aura event payload: generic proc handling comes from `RGXCombat`, while Lust/Heroism detection queries player aura state through `RGXAuras` and edge-detects gains.
+- Requires RGX-Framework v2.5.1 or later.
+
 ### [v8.0.3](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/8.0.3.md) - 2026-07-03
 
 - **New combat trigger: Lust / Heroism Sound.** Plays a dedicated sound (configurable in the Combat tab, separate from the generic proc trigger) when Bloodlust, Heroism, Time Warp, Ancient Hysteria, or Primal Rage lands on you — matched by spell ID via the `UNIT_AURA` event's `updateInfo.addedAuras` payload, not name (locale-independent).

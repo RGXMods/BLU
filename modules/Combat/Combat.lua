@@ -27,7 +27,9 @@
 
 local addonName = ...
 local BLU = _G["BLU"]
-local Combat = _G.RGXCombat
+local RGX = _G.RGXFramework
+local Combat = RGX and RGX:GetCombat()
+local Auras = RGX and RGX:GetAuras()
 local CombatModule = {}
 
 local PER_TRIGGER_COOLDOWN = 1.0   -- seconds between same trigger fires
@@ -45,6 +47,13 @@ local LUST_SPELL_IDS = {
 CombatModule.lastSoundAt          = {}
 CombatModule.hadLust              = false -- edge-detect Bloodlust-class buffs on player
 CombatModule.savedAmbienceEnabled = nil
+CombatModule.subscriptions        = {}
+
+local function Subscribe(module, unsubscribe)
+    if type(unsubscribe) == "function" then
+        module.subscriptions[#module.subscriptions + 1] = unsubscribe
+    end
+end
 
 local function IsEnabled()
     if not BLU.db or BLU.db.enabled == false then return false end
@@ -136,122 +145,83 @@ function CombatModule:PlayCombatMusic()
     end
 end
 
--- Player lust presence via C_UnitAuras.GetPlayerAuraBySpellID (AllowedWhenTainted).
--- Avoids UNIT_AURA updateInfo.addedAuras, which is ConditionalSecretContents and
--- errors under addon taint: "ipairs (table expected, got secret)".
+-- RGXAuras owns the 12.1 secret-value boundary and only returns accessible data.
 local function PlayerHasLustAura()
-    if not C_UnitAuras or type(C_UnitAuras.GetPlayerAuraBySpellID) ~= "function" then
-        return false
-    end
+    if not Auras then return false end
     for spellId in pairs(LUST_SPELL_IDS) do
-        local ok, aura = pcall(C_UnitAuras.GetPlayerAuraBySpellID, spellId)
-        if ok and aura then
-            return true
-        end
+        if Auras:HasPlayerAura(spellId) then return true end
     end
     return false
 end
 
-function CombatModule:OnUnitAura(_, unit, updateInfo)
-    if unit ~= "player" then return end
-    -- Lust detection via safe C_UnitAuras fallback when addedAuras is secret.
-    local lustGained = false
-    local added = updateInfo and updateInfo.addedAuras
-    local addedReadable = added ~= nil
-        and type(added) == "table"
-        and (type(canaccesstable) ~= "function" or canaccesstable(added))
-        and (type(issecrettable) ~= "function" or not issecrettable(added))
-
-    if addedReadable then
-        for _, aura in ipairs(added) do
-            local spellId = aura and aura.spellId
-            if type(spellId) == "number" and LUST_SPELL_IDS[spellId] then
-                lustGained = true
-                break
-            end
-        end
-        -- Keep hadLust in sync so a later secret update does not re-fire.
-        if lustGained then
-            self.hadLust = true
-        elseif updateInfo and updateInfo.removedAuraInstanceIDs then
-            self.hadLust = PlayerHasLustAura()
-        end
-    else
-        local hasLust = PlayerHasLustAura()
-        if hasLust and not self.hadLust then
-            lustGained = true
-        end
-        self.hadLust = hasLust
-    end
-
-    if lustGained then
+function CombatModule:RefreshLustState()
+    local hasLust = PlayerHasLustAura()
+    if hasLust and not self.hadLust then
         self:PlayTrigger("lust_sound")
     end
+    self.hadLust = hasLust
 end
 
 -- ── Lifecycle ────────────────────────────────────────────────────────────────
 
 function CombatModule:Init()
     if not Combat then return end
+    if #self.subscriptions > 0 then return end
+    self.hadLust = PlayerHasLustAura()
 
-    Combat:OnEnter(function()
+    Subscribe(self, Combat:OnEnter(function()
         self:PlayTrigger("combat_start_sound")
         self:PlayCombatMusic()
-    end)
+    end))
 
-    Combat:OnLeave(function()
+    Subscribe(self, Combat:OnLeave(function()
         self:StopCombatMusic()
         self:PlayTrigger("combat_end_sound")
-    end)
+    end))
 
-    Combat:OnLowHealth(function()
+    Subscribe(self, Combat:OnLowHealth(function()
         self:PlayTrigger("low_health")
-    end)
+    end))
 
-    Combat:OnExecuteWindow(function()
+    Subscribe(self, Combat:OnExecuteWindow(function()
         self:PlayTrigger("execute_window")
-    end)
+    end))
 
-    Combat:OnTargetLost(function()
+    Subscribe(self, Combat:OnTargetLost(function()
         self:PlayTrigger("target_lost")
-    end)
+    end))
 
-    Combat:OnResourceCapped(function()
+    Subscribe(self, Combat:OnResourceCapped(function()
         self:PlayTrigger("resource_capped")
-    end)
+    end))
 
-    Combat:OnResourceLow(function()
+    Subscribe(self, Combat:OnResourceLow(function()
         self:PlayTrigger("resource_low")
-    end)
+    end))
 
-    Combat:OnCrit(function(amount, spellName, isMelee)
+    Subscribe(self, Combat:OnCrit(function(amount, spellName, isMelee)
         self:PlayTrigger("critical_hit")
-    end)
+    end))
 
-    Combat:OnCritHeal(function(amount, spellName)
+    Subscribe(self, Combat:OnCritHeal(function(amount, spellName)
         self:PlayTrigger("critical_heal")
-    end)
+    end))
 
-    Combat:OnProc(function()
+    Subscribe(self, Combat:OnProc(function()
         self:PlayTrigger("proc_trigger")
-    end)
+        self:RefreshLustState()
+    end))
 
-    Combat:OnEncounterEnd(function(encounterID, encounterName, difficultyID, groupSize, success)
+    Subscribe(self, Combat:OnEncounterEnd(function(encounterID, encounterName, difficultyID, groupSize, success)
         self:PlayTrigger("encounterend")
         if success == 1 then
             self:PlayTrigger("encountervictory")
         end
-    end)
+    end))
 
-    Combat:OnPvPVictory(function()
+    Subscribe(self, Combat:OnPvPVictory(function()
         self:PlayTrigger("pvpvictory")
-    end)
-
-    -- Lust detection still needs UNIT_AURA because OnProc does not expose
-    -- aura data; guard against secret addedAuras.
-    BLU:RegisterEvent("UNIT_AURA", function(_, unit, updateInfo)
-        self:OnUnitAura(_, unit, updateInfo)
-    end, "combat_unit_aura")
+    end))
 
     BLU:PrintDebug("[Combat] Combat module initialized")
     if BLU.Emit then BLU:Emit("blu:moduleReady", "combat") end
@@ -259,6 +229,10 @@ end
 
 function CombatModule:Cleanup()
     self:StopCombatMusic()
+    for i = #self.subscriptions, 1, -1 do
+        pcall(self.subscriptions[i])
+    end
+    self.subscriptions = {}
     self.lastSoundAt = {}
     self.hadLust = false
     BLU:PrintDebug("[Combat] Combat module cleaned up")

@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+jobs:
+  lua-checks:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Clone Project
+      uses: actions/checkout@v4
+
+    - name: Install Lua 5.1
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y lua5.1
+
+    - name: Lua syntax check
+      run: |
+        set -e
+        find . -name '*.lua' -not -path './.git/*' | sort | while read -r f; do
+          luac5.1 -o /dev/null "$f"
+          echo "OK $f"
+        done
+
+    - name: Run regression tests
+      run: |
+        lua5.1 tests/combat-secret-aura-test.lua

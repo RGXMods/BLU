@@ -4,6 +4,11 @@
 
 ## Current Development Release
 
+### [v8.0.5](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/8.0.5.md) - 2026-08-21
+
+- Migrated Delve Companion `UNIT_AURA` registration from `BLU:RegisterEvent` to `RGX:RegisterUnitEvent("UNIT_AURA", "player", ...)`, removing the manual `unitToken` guard and aligning with the RGX-Framework event delegation pattern used by the Combat module.
+- Requires RGX-Framework v2.5.1 or later.
+
 ### [v8.0.4](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/8.0.4.md) - 2026-08-13
 
 - Fixed repeated `UNIT_AURA` errors on Midnight when `updateInfo.addedAuras` is secret. BLU no longer reads the raw aura event payload: generic proc handling comes from `RGXCombat`, while Lust/Heroism detection queries player aura state through `RGXAuras` and edge-detects gains.

@@ -5,6 +5,7 @@
 
 local addonName = ...
 local BLU = _G["BLU"]
+local RGX = assert(_G.RGXFramework, "BLU requires RGX-Framework")
 local DelveCompanion = {}
 
 local DELVE_EVENT_ID_FACTION = "delve_faction_standing_changed"
@@ -65,7 +66,9 @@ function DelveCompanion:Init()
 
     BLU:RegisterEvent("FACTION_STANDING_CHANGED", function(...) self:OnFactionStandingChanged(...) end, DELVE_EVENT_ID_FACTION)
     BLU:RegisterEvent("MAJOR_FACTION_RENOWN_LEVEL_CHANGED", function(...) self:OnMajorFactionRenownLevelChanged(...) end, DELVE_EVENT_ID_RENOWN)
-    BLU:RegisterEvent("UNIT_AURA", function(...) self:OnUnitAura(...) end, DELVE_EVENT_ID_LIVES)
+    RGX:RegisterUnitEvent("UNIT_AURA", "player", function()
+        self:OnUnitAura()
+    end, DELVE_EVENT_ID_LIVES, self)
 
     self:UpdateCompanionLevelCache()
     self:UpdateLivesCache()
@@ -76,7 +79,7 @@ end
 function DelveCompanion:Cleanup()
     BLU:UnregisterEvent("FACTION_STANDING_CHANGED", DELVE_EVENT_ID_FACTION)
     BLU:UnregisterEvent("MAJOR_FACTION_RENOWN_LEVEL_CHANGED", DELVE_EVENT_ID_RENOWN)
-    BLU:UnregisterEvent("UNIT_AURA", DELVE_EVENT_ID_LIVES)
+    RGX:UnregisterUnitEvent("UNIT_AURA", DELVE_EVENT_ID_LIVES)
     BLU:PrintDebug(BLU:Loc("MODULE_CLEANED_UP", "DelveCompanion"))
 end
 
@@ -288,8 +291,7 @@ function DelveCompanion:QueueLivesRefresh(delaySeconds)
     end)
 end
 
-function DelveCompanion:OnUnitAura(event, unitToken)
-    if unitToken ~= "player" then return end
+function DelveCompanion:OnUnitAura()
     if not self:IsEnabled() then return end
 
     self:RefreshLivesState()

@@ -21,6 +21,13 @@ config/api_keys.json
 *.zip
 *.tar.gz
 
+# Agent/tool config files
+CLAUDE.md
+Home.md
+.agents/
+.claude/
+.graphify-out/
+
 # User custom sound files (keep folder, ignore contents)
 /user/sounds/*.ogg
 /user/sounds/*.mp3

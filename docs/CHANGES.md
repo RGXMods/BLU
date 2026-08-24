@@ -4,28 +4,28 @@
 
 ## Current Development Release
 
-### [v8.0.5](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/8.0.5.md) - 2026-08-21
+### [v8.0.5](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/8.0.5.md) - 2026-08-21
 
 - Migrated Delve Companion `UNIT_AURA` registration from `BLU:RegisterEvent` to `RGX:RegisterUnitEvent("UNIT_AURA", "player", ...)`, removing the manual `unitToken` guard and aligning with the RGX-Framework event delegation pattern used by the Combat module.
 - Requires RGX-Framework v2.5.1 or later.
 
-### [v8.0.4](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/8.0.4.md) - 2026-08-13
+### [v8.0.4](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/8.0.4.md) - 2026-08-13
 
 - Fixed repeated `UNIT_AURA` errors on Midnight when `updateInfo.addedAuras` is secret. BLU no longer reads the raw aura event payload: generic proc handling comes from `RGXCombat`, while Lust/Heroism detection queries player aura state through `RGXAuras` and edge-detects gains.
 - Requires RGX-Framework v2.5.1 or later.
 
-### [v8.0.3](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/8.0.3.md) - 2026-07-03
+### [v8.0.3](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/8.0.3.md) - 2026-07-03
 
 - **New combat trigger: Lust / Heroism Sound.** Plays a dedicated sound (configurable in the Combat tab, separate from the generic proc trigger) when Bloodlust, Heroism, Time Warp, Ancient Hysteria, or Primal Rage lands on you — matched by spell ID via the `UNIT_AURA` event's `updateInfo.addedAuras` payload, not name (locale-independent).
 
-### [v8.0.2](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/8.0.2.md) - 2026-07-03
+### [v8.0.2](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/8.0.2.md) - 2026-07-03
 
 - Fixed `LUA_WARNING: Error loading core/sounds/user_sounds_generated.lua` — the file was gitignored and never shipped in any package, so every player hit this on login.
 - Fixed the Channel Volume slider not reliably restoring its visual position and looking inconsistent with the rest of the options UI — migrated to `RGX-Framework`'s `UI:CreateSlider`.
 - Fixed nested-dropdown Play buttons not flipping to Stop on the first click (playback was correct; only the label lagged).
 - Migrated external-sound discovery to the shared `RGXSharedMedia` framework module. `core/sounds/sharedmedia.lua` is now a ~217-line bridge that imports the framework's scan results into `BLU.SoundRegistry` and re-exports the public bridge API, with dedup-on-import so the shared registry can scan every addon folder (including BLU's own) without duplicating entries. Removes ~640 lines of duplicated local scanning.
 
-### [v8.0.0](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/8.0.0.md) - 2026-06-30
+### [v8.0.0](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/8.0.0.md) - 2026-06-30
 
 - Stable BLU v8 release for WoW Retail 12.0.7.
 - Ships the RGX-Framework migration for events, timers, hooks, slash commands, database/profiles, dropdowns, and combat-safe runtime paths.
@@ -33,18 +33,18 @@
 - Fixes user custom sound discovery, fuzzy custom sound matching, User Custom Sounds table display, and combat music playback routing.
 
 Full notes:
-- [v8.0.0 changelog](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/8.0.0.md)
+- [v8.0.0 changelog](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/8.0.0.md)
 
-### [v8.0.0-alpha.2](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/8.0.0-alpha.2.md) - 2026-06-28
+### [v8.0.0-alpha.2](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/8.0.0-alpha.2.md) - 2026-06-28
 
 - User custom sound manifests now resolve through the same filename/path resolver as `/blu addcustom`.
 - Short custom filenames in `BLU\\media` and `BLU\\media\\sounds` now register correctly in the combat picker.
 - Profile-stored custom sound entries are normalized through the same resolver on refresh.
 
 Full notes:
-- [v8.0.0-alpha.2 changelog](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/8.0.0-alpha.2.md)
+- [v8.0.0-alpha.2 changelog](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/8.0.0-alpha.2.md)
 
-### [v8.0.0-alpha.1](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/8.0.0-alpha.1.md) - 2026-06-11
+### [v8.0.0-alpha.1](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/8.0.0-alpha.1.md) - 2026-06-11
 
 - **Framework Migration — Stages 1-5 complete.** BLU now delegates events, timers, hooks, slash commands, and database to RGX-Framework.
 - Database proxy stabilization: fixed `__newindex`/`__index` metamethod guards so internal fields (`_guard`, `_raw`, `_defaults`, `_callbacks`, `_onSwitch`) never leak into profile SavedVars.
@@ -59,26 +59,26 @@ Full notes:
 - Quest debug-mode handlers guarded against nil/invalid quest IDs (was crashing on `QUEST_ACCEPTED`/`QUEST_TURNED_IN`).
 
 Full notes:
-- [v8.0.0-alpha.1 changelog](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/8.0.0-alpha.1.md)
+- [v8.0.0-alpha.1 changelog](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/8.0.0-alpha.1.md)
 
 ## Production Releases
 
-### [v7.1.1](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/7.1.1.md) - 2026-06-10
+### [v7.1.1](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/7.1.1.md) - 2026-06-10
 
 - Utility deduplication: removed local DeepCopy, Throttle, Debounce, SafeCall — use RGX equivalents.
 - Sound muter rewritten to use `RGX:GetSound():MuteList(ids)`.
 
-### [v7.1.0](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/7.1.0.md) - 2026-06-10
+### [v7.1.0](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/7.1.0.md) - 2026-06-10
 
 - Removed local `combat_protection.lua` (344 lines) → `RGX:QueueForCombat()`.
 - Removed local `dropdown.lua` (252 lines) → `RGX:GetDropdowns()`.
 
-### [v7.0.0](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/7.0.0.md) - 2026-06-09
+### [v7.0.0](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/7.0.0.md) - 2026-06-09
 
 - Migrated from `RGX:OpenDB` to `RGX:NewDatabase` proxy (`BLU.db`).
 - Combat load screen safety — deferred registration with `C_Timer.After` + `PLAYER_REGEN_ENABLED` retry.
 
-### [v6.5.1](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.5.1.md) - 2026-05-02
+### [v6.5.1](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/6.5.1.md) - 2026-05-02
 
 - Fixed volume sliders not appearing for BLU game sounds (Lua pattern bug in registry).
 - Replaced OptionsSliderTemplate with consistent custom track-style volume control across all panels.
@@ -89,9 +89,9 @@ Full notes:
 - Volume fill/thumb uses percentage-based positioning with deferred layout fix.
 
 Full notes:
-- [v6.5.1 changelog](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.5.1.md)
+- [v6.5.1 changelog](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/6.5.1.md)
 
-### [v6.5.0](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.5.0.md) - 2026-04-10
+### [v6.5.0](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/6.5.0.md) - 2026-04-10
 
 - Added a real `Combat` options page with the same module toggle header pattern used by the other panels.
 - Replaced the old mock combat layout with a compact 2-column trigger grid that supports 8 trigger cards per page.
@@ -100,19 +100,19 @@ Full notes:
 - Cleaned up the Combat page layout by removing extra explanatory sections that were wasting vertical space.
 
 Full notes:
-- [v6.5.0 changelog](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.5.0.md)
+- [v6.5.0 changelog](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/6.5.0.md)
 
 ## Recent History
-- [v6.4.1](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.4.1.md)
-- [v6.4.0](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.4.0.md)
-- [v6.3.0](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.3.0.md)
-- [v6.2.5](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.2.5.md)
-- [v6.2.4](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.2.4.md)
-- [v6.2.3](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.2.3.md)
-- [v6.2.1](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.2.1.md)
-- [v6.2.0](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.2.0.md)
-- [v6.1.3](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.1.3.md)
-- [v6.1.2](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.1.2.md)
-- [v6.1.1](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.1.1.md)
-- [v6.1.0](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.1.0.md)
-- [v6.0.0](https://github.com/DonnieDice/BLU/blob/main/docs/changelogs/6.0.0.md)
+- [v6.4.1](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/6.4.1.md)
+- [v6.4.0](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/6.4.0.md)
+- [v6.3.0](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/6.3.0.md)
+- [v6.2.5](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/6.2.5.md)
+- [v6.2.4](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/6.2.4.md)
+- [v6.2.3](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/6.2.3.md)
+- [v6.2.1](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/6.2.1.md)
+- [v6.2.0](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/6.2.0.md)
+- [v6.1.3](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/6.1.3.md)
+- [v6.1.2](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/6.1.2.md)
+- [v6.1.1](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/6.1.1.md)
+- [v6.1.0](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/6.1.0.md)
+- [v6.0.0](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/6.0.0.md)

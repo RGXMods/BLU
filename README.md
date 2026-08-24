@@ -6,9 +6,9 @@
 
 ### <span style="color:#e67e23">Iconic game sounds for every milestone in World of Warcraft Retail</span>
 
-[![Release](https://img.shields.io/github/v/release/donniedice/BLU?style=for-the-badge&logo=github&color=05dffa)](https://github.com/donniedice/BLU/releases)
+[![Release](https://img.shields.io/github/v/release/donniedice/BLU?style=for-the-badge&logo=github&color=05dffa)](https://github.com/RGXMods/BLU/releases)
 [![WoW Retail](https://img.shields.io/badge/WoW-Retail-148eff?style=for-the-badge&logo=worldofwarcraft&logoColor=white)](https://worldofwarcraft.blizzard.com/)
-[![License](https://img.shields.io/github/license/donniedice/BLU?style=for-the-badge&color=2dc26b)](https://github.com/donniedice/BLU/blob/main/LICENSE)
+[![License](https://img.shields.io/github/license/donniedice/BLU?style=for-the-badge&color=2dc26b)](https://github.com/RGXMods/BLU/blob/main/LICENSE)
 
 [![CurseForge](https://img.shields.io/badge/CurseForge-Download-f16436?style=flat-square&logo=curseforge&logoColor=white)](https://www.curseforge.com/wow/addons/blu-better-level-up)
 [![Wago](https://img.shields.io/badge/Wago-Download-b96ad9?style=flat-square)](https://addons.wago.io/addons/blu)
@@ -25,7 +25,7 @@
 
 **BLU** replaces repetitive World of Warcraft sounds with memorable audio from more than 50 games. Choose unique cues for levels, achievements, quests, reputation, battle pets, delves, housing, the Trading Post, and other milestones.
 
-BLU is the **Retail** edition. Classic players should install [<span style="color:#FFD700">BLU Classic</span>](https://github.com/donniedice/BLU_Classic).
+BLU is the **Retail** edition. Classic players should install [<span style="color:#FFD700">BLU Classic</span>](https://github.com/RGXMods/BLU_Classic).
 
 ## <span style="color:#05dffa">Features</span>
 
@@ -42,8 +42,8 @@ BLU is the **Retail** edition. Classic players should install [<span style="colo
 
 ## <span style="color:#05dffa">Quick Start</span>
 
-1. Install BLU from [CurseForge](https://www.curseforge.com/wow/addons/blu-better-level-up), [Wago](https://addons.wago.io/addons/blu), [WoWInterface](https://www.wowinterface.com/downloads/info26465-BLU-BetterLevelUp.html), or [GitHub Releases](https://github.com/donniedice/BLU/releases).
-2. Install the required [RGX-Framework](https://github.com/DonnieDice/RGX-Framework) dependency if your addon manager does not resolve it automatically.
+1. Install BLU from [CurseForge](https://www.curseforge.com/wow/addons/blu-better-level-up), [Wago](https://addons.wago.io/addons/blu), [WoWInterface](https://www.wowinterface.com/downloads/info26465-BLU-BetterLevelUp.html), or [GitHub Releases](https://github.com/RGXMods/BLU/releases).
+2. Install the required [RGX-Framework](https://github.com/RGXMods/RGX-Framework) dependency if your addon manager does not resolve it automatically.
 3. Launch Retail WoW and type `/blu`.
 4. Choose a sound for each event and preview it directly from the options panel.
 
@@ -77,7 +77,7 @@ Open `/blu`, select the **Sounds** tab, and use **User Custom Sounds** to add a 
 /blu addcustom Interface\AddOns\myfile.ogg | My Custom Sound
 ```
 
-Sound-pack authors can use `BLU:RegisterExternalSoundPack()` for simple files or `BLU:RegisterSoundPack()` for complete Low/Medium/High packs. See the [Sounds Guidelines](https://github.com/DonnieDice/BLU/wiki/Sounds-Guidelines) for current layouts and examples.
+Sound-pack authors can use `BLU:RegisterExternalSoundPack()` for simple files or `BLU:RegisterSoundPack()` for complete Low/Medium/High packs. See the [Sounds Guidelines](https://github.com/RGXMods/BLU/wiki/Sounds-Guidelines) for current layouts and examples.
 
 ## <span style="color:#05dffa">Troubleshooting</span>
 
@@ -88,7 +88,7 @@ Sound-pack authors can use `BLU:RegisterExternalSoundPack()` for simple files or
 
 ## <span style="color:#05dffa">Support</span>
 
-- [GitHub Issues](https://github.com/donniedice/BLU/issues) for reproducible bugs
+- [GitHub Issues](https://github.com/RGXMods/BLU/issues) for reproducible bugs
 - [RealmGX Discord](https://discord.gg/N7kdKAHVVF) for help, feedback, and sound suggestions
 - [GitHub Sponsors](https://github.com/sponsors/donniedice) or [Buy Me a Coffee](https://buymeacoffee.com/donniedice) to support development
 
@@ -98,7 +98,7 @@ Bug reports, translations, feature ideas, and sound suggestions are welcome. Kee
 
 ## <span style="color:#05dffa">License</span>
 
-BLU is available under the [MIT License](https://github.com/donniedice/BLU/blob/main/LICENSE).
+BLU is available under the [MIT License](https://github.com/RGXMods/BLU/blob/main/LICENSE).
 
 ---
 
@@ -108,7 +108,7 @@ BLU is available under the [MIT License](https://github.com/donniedice/BLU/blob/
 
 **Made by [DonnieDice](https://github.com/donniedice) for the [RealmGX](https://realmgx.com) community.**
 
-[<span style="color:#FFD700">BLU Classic</span>](https://github.com/donniedice/BLU_Classic) | [<span style="color:#58be81">Simple Quest Plates</span>](https://github.com/donniedice/SimpleQuestPlates) | [<span style="color:#e74c3c">Remove Nameplate Debuffs</span>](https://github.com/DonnieDice/RemoveNameplateDebuffs)
+[<span style="color:#FFD700">BLU Classic</span>](https://github.com/RGXMods/BLU_Classic) | [<span style="color:#58be81">Simple Quest Plates</span>](https://github.com/RGXMods/SimpleQuestPlates) | [<span style="color:#e74c3c">Remove Nameplate Debuffs</span>](https://github.com/RGXMods/RemoveNameplateDebuffs)
 
 _<span style="color:#e67e23">Make every level count with sounds that matter.</span>_
 

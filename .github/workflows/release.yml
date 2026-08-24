@@ -183,7 +183,7 @@ jobs:
         color=385018
         footer="RGX Mods • Stable Release"
         description="A new stable release is live."
-        release_url="https://github.com/DonnieDice/BLU/releases/tag/${version}"
+        release_url="https://github.com/RGXMods/BLU/releases/tag/${version}"
         downloads="[CurseForge](https://www.curseforge.com/wow/addons/blu-better-level-up) • [Wago](https://addons.wago.io/addons/vEGPgWK1) • [WoWInterface](https://www.wowinterface.com/downloads/info26465) • [GitHub](${release_url})"
         channel="Release"
         ;;
@@ -192,7 +192,7 @@ jobs:
         color=16744448
         footer="RGX Mods • Beta Build"
         description="Beta build available for testing."
-        release_url="https://github.com/DonnieDice/BLU/releases/tag/${version}"
+        release_url="https://github.com/RGXMods/BLU/releases/tag/${version}"
         downloads="[CurseForge](https://www.curseforge.com/wow/addons/blu-better-level-up) • [GitHub](${release_url})"
         channel="Beta"
         ;;
@@ -201,7 +201,7 @@ jobs:
         color=9109504
         footer="RGX Mods • Alpha Build"
         description="Alpha build available for testing."
-        release_url="https://github.com/DonnieDice/BLU/tree/alpha"
+        release_url="https://github.com/RGXMods/BLU/tree/alpha"
         downloads="[GitHub Alpha Branch](${release_url})"
         channel="Alpha"
         ;;
@@ -210,7 +210,7 @@ jobs:
         color=3447003
         footer="RGX Mods • Dev Build"
         description="Development build from the dev branch."
-        release_url="https://github.com/DonnieDice/BLU/tree/dev"
+        release_url="https://github.com/RGXMods/BLU/tree/dev"
         downloads="[GitHub Dev Branch](${release_url})"
         channel="Dev"
         ;;
@@ -219,7 +219,7 @@ jobs:
         color=10000000
         footer="RGX Mods"
         description="Build completed."
-        release_url="https://github.com/DonnieDice/BLU/releases"
+        release_url="https://github.com/RGXMods/BLU/releases"
         downloads="[GitHub](${release_url})"
         channel="Unknown"
         ;;
@@ -227,13 +227,13 @@ jobs:
 
         jq -n \
         --arg username "BLU Releases" \
-        --arg avatar_url "https://raw.githubusercontent.com/DonnieDice/BLU/main/media/Textures/logo.png" \
+        --arg avatar_url "https://raw.githubusercontent.com/RGXMods/BLU/main/media/Textures/logo.png" \
         --arg title "$title" \
         --arg url "$release_url" \
         --arg description "$description" \
         --argjson color "$color" \
         --arg footer "$footer" \
-        --arg icon_url "https://raw.githubusercontent.com/donniedice/SimpleQuestPlates/main/images/kiwi.gif" \
+        --arg icon_url "https://raw.githubusercontent.com/RGXMods/SimpleQuestPlates/main/images/kiwi.gif" \
         --arg timestamp "${RELEASE_TIMESTAMP}" \
         --arg summary "$summary" \
         --arg downloads "$downloads" \
@@ -274,19 +274,19 @@ jobs:
         --arg timestamp "${{ steps.version.outputs.timestamp }}" \
         '{
         username: "BLU Build Failed",
-        avatar_url: "https://raw.githubusercontent.com/DonnieDice/BLU/main/media/Textures/logo.png",
+        avatar_url: "https://raw.githubusercontent.com/RGXMods/BLU/main/media/Textures/logo.png",
         embeds: [{
         title: "❌ BLU Build Failed",
         description: "The release workflow encountered an error",
-        url: "https://github.com/DonnieDice/BLU/actions/runs/\($run_id)",
+        url: "https://github.com/RGXMods/BLU/actions/runs/\($run_id)",
         color: 15158332,
         fields: [
         { "name": "Version", "value": $version, "inline": true },
-        { "name": "Workflow", "value": "[View Logs](https://github.com/DonnieDice/BLU/actions/runs/\($run_id))", "inline": true }
+        { "name": "Workflow", "value": "[View Logs](https://github.com/RGXMods/BLU/actions/runs/\($run_id))", "inline": true }
         ],
         footer: {
         "text": "RGX Mods - Build System",
-        "icon_url": "https://raw.githubusercontent.com/donniedice/SimpleQuestPlates/main/images/kiwi.gif"
+        "icon_url": "https://raw.githubusercontent.com/RGXMods/SimpleQuestPlates/main/images/kiwi.gif"
         },
         timestamp: $timestamp
         }]

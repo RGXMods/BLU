@@ -12,7 +12,6 @@
 
 [![CurseForge](https://img.shields.io/badge/CurseForge-Download-f16436?style=flat-square&logo=curseforge&logoColor=white)](https://www.curseforge.com/wow/addons/blu-better-level-up)
 [![Wago](https://img.shields.io/badge/Wago-Download-b96ad9?style=flat-square)](https://addons.wago.io/addons/blu)
-[![WoWInterface](https://img.shields.io/badge/WoWInterface-Download-3598db?style=flat-square)](https://www.wowinterface.com/downloads/info26465-BLU-BetterLevelUp.html)
 [![Discord](https://img.shields.io/badge/Discord-RealmGX-5865f2?style=flat-square&logo=discord&logoColor=white)](https://discord.gg/N7kdKAHVVF)
 
 **[Features](#features) | [Quick Start](#quick-start) | [Commands](#commands) | [Custom Sounds](#custom-sounds) | [Support](#support)**
@@ -42,7 +41,7 @@ BLU is the **Retail** edition. Classic players should install [<span style="colo
 
 ## <span style="color:#05dffa">Quick Start</span>
 
-1. Install BLU from [CurseForge](https://www.curseforge.com/wow/addons/blu-better-level-up), [Wago](https://addons.wago.io/addons/blu), [WoWInterface](https://www.wowinterface.com/downloads/info26465-BLU-BetterLevelUp.html), or [GitHub Releases](https://github.com/RGXMods/BLU/releases).
+1. Install BLU from [CurseForge](https://www.curseforge.com/wow/addons/blu-better-level-up), [Wago](https://addons.wago.io/addons/blu), or [GitHub Releases](https://github.com/RGXMods/BLU/releases).
 2. Install the required [RGX-Framework](https://github.com/RGXMods/RGX-Framework) dependency if your addon manager does not resolve it automatically.
 3. Launch Retail WoW and type `/blu`.
 4. Choose a sound for each event and preview it directly from the options panel.

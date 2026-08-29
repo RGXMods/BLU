@@ -9,7 +9,6 @@ on:
 
 env:
   CF_API_KEY: ${{ secrets.CF_API_KEY }}
-  WOWI_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
   WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
   GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
   DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }} # 🔐 Store securely!
@@ -71,19 +70,13 @@ jobs:
         version="${{ steps.version.outputs.version }}"
         curse_id="$(grep -oP '^## X-Curse-Project-ID:\s*\K(.*)' BLU.toc || true)"
         wago_id="$(grep -oP '^## X-Wago-ID:\s*\K(.*)' BLU.toc || true)"
-        wowi_id="$(grep -oP '^## X-WoWI-ID:\s*\K(.*)' BLU.toc || true)"
 
         echo "Detected project IDs:"
         echo " X-Curse-Project-ID: ${curse_id:-missing}"
         echo " X-Wago-ID: ${wago_id:-missing}"
-        echo " X-WoWI-ID: ${wowi_id:-missing}"
 
         if [[ -z "$wago_id" ]]; then
         echo "::warning::X-Wago-ID is missing in BLU.toc. Wago upload will be skipped."
-        fi
-
-        if [[ -z "$wowi_id" ]]; then
-        echo "::warning::X-WoWI-ID is missing in BLU.toc. WoWInterface upload will be skipped."
         fi
 
         if [[ "$GITHUB_REF" == refs/tags/* ]]; then
@@ -158,8 +151,8 @@ jobs:
 
     - name: ℹ️ Upload Notes
       run: |
-        echo "CurseForge, Wago, and WoWInterface uploads are handled by BigWigsMods/packager."
-        echo "Project IDs come from X-Curse-Project-ID, X-Wago-ID, and X-WoWI-ID in BLU.toc."
+        echo "CurseForge and Wago uploads are handled by BigWigsMods/packager."
+        echo "Project IDs come from X-Curse-Project-ID and X-Wago-ID in BLU.toc."
 
     - name: 📢 Send Discord Notification
       if: success() && startsWith(github.ref, 'refs/tags/')
@@ -184,7 +177,7 @@ jobs:
         footer="RGX Mods • Stable Release"
         description="A new stable release is live."
         release_url="https://github.com/RGXMods/BLU/releases/tag/${version}"
-        downloads="[CurseForge](https://www.curseforge.com/wow/addons/blu-better-level-up) • [Wago](https://addons.wago.io/addons/vEGPgWK1) • [WoWInterface](https://www.wowinterface.com/downloads/info26465) • [GitHub](${release_url})"
+        downloads="[CurseForge](https://www.curseforge.com/wow/addons/blu-better-level-up) • [Wago](https://addons.wago.io/addons/vEGPgWK1) • [GitHub](${release_url})"
         channel="Release"
         ;;
         "beta")

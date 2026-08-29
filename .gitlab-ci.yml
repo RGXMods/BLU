@@ -1,0 +1,7 @@
+variables:
+  GITHUB_MIRROR_REPOSITORY: RGXMods/BLU
+
+include:
+  - project: rgxmods/warcraft/RGX-Framework
+    ref: main
+    file: /.gitlab/ci/addon.yml

@@ -11,6 +11,5 @@
 ## IconTexture: Interface\AddOns\BLU\media\Textures\icon.tga
 ## X-Curse-Project-ID: 697841
 ## X-Wago-ID: vEGPgWK1
-## X-WoWI-ID: 26465
 
 BLU.xml

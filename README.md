@@ -73,9 +73,9 @@ buttons let you test a selection before closing the options panel.
 
 ## <span style="color:#05dffa">Compatibility and Requirements</span>
 
-BLU supports **World of Warcraft Retail**. The current interface value is
-maintained in [`BLU.toc`](BLU.toc), which is the source of truth as Retail
-clients update.
+BLU supports World of Warcraft Retail and the WoW Forever beta client, which
+uses the Retail API at Interface `120007`. The current interface values are
+maintained in [`BLU.toc`](BLU.toc).
 
 - [RGX-Framework](https://github.com/RGXMods/RGX-Framework) is required.
 - BLU Classic is a separate addon for supported Classic clients.
@@ -84,7 +84,7 @@ clients update.
 
 1. Install BLU from [CurseForge](https://www.curseforge.com/wow/addons/blu-better-level-up), [Wago](https://addons.wago.io/addons/blu), or [GitHub Releases](https://github.com/RGXMods/BLU/releases).
 2. Install the required [RGX-Framework](https://github.com/RGXMods/RGX-Framework) dependency if your addon manager does not resolve it automatically.
-3. Launch Retail WoW and type `/blu`.
+3. Launch Retail WoW or WoW Forever and type `/blu`.
 4. Choose a sound for each event and preview it directly from the options panel.
 
 Manual installs belong in:

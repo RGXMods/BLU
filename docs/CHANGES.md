@@ -4,6 +4,15 @@
 
 ## Current Development Release
 
+### [v8.0.7](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/8.0.7.md) - 2026-09-17
+
+- Added WoW Forever Beta compatibility for build `1.60.1.69893` (Interface `120007`) while retaining Retail `120100` support.
+- Validated the RGX-backed event and combat paths against the Forever client without using a hard-coded Blizzard build check.
+
+### [v8.0.6](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/8.0.6.md) - 2026-08-22
+
+- Updated Retail interface metadata to `120100` for WoW 12.1.0.
+
 ### [v8.0.5](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/8.0.5.md) - 2026-08-21
 
 - Migrated Delve Companion `UNIT_AURA` registration from `BLU:RegisterEvent` to `RGX:RegisterUnitEvent("UNIT_AURA", "player", ...)`, removing the manual `unitToken` guard and aligning with the RGX-Framework event delegation pattern used by the Combat module.

@@ -230,6 +230,7 @@ function BLU:ShowHelp()
 	self:Print(" |cffffff00/blu|r - Open options")
 	self:Print(" |cffffff00/blu debug|r - Toggle debug mode")
 	self:Print(" |cffffff00/blu status|r - Show addon status")
+	self:Print(" |cffffff00/blu icon on|r|cffffffff/|r|cffffff00off|r - Show or hide the minimap icon")
 	self:Print(" |cffffff00/blu help|r - Show this help")
 end
 
@@ -252,6 +253,11 @@ local function BootstrapFromWorldEvent(event)
 		BLU:CreateOptionsPanel()
 	elseif not BLU.CreateOptionsPanel then
 		BLU:PrintError("[Init] CreateOptionsPanel not available after initialization!")
+	end
+
+	-- Create the minimap button once the database and options are ready
+	if BLU.Modules.minimap and BLU.Modules.minimap.Init then
+		pcall(function() BLU.Modules.minimap:Init() end)
 	end
 
 	-- Unregister this event as it only needs to fire once

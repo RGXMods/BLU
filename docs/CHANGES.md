@@ -4,6 +4,11 @@
 
 ## Current Development Release
 
+### [v8.0.8](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/8.0.8.md) - 2026-09-20
+
+- Added a minimap button via the RGX-Framework minimap system with BLU branding, a **Show minimap icon** toggle in the General options pane, and `/blu icon on|off`. Visibility and drag angle persist in the active profile.
+- Added the WoW Forever beta interface `16001` to the TOC for clean loading during beta testing.
+
 ### [v8.0.7](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/8.0.7.md) - 2026-09-17
 
 - Added WoW Forever Beta compatibility for build `1.60.1.69893` (Interface `120007`) while retaining Retail `120100` support.

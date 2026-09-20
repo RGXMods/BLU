@@ -81,11 +81,13 @@ function BLU.CreateGeneralPanel(panel)
 
     local profile = BLU.db
 
+    profile.minimapIconEnabled = profile.minimapIconEnabled ~= false
+
     -- Left column: Core on top, Behavior below
     local coreSection = BLU.Modules.design:CreateSection(content, "Core", "Interface\\Icons\\Achievement_General")
     coreSection:SetPoint("TOPLEFT", content, "TOPLEFT", 2, -2)
     coreSection:SetPoint("TOPRIGHT", content, "TOP", -4, -2)
-    coreSection:SetHeight(104)
+    coreSection:SetHeight(132)
 
     CreateCheckbox(coreSection.content, "Enable BLU", 4, -6, profile.enabled ~= false, function(self)
         profile.enabled = self:GetChecked()
@@ -101,6 +103,13 @@ function BLU.CreateGeneralPanel(panel)
     CreateCheckbox(coreSection.content, "Show welcome message", 4, -32, profile.showWelcomeMessage ~= false, function(self)
         profile.showWelcomeMessage = self:GetChecked()
     end, "Shows BLU's startup message after login or reload.")
+
+    CreateCheckbox(coreSection.content, "Show minimap icon", 4, -58, profile.minimapIconEnabled ~= false, function(self)
+        profile.minimapIconEnabled = self:GetChecked()
+        if BLU.Modules.minimap and BLU.Modules.minimap.SetIconVisible then
+            BLU.Modules.minimap:SetIconVisible(self:GetChecked())
+        end
+    end, "Shows a BLU button on the minimap. Left-click opens the options panel; drag to reposition; Ctrl+Right-click hides it (/blu icon on restores it).")
 
     local behaviorSection = BLU.Modules.design:CreateSection(content, "Behavior", "Interface\\Icons\\INV_Misc_GroupLooking")
     behaviorSection:SetPoint("TOPLEFT", coreSection, "BOTTOMLEFT", 0, -12)

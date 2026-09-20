@@ -14,6 +14,8 @@ Config.defaults = {
         -- General settings
         enabled = true,
         showWelcomeMessage = true,
+        minimapIconEnabled = true,
+        minimapAngle = 220,
         masterVolume = 0.5,
         soundVolume = 100,
         debugMode = false,

@@ -4,10 +4,15 @@
 
 ## Current Development Release
 
+### [v8.0.9](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/8.0.9.md) - 2026-09-24
+
+- Restored the WoW Forever Beta interface `120007` to the TOC (validated against build `1.60.1.69893`); it was incorrectly removed in v8.0.8.
+- TOC interface list is now `120007,120100,16001`, covering WoW Forever Beta, Retail live, and the additional beta flavor.
+
 ### [v8.0.8](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/8.0.8.md) - 2026-09-20
 
 - Added a minimap button via the RGX-Framework minimap system with BLU branding, a **Show minimap icon** toggle in the General options pane, and `/blu icon on|off`. Visibility and drag angle persist in the active profile.
-- Added the WoW Forever beta interface `16001` to the TOC for clean loading during beta testing.
+- Added the WoW Forever beta interface `16001` to the TOC for clean loading during beta testing, but incorrectly removed the validated `120007` entry (restored in v8.0.9).
 
 ### [v8.0.7](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/8.0.7.md) - 2026-09-17
 

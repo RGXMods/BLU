@@ -4,6 +4,12 @@
 
 ## Current Development Release
 
+### [v8.0.10](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/8.0.10.md) - 2026-09-29
+
+- Corrected the TOC interface list to `120100,16001` (the v8.0.9 `120007` entry was Retail `12.0.7`, misattributed to the Forever beta; `1.60.1` derives as `16001`).
+- Synchronized the `core/core.lua` version fallback with the TOC.
+- Added the `AGENTS.md` framework-build and interface-versioning directives.
+
 ### [v8.0.9](https://github.com/RGXMods/BLU/blob/main/docs/changelogs/8.0.9.md) - 2026-09-24
 
 - Restored the WoW Forever Beta interface `120007` to the TOC (validated against build `1.60.1.69893`); it was incorrectly removed in v8.0.8.

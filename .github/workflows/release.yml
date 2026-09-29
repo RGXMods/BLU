@@ -10,7 +10,7 @@ on:
 env:
   CF_API_KEY: ${{ secrets.CF_API_KEY }}
   WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
-  GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }} # 🔐 Store securely!
 
 jobs:
@@ -146,13 +146,32 @@ jobs:
         echo "EOF"
         } >> "$GITHUB_OUTPUT"
 
-    - name: 📦 Package and Release
-      uses: BigWigsMods/packager@master
+        # The in-house publisher reads the release notes from this file.
+        printf '%s\n' "$changelog_content" > "${RUNNER_TEMP}/release-notes.md"
 
-    - name: ℹ️ Upload Notes
+    - name: 📦 Build Package
       run: |
-        echo "CurseForge and Wago uploads are handled by BigWigsMods/packager."
-        echo "Project IDs come from X-Curse-Project-ID and X-Wago-ID in BLU.toc."
+        version="${{ steps.version.outputs.version }}"
+        short="${version#v}"
+        node tools/release/packager.mjs --toc BLU.toc --out artifacts
+
+    - name: 🚀 Publish Release
+      if: startsWith(github.ref, 'refs/tags/')
+      shell: bash
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        CF_API_KEY: ${{ secrets.CF_API_KEY }}
+        WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
+      run: |
+        version="${{ steps.version.outputs.version }}"
+        short="${version#v}"
+        node tools/release/publish-release.mjs \
+          --toc BLU.toc \
+          --archive "artifacts/BLU-v${short}.zip" \
+          --tag "${GITHUB_REF_NAME}" \
+          --release-type "${{ steps.release_type.outputs.type }}" \
+          --changelog-file "${RUNNER_TEMP}/release-notes.md" \
+          --out artifacts
 
     - name: 📢 Send Discord Notification
       if: success() && startsWith(github.ref, 'refs/tags/')

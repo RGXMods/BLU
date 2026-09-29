@@ -18,6 +18,7 @@ config/secrets.json
 config/api_keys.json
 
 # Build artifacts
+artifacts/
 *.zip
 *.tar.gz
 

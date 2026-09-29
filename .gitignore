@@ -19,6 +19,7 @@ config/api_keys.json
 
 # Build artifacts
 artifacts/
+.release/
 *.zip
 *.tar.gz
 

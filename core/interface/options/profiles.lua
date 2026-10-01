@@ -346,13 +346,13 @@ local function EnsurePopupConfig(targetPanel)
             end
 
             if profileName == "Default" then
-                BLU:Print("'Default' is a reserved name. Please choose a different name.")
+                BLU:Print(BLU:Loc("PROFILE_NAME_RESERVED"))
                 return
             end
 
             local raw = GetRawDB()
  if raw.profiles and raw.profiles[profileName] then
-                BLU:Print("Profile already exists: " .. tostring(profileName))
+                BLU:Print(BLU:Loc("PROFILE_EXISTS", tostring(profileName)))
                 return
             end
 
@@ -360,7 +360,7 @@ local function EnsurePopupConfig(targetPanel)
                 BLU:PrintDebug("[Options/Profiles] Created profile: " .. tostring(profileName))
                 RefreshProfileUIDeferred(profileName)
             else
-                BLU:Print("Failed to create profile: " .. tostring(profileName))
+                BLU:Print(BLU:Loc("PROFILE_CREATE_FAILED", tostring(profileName)))
             end
         end,
         timeout = 0,
@@ -395,22 +395,22 @@ local function EnsurePopupConfig(targetPanel)
             local newName = (editBox and editBox:GetText() or ""):gsub("^%s+", ""):gsub("%s+$", "")
 
             if not oldName or oldName == "" or newName == "" then
-                BLU:Print("Select a profile and enter a new name.")
+                BLU:Print(BLU:Loc("PROFILE_SELECT_FOR_RENAME"))
                 return
             end
 
             if oldName == "Default" then
-                BLU:Print("'Default' is a permanent profile and cannot be renamed.")
+                BLU:Print(BLU:Loc("PROFILE_RENAME_DEFAULT"))
                 return
             end
 
             if newName == "Default" then
-                BLU:Print("'Default' is a reserved name. Please choose a different name.")
+                BLU:Print(BLU:Loc("PROFILE_NAME_RESERVED"))
                 return
             end
 
             if GetRawDB().profiles and GetRawDB().profiles[newName] then
-                BLU:Print("Profile already exists: " .. tostring(newName))
+                BLU:Print(BLU:Loc("PROFILE_EXISTS", tostring(newName)))
                 return
             end
 
@@ -418,7 +418,7 @@ local function EnsurePopupConfig(targetPanel)
                 BLU:PrintDebug("[Options/Profiles] Renamed profile: " .. tostring(oldName) .. " → " .. tostring(newName))
                 RefreshProfileUIDeferred(newName)
             else
-                BLU:Print("Failed to rename profile: " .. tostring(oldName))
+                BLU:Print(BLU:Loc("PROFILE_CREATE_FAILED", tostring(oldName)))
             end
         end,
         timeout = 0,
@@ -434,12 +434,12 @@ local function EnsurePopupConfig(targetPanel)
         button2 = "Cancel",
         OnAccept = function(_, data)
             if not data or data == "" then
-                BLU:Print("Select a profile first.")
+                BLU:Print(BLU:Loc("PROFILE_SELECT_FIRST"))
                 return
             end
 
             if data == "Default" then
-                BLU:Print("Default cannot be deleted.")
+                BLU:Print(BLU:Loc("PROFILE_DELETE_DEFAULT"))
                 return
             end
 
@@ -447,7 +447,7 @@ local function EnsurePopupConfig(targetPanel)
                 BLU:PrintDebug("[Options/Profiles] Deleted profile: " .. tostring(data))
                 RefreshProfileUI(GetActiveProfileName() or "Default")
             else
-                BLU:Print("Failed to delete profile: " .. tostring(data))
+                BLU:Print(BLU:Loc("PROFILE_DELETE_FAILED", tostring(data)))
             end
         end,
         OnShow = function(self)
@@ -466,15 +466,15 @@ local function EnsurePopupConfig(targetPanel)
         button2 = "Cancel",
         OnAccept = function(_, data)
             if not data or not data.profileName or not data.preset then
-                BLU:Print("[Profiles] Preset apply: missing data.")
+                BLU:Print(BLU:Loc("PROFILE_PRESET_MISSING_DATA"))
                 return
             end
-            BLU:Print("[Profiles] Applying preset '" .. tostring(data.preset.name) .. "' to profile: '" .. tostring(data.profileName) .. "' (active: '" .. tostring(GetActiveProfileName()) .. "')")
+            BLU:Print(BLU:Loc("PROFILES_PRESET_APPLYING", tostring(data.preset.name), tostring(data.profileName), tostring(GetActiveProfileName())))
             local ok, err = ApplyPresetToProfile(data.profileName, data.preset.settings)
             if ok then
-                BLU:Print("[Profiles] Preset applied successfully.")
+                BLU:Print(BLU:Loc("PROFILE_PRESET_APPLIED"))
             else
-                BLU:Print("[Profiles] Preset apply failed: " .. tostring(err))
+                BLU:Print(BLU:Loc("PROFILE_PRESET_APPLY_FAILED", tostring(err)))
             end
             RefreshProfileUI(data.profileName)
         end,
@@ -548,7 +548,7 @@ function BLU.CreateProfilesPanel(panel)
 
     local profileDropdownLabel = mainSection.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     profileDropdownLabel:SetPoint("TOPLEFT", col2X, -16)
-    profileDropdownLabel:SetText("|cff05dffaProfile|r")
+    profileDropdownLabel:SetText(BLU:Loc("PROFILES_TAB_TITLE"))
 
     local profileDropdown = CreateFrame("Frame", "BLUProfilesDropdown", mainSection.content, "UIDropDownMenuTemplate")
     profileDropdown:SetPoint("TOPLEFT", profileDropdownLabel, "BOTTOMLEFT", -15, -4)
@@ -563,7 +563,7 @@ function BLU.CreateProfilesPanel(panel)
 
     local currentProfileLabel = activeHighlight:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     currentProfileLabel:SetPoint("TOPLEFT", activeHighlight, "TOPLEFT", 12, -12)
-    currentProfileLabel:SetText("Active")
+    currentProfileLabel:SetText(BLU:Loc("PROFILES_ACTIVE"))
 
     local currentProfileValue = activeHighlight:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     currentProfileValue:SetPoint("TOPLEFT", currentProfileLabel, "BOTTOMLEFT", 0, -2)
@@ -615,7 +615,7 @@ function BLU.CreateProfilesPanel(panel)
             BLU:PrintDebug("[Options/Profiles] Copied profile: " .. tostring(sourceProfileName) .. " -> " .. tostring(newProfileName))
             RefreshProfileUI(newProfileName)
         else
-            BLU:Print("Failed to copy profile: " .. tostring(sourceProfileName))
+            BLU:Print(BLU:Loc("PROFILE_COPY_FAILED", tostring(sourceProfileName)))
         end
     end)
 
@@ -739,7 +739,7 @@ function BLU.CreateProfilesPanel(panel)
                                 deleteButton:SetScript("OnEnter", function(btn)
                                     btn:SetBackdropColor(0.2, 0.07, 0.07, 1)
                                     GameTooltip:SetOwner(btn, "ANCHOR_RIGHT")
-                                    GameTooltip:SetText("Delete Profile")
+                                    GameTooltip:SetText(BLU:Loc("PROFILES_DELETE_TOOLTIP"))
                                     GameTooltip:AddLine(btn.profileName or "", 0.82, 0.82, 0.82, true)
                                     GameTooltip:Show()
                                 end)
@@ -783,8 +783,8 @@ function BLU.CreateProfilesPanel(panel)
 
         UIDropDownMenu_SetText(profileDropdown, tostring(selectedProfile))
         currentProfileValue:SetText("|cff05dffa" .. tostring(activeProfileName) .. "|r")
-        characterProfileLabel:SetText("Character: |cff95a5a6" .. tostring(characterProfileName) .. "|r")
-        profileCount:SetText("Saved: |cffffd700" .. tostring(#profileNames) .. "|r")
+        characterProfileLabel:SetText(BLU:Loc("PROFILES_CHARACTER_LABEL", "|cff95a5a6" .. tostring(characterProfileName) .. "|r"))
+        profileCount:SetText(BLU:Loc("PROFILES_SAVED_COUNT", "|cffffd700" .. tostring(#profileNames) .. "|r"))
     end
 
     panel:SetScript("OnShow", function(self)

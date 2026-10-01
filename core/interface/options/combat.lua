@@ -186,14 +186,14 @@ local function PlayCombatTriggerPreview(triggerId)
     local volume = GetSelectedVolume(triggerId)
 
     if selected == "None" then
-        BLU:Print("|cff00ccffBLU:|r No sound selected for this combat trigger.")
+        BLU:Print(BLU:Loc("COMBAT_NO_SOUND_SELECTED"))
         return
     end
 
     if selected == "random" then
         local pool = FlattenHierarchySounds(hierarchy)
         if #pool == 0 then
-            BLU:Print("|cff00ccffBLU:|r No sounds available to preview.")
+            BLU:Print(BLU:Loc("COMBAT_NO_SOUNDS_AVAILABLE"))
             return
         end
         selected = pool[math.random(#pool)].id
@@ -407,7 +407,7 @@ local function BuildSoundButtonMenu(dropdownFrame, getTriggerId, labelFontString
 
                 local previewLabel = previewButton:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
                 previewLabel:SetPoint("CENTER", 0, 0)
-                previewLabel:SetText("Play")
+                previewLabel:SetText(BLU:Loc("UI_PLAY"))
                 previewLabel:SetTextColor(unpack(BLU.Modules.design.Colors.Primary))
                 previewButton.label = previewLabel
                 button.bluPreviewButton = previewButton
@@ -416,9 +416,9 @@ local function BuildSoundButtonMenu(dropdownFrame, getTriggerId, labelFontString
             previewButton.previewKey = "combat:inline:" .. tostring(getTriggerId()) .. ":" .. tostring(soundId)
             previewButton.soundId = soundId
             if previewButton.label and BLU.SoundRegistry and BLU.SoundRegistry.IsPreviewPlaying and BLU.SoundRegistry:IsPreviewPlaying(soundId, previewButton.previewKey) then
-                previewButton.label:SetText("Stop")
+                previewButton.label:SetText(BLU:Loc("UI_STOP"))
             elseif previewButton.label then
-                previewButton.label:SetText("Play")
+                previewButton.label:SetText(BLU:Loc("UI_PLAY"))
             end
             previewButton:Show()
 
@@ -516,7 +516,7 @@ local function BuildSoundButtonMenu(dropdownFrame, getTriggerId, labelFontString
 
             if totalPages > 1 then
                 local pageInfo = UIDropDownMenu_CreateInfo()
-                pageInfo.text = string.format("|cff7fd0ffPage %d/%d|r", safePage, totalPages)
+                pageInfo.text = BLU:Loc("UI_PAGE_COUNT", safePage, totalPages)
                 pageInfo.isTitle = true
                 pageInfo.notCheckable = true
                 UIDropDownMenu_AddButton(pageInfo, levelToUse)
@@ -625,7 +625,7 @@ local function BuildSoundButtonMenu(dropdownFrame, getTriggerId, labelFontString
                     info.notCheckable = true
                     info.hasArrow = true
                     info.menuList = {group = groupKey, sub = subKey, type = "pack", page = pageIndex}
-                    info.text = string.format("Page %d (%d-%d)", pageIndex, firstEntry, lastEntry)
+                    info.text = BLU:Loc("UI_PAGE_RANGE", pageIndex, firstEntry, lastEntry)
                     UIDropDownMenu_AddButton(info, level)
                 end
             else
@@ -821,7 +821,7 @@ end
     dropdownLabel:SetPoint("RIGHT", -18, 0)
     dropdownLabel:SetJustifyH("LEFT")
     dropdownLabel:SetTextColor(0.84, 0.84, 0.84, 1)
-    dropdownLabel:SetText("Select Sound")
+    dropdownLabel:SetText(BLU:Loc("UI_SELECT_SOUND"))
 
     local dropdownArrow = dropdownButton:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     dropdownArrow:SetPoint("RIGHT", -6, 0)
@@ -910,7 +910,7 @@ end
 	row.Refresh = function()
 		if not row._combatTriggerId then
 			title:SetText("")
-			dropdownLabel:SetText("Select Sound")
+			dropdownLabel:SetText(BLU:Loc("UI_SELECT_SOUND"))
 			volumeControl:Hide()
 			LayoutControls(false)
 			return
@@ -979,7 +979,7 @@ function BLU.CreateCombatPanel(panel)
 
     local title = titleBar:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     title:SetPoint("LEFT", icon, "RIGHT", 8, 0)
-    title:SetText("|cff05dffaCombat|r")
+    title:SetText(BLU:Loc("COMBAT_TAB_TITLE"))
 
     local switchFrame = CreateFrame("Frame", nil, titleBar)
     switchFrame:SetSize(44, 20)
@@ -1006,11 +1006,11 @@ function BLU.CreateCombatPanel(panel)
         if enabled then
             toggle:SetPoint("RIGHT", switchFrame, "RIGHT", -1, 0)
             switchBg:SetVertexColor(unpack(BLU.Modules.design.Colors.Primary))
-            status:SetText("|cff00ff00ON|r")
+            status:SetText(BLU:Loc("UI_ON"))
         else
             toggle:SetPoint("LEFT", switchFrame, "LEFT", 1, 0)
             switchBg:SetVertexColor(0.3, 0.3, 0.3, 1)
-            status:SetText("|cffff0000OFF|r")
+            status:SetText(BLU:Loc("UI_OFF"))
         end
     end
 

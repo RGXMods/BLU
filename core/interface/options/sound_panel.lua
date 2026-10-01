@@ -486,7 +486,7 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 
 				local label = previewButton:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
 				label:SetPoint("CENTER", 0, 0)
-				label:SetText("Play")
+				label:SetText(BLU:Loc("UI_PLAY"))
 				label:SetTextColor(unpack(BLU.Modules.design.Colors.Primary))
 				previewButton.label = label
 				button.bluPreviewButton = previewButton
@@ -495,9 +495,9 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 			previewButton.previewKey = "soundpanel:inline:" .. tostring(actualEventType) .. ":" .. tostring(soundId)
 			previewButton.soundId = soundId
 			if previewButton.label and BLU.SoundRegistry and BLU.SoundRegistry.IsPreviewPlaying and BLU.SoundRegistry:IsPreviewPlaying(soundId, previewButton.previewKey) then
-				previewButton.label:SetText("Stop")
+				previewButton.label:SetText(BLU:Loc("UI_STOP"))
 			elseif previewButton.label then
-				previewButton.label:SetText("Play")
+				previewButton.label:SetText(BLU:Loc("UI_PLAY"))
 			end
 			previewButton:Show()
 
@@ -635,7 +635,7 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 
 			if totalPages > 1 then
 				local pageInfo = UIDropDownMenu_CreateInfo()
-				pageInfo.text = string.format("|cff7fd0ffPage %d/%d|r", safePage, totalPages)
+				pageInfo.text = BLU:Loc("UI_PAGE_COUNT", safePage, totalPages)
 				pageInfo.isTitle = true
 				pageInfo.notCheckable = true
 				UIDropDownMenu_AddButton(pageInfo, levelToUse)
@@ -767,7 +767,7 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 						pageInfo.notCheckable = true
 						pageInfo.hasArrow = true
 						pageInfo.menuList = {group = groupKey, sub = subKey, type = "pack", page = pageIndex}
-						pageInfo.text = string.format("Page %d (%d-%d)", pageIndex, firstEntry, lastEntry)
+						pageInfo.text = BLU:Loc("UI_PAGE_RANGE", pageIndex, firstEntry, lastEntry)
 						UIDropDownMenu_AddButton(pageInfo, level)
 					end
 				else
@@ -875,7 +875,7 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
 
 	local title = titleBar:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	title:SetPoint("LEFT", icon, "RIGHT", 8, 0)
-	title:SetText("|cff05dffa" .. eventName .. " Sounds|r")
+	title:SetText(BLU:Loc("EVENT_SOUNDS_TITLE", eventName))
 
 	local switchFrame = CreateFrame("Frame", nil, titleBar)
 	switchFrame:SetSize(44, 20)
@@ -905,11 +905,11 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
 		if enabled then
 			toggle:SetPoint("RIGHT", switchFrame, "RIGHT", -1, 0)
 			switchBg:SetVertexColor(unpack(BLU.Modules.design.Colors.Primary))
-			status:SetText("|cff00ff00ON|r")
+			status:SetText(BLU:Loc("UI_ON"))
 		else
 			toggle:SetPoint("LEFT", switchFrame, "LEFT", 1, 0)
 			switchBg:SetVertexColor(0.3, 0.3, 0.3, 1)
-			status:SetText("|cffff0000OFF|r")
+			status:SetText(BLU:Loc("UI_OFF"))
 		end
 	end
 
@@ -994,7 +994,7 @@ function BLU.CreateHousingPanel(panel)
 
 	local title = titleBar:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	title:SetPoint("LEFT", icon, "RIGHT", 8, 0)
-	title:SetText("|cff05dffaHousing Sounds|r")
+	title:SetText(BLU:Loc("UI_HOUSING_TITLE"))
 
 	local switchFrame = CreateFrame("Frame", nil, titleBar)
 	switchFrame:SetSize(44, 20)
@@ -1021,11 +1021,11 @@ function BLU.CreateHousingPanel(panel)
 		if enabled then
 			toggle:SetPoint("RIGHT", switchFrame, "RIGHT", -1, 0)
 			switchBg:SetVertexColor(unpack(BLU.Modules.design.Colors.Primary))
-			status:SetText("|cff00ff00ON|r")
+			status:SetText(BLU:Loc("UI_ON"))
 		else
 			toggle:SetPoint("LEFT", switchFrame, "LEFT", 1, 0)
 			switchBg:SetVertexColor(0.3, 0.3, 0.3, 1)
-			status:SetText("|cffff0000OFF|r")
+			status:SetText(BLU:Loc("UI_OFF"))
 		end
 	end
 

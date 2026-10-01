@@ -77,8 +77,8 @@ SlashCmdList["BLU"] = function(msg)
     
     -- Recover if the normal login/world initialization path did not complete.
     if not EnsureReadyForOptions() then
-        BLU:Print("|cffff9900BLU is still loading...|r")
-        BLU:Print("Please wait a moment and try again.")
+        BLU:Print(BLU:Loc("CMD_STILL_LOADING"))
+        BLU:Print(BLU:Loc("CMD_PLEASE_WAIT"))
         BLU:PrintDebug("Database not ready. BLU.db is " .. tostring(BLU.db))
         BLU:PrintDebug("BLUDB global is " .. tostring(_G["BLUDB"]))
         return
@@ -90,16 +90,16 @@ SlashCmdList["BLU"] = function(msg)
         if BLU.OpenOptions then
             BLU:OpenOptions()
         else
-            BLU:Print("|cff00ccffBLU:|r Options panel not available yet. Please wait a moment and try again.")
+            BLU:Print(BLU:Loc("CMD_OPTIONS_UNAVAILABLE"))
         end
     elseif command == "debug" then
         BLU:PrintDebug("[Commands] Toggling debug mode")
         if BLU.db then
             BLU.db.debugMode = not BLU.db.debugMode
             BLU.debugMode = BLU.db.debugMode
-            BLU:Print("|cff00ccffBLU:|r Debug mode " .. (BLU.db.debugMode and "enabled" or "disabled"))
+            BLU:Print(BLU:Loc("CMD_DEBUG_ENABLED", BLU.db.debugMode and BLU:Loc("CMD_DEBUG_ON") or BLU:Loc("CMD_DEBUG_OFF")))
         else
-            BLU:Print("|cff00ccffBLU:|r Database not loaded yet")
+            BLU:Print(BLU:Loc("CMD_DB_NOT_LOADED"))
         end
     elseif command == "enable" then
         BLU:PrintDebug("[Commands] Enabling addon")
@@ -108,7 +108,7 @@ SlashCmdList["BLU"] = function(msg)
             if BLU.Enable then
                 BLU:Enable()
             end
-            BLU:Print("|cff00ff00BLU Enabled|r")
+            BLU:Print(BLU:Loc("CMD_ENABLED_MSG"))
         end
     elseif command == "disable" then
         BLU:PrintDebug("[Commands] Disabling addon")
@@ -117,7 +117,7 @@ SlashCmdList["BLU"] = function(msg)
             if BLU.Disable then
                 BLU:Disable()
             end
-            BLU:Print("|cffff0000BLU Disabled|r")
+            BLU:Print(BLU:Loc("CMD_DISABLED_MSG"))
         end
     elseif command == "icon" then
         BLU:PrintDebug("[Commands] Handling minimap icon command: " .. tostring(rest))
@@ -125,26 +125,26 @@ SlashCmdList["BLU"] = function(msg)
         if sub == "on" then
             if BLU.db then BLU.db.minimapIconEnabled = true end
             if BLU.Modules.minimap then BLU.Modules.minimap:SetIconVisible(true) end
-            BLU:Print("Minimap icon |cff00ff00shown|r")
+            BLU:Print(BLU:Loc("CMD_ICON_SHOWN"))
         elseif sub == "off" then
             if BLU.db then BLU.db.minimapIconEnabled = false end
             if BLU.Modules.minimap then BLU.Modules.minimap:SetIconVisible(false) end
-            BLU:Print("Minimap icon |cffff0000hidden|r. Use |cffffffff/blu icon on|r to show it again.")
+            BLU:Print(BLU:Loc("CMD_ICON_HIDDEN"))
         else
-            BLU:Print("Usage: |cffffff00/blu icon on|r or |cffffff00/blu icon off|r")
+            BLU:Print(BLU:Loc("CMD_ICON_USAGE"))
         end
     elseif command == "status" then
         BLU:PrintDebug("[Commands] Showing addon status")
-        BLU:Print("|cff00ccffBLU Status:|r")
-        BLU:Print("  Database: " .. (BLU.db and "|cff00ff00Loaded|r" or "|cffff0000Not Loaded|r"))
-        BLU:Print("  Options Panel: " .. (BLU.OptionsPanel and "|cff00ff00Created|r" or "|cffff9900Not Created|r"))
-        BLU:Print("  Enabled: " .. ((BLU.db and BLU.db.enabled) and "|cff00ff00Yes|r" or "|cffff0000No|r"))
-        BLU:Print("  Debug Mode: " .. (BLU.debugMode and "|cff00ff00On|r" or "|cff808080Off|r"))
+        BLU:Print(BLU:Loc("CMD_STATUS_HEADER"))
+        BLU:Print(BLU:Loc("CMD_STATUS_DB", BLU.db and BLU:Loc("CMD_STATUS_DB_LOADED") or BLU:Loc("CMD_STATUS_DB_NOT_LOADED")))
+        BLU:Print(BLU:Loc("CMD_STATUS_PANEL", BLU.OptionsPanel and BLU:Loc("CMD_STATUS_PANEL_CREATED") or BLU:Loc("CMD_STATUS_PANEL_NOT_CREATED")))
+        BLU:Print(BLU:Loc("CMD_STATUS_ENABLED", (BLU.db and BLU.db.enabled) and BLU:Loc("CMD_STATUS_YES") or BLU:Loc("CMD_STATUS_NO")))
+        BLU:Print(BLU:Loc("CMD_STATUS_DEBUG", BLU.debugMode and BLU:Loc("CMD_STATUS_ON") or BLU:Loc("CMD_STATUS_OFF")))
     elseif command == "refresh" or command == "rescan" then
         BLU:PrintDebug("[Commands] Refreshing external sounds")
         if BLU.RefreshUserSounds then
             BLU:RefreshUserSounds()
-            BLU:Print("|cff00ccffBLU:|r Rescanning user custom sounds...")
+            BLU:Print(BLU:Loc("CMD_RESCANNING"))
         end
     elseif command == "addcustom" then
         BLU:PrintDebug("[Commands] Adding profile custom sound")
@@ -153,7 +153,7 @@ SlashCmdList["BLU"] = function(msg)
         soundPath = soundPath and soundPath:gsub("^%s+", ""):gsub("%s+$", "") or ""
 
         if soundPath == "" then
-            BLU:Print("|cff00ccffBLU:|r Usage: /blu addcustom myfile[.ogg] | Optional Name")
+            BLU:Print(BLU:Loc("CMD_ADDCUSTOM_USAGE"))
             return
         end
 
@@ -161,46 +161,46 @@ SlashCmdList["BLU"] = function(msg)
             local ok, result, resolvedPath = BLU.Modules["usersounds"]:AddCustomSound(soundPath, displayName)
             if ok then
                 if resolvedPath and displayName then
-                    BLU:Print("|cff00ccffBLU:|r Added custom sound: " .. tostring(result) .. " (" .. tostring(resolvedPath) .. ")")
+                    BLU:Print(BLU:Loc("CMD_ADDCUSTOM_ADDED_PATH", tostring(result), tostring(resolvedPath)))
                 else
-                    BLU:Print("|cff00ccffBLU:|r Added custom sound: " .. tostring(result))
+                    BLU:Print(BLU:Loc("CMD_ADDCUSTOM_ADDED", tostring(result)))
                 end
             else
-                BLU:Print("|cff00ccffBLU:|r Failed to add custom sound: " .. tostring(result))
+                BLU:Print(BLU:Loc("CMD_ADDCUSTOM_FAILED", tostring(result)))
             end
         end
     elseif command == "removecustom" then
         BLU:PrintDebug("[Commands] Removing profile custom sound")
         local matchValue = rest and rest:gsub("^%s+", ""):gsub("%s+$", "") or ""
         if matchValue == "" then
-            BLU:Print("|cff00ccffBLU:|r Usage: /blu removecustom Interface\\AddOns\\file.ogg")
+            BLU:Print(BLU:Loc("CMD_REMOVECUSTOM_USAGE"))
             return
         end
 
         if BLU.Modules and BLU.Modules["usersounds"] and BLU.Modules["usersounds"].RemoveCustomSound then
             local ok, err = BLU.Modules["usersounds"]:RemoveCustomSound(matchValue)
             if ok then
-                BLU:Print("|cff00ccffBLU:|r Removed custom sound: " .. matchValue)
+                BLU:Print(BLU:Loc("CMD_REMOVECUSTOM_REMOVED", matchValue))
             else
-                BLU:Print("|cff00ccffBLU:|r Failed to remove custom sound: " .. tostring(err))
+                BLU:Print(BLU:Loc("CMD_REMOVECUSTOM_FAILED", tostring(err)))
             end
         end
     elseif command == "help" then
         BLU:PrintDebug("[Commands] Showing help")
-        BLU:Print("|cff00ccffBLU Commands:|r")
-        BLU:Print("  |cffffff00/blu|r - Open options")
-        BLU:Print("  |cffffff00/blu debug|r - Toggle debug mode")
-        BLU:Print("  |cffffff00/blu status|r - Show addon status")
-        BLU:Print("  |cffffff00/blu refresh|r - Rescan external sound packs")
-        BLU:Print("  |cffffff00/blu addcustom <file or path> | <name>|r - Add a custom sound file")
-        BLU:Print("  |cffffff00/blu removecustom <path>|r - Remove a custom sound file")
-        BLU:Print("  |cffffff00/blu enable|r - Enable addon")
-        BLU:Print("  |cffffff00/blu disable|r - Disable addon")
-        BLU:Print("  |cffffff00/blu help|r - Show this help")
+        BLU:Print(BLU:Loc("CMD_HELP_HEADER"))
+        BLU:Print(BLU:Loc("CMD_HELP_LINE_OPTIONS"))
+        BLU:Print(BLU:Loc("CMD_HELP_LINE_DEBUG"))
+        BLU:Print(BLU:Loc("CMD_HELP_LINE_STATUS"))
+        BLU:Print(BLU:Loc("CMD_HELP_LINE_REFRESH"))
+        BLU:Print(BLU:Loc("CMD_HELP_LINE_ADDCUSTOM"))
+        BLU:Print(BLU:Loc("CMD_HELP_LINE_REMOVECUSTOM"))
+        BLU:Print(BLU:Loc("CMD_HELP_LINE_ENABLE"))
+        BLU:Print(BLU:Loc("CMD_HELP_LINE_DISABLE"))
+        BLU:Print(BLU:Loc("CMD_HELP_LINE_HELP"))
     else
         -- Unknown command, show help
         BLU:PrintDebug("[Commands] Unknown /blu command: '" .. tostring(command) .. "'")
-        BLU:Print("|cff00ccffBLU:|r Unknown command. Type |cffffff00/blu help|r for help.")
+        BLU:Print(BLU:Loc("CMD_UNKNOWN"))
     end
 end
 
@@ -209,7 +209,7 @@ SLASH_BLUTEST1 = "/blutest"
 SlashCmdList["BLUTEST"] = function(event)
     BLU:PrintDebug("[Commands] /blutest invoked with '" .. tostring(event) .. "'")
     if not BLU.db then
-        BLU:Print("Database not loaded yet")
+        BLU:Print(BLU:Loc("BLUTEST_DB_NOT_LOADED"))
         return
     end
 
@@ -219,7 +219,7 @@ SlashCmdList["BLUTEST"] = function(event)
             if functionName:find("^On") then
                 local eventName = functionName:gsub("On", ""):lower()
                 events[eventName] = function()
-                    BLU:Print("Simulating " .. functionName .. "...")
+                    BLU:Print(BLU:Loc("BLUTEST_SIMULATING", functionName))
                     if module[functionName] then
                         module[functionName](module)
                     end
@@ -230,12 +230,12 @@ SlashCmdList["BLUTEST"] = function(event)
 
     if event == "" then
         BLU:PrintDebug("[Commands] /blutest requested usage output")
-        BLU:Print("Usage: /blutest [event]")
+        BLU:Print(BLU:Loc("BLUTEST_USAGE"))
         local available_events = ""
         for eventName, _ in pairs(events) do
             available_events = available_events .. eventName .. ", "
         end
-        BLU:Print("Available events: " .. available_events:sub(1, -3))
+        BLU:Print(BLU:Loc("BLUTEST_AVAILABLE", available_events:sub(1, -3)))
         return
     end
 
@@ -245,11 +245,11 @@ SlashCmdList["BLUTEST"] = function(event)
         handler()
     else
         BLU:PrintDebug("[Commands] Unknown /blutest event '" .. tostring(event) .. "'")
-        BLU:Print("Unknown event: " .. event)
+        BLU:Print(BLU:Loc("BLUTEST_UNKNOWN_EVENT", event))
         local available_events = ""
         for eventName, _ in pairs(events) do
             available_events = available_events .. eventName .. ", "
         end
-        BLU:Print("Available events: " .. available_events:sub(1, -3))
+        BLU:Print(BLU:Loc("BLUTEST_AVAILABLE", available_events:sub(1, -3)))
     end
 end

@@ -321,8 +321,8 @@ function BLU:ShowWelcomeMessage()
     end
 
     local version = self.GetMetadata(addonName, "Version") or self.version or "Unknown"
-    print(CHAT_PREFIX .. " Welcome. Use |cff05dffa/blu|r to open the options panel or |cff05dffa/blu help|r for more commands.")
-    print(CHAT_PREFIX .. " |cffffff00Version:|r |cff8080ff" .. version .. "|r")
+    print(CHAT_PREFIX .. " " .. self:Loc("WELCOME_MESSAGE"))
+    print(CHAT_PREFIX .. " " .. self:Loc("VERSION_LINE", "|cff8080ff" .. version .. "|r"))
     self._welcomeMessageShown = true
     self:Trace("Welcome", "Displayed welcome message for version " .. tostring(version))
 end

@@ -26,7 +26,7 @@ L["ADDON_NAME"] = "Better Level-Up!"
 L["VERSION"] = "Version"
 L["UNKNOWN"] = "Unknown"
 L["WELCOME_MESSAGE"] = "Welcome. Use |cff05dffa/blu|r to open the options panel or |cff05dffa/blu help|r for more commands."
-L["VERSION_LINE"] = "Version: %s"
+L["VERSION_LINE"] = "|cffffff00Version:|r %s"
 
 -- Command strings
 L["CMD_HELP"] = "Shows this help message"
@@ -79,6 +79,11 @@ L["CMD_HELP_LINE_ENABLE"] = "  |cffffff00/blu enable|r - Enable addon"
 L["CMD_HELP_LINE_DISABLE"] = "  |cffffff00/blu disable|r - Disable addon"
 L["CMD_HELP_LINE_HELP"] = "  |cffffff00/blu help|r - Show this help"
 L["CMD_UNKNOWN"] = "|cff00ccffBLU:|r Unknown command. Type |cffffff00/blu help|r for help."
+L["BLUTEST_DB_NOT_LOADED"] = "Database not loaded yet"
+L["BLUTEST_SIMULATING"] = "Simulating %s..."
+L["BLUTEST_USAGE"] = "Usage: /blutest [event]"
+L["BLUTEST_AVAILABLE"] = "Available events: %s"
+L["BLUTEST_UNKNOWN_EVENT"] = "Unknown event: %s"
 
 -- Settings panel strings
 L["SETTINGS_TITLE"] = "BLU Settings"

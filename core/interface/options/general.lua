@@ -74,7 +74,7 @@ function BLU.CreateGeneralPanel(panel)
     if not EnsureProfileDefaults() then
         local unavailable = content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
         unavailable:SetPoint("TOPLEFT", 0, -12)
-        unavailable:SetText("|cffff6666Database not ready. Reopen this tab in a moment.|r")
+        unavailable:SetText(BLU:Loc("GENERAL_DB_NOT_READY"))
         content:SetHeight(60)
         return
     end
@@ -136,19 +136,19 @@ function BLU.CreateGeneralPanel(panel)
     soundDesc:SetJustifyH("LEFT")
     soundDesc:SetWordWrap(true)
     soundDesc:SetTextColor(0.72, 0.78, 0.86)
-    soundDesc:SetText("All BLU sounds play through the selected channel. Adjusting the volume here changes your in-game channel level.")
+    soundDesc:SetText(BLU:Loc("GENERAL_CHANNEL_DESC"))
 
     local soundChannelLabel = soundSection.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     soundChannelLabel:SetPoint("TOPLEFT", 8, -52)
-    soundChannelLabel:SetText("Sound Channel")
+    soundChannelLabel:SetText(BLU:Loc("GENERAL_SOUND_CHANNEL"))
 
     local soundChannelDropdown = CreateFrame("Frame", nil, soundSection.content, "UIDropDownMenuTemplate")
     soundChannelDropdown:SetPoint("TOPLEFT", soundChannelLabel, "BOTTOMLEFT", -16, -2)
     UIDropDownMenu_SetWidth(soundChannelDropdown, 160)
     soundChannelDropdown:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-        GameTooltip:SetText("Sound Channel", 1, 1, 1)
-        GameTooltip:AddLine("Pick which WoW audio channel BLU uses for playback. The volume slider below controls that same channel.", 0.82, 0.82, 0.82, true)
+        GameTooltip:SetText(BLU:Loc("GENERAL_CHANNEL_TOOLTIP_TITLE"), 1, 1, 1)
+        GameTooltip:AddLine(BLU:Loc("GENERAL_CHANNEL_TOOLTIP"), 0.82, 0.82, 0.82, true)
         GameTooltip:Show()
     end)
     soundChannelDropdown:SetScript("OnLeave", GameTooltip_Hide)
@@ -180,8 +180,8 @@ function BLU.CreateGeneralPanel(panel)
     volumeSlider:EnableMouse(true)
     volumeSlider:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-        GameTooltip:SetText("Channel Volume", 1, 1, 1)
-        GameTooltip:AddLine("Adjusts the selected WoW sound channel volume. This affects BLU because BLU plays through that channel.", 0.82, 0.82, 0.82, true)
+        GameTooltip:SetText(BLU:Loc("GENERAL_VOLUME_TOOLTIP_TITLE"), 1, 1, 1)
+        GameTooltip:AddLine(BLU:Loc("GENERAL_VOLUME_TOOLTIP"), 0.82, 0.82, 0.82, true)
         GameTooltip:Show()
     end)
     volumeSlider:SetScript("OnLeave", GameTooltip_Hide)
@@ -253,7 +253,7 @@ function BLU.CreateGeneralPanel(panel)
             BLU:PrintDebug("[Options/General] Add Custom Sound popup accepted with input '" .. tostring(soundInput) .. "'")
 
             if soundInput == "" then
-                BLU:Print("|cff00ccffBLU:|r Enter a file name like myfile or myfile.ogg.")
+                BLU:Print(BLU:Loc("GENERAL_ENTER_FILE_NAME"))
                 return
             end
 
@@ -261,15 +261,15 @@ function BLU.CreateGeneralPanel(panel)
                 local ok, result, resolvedPath = BLU.Modules["usersounds"]:AddCustomSound(soundInput)
                 if ok then
                     if resolvedPath and soundInput:find("[/\\]") then
-                        BLU:Print("|cff00ccffBLU:|r Added custom sound: " .. tostring(result) .. " (" .. tostring(resolvedPath) .. ")")
+                        BLU:Print(BLU:Loc("GENERAL_ADDED_CUSTOM_SOUND_PATH", tostring(result), tostring(resolvedPath)))
                     else
-                        BLU:Print("|cff00ccffBLU:|r Added custom sound: " .. tostring(result))
+                        BLU:Print(BLU:Loc("GENERAL_ADDED_CUSTOM_SOUND", tostring(result)))
                     end
                 else
-                    BLU:Print("|cff00ccffBLU:|r Failed to add custom sound: " .. tostring(result))
+                    BLU:Print(BLU:Loc("GENERAL_ADD_CUSTOM_FAILED", tostring(result)))
                 end
             else
-                BLU:Print("|cff00ccffBLU:|r User custom sounds are not available yet.")
+                BLU:Print(BLU:Loc("GENERAL_CUSTOM_SOUNDS_UNAVAILABLE"))
             end
         end,
         timeout = 0,

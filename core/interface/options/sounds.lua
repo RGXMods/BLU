@@ -123,7 +123,7 @@ function BLU.CreateSoundsPanel(panel)
     headerNote:SetJustifyH("LEFT")
     headerNote:SetWordWrap(true)
     headerNote:SetTextColor(0.78, 0.78, 0.78)
-    headerNote:SetText("BLU lists its built-in libraries, your manually added custom sounds, and any supported third-party sound packs detected from other addons.")
+    headerNote:SetText(BLU:Loc("SOUNDS_TAB_HEADER"))
 
     local startY = -72
     local rowsPerColumn = 12
@@ -157,15 +157,15 @@ function BLU.CreateSoundsPanel(panel)
             GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
             GameTooltip:SetText(pack.name or "Unknown Pack", 1, 1, 1)
             GameTooltip:AddLine((pack.status or "Status unavailable"):gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", ""), 0.02, 0.87, 0.98, true)
-            GameTooltip:AddLine("Registered sounds: " .. tostring(pack.soundCount or 0), 0.82, 0.82, 0.82, true)
+            GameTooltip:AddLine(BLU:Loc("SOUNDS_SOURCE_TOOLTIP_REGISTERED", tostring(pack.soundCount or 0)), 0.82, 0.82, 0.82, true)
             if pack.id == "wow_default_blu" then
-                GameTooltip:AddLine("BLU's built-in Warcraft-style defaults.", 0.82, 0.82, 0.82, true)
+                GameTooltip:AddLine(BLU:Loc("SOUNDS_SOURCE_TOOLTIP_INTERNAL"), 0.82, 0.82, 0.82, true)
             elseif pack.id == "other_games_blu" then
-                GameTooltip:AddLine("BLU's built-in game sound library with low, medium, and high variants.", 0.82, 0.82, 0.82, true)
+                GameTooltip:AddLine(BLU:Loc("SOUNDS_SOURCE_TOOLTIP_BUILTIN"), 0.82, 0.82, 0.82, true)
             elseif pack.id == "user_custom_sounds" then
-                GameTooltip:AddLine("Sounds you added manually from the Sounds tab or slash commands.", 0.82, 0.82, 0.82, true)
+                GameTooltip:AddLine(BLU:Loc("SOUNDS_SOURCE_TOOLTIP_USER"), 0.82, 0.82, 0.82, true)
             else
-                GameTooltip:AddLine("Detected from a third-party addon or external media source.", 0.82, 0.82, 0.82, true)
+                GameTooltip:AddLine(BLU:Loc("SOUNDS_SOURCE_TOOLTIP_EXTERNAL"), 0.82, 0.82, 0.82, true)
             end
             GameTooltip:Show()
         end)
@@ -297,7 +297,7 @@ function BLU.CreateSoundsPanel(panel)
     managerNote:SetJustifyH("LEFT")
     managerNote:SetWordWrap(true)
     managerNote:SetTextColor(0.78, 0.78, 0.78)
-    managerNote:SetText("Add, review, and remove personal sound files for the active profile. BLU can resolve short file names or full AddOns paths and load the match into User Custom Sounds.")
+    managerNote:SetText(BLU:Loc("SOUNDS_MANAGER_HEADER"))
 
     local addButton = BLU.Modules.design:CreateActionButton(
         managerPanel,
@@ -316,7 +316,7 @@ function BLU.CreateSoundsPanel(panel)
     local countLabel = managerPanel:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     countLabel:SetPoint("LEFT", addButton, "RIGHT", 10, 0)
     countLabel:SetTextColor(0.7, 0.7, 0.7)
-    countLabel:SetText("Loaded: " .. tostring(customSoundCount))
+    countLabel:SetText(BLU:Loc("SOUNDS_LOADED_COUNT", tostring(customSoundCount)))
 
     local listFrame = CreateFrame("ScrollFrame", nil, managerPanel, "UIPanelScrollFrameTemplate")
     listFrame:SetPoint("TOPLEFT", addButton, "BOTTOMLEFT", 0, -12)
@@ -356,7 +356,7 @@ function BLU.CreateSoundsPanel(panel)
         emptyText:SetPoint("RIGHT", -4, 0)
         emptyText:SetJustifyH("LEFT")
         emptyText:SetTextColor(0.65, 0.65, 0.65)
-        emptyText:SetText("No user custom sounds are loaded.")
+        emptyText:SetText(BLU:Loc("SOUNDS_NO_CUSTOM"))
         listContent:SetHeight(40)
     else
         local rowHeight = 48
@@ -396,12 +396,12 @@ function BLU.CreateSoundsPanel(panel)
                     if soundsModule and soundsModule.RemoveCustomSound then
                         local ok, err = soundsModule:RemoveCustomSound(entry.file)
                         if ok then
-                            BLU:Print("|cff00ccffBLU:|r Removed custom sound: " .. tostring(entry.name))
+                            BLU:Print(BLU:Loc("SOUNDS_REMOVED_CUSTOM", tostring(entry.name)))
                             if BLU.RefreshSoundPackUI then
                                 BLU.RefreshSoundPackUI()
                             end
                         else
-                            BLU:Print("|cff00ccffBLU:|r Failed to remove custom sound: " .. tostring(err))
+                            BLU:Print(BLU:Loc("SOUNDS_REMOVE_CUSTOM_FAILED", tostring(err)))
                         end
                     end
                 end)
@@ -409,7 +409,7 @@ function BLU.CreateSoundsPanel(panel)
                 local loadedLabel = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
                 loadedLabel:SetPoint("TOPRIGHT", row, "TOPRIGHT", -8, -15)
                 loadedLabel:SetTextColor(0.36, 0.88, 0.52)
-                loadedLabel:SetText("Loaded")
+                loadedLabel:SetText(BLU:Loc("SOUNDS_LOADED_LABEL"))
             end
         end
 

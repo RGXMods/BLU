@@ -68,7 +68,7 @@ function Minimap:Init()
         onCtrlRight = function(btn)
             btn:SetVisible(false)
             if BLU.db then BLU.db.minimapIconEnabled = false end
-            BLU:Print("Minimap icon |cffff0000hidden|r. Use |cffffffff/blu icon on|r to show it again.")
+            BLU:Print(BLU:Loc("MINIMAP_ICON_HIDDEN"))
         end,
     })
 

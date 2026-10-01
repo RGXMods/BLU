@@ -78,7 +78,7 @@ local function CreateDebugControls(parent, options)
     if not EnsureDebugDefaults() then
         local unavailable = parent:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
         unavailable:SetPoint("TOPLEFT", 0, -12)
-        unavailable:SetText("|cffff6666Database not ready. Reopen this tab in a moment.|r")
+        unavailable:SetText(BLU:Loc("GENERAL_DB_NOT_READY"))
         return nil
     end
 
@@ -111,7 +111,7 @@ local function CreateDebugControls(parent, options)
         else
             local masterLabel = content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
             masterLabel:SetPoint("TOPLEFT", 0, -2)
-            masterLabel:SetText("|cff05dffaDebug Mode|r")
+            masterLabel:SetText(BLU:Loc("DEBUG_TAB_MASTER"))
             status:SetPoint("RIGHT", content, "TOPRIGHT", -54, -2)
         end
 
@@ -204,7 +204,7 @@ function BLU.CreateDebugPanel(panel)
 
     local title = titleBar:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     title:SetPoint("LEFT", icon, "RIGHT", 8, 0)
-    title:SetText("|cff05dffaDebug Options|r")
+    title:SetText(BLU:Loc("DEBUG_TAB_TITLE"))
 
     local status = titleBar:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     status:SetPoint("RIGHT", titleBar, "RIGHT", -60, 0)
@@ -212,7 +212,7 @@ function BLU.CreateDebugPanel(panel)
     if not EnsureDebugDefaults() then
         local unavailable = content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
         unavailable:SetPoint("TOPLEFT", 0, -12)
-        unavailable:SetText("|cffff6666Database not ready. Reopen this tab in a moment.|r")
+        unavailable:SetText(BLU:Loc("GENERAL_DB_NOT_READY"))
         return
     end
 
@@ -224,9 +224,9 @@ function BLU.CreateDebugPanel(panel)
         local enabled = profile.debugMode == true
         updateToggle(enabled)
         if enabled then
-            status:SetText("|cff00ff00ON|r")
+            status:SetText(BLU:Loc("UI_ON"))
         else
-            status:SetText("|cffff0000OFF|r")
+            status:SetText(BLU:Loc("UI_OFF"))
         end
     end
 

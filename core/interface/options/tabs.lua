@@ -156,7 +156,7 @@ local function CreateComingSoonPanel(panel, tabName)
 
     local title = titleBar:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     title:SetPoint("LEFT", icon, "RIGHT", 8, 0)
-    title:SetText("|cff05dffa" .. tabName .. "|r")
+    title:SetText(BLU:Loc("TAB_TITLE", tabName))
 
     local section = BLU.Modules.design:CreateSection(content, "Coming Soon", "Interface\\Icons\\INV_Misc_Note_05")
     section:SetPoint("TOPLEFT", titleBar, "BOTTOMLEFT", 0, -10)
@@ -195,7 +195,7 @@ local function CreateCombatPrototypePanel(panel)
 
     local title = titleBar:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     title:SetPoint("LEFT", icon, "RIGHT", 8, 0)
-    title:SetText("|cff05dffaCombat|r")
+    title:SetText(BLU:Loc("COMBAT_TAB_TITLE"))
 
     local introSection = BLU.Modules.design:CreateSection(content, "Combat Prototype", "Interface\\Icons\\INV_Misc_Note_05")
     introSection:SetPoint("TOPLEFT", titleBar, "BOTTOMLEFT", 0, -10)
@@ -208,7 +208,7 @@ local function CreateCombatPrototypePanel(panel)
     intro:SetJustifyH("LEFT")
     intro:SetWordWrap(true)
     intro:SetTextColor(0.82, 0.82, 0.82)
-    intro:SetText("This tab is a visual test bed for future combat settings. The goal here is to compare direct combat cue options, dedicated combat music controls, and a compact paged trigger layout before module logic is built.")
+    intro:SetText(BLU:Loc("COMBAT_INTRO"))
 
     local function CreateCompactMockRow(parent, x, y, titleText, soundText, volumeText, tooltipText)
         local row = CreateFrame("Frame", nil, parent, "BackdropTemplate")
@@ -404,7 +404,7 @@ local function CreateCombatPrototypePanel(panel)
     cuesNote:SetJustifyH("LEFT")
     cuesNote:SetWordWrap(true)
     cuesNote:SetTextColor(0.78, 0.82, 0.88)
-    cuesNote:SetText("One-shot sounds that fire at a combat boundary. This is the clearest place for separate start and end cues.")
+    cuesNote:SetText(BLU:Loc("COMBAT_CUES_NOTE"))
 
     local cueStartRow = CreateCompactMockRow(
         cuesSection.content,
@@ -438,7 +438,7 @@ local function CreateCombatPrototypePanel(panel)
     musicNote:SetJustifyH("LEFT")
     musicNote:SetWordWrap(true)
     musicNote:SetTextColor(0.78, 0.82, 0.88)
-    musicNote:SetText("Persistent combat music should likely live as its own system instead of being mixed into normal one-shot triggers.")
+    musicNote:SetText(BLU:Loc("COMBAT_MUSIC_NOTE"))
 
     local musicTrackRow = CreateCompactMockRow(
         musicSection.content,
@@ -456,7 +456,7 @@ local function CreateCombatPrototypePanel(panel)
     musicState:SetPoint("RIGHT", musicSection.content, "RIGHT", -8, 0)
     musicState:SetJustifyH("LEFT")
     musicState:SetTextColor(0.70, 0.78, 0.86)
-    musicState:SetText("Placeholder behavior: start on combat begin, stop on combat end, with room later for fades, boss-only filters, or instance-only rules.")
+    musicState:SetText(BLU:Loc("COMBAT_MUSIC_STATE"))
 
     local futureSection = BLU.Modules.design:CreateSection(content, "Future Trigger Paging", "Interface\\Icons\\Ability_Warrior_Charge")
     futureSection:SetPoint("TOPLEFT", topGrid, "BOTTOMLEFT", 0, -10)
@@ -470,7 +470,7 @@ local function CreateCombatPrototypePanel(panel)
     futureNote:SetJustifyH("LEFT")
     futureNote:SetWordWrap(true)
     futureNote:SetTextColor(0.78, 0.82, 0.88)
-    futureNote:SetText("This area is for the broader combat-trigger catalog. It keeps the compact 2-column layout so we can test fitting up to 8 options on a single page.")
+    futureNote:SetText(BLU:Loc("COMBAT_FUTURE_NOTE"))
 
     local pageLabel = futureSection.content:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     pageLabel:SetPoint("TOPRIGHT", -126, -6)
@@ -549,7 +549,7 @@ local function CreateCombatPrototypePanel(panel)
         end
 
         local page = COMBAT_TRIGGER_PAGES[state.page] or {}
-        pageLabel:SetText(string.format("Page %d of %d", state.page, totalPages))
+        pageLabel:SetText(BLU:Loc("TABS_PAGE_LABEL", state.page, totalPages))
 
         for index, row in ipairs(triggerRows) do
             local trigger = page[index]

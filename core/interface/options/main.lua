@@ -120,18 +120,18 @@ function Options:CreateOptionsPanel()
 
     local title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     title:SetPoint("LEFT", header, "TOPLEFT", leftX, rowOneY)
-    title:SetText("|cff05dffaB|r|cffffffffetter |cff05dffaL|r|cffffffffevel-|cff05dffaU|r|cffffffffp|cff05dffa!|r")
+    title:SetText(BLU:Loc("MAIN_TITLE"))
     title:SetJustifyV("MIDDLE")
 
     local subtitle = header:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     subtitle:SetPoint("LEFT", header, "TOPLEFT", leftX, rowTwoY)
-    subtitle:SetText("Iconic game sounds for World of Warcraft events")
+    subtitle:SetText(BLU:Loc("MAIN_SUBTITLE"))
     subtitle:SetTextColor(0.7, 0.7, 0.7)
     subtitle:SetJustifyV("MIDDLE")
 
     local discord = header:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     discord:SetPoint("LEFT", header, "TOPLEFT", leftX, rowThreeY)
-    discord:SetText("|cff7289daDiscord:|r |cffffd700discord.gg/N7kdKAHVVF|r")
+    discord:SetText(BLU:Loc("MAIN_DISCORD"))
     discord:SetTextColor(0.85, 0.85, 0.85)
     discord:SetJustifyV("MIDDLE")
 
@@ -145,14 +145,14 @@ function Options:CreateOptionsPanel()
 
     local author = header:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     author:SetPoint("RIGHT", header, "TOPRIGHT", rightX, rowTwoY)
-    author:SetText("by donniedice")
+    author:SetText(BLU:Loc("MAIN_AUTHOR"))
     author:SetTextColor(0.7, 0.7, 0.7)
     author:SetJustifyH("RIGHT")
     author:SetJustifyV("MIDDLE")
 
     local branding = header:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     branding:SetPoint("RIGHT", header, "TOPRIGHT", rightX, rowThreeY)
-    branding:SetText("|cff8b4b5cRGX|r |cffffd700Mods|r")
+    branding:SetText(BLU:Loc("MAIN_BRANDING"))
     branding:SetJustifyH("RIGHT")
     branding:SetJustifyV("MIDDLE")
 
@@ -212,7 +212,7 @@ function Options:CreateOptionsPanel()
         elseif tabInfo.placeholder then
             local placeholderMessage = content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
             placeholderMessage:SetPoint("TOPLEFT", 18, -18)
-            placeholderMessage:SetText("|cff778899Reserved for a future options panel.|r")
+            placeholderMessage:SetText(BLU:Loc("MAIN_PLACEHOLDER"))
             placeholderMessage:SetJustifyH("LEFT")
         end
         panel.contents[i] = content
@@ -313,7 +313,7 @@ end
 function Options:OpenOptions()
     BLU:PrintDebug("[Options] OpenOptions called")
     if not BLU.db then
-        BLU:Print("Database not ready. Please wait a moment and try again.")
+        BLU:Print(BLU:Loc("OPTIONS_DB_NOT_READY"))
         return
     end
 
@@ -321,7 +321,7 @@ function Options:OpenOptions()
         BLU:PrintDebug("[Options] OpenOptions blocked by combat lockdown")
         if not BLU._queuedOpenOptions then
             BLU._queuedOpenOptions = true
-            BLU:Print("|cff00ccffBLU:|r Options cannot be opened in combat. Queued to open after combat.")
+            BLU:Print(BLU:Loc("OPTIONS_QUEUED_AFTER_COMBAT"))
             local RGX = _G.RGXFramework
             if RGX and RGX.QueueForCombat then
                 RGX:QueueForCombat(function()
@@ -346,7 +346,7 @@ function Options:OpenOptions()
     end
 
     if not BLU.OptionsCategory then
-        BLU:Print("Options panel not properly registered.")
+        BLU:Print(BLU:Loc("OPTIONS_NOT_REGISTERED"))
         return
     end
 
@@ -408,7 +408,7 @@ function Options:OpenOptions()
     end
 
     if not opened then
-        BLU:Print("Unable to open options panel")
+        BLU:Print(BLU:Loc("OPTIONS_UNABLE_TO_OPEN"))
     else
         BLU:PrintDebug("[Options] Options panel opened successfully")
     end

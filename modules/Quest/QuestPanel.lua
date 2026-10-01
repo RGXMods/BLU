@@ -29,7 +29,7 @@ function BLU.CreateQuestPanel(panel)
     
     local title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     title:SetPoint("LEFT", icon, "RIGHT", 10, 0)
-    title:SetText("|cff05dffaB|retter |cff05dffaL|revel-|cff05dffaU|rp! Quest Events")
+    title:SetText(BLU:Loc("QUEST_PANEL_TITLE"))
     
     -- Helper function to create a quest sound dropdown
     local function CreateQuestDropdown(parent, questEventType, questEventName, yOffset)
@@ -41,11 +41,11 @@ function BLU.CreateQuestPanel(panel)
         -- Current selection display
         local currentLabel = section.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         currentLabel:SetPoint("TOPLEFT", BLU.Design.Layout.Spacing, -BLU.Design.Layout.Spacing)
-        currentLabel:SetText("Current Selection:")
+        currentLabel:SetText(BLU:Loc("QUEST_CURRENT_SELECTION"))
         
         local currentSound = section.content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
         currentSound:SetPoint("LEFT", currentLabel, "RIGHT", BLU.Design.Layout.Spacing, 0)
-        currentSound:SetText("None")
+        currentSound:SetText(BLU:Loc("QUEST_NONE"))
         
         -- Test button
         local testBtn = BLU.Design:CreateButton(section.content, "Test", 60, 22)
@@ -54,11 +54,11 @@ function BLU.CreateQuestPanel(panel)
             local selected = BLU.db.selectedSounds and BLU.db.selectedSounds[questEventType]
             
             if not selected or selected == "none" then
-                BLU:Print("No sound selected for " .. questEventName)
+                BLU:Print(BLU:Loc("QUEST_NO_SOUND_SELECTED", questEventName))
                 return
             end
             
-            self:SetText("Playing...")
+            self:SetText(BLU:Loc("QUEST_PLAYING"))
             self:Disable()
             
             -- Play the selected sound based on type
@@ -70,7 +70,7 @@ function BLU.CreateQuestPanel(panel)
             end
             
             C_Timer.After(2, function()
-                self:SetText("Test")
+                self:SetText(BLU:Loc("QUEST_TEST"))
                 self:Enable()
             end)
         end)
@@ -95,7 +95,7 @@ function BLU.CreateQuestPanel(panel)
                 info.func = function()
                     BLU.db.selectedSounds[self.eventId] = "none"
                     UIDropDownMenu_SetText(self, "None (Disabled)")
-                    currentSound:SetText("|cff888888None|r")
+                    currentSound:SetText(BLU:Loc("QUEST_NONE_DIMMED"))
                     CloseDropDownMenus()
                 end
                 info.checked = BLU.db.selectedSounds[self.eventId] == "none"
@@ -175,7 +175,7 @@ function BLU.CreateQuestPanel(panel)
                         info.func = function()
                             BLU.db.selectedSounds[dropdown.eventId] = info.value
                             UIDropDownMenu_SetText(dropdown, sound.name)
-                            currentSound:SetText("|cff05dffa" .. sound.name .. "|r")
+                            currentSound:SetText(BLU:Loc("QUEST_CURRENT_SOUND", sound.name))
                             CloseDropDownMenus()
                             
                             -- Enable quest module
@@ -199,20 +199,20 @@ function BLU.CreateQuestPanel(panel)
         
         if selectedSound == "none" then
             UIDropDownMenu_SetText(dropdown, "None (Disabled)")
-            currentSound:SetText("|cff888888None|r")
+            currentSound:SetText(BLU:Loc("QUEST_NONE_DIMMED"))
         elseif selectedSound:match("^default") then
             local volumePart = selectedSound:gsub("^default_?", "")
             if volumePart == "" or volumePart == "default" then
                 UIDropDownMenu_SetText(dropdown, "Default (Normal Volume)")
-                currentSound:SetText("Default (Normal Volume)")
+                currentSound:SetText(BLU:Loc("QUEST_DEFAULT_NORMAL"))
             else
                 local volumeText = volumePart:gsub("^%l", string.upper) .. " Volume"
                 UIDropDownMenu_SetText(dropdown, "Default (" .. volumeText .. ")")
-                currentSound:SetText("Default (" .. volumeText .. ")")
+                currentSound:SetText(BLU:Loc("QUEST_DEFAULT_VOLUME", volumeText))
             end
         else
             UIDropDownMenu_SetText(dropdown, "Custom")
-            currentSound:SetText("Custom")
+            currentSound:SetText(BLU:Loc("QUEST_CUSTOM"))
         end
         
         return section
@@ -232,9 +232,6 @@ function BLU.CreateQuestPanel(panel)
     local infoText = content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     infoText:SetPoint("TOPLEFT", turninSection, "BOTTOMLEFT", BLU.Design.Layout.ContentMargin, -20)
     infoText:SetPoint("RIGHT", -BLU.Design.Layout.ContentMargin, 0)
-    infoText:SetText(
-        "|cff888888The Quest module is automatically enabled when you select a sound for either event.|r\n" ..
-        "|cff888888Select |cffff0000None|r|cff888888 for both events to completely disable quest sounds.|r"
-    )
+    infoText:SetText(BLU:Loc("QUEST_INFO_TEXT"))
     infoText:SetJustifyH("LEFT")
 end

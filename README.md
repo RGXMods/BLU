@@ -30,12 +30,12 @@ BLU is the **Retail** edition. Classic players should install [<span style="colo
 
 | | Feature | What it provides |
 |---|---|---|
-| 🎵 | **50+ game sound libraries** | Favorites from Final Fantasy, Zelda, Mario, Skyrim, Pokemon, Warcraft, and many more |
-| 🏆 | **Extensive event coverage** | Levels, achievements, quests, reputation, renown, battle pets, delves, honor, housing, and Trading Post activity |
-| 🔊 | **Granular audio control** | Per-event choices, volume variants, previews, and selective muting of matching WoW sounds |
-| 📦 | **Sound packs** | Automatic discovery plus APIs for simple and full three-volume third-party packs |
-| 🗂️ | **Custom sounds** | Register your own `.ogg`, `.mp3`, or `.wav` files in game |
-| ⚙️ | **Modern configuration** | Tabbed options, profiles, modular features, and built-in diagnostics |
+| | **50+ game sound libraries** | Favorites from Final Fantasy, Zelda, Mario, Skyrim, Pokemon, Warcraft, and many more |
+| | **Extensive event coverage** | Levels, achievements, quests, reputation, renown, battle pets, delves, honor, housing, and Trading Post activity |
+| | **Granular audio control** | Per-event choices, volume variants, previews, and selective muting of matching WoW sounds |
+| | **Sound packs** | Automatic discovery plus APIs for simple and full three-volume third-party packs |
+| | **Custom sounds** | Register your own `.ogg`, `.mp3`, or `.wav` files in game |
+| | **Modern configuration** | Tabbed options, profiles, modular features, and built-in diagnostics |
 
 > Each bundled selection includes Low, Medium, and High variants. Special collections may include several alternate cues.
 

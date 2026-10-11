@@ -12,6 +12,7 @@ local COMBAT_TRIGGER_PAGES = {
         { id = "combat_end_sound", title = "Combat End Sound" },
         { id = "combat_music_track", title = "Combat Music Track" },
         { id = "lust_sound", title = "Lust / Heroism Sound" },
+        { id = "pvpvictory", title = "PvP Victory Sound" },
     },
 }
 

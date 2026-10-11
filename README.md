@@ -193,6 +193,10 @@ Stable releases use version tags and package the addon for distribution.
 Development and release context is recorded in [the changelog](docs/CHANGES.md)
 and [roadmap](docs/ROADMAP.md).
 
+- Framework-first addon development: the [agent directives](docs/AGENT-DIRECTIVES.md)
+  document the MCP tool loop, the declarative `RGXAddon` contract surface,
+  forbidden raw-WoW patterns, and the release discipline enforced by `AGENTS.md`.
+
 ## <span style="color:#05dffa">License</span>
 
 BLU is available under the [MIT License](https://github.com/RGXMods/BLU/blob/main/LICENSE).

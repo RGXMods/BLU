@@ -1,5 +1,9 @@
 # Changes
 
+## Non-beta Candidate: [v8.0.11](changelogs/8.0.11.md)
+
+Retail 12.1.5 / Interface `120105`; client testing and publication pending.
+
 `docs/CHANGES.md` is the canonical changelog summary for BLU.
 
 ## Current Development Release

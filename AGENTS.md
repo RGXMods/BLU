@@ -28,3 +28,9 @@
 - Online cross-checks for builds not installed locally: the wago.tools build pages and versions.wowtools.io. Verify a feed is reachable at runtime before trusting it; if it is unreachable, the installed client's `.build.info` is authoritative and an uninstalled flavor's live version is never guessed.
 - A stale `## Interface:` value is a bug: fix it in a task-branch MR with green shared validation before any release.
 - Release through GitLab MR and green shared validation, then patch-bump through the same discipline and create a protected GitLab release tag matching the TOC version. Verify the identical tag on the downstream `RGXMods/BLU` mirror before reporting distribution pickup.
+
+## Agent directive surface
+
+Before changing addon behavior or preparing a release, follow
+[docs/AGENT-DIRECTIVES.md](docs/AGENT-DIRECTIVES.md) for the framework contract,
+ordered MCP authoring loop, raw-WoW audit rules, and validation-to-mirror flow.

@@ -5,3 +5,16 @@ include:
   - project: rgxmods/warcraft/RGX-Framework
     ref: main
     file: /.gitlab/ci/addon.yml
+
+stages:
+  - validate
+  - test
+  - contract
+  - mirror
+
+test:combat-secret-aura:
+  stage: test
+  image: node:22-alpine
+  script:
+    - apk add --no-cache lua5.1
+    - lua5.1 tests/combat-secret-aura-test.lua

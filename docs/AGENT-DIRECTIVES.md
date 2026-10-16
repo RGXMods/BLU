@@ -31,7 +31,10 @@ using **only** keys the framework ships today. Read
 `docs/DECLARATIVE-API.md` in `rgxmods/warcraft/RGX-Framework` before
 writing code.
 
-- `name` — the addon name (matches the `## Title` TOC field).
+- `name` — the addon name. The framework derives the slash command and the
+  SavedVariables DB name from it (`<Name>DB` unless `dbName` overrides);
+  declare `## RequiredDeps: RGX-Framework` and the SavedVariables name in
+  the TOC.
 - `opts` — the declarative options table. Only shipped keys are valid;
   tier 4 keys are future targets, not runtime features.
 
@@ -47,12 +50,12 @@ them.
 
 | Forbidden pattern | Framework equivalent |
 |---|---|
-| raw `C_Timer` (e.g. `C_Timer.After`, `C_Timer.NewTicker`) | RGX timers / repeating schedules |
-| manual event frames (`CreateFrame("FRAME")`, manual `SetScript`) | `RGX:RegisterEvent` / `RGX:RegisterUnitEvent` |
-| `SLASH_` globals | framework slash command registration |
+| raw `C_Timer` (e.g. `C_Timer.After`, `C_Timer.NewTicker`) | framework timers (`addon:After`, `addon:Every`) |
+| manual event frames (`CreateFrame("FRAME")`, manual `SetScript`) | `addon:RegisterEvent` / `addon:RegisterUnitEvent` |
+| `SLASH_` globals | framework slash command registration (`opts.slash`) |
 | unguarded `SetAttribute` | framework UI controls / dropdowns |
-| raw aura plumbing (`UnitAura`, custom aura watching) | `RGXAuras` module |
-| raw hook reassignment (`hooksecurefunc`, `HookScript`) | framework lifecycle hooks |
+| raw aura plumbing (`UnitAura`, custom aura watching) | the `RGXAuras` module (`RGX:GetAuras()`) |
+| raw hook reassignment (`hooksecurefunc`, `HookScript`) | `RGX:Hook` (post-hooks; cannot be unhooked) |
 
 ## Release discipline
 
@@ -69,15 +72,15 @@ release tag matching the TOC version. The release flow is:
    publish the identical protected GitLab tag to the downstream
    `RGXMods/BLU` mirror.
 
-After merge to `main`, bump the patch version in `BLU.toc` (`## Version:`
-`vX.Y.Z-beta.W` line), create a protected GitLab release tag matching the
-TOC version, and verify the identical tag on the `RGXMods/BLU` mirror
-before reporting distribution pickup.
+After merge to `main`, bump the patch version in `BLU.toc` (the `## Version:`
+line; current release line is stable `v8.0.11`), create a protected GitLab
+release tag matching the TOC version, and verify the identical tag on the
+`RGXMods/BLU` mirror before reporting distribution pickup.
 
 ## Related references
 
 - Framework canonical docs: `rgxmods/warcraft/RGX-Framework`
   `docs/DECLARATIVE-API.md` and `docs/RGX-MCP.md`
 - This addon's contract surface and validation rules: `AGENTS.md`
-- Release and CI configuration: `.gitlab-ci.yml`,
-  `rgxmods/warcraft/RGX-Framework /.gitlab/ci/addon.yml`
+- Release and CI configuration: `.gitlab-ci.yml` and the shared include
+  `rgxmods/warcraft/RGX-Framework/.gitlab/ci/addon.yml`

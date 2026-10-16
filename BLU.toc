@@ -6,6 +6,7 @@
 ## Category: RGX
 ## Group: RGX
 ## RequiredDeps: RGX-Framework
+## X-RGX-Framework-MinVersion: 2.7.0
 ## SavedVariables: BLUDB
 ## IconTexture: Interface\AddOns\BLU\media\Textures\icon.tga
 ## X-Curse-Project-ID: 697841

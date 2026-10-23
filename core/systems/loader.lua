@@ -77,25 +77,8 @@ local function ResolveModuleKey(moduleType, moduleName)
     return moduleName
 end
 
-local moduleSettingKeyMap = {
-    honor = "honorrank",
-    renown = "renownrank",
-    delve = "delvecompanion",
-    housing = "housing",
-}
-
-local moduleLegacyToggleMap = {
-    levelup = "enableLevelUp",
-    achievement = "enableAchievement",
-    reputation = "enableReputation",
-    quest = "enableQuest",
-    battlepet = "enableBattlePet",
-    honor = "enableHonorRank",
-    renown = "enableRenownRank",
-    tradingpost = "enableTradingPost",
-    delve = "enableDelveCompanion",
-    housing = "enableHousing",
-}
+local moduleSettingKeyMap = BLU.ModuleSettingKeys or {}
+local moduleLegacyToggleMap = BLU.ModuleLegacyToggles or {}
 
 local function IsFeatureEnabled(db, moduleName)
     if not db then

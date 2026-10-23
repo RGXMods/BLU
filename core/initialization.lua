@@ -12,25 +12,8 @@ local INIT_EVENT_ID_PLAYER_LOGIN = "init_player_login"
 -- Track what's been initialized
 BLU.initialized = {}
 
-local moduleSettingKeyMap = {
-	honor = "honorrank",
-	renown = "renownrank",
-	delve = "delvecompanion",
-	housing = "housing",
-}
-
-local moduleLegacyToggleMap = {
-	levelup = "enableLevelUp",
-	achievement = "enableAchievement",
-	reputation = "enableReputation",
-	quest = "enableQuest",
-	battlepet = "enableBattlePet",
-	honor = "enableHonorRank",
-	renown = "enableRenownRank",
-	tradingpost = "enableTradingPost",
-	delve = "enableDelveCompanion",
-	housing = "enableHousing",
-}
+local moduleSettingKeyMap = BLU.ModuleSettingKeys or {}
+local moduleLegacyToggleMap = BLU.ModuleLegacyToggles or {}
 
 function BLU:IsFeatureModuleEnabled(moduleName)
 	if not self.db then
@@ -223,16 +206,6 @@ function BLU:LoadSavedSettings()
 
 	self.initialized.savedSettings = true
 	self:PrintDebug("[Init] Saved settings loaded")
-end
-
--- Show help
-function BLU:ShowHelp()
-	self:Print("BLU Commands:")
-	self:Print(" |cffffff00/blu|r - Open options")
-	self:Print(" |cffffff00/blu debug|r - Toggle debug mode")
-	self:Print(" |cffffff00/blu status|r - Show addon status")
-	self:Print(" |cffffff00/blu icon on|r|cffffffff/|r|cffffff00off|r - Show or hide the minimap icon")
-	self:Print(" |cffffff00/blu help|r - Show this help")
 end
 
 -- Play test sound

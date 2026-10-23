@@ -58,6 +58,7 @@ Config.defaults = {
             tradingpost = true,
             delvecompanion = true,
             housing = true,
+            collectibles = true,
         },
         
         -- Sound selections (will be populated dynamically)

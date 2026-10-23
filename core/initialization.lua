@@ -115,7 +115,8 @@ function BLU:Initialize()
 		"renown",
 		"tradingpost",
 		"delve",
-		"housing"
+		"housing",
+		"collectibles"
 	})
 
 	BLU:PrintDebug("[Init] BLU.db after Phase 4: " .. tostring(BLU.db))

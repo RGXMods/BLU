@@ -29,6 +29,10 @@ local defaultBluSounds = {
     housingleveledup = "housing_level_default",
     housingrewardsreceived = "housing_rewards_default",
     housingdecorcollected = "housing_decor_default",
+    mount = "mount_default",
+    pet = "pet_default",
+    toy = "toy_default",
+    transmog = "transmog_default",
 }
 
 local moduleCategoryMap = {
@@ -44,6 +48,10 @@ local moduleCategoryMap = {
     housingleveledup = "housing",
     housingrewardsreceived = "housing",
     housingdecorcollected = "housing",
+    mount = "collectibles",
+    pet = "collectibles",
+    toy = "collectibles",
+    transmog = "collectibles",
 }
 
 local CATEGORY_SOUND_COOLDOWN_SECONDS = 0.20

@@ -1,4 +1,4 @@
-## v8.1.0 - Unreleased
+## v8.1.0 - 2026-10-23
 - Collectibles module: mount, pet, toy, and transmog appearance acquisitions now play their selected category sound (issue #17).
 - Code cleanup: removed the unused combat prototype panel and its trigger-page fixtures (~430 lines), the unused `QuestPanel.lua` module, unused tab/helper functions, and duplicate module-toggle maps in the loader and initialization manager.
 

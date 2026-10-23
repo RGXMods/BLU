@@ -18,19 +18,9 @@ function Loader:Init()
     BLU:PrintDebug("Loader module initialized")
 end
 
--- Module registry
+-- Module registry: feature aliases resolve UI/event names to module ids.
+-- Unknown names pass through unchanged (core systems and sound packs rely on that).
 local moduleRegistry = {
-    -- Core modules (always loaded)
-    core = {
-        "core",
-        "config",
-        "utils",
-        "localization",
-        "registry",
-        "events",
-        "sound_muter"
-    },
-    
     -- Feature modules (loaded on demand)
     features = {
         levelup = "levelup",
@@ -77,25 +67,8 @@ local function ResolveModuleKey(moduleType, moduleName)
     return moduleName
 end
 
-local moduleSettingKeyMap = {
-    honor = "honorrank",
-    renown = "renownrank",
-    delve = "delvecompanion",
-    housing = "housing",
-}
-
-local moduleLegacyToggleMap = {
-    levelup = "enableLevelUp",
-    achievement = "enableAchievement",
-    reputation = "enableReputation",
-    quest = "enableQuest",
-    battlepet = "enableBattlePet",
-    honor = "enableHonorRank",
-    renown = "enableRenownRank",
-    tradingpost = "enableTradingPost",
-    delve = "enableDelveCompanion",
-    housing = "enableHousing",
-}
+local moduleSettingKeyMap = BLU.ModuleSettingKeys or {}
+local moduleLegacyToggleMap = BLU.ModuleLegacyToggles or {}
 
 local function IsFeatureEnabled(db, moduleName)
     if not db then

@@ -6,10 +6,6 @@
 local addonName = ...
 local BLU = _G["BLU"]
 
-local function IsProfileReady()
-    return BLU and BLU.db
-end
-
 local function EnsureProfileDefaults()
     if not BLU or not BLU.db then
         return false 

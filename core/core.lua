@@ -68,6 +68,28 @@ BLU.Modules = BLU.Modules or {}
 BLU.LoadedModules = BLU.LoadedModules or {}
 BLU.events = BLU.events or {}
 BLU.hooks = BLU.hooks or {}
+
+-- Shared feature-module toggle maps. The loader and the initialization manager
+-- both need the same alias and legacy-toggle resolution; keep one definition.
+BLU.ModuleSettingKeys = {
+    honor = "honorrank",
+    renown = "renownrank",
+    delve = "delvecompanion",
+    housing = "housing",
+}
+
+BLU.ModuleLegacyToggles = {
+    levelup = "enableLevelUp",
+    achievement = "enableAchievement",
+    reputation = "enableReputation",
+    quest = "enableQuest",
+    battlepet = "enableBattlePet",
+    honor = "enableHonorRank",
+    renown = "enableRenownRank",
+    tradingpost = "enableTradingPost",
+    delve = "enableDelveCompanion",
+    housing = "enableHousing",
+}
 BLU.timers = BLU.timers or {}
 BLU.debugMode = BLU.debugMode or false
 BLU.isInitialized = BLU.isInitialized or false
@@ -367,27 +389,6 @@ function BLU:ClearSoundCache()
         self.Modules.registry.soundCache = {}
         self:Print("Sound cache cleared")
     end
-end
-
--- Module enable/disable functions
-function BLU:EnableModule(moduleId)
-    if self.Modules[moduleId] then
-        -- Module is already loaded, just enable it
-        if self.db and self.db.modules then
-            self.db.modules[moduleId] = true
-        end
-        self:PrintDebug("Enabled module: " .. moduleId)
-        return true
-    end
-    return false
-end
-
-function BLU:DisableModule(moduleId)
-    if self.db and self.db.modules then
-        self.db.modules[moduleId] = false
-    end
-    self:PrintDebug("Disabled module: " .. moduleId)
-    return true
 end
 
 -- Reload modules function

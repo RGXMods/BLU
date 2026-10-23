@@ -1,12 +1,12 @@
 #!/usr/bin/env node
-// RGX in-house release publisher — the BigWigsMods/packager replacement.
+// RGX in-house release publisher - replaces the retired community packager.
 //
 // Publishes the deterministic archive built by the in-house packager:
 //   1. Creates the GitHub release and uploads the zip + release.json.
 //   2. Uploads to CurseForge when X-Curse-Project-ID and CF_API_KEY exist.
 //   3. Uploads to Wago when X-Wago-ID and WAGO_API_TOKEN exist.
 //
-// Upload protocols verified against BigWigsMods/packager release.sh:
+// Upload protocols verified against the retired community packager:
 //   - CurseForge: GET  https://wow.curseforge.com/api/game/wow/versions
 //                 POST https://wow.curseforge.com/api/projects/<id>/upload-file
 //   - Wago:       GET  https://addons.wago.io/api/data/game
@@ -52,7 +52,7 @@ function readToc(path) {
 
 // Flavor names follow the convention checked by tools/ci/release-metadata-check.mjs:
 // mainline / classic / forever / bcc / wrath / titan / cata / mists. Ranges
-// mirror BigWigsMods/packager's toc_to_type classification so interface bumps
+// mirror the retired community packager's toc_to_type classification so interface bumps
 // do not require editing a literal map.
 function flavorForInterface(interfaceValue) {
   const value = Number(interfaceValue);
@@ -70,7 +70,7 @@ function flavorForInterface(interfaceValue) {
   fail(`unrecognized TOC Interface value "${interfaceValue}"`);
 }
 
-// CurseForge gameVersionTypeID values (BigWigsMods/packager release.sh).
+// CurseForge gameVersionTypeID values (verified community-packager parity).
 const CF_GAME_TYPE_ID = new Map([
   ["mainline", 517],
   ["classic", 67408],
@@ -208,7 +208,10 @@ async function publishCurseForge({ projectId, apiKey, flavors, version, releaseT
     changelogType: "markdown",
   });
   const form = new FormData();
-  form.append("metadata", new Blob([metadata], { type: "application/json" }));
+  // CurseForge requires metadata as a plain string form value (curl -F
+  // "metadata=..."); a Blob field becomes a file part and
+  // the API answers 1001 "Missing field `metadata`".
+  form.append("metadata", metadata);
   form.append("file", new Blob([readFileSync(archive)]), basename(archive));
 
   const uploadUrl = `https://wow.curseforge.com/api/projects/${projectId}/upload-file`;
@@ -258,7 +261,9 @@ async function publishWago({ projectId, token, flavors, version, releaseType, ch
   }
 
   const form = new FormData();
-  form.append("metadata", new Blob([JSON.stringify(payload)], { type: "application/json" }));
+  // Wago, like CurseForge, requires metadata as a plain string form value;
+  // a Blob part is rejected with 422 "The metadata must be a string."
+  form.append("metadata", JSON.stringify(payload));
   form.append("file", new Blob([readFileSync(archive)]), basename(archive));
 
   const uploadUrl = `https://addons.wago.io/api/projects/${projectId}/version`;
@@ -295,8 +300,8 @@ if (!existsSync(changelogFile)) fail(`changelog file does not exist: ${changelog
 const tocText = readToc(tocPath);
 const tocVersion = (tocField(tocText, "Version") ?? "").replace(/^v/, "");
 if (!tocVersion) fail(`${basename(tocPath)} declares no Version`);
-// Release names use the color-cleaned TOC Title (BigWigs parity, e.g. BLU
-// publishes as "Better Level-Up!"); fall back to the TOC file stem.
+// Release names use the color-cleaned TOC Title (the display name players
+// see in the addon list); fall back to the TOC file stem.
 const tocTitle = (tocField(tocText, "Title") ?? "")
   .replace(/\|c[0-9a-fA-F]{8}/g, "")
   .replace(/\|r/g, "")

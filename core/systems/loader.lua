@@ -18,19 +18,9 @@ function Loader:Init()
     BLU:PrintDebug("Loader module initialized")
 end
 
--- Module registry
+-- Module registry: feature aliases resolve UI/event names to module ids.
+-- Unknown names pass through unchanged (core systems and sound packs rely on that).
 local moduleRegistry = {
-    -- Core modules (always loaded)
-    core = {
-        "core",
-        "config",
-        "utils",
-        "localization",
-        "registry",
-        "events",
-        "sound_muter"
-    },
-    
     -- Feature modules (loaded on demand)
     features = {
         levelup = "levelup",

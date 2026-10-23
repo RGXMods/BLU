@@ -17,7 +17,6 @@ local TAB_BUTTON_HEIGHT = 22
 local TAB_SPACING = 6
 local TAB_ROW_PADDING = 8
 local TAB_ROW_SPACING = 3
-local TAB_COLUMNS_PER_ROW = 6
 
 -- Generic "coming soon" placeholder panel — used by Combat, Collectibles, Loot, and Prey
 local PLACEHOLDER_CONFIG = {

@@ -43,6 +43,7 @@ local moduleRegistry = {
         tradingpost = "tradingpost",
         delve = "delve",
         housing = "housing",
+        collectibles = "collectibles",
 
         -- UI/event aliases mapped to concrete module ids.
         honorrank = "honor",
@@ -205,6 +206,7 @@ function BLU:LoadModulesFromSettings()
             "renown",
             "tradingpost",
             "housing",
+            "collectibles",
         }
 
         for _, moduleName in ipairs(featureModules) do

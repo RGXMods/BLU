@@ -73,6 +73,10 @@ function InternalSounds:RegisterSoundPacks()
             housing_level_default = { name = "Default House Level", file = ADDON_PATH .. "media\\sounds\\level_default_med.ogg", duration = 2.0, category = "housingleveledup", source = "BLU", isInternal = true },
             housing_rewards_default = { name = "Default House Rewards", file = ADDON_PATH .. "media\\sounds\\achievement_default_med.ogg", duration = 2.0, category = "housingrewardsreceived", source = "BLU", isInternal = true },
             housing_decor_default = { name = "Default New Decor", file = ADDON_PATH .. "media\\sounds\\quest_default_med.ogg", duration = 2.0, category = "housingdecorcollected", source = "BLU", isInternal = true },
+            mount_default = { name = "Default Mount Collected", file = ADDON_PATH .. "media\\sounds\\level_default_med.ogg", duration = 2.0, category = "mount", source = "BLU", isInternal = true },
+            pet_default = { name = "Default Pet Collected", file = ADDON_PATH .. "media\\sounds\\battle_pet_level_default_med.ogg", duration = 2.0, category = "pet", source = "BLU", isInternal = true },
+            toy_default = { name = "Default Toy Collected", file = ADDON_PATH .. "media\\sounds\\quest_accept_default_med.ogg", duration = 2.0, category = "toy", source = "BLU", isInternal = true },
+            transmog_default = { name = "Default Transmog Collected", file = ADDON_PATH .. "media\\sounds\\achievement_default_med.ogg", duration = 2.0, category = "transmog", source = "BLU", isInternal = true },
         }
     }
     if RegisterPack(defaultPack.id, defaultPack.name, defaultPack.sounds) then

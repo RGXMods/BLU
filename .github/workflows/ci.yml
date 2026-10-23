@@ -30,3 +30,4 @@ jobs:
     - name: Run regression tests
       run: |
         lua5.1 tests/combat-secret-aura-test.lua
+        lua5.1 tests/collectibles-triggers-test.lua

@@ -1,3 +1,6 @@
+## v8.1.0 - Unreleased
+- Collectibles module: mount, pet, toy, and transmog appearance acquisitions now play their selected category sound (issue #17).
+
 # Changes
 
 ## Release: [v8.0.11](changelogs/8.0.11.md) - 2026-10-22

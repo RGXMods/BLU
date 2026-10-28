@@ -77,9 +77,9 @@ line; current release line is stable `v8.0.11`), create a protected GitLab
 release tag matching the TOC version, and verify the identical tag on the
 `RGXMods/BLU` mirror before reporting distribution pickup.
 
-BLU is delta-classified in the Hermes workforce: the Release role prepares
-and verifies the candidate and the human operator performs the merge. No
-role merges this repository unattended.
+Operator directive 2026-10-27: the Hermes workforce is excluded from this
+repository entirely. No workforce role implements, reviews, gates, merges,
+or releases here; all work and merges are operator-owned.
 
 ## Related references
 

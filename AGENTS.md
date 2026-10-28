@@ -6,7 +6,7 @@
 - Shared CI is included from `rgxmods/warcraft/RGX-Framework` at `/.gitlab/ci/addon.yml`; validation must pass before publishing to the GitHub mirror.
 - The GitHub `RGXMods` repository is downstream distribution, not development authority.
 - Keep GitLab and GitHub release tags identical, and use protected GitLab release tags.
-- This repository is delta-classified in the Hermes workforce: the Release role prepares and verifies the candidate and hands it to the human operator, who performs the merge. No role merges this repository unattended.
+- Operator directive 2026-10-27: the Hermes workforce is excluded from this repository entirely. No workforce role implements, reviews, gates, merges, or releases here; all work and merges are operator-owned.
 - Preserve any existing working Wago connection and ID exactly. Never create a new Wago connection without explicit user direction.
 - Publishing integrations prohibited by the shared validation policy are retired and must not be restored.
 - The root `README.md` must remain detailed and project-specific. Narrow distribution edits must not replace or truncate installation, features, compatibility, usage, media, or support content.

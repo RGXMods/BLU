@@ -13,7 +13,9 @@ const notesPath = argOf("changelog-file");
 
 const toc = fs.readFileSync(tocPath, "utf8");
 const id = (toc.match(/^## X-WoWI-ID:\s*(\d+)/m) || [])[1];
-const version = ((toc.match(/^## Version:\s*(.+)$/m) || [])[1] || "").trim();
+const rawVersion = ((toc.match(/^## Version:\s*(.+)$/m) || [])[1] || "").trim();
+// Listing labels carry the release tag form (v1.2.3) regardless of how the TOC writes it.
+const version = rawVersion ? "v" + rawVersion.replace(/^v/i, "") : rawVersion;
 const token = process.env.WOWI_API_TOKEN;
 if (!id) { console.log("WoWInterface: no X-WoWI-ID in TOC; skipping"); process.exit(0); }
 if (!token) { console.log("WoWInterface: WOWI_API_TOKEN not set; skipping"); process.exit(0); }

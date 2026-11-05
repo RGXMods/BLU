@@ -290,29 +290,17 @@ jobs:
         -X POST -d @payload.json "$DISCORD_WEBHOOK"
 
     - name: Publish to WoWInterface
-
       if: startsWith(github.ref, 'refs/tags/') && steps.release_type.outputs.type == 'release'
-
       shell: bash
-
       env:
-
         WOWI_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
-
       run: |
-
         version="${{ steps.version.outputs.version }}"
-
         short="${version#v}"
-
         node tools/release/publish-wowinterface.mjs \
-
           --toc BLU.toc \
-
           --archive "artifacts/BLU-v${short}.zip" \
-
           --changelog-file "${RUNNER_TEMP}/release-notes.md"
-
 
     - name: ❌ Send Failure Notification
       if: failure() && startsWith(github.ref, 'refs/tags/')

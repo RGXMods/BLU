@@ -1,3 +1,7 @@
+## v8.1.1 - 2026-11-05
+- No gameplay changes.
+- Release tooling updated to RGX-Framework v2.13.0: CurseForge and Wago now list the correct game version (Retail 12.1.5, Interface `120105`) and no longer list WoW Forever on this retail-only addon. Forever players use BLU Forever.
+
 ## v8.1.0 - 2026-10-23
 - Collectibles module: mount, pet, toy, and transmog appearance acquisitions now play their selected category sound (issue #17).
 - Code cleanup: removed the unused combat prototype panel and its trigger-page fixtures (~430 lines), the unused `QuestPanel.lua` module, unused tab/helper functions, and duplicate module-toggle maps in the loader and initialization manager.

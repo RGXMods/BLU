@@ -152,6 +152,20 @@ function InternalSounds:RegisterSoundPacks()
             {soundId = "warcraft_3_2", name = "Warcraft 3-2", file_id = "warcraft_3-2"},
             {soundId = "warcraft_3_3", name = "Warcraft 3-3", file_id = "warcraft_3-3"},
         } },
+        { id = "warcraft_3_music", name = "Warcraft III Music", sounds = {
+            {soundId = "wc3_music_alliance_battle_march", name = "Alliance Battle March", file_id = "wc3_music_alliance_battle_march", duration = 119},
+            {soundId = "wc3_music_arthas_theme", name = "Arthas' Theme", file_id = "wc3_music_arthas_theme", duration = 122},
+            {soundId = "wc3_music_battle_a", name = "Battle A", file_id = "wc3_music_battle_a", duration = 138},
+            {soundId = "wc3_music_battle_b", name = "Battle B", file_id = "wc3_music_battle_b", duration = 124},
+            {soundId = "wc3_music_battle_intense_a", name = "Battle Intense A", file_id = "wc3_music_battle_intense_a", duration = 61},
+            {soundId = "wc3_music_battle_intense_b", name = "Battle Intense B", file_id = "wc3_music_battle_intense_b", duration = 66},
+            {soundId = "wc3_music_battle_intense_c", name = "Battle Intense C", file_id = "wc3_music_battle_intense_c", duration = 71},
+            {soundId = "wc3_music_combat_1", name = "Combat 1", file_id = "wc3_music_combat_1", duration = 107},
+            {soundId = "wc3_music_combat_2", name = "Combat 2", file_id = "wc3_music_combat_2", duration = 90},
+            {soundId = "wc3_music_combat_3", name = "Combat 3", file_id = "wc3_music_combat_3", duration = 80},
+            {soundId = "wc3_music_doom", name = "Doom", file_id = "wc3_music_doom", duration = 66},
+            {soundId = "wc3_music_illidans_theme", name = "Illidan's Theme", file_id = "wc3_music_illidans_theme", duration = 107},
+        } },
         { id = "witcher_3", name = "Witcher 3", sounds = {
             {soundId = "witcher_3_1", name = "Witcher 3-1", file_id = "witcher_3-1"},
             {soundId = "witcher_3_2", name = "Witcher 3-2", file_id = "witcher_3-2"},
@@ -164,7 +178,7 @@ function InternalSounds:RegisterSoundPacks()
             soundsToRegister[soundData.soundId] = {
                 name = soundData.name,
                 file = ADDON_PATH .. "media\\sounds\\" .. soundData.file_id .. "_med.ogg",
-                duration = 2.0,
+                duration = soundData.duration or 2.0,
                 category = "all",
                 source = "BLU",
             }

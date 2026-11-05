@@ -182,7 +182,7 @@ jobs:
       run: |
         version="${{ steps.version.outputs.version }}"
         short="${version#v}"
-        node .framework-source/tools/release/publish-release.mjs \
+        node tools/release/publish-release.mjs \
           --toc BLU.toc \
           --archive "artifacts/BLU-v${short}.zip" \
           --tag "${GITHUB_REF_NAME}" \

@@ -47,6 +47,7 @@ local LUST_SPELL_IDS = {
 CombatModule.lastSoundAt          = {}
 CombatModule.hadLust              = false -- edge-detect Bloodlust-class buffs on player
 CombatModule.savedAmbienceEnabled = nil
+CombatModule.combatMusicHandle    = nil -- handle of the playing combat track, if any
 CombatModule.subscriptions        = {}
 
 local function Subscribe(module, unsubscribe)
@@ -111,9 +112,17 @@ function CombatModule:RestoreAmbientAfterCombatMusic()
     self.savedAmbienceEnabled = nil
 end
 
+-- Combat music is a normal registry sound on the Music channel. The registry hands back a
+-- sound handle, which is what lets combat end stop exactly the track combat start began.
+-- (The old path called PlayMusic with sound.file, so built-in soundKit tracks never played and
+-- volume variants were ignored.)
+local COMBAT_MUSIC_FADE_MS = 1000
+
 function CombatModule:StopCombatMusic()
-    if StopMusic then
-        pcall(StopMusic)
+    local handle = self.combatMusicHandle
+    self.combatMusicHandle = nil
+    if handle and StopSound then
+        pcall(StopSound, handle, COMBAT_MUSIC_FADE_MS)
     end
     self:RestoreAmbientAfterCombatMusic()
 end
@@ -124,24 +133,28 @@ function CombatModule:PlayCombatMusic()
     local combat = BLU.db and BLU.db.combat
     if not combat then return end
 
+    -- A previous track must never stack with the new one.
+    self:StopCombatMusic()
+
     local selected = combat.selectedSounds and combat.selectedSounds["combat_music_track"]
-    if not selected or selected == "None" or selected == "none" then
-        self:RestoreAmbientAfterCombatMusic()
-        return
-    end
+    if not selected or selected == "None" or selected == "none" then return end
 
     local registry = BLU.Modules and BLU.Modules.registry
-    if not (registry and registry.GetSound) then return end
+    if not (registry and registry.PlaySound) then return end
 
-    local soundInfo = registry:GetSound(selected)
-    local filePath  = soundInfo and (soundInfo.file or soundInfo.path)
-    if not filePath then return end
+    local volume = (combat.soundVolumes and combat.soundVolumes["combat_music_track"]) or "medium"
 
-    self:StopCombatMusic()
     self:MuteAmbientForCombatMusic()
-
-    if PlayMusic then
-        pcall(PlayMusic, filePath)
+    local ok, handle = registry:PlaySound(selected, nil, {
+        categoryOverride = "combat",
+        volumeSettingOverride = volume,
+        triggerIdOverride = "combat_music_track",
+        stopMusic = true, -- replace the zone music while the combat track plays
+    })
+    if ok then
+        self.combatMusicHandle = handle
+    else
+        self:RestoreAmbientAfterCombatMusic()
     end
 end
 

@@ -92,6 +92,24 @@ function wagoType(flavor) {
   return flavor;
 }
 
+// Interface number -> patch name used by CurseForge and Wago (120105 -> "12.1.5", 16001 -> "1.60.1").
+export function patchName(wowInterface) {
+  const n = Number(wowInterface);
+  if (!Number.isFinite(n) || n <= 0) return "";
+  return `${Math.floor(n / 10000)}.${Math.floor(n / 100) % 100}.${n % 100}`;
+}
+
+// Numeric dotted-version compare. Plain string comparison ranks "9.2.7" above "12.1.7".
+export function compareVersions(left, right) {
+  const a = String(left).split(".").map(Number);
+  const b = String(right).split(".").map(Number);
+  for (let i = 0; i < Math.max(a.length, b.length); i++) {
+    const diff = (a[i] || 0) - (b[i] || 0);
+    if (diff) return diff;
+  }
+  return 0;
+}
+
 function collectFlavors(tocPath) {
   const primary = readToc(tocPath);
   const stem = basename(tocPath).replace(/\.toc$/, "");
@@ -190,7 +208,8 @@ async function publishCurseForge({ projectId, apiKey, flavors, version, releaseT
     if (!typeId) fail(`no CurseForge gameVersionTypeID known for flavor "${flavor}"`);
     const typed = versionRows.filter((row) => row.gameVersionTypeID === typeId);
     if (!typed.length) fail(`CurseForge reports no game versions for flavor "${flavor}"`);
-    const exact = typed.find((row) => row.name === String(wowInterface));
+    const wanted = patchName(wowInterface);
+    const exact = typed.find((row) => row.name === String(wowInterface) || row.name === wanted);
     if (exact) {
       gameVersions.push(exact.id);
     } else {
@@ -250,14 +269,21 @@ async function publishWago({ projectId, token, flavors, version, releaseType, ch
     stability: releaseType === "release" ? "stable" : releaseType,
     changelog,
   };
-  for (const { flavor } of flavors) {
+  for (const { flavor, interface: wowInterface } of flavors) {
     const type = wagoType(flavor);
     const list = patches[type];
     if (!Array.isArray(list) || !list.length) {
       fail(`Wago reports no patches for flavor type "${type}"`);
     }
-    // Ship the latest patch per flavor — our TOC interfaces track live clients.
-    payload[`supported_${type}_patches`] = [list.reduce((best, value) => (value > best ? value : best))];
+    // Exact patch for the TOC interface; otherwise the numerically latest patch for the flavor.
+    const wanted = patchName(wowInterface);
+    let chosen = list.includes(wanted) ? wanted : null;
+    if (!chosen) {
+      chosen = list.reduce((best, value) => (compareVersions(value, best) > 0 ? value : best));
+      console.warn(`WARNING: no Wago patch "${wanted}" for ${type}; using "${chosen}"`);
+    }
+    const key = `supported_${type}_patches`;
+    payload[key] = [...new Set([...(payload[key] || []), chosen])];
   }
 
   const form = new FormData();

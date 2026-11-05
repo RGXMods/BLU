@@ -116,7 +116,10 @@ function crc32(buffer) {
 const DOS_TIME = 0;      // 00:00:00
 const DOS_DATE = 0x0021; // 1980-01-01
 
-function buildZip(entries) {
+// Some archives happen to carry 0x55 0xAA at bytes 510-511. MIME sniffing (libmagic, used by Wago) then
+// reports a DOS/MBR boot sector instead of a zip and rejects the upload. The first local header can carry
+// unknown extra fields, which every zip reader skips, so pad it until the coincidence goes away.
+function buildZipPadded(entries, padFields) {
   const local = [];
   const central = [];
   let offset = 0;
@@ -136,8 +139,11 @@ function buildZip(entries) {
     header.writeUInt32LE(compressed.length, 18);
     header.writeUInt32LE(entry.data.length, 22);
     header.writeUInt16LE(name.length, 26);
-    header.writeUInt16LE(0, 28);        // extra length
-    local.push(header, name, compressed);
+    const extra = (entry === entries[0] && padFields > 0)
+      ? Buffer.concat(Array.from({ length: padFields }, () => Buffer.from([0x5a, 0x5a, 0x00, 0x00])))
+      : Buffer.alloc(0);
+    header.writeUInt16LE(extra.length, 28); // extra length
+    local.push(header, name, extra, compressed);
 
     const directory = Buffer.alloc(46);
     directory.writeUInt32LE(0x02014b50, 0);
@@ -159,7 +165,7 @@ function buildZip(entries) {
     directory.writeUInt32LE(offset, 42);
     central.push(directory, name);
 
-    offset += header.length + name.length + compressed.length;
+    offset += header.length + name.length + extra.length + compressed.length;
   }
   const centralBuffer = Buffer.concat(central);
   const eocd = Buffer.alloc(22);
@@ -172,6 +178,14 @@ function buildZip(entries) {
   eocd.writeUInt32LE(offset, 16);
   eocd.writeUInt16LE(0, 20);
   return Buffer.concat([...local, centralBuffer, eocd]);
+}
+
+function buildZip(entries) {
+  for (let padFields = 0; padFields < 16; padFields++) {
+    const zip = buildZipPadded(entries, padFields);
+    if (zip.length < 512 || !(zip[510] === 0x55 && zip[511] === 0xaa)) return zip;
+  }
+  throw new Error("could not avoid a boot-sector signature in the archive header");
 }
 
 // ── Main ─────────────────────────────────────────────────────────────────────

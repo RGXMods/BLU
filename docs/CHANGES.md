@@ -1,3 +1,8 @@
+# v8.2.4 - 2026-11-06
+
+- BLU now finds your sounds where the documentation says it does. Files in BLU's own user folders (user\sounds and user) are picked up automatically when named custom01, sound01, usersound01 or blu_custom01 (up to 99).
+- Adding a sound by name now also searches the sound folders of every other installed addon (sound packs and media addons first), not only BLU's own folders. The search is bounded so it cannot stall the game, and a full Interface\AddOns path still works for sounds in unusual folders.
+
 # v8.2.3 - 2026-11-06
 
 - Removed the user sound manifest tool and the BLU_UserSounds companion-addon support added in the previous release. BLU is back to finding user sounds the way it did before, with no scripts or generated files.

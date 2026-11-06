@@ -245,7 +245,6 @@ function Tabs:Init()
         end
     end
     local function collectiblesPanel(p) CreateComingSoonPanel(p, "Collectibles") end
-    local function lootPanel(p)         CreateComingSoonPanel(p, "Loot")         end
     local function preyPanel(p)         CreateComingSoonPanel(p, "Prey")         end
 
     BLU.OptionsTabs = {
@@ -262,7 +261,7 @@ function Tabs:Init()
         {text = "Honor",        eventType = "honorrank",           row = 2, col = 2, icon = "Interface\\Icons\\PVPCurrency-Honor-Horde"},
         {text = "Housing",      create = BLU.CreateHousingPanel,  row = 2, col = 3, icon = "Interface\\Icons\\Trade_Blacksmithing"},
         {text = "Level Up",     eventType = "levelup",             row = 2, col = 4, icon = "Interface\\Icons\\Achievement_Level_100"},
-        {text = "Loot",         create = lootPanel,               row = 2, col = 5, icon = "Interface\\Icons\\INV_Misc_Coin_02"},
+        {text = "Loot",         eventType = "loot",               row = 2, col = 5, icon = "Interface\\Icons\\INV_Misc_Coin_02"},
         {text = "Prey",         create = preyPanel,               row = 2, col = 6, icon = "Interface\\Icons\\Ability_Hunter_MarkedForDeath"},
         -- Row 3
         {text = "Profiles",     create = BLU.CreateProfilesPanel, row = 3, col = 1, icon = "Interface\\Icons\\Ability_Marksmanship"},

@@ -152,10 +152,9 @@ Open `/blu`, select the **Sounds** tab, and use **User Custom Sounds** to add a 
 
 Sound-pack authors can use `BLU:RegisterExternalSoundPack()` for simple files or `BLU:RegisterSoundPack()` for complete Low/Medium/High packs. See the [Sounds Guidelines](https://github.com/RGXMods/BLU/wiki/Sounds-Guidelines) for current layouts and examples.
 
-When only a filename is supplied, BLU checks common AddOns locations and its
-own sound directories. The first compatible match is registered under **User
-Custom Sounds**. Use `/blu refresh` after adding or removing files and
-`/blu rescan` after another addon registers media.
+Put your sound files (`.ogg`, `.mp3`, `.wav`) in `Interface\AddOns\BLU_Forever\user\sounds\`, then add them from `/blu` > Sounds > Add Custom Sound by name (`myfile` or `myfile.ogg`) or with `/blu addcustom myfile`. Files named `custom01`, `sound01`, `usersound01` or `blu_custom01` (up to 99) in that folder, or in `user\`, are picked up automatically.
+
+BLU looks for a name in this order: its own `user\sounds`, `user`, `sounds`, `media` and `media\sounds` folders, then `Interface\AddOns\` itself, then the sound folders of every other installed addon (sound packs and media addons first). A WoW addon cannot list folders, so it tests the conventional folder names (`sounds`, `sound`, `media`, `media\sounds`, `audio`, `assets`) in each addon; a sound in an unusual folder needs its full path: `/blu addcustom Interface\AddOns\SomePack\weird\place\file.ogg`. Sounds that other addons register with Shared Media are listed automatically at any depth.
 
 ### Sound-Pack Authors
 

@@ -23,9 +23,17 @@ local minimapStorage = setmetatable({}, {
     end,
 })
 
+-- Single owner of the icon's visible state: every path (options checkbox,
+-- /blu icon, Ctrl+Right-click, login) goes through here so the saved value, the
+-- button and the options checkbox can never disagree.
 function Minimap:SetIconVisible(show)
+    show = show and true or false
+    if BLU.db then BLU.db.minimapIconEnabled = show end
     if self.button then
-        self.button:SetVisible(show and true or false)
+        self.button:SetVisible(show)
+    end
+    if self.optionCheckbox and self.optionCheckbox.SetChecked then
+        self.optionCheckbox:SetChecked(show)
     end
 end
 
@@ -65,9 +73,8 @@ function Minimap:Init()
                 BLU:OpenOptions()
             end
         end,
-        onCtrlRight = function(btn)
-            btn:SetVisible(false)
-            if BLU.db then BLU.db.minimapIconEnabled = false end
+        onCtrlRight = function()
+            Minimap:SetIconVisible(false)
             BLU:Print("Minimap icon |cffff0000hidden|r. Use |cffffffff/blu icon on|r to show it again.")
         end,
     })

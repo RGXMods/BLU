@@ -118,7 +118,23 @@ end
 -- volume variants were ignored.)
 local COMBAT_MUSIC_FADE_MS = 1000
 
+-- A track is a finite file, so a long fight outlasts it. While still in combat the
+-- track is started again when it ends; StopCombatMusic bumps this token so a pending
+-- restart from an earlier fight can never fire.
+local function IsStillInCombat()
+    if Combat and Combat.IsInCombat then
+        return Combat:IsInCombat() == true
+    end
+    return type(UnitAffectingCombat) == "function" and UnitAffectingCombat("player") == true
+end
+
+local MUSIC_RESTART_GRACE_SECONDS = 0.5
+-- Only music-length tracks are restarted. Most registered sounds carry a 2 second placeholder
+-- duration, which must never turn a short sound (or a track of unknown length) into a retrigger loop.
+local MUSIC_RESTART_MIN_SECONDS = 20
+
 function CombatModule:StopCombatMusic()
+    self.musicToken = (self.musicToken or 0) + 1
     local handle = self.combatMusicHandle
     self.combatMusicHandle = nil
     if handle and StopSound then
@@ -153,9 +169,27 @@ function CombatModule:PlayCombatMusic()
     })
     if ok then
         self.combatMusicHandle = handle
+        self:ScheduleCombatMusicRestart(registry, selected)
     else
         self:RestoreAmbientAfterCombatMusic()
     end
+end
+
+-- Restart the track when it finishes, but only for the same fight and only while the
+-- player is still in combat.
+function CombatModule:ScheduleCombatMusicRestart(registry, soundId)
+    local info = registry.GetSound and registry:GetSound(soundId)
+    local duration = info and tonumber(info.duration)
+    if not duration or duration < MUSIC_RESTART_MIN_SECONDS then return end
+    local after = RGX and RGX.After
+    if type(after) ~= "function" then return end
+
+    local token = self.musicToken
+    after(RGX, duration + MUSIC_RESTART_GRACE_SECONDS, function()
+        if self.musicToken ~= token or not self.combatMusicHandle then return end
+        if not IsStillInCombat() then return end
+        self:PlayCombatMusic()
+    end)
 end
 
 -- RGXAuras owns the 12.1 secret-value boundary and only returns accessible data.

@@ -96,9 +96,17 @@ BLU.isInitialized = BLU.isInitialized or false
 BLU.GetMetadata = BLU.GetMetadata or GetAddOnMetadataSafe
 BLU.name = BLU.name or addonName
 
+-- Several callers still start their text with their own "|cff00ccffBLU:|r" tag. The chat prefix
+-- already says BLU, so drop an embedded leading tag instead of printing "[BLU] BLU: ...".
+local function StripEmbeddedPrefix(message)
+    message = tostring(message)
+    return (message:gsub("^|c%x%x%x%x%x%x%x%xBLU:|r%s*", ""):gsub("^BLU:%s*", ""))
+end
+BLU.StripEmbeddedPrefix = StripEmbeddedPrefix
+
 -- Print message
 function BLU:Print(message)
-    print(CHAT_PREFIX .. " " .. message)
+    print(CHAT_PREFIX .. " " .. StripEmbeddedPrefix(message))
 end
 
 -- Print debug message
@@ -128,7 +136,7 @@ end
 
 -- Print error message
 function BLU:PrintError(message)
-    print(CHAT_ERROR_PREFIX .. " " .. message)
+    print(CHAT_ERROR_PREFIX .. " " .. StripEmbeddedPrefix(message))
 end
 
 function BLU:NormalizeDebugScope(scope)

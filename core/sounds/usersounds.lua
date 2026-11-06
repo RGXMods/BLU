@@ -22,6 +22,10 @@ local AUTO_SLOT_NAME_PATTERNS = {
     "blu_custom%02d",
 }
 local AUTO_SLOT_PATH_PATTERNS = {
+    -- The documented personal-sound folders come first: files dropped here are picked up
+    -- automatically when they use the slot names above (custom01.ogg, sound01.ogg, ...).
+    "Interface\\AddOns\\" .. addonName .. "\\user\\sounds\\%s.%s",
+    "Interface\\AddOns\\" .. addonName .. "\\user\\%s.%s",
     "Interface\\AddOns\\%s.%s",
     "Interface\\AddOns\\sounds\\%s.%s",
     "Interface\\AddOns\\" .. addonName .. "\\%s.%s",
@@ -400,6 +404,92 @@ local function FindKnownCustomSoundMatch(soundInput)
     return bestPath, bestCandidates
 end
 
+-- ── Searching other addons' sound folders ────────────────────────────────────────
+-- A WoW addon cannot list a folder, only test a path it already knows. So when a sound is
+-- not in BLU's own documented folders, BLU asks the game which addons are installed and tests
+-- the conventional sound folders inside each one (sound packs, media addons, other addons'
+-- bundled sounds). Folders that look like sound packs are tried first, and the whole search is
+-- bounded so a big addon list can never stall the game.
+local PACK_SUBFOLDERS = { "", "sounds", "sound", "media", "media\\sounds", "audio", "assets", "assets\\sounds", "resources\\sounds" }
+local PACK_LIKELY_PATTERNS = { "sound", "audio", "media", "voice", "music", "sfx", "pack" }
+local MAX_ADDON_SEARCH_PROBES = 6000
+
+local function GetInstalledAddonFolders()
+    local folders = {}
+    local getNum = (C_AddOns and C_AddOns.GetNumAddOns) or GetNumAddOns
+    local getInfo = (C_AddOns and C_AddOns.GetAddOnInfo) or GetAddOnInfo
+    if type(getNum) ~= "function" or type(getInfo) ~= "function" then
+        return folders
+    end
+
+    local okCount, count = pcall(getNum)
+    if not okCount or type(count) ~= "number" then
+        return folders
+    end
+
+    local ownFolder = string.lower(addonName)
+    for index = 1, count do
+        local okInfo, info = pcall(getInfo, index)
+        local name = okInfo and (type(info) == "table" and info.name or info) or nil
+        if type(name) == "string" and name ~= "" then
+            local lower = string.lower(name)
+            -- BLU's own folders are searched through the documented locations; Blizzard's are not sound packs.
+            if lower ~= ownFolder and not lower:find("^blizzard_") then
+                folders[#folders + 1] = name
+            end
+        end
+    end
+
+    -- Likely sound packs first (stable within each group).
+    local likely, others = {}, {}
+    for _, name in ipairs(folders) do
+        local lower = string.lower(name)
+        local isLikely = false
+        for _, pattern in ipairs(PACK_LIKELY_PATTERNS) do
+            if lower:find(pattern, 1, true) then
+                isLikely = true
+                break
+            end
+        end
+        table.insert(isLikely and likely or others, name)
+    end
+    for _, name in ipairs(others) do
+        likely[#likely + 1] = name
+    end
+    return likely
+end
+
+-- Candidate paths for the given file names inside every installed addon, in search order.
+local function BuildInstalledAddonCandidates(candidateNames, folders, maxProbes)
+    local paths = {}
+    for _, folder in ipairs(folders) do
+        for _, sub in ipairs(PACK_SUBFOLDERS) do
+            for _, fileName in ipairs(candidateNames) do
+                if #paths >= maxProbes then
+                    return paths
+                end
+                local prefix = "Interface\\AddOns\\" .. folder .. "\\"
+                if sub ~= "" then
+                    prefix = prefix .. sub .. "\\"
+                end
+                paths[#paths + 1] = prefix .. fileName
+            end
+        end
+    end
+    return paths
+end
+
+local function FindInInstalledAddons(candidateNames)
+    local candidates = BuildInstalledAddonCandidates(candidateNames, GetInstalledAddonFolders(), MAX_ADDON_SEARCH_PROBES)
+    for _, candidatePath in ipairs(candidates) do
+        if CanLoadSoundFile(candidatePath) then
+            BLU:PrintDebug("[UserSounds] Found '" .. tostring(candidatePath) .. "' in an installed addon")
+            return candidatePath
+        end
+    end
+    return nil
+end
+
 ResolveCustomSoundPath = function(soundInput)
     local normalizedInput = NormalizeEntryPath(soundInput)
     if not normalizedInput then
@@ -465,6 +555,13 @@ ResolveCustomSoundPath = function(soundInput)
                 return candidatePath, candidatePaths
             end
         end
+    end
+
+    -- Not in BLU's documented folders: look through the installed addons' sound folders.
+    local addonPath = FindInInstalledAddons(candidateNames)
+    if addonPath then
+        BLU:PrintDebug("[UserSounds] Resolved '" .. tostring(soundInput) .. "' in another addon: '" .. tostring(addonPath) .. "'")
+        return addonPath, {addonPath}
     end
 
     if not explicitExtension then
@@ -592,6 +689,9 @@ function UserSounds:Register()
     BLU:PrintDebug(string.format("[UserSounds] Registered %d user custom sound(s).", count))
     return count
 end
+
+-- Exposed for tests and for other BLU modules that need the same resolution rules.
+UserSounds.ResolveCustomSoundPath = ResolveCustomSoundPath
 
 function UserSounds:Init()
     BLU:PrintDebug("[UserSounds] Init called")

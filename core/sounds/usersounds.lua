@@ -143,7 +143,9 @@ local function AddEntry(entries, seenPaths, soundPath, displayName, autoDetected
         return false
     end
 
-    if not CanLoadSoundFile(normalizedPath) then
+    -- Manifest paths come from a tool that found the file on disk, at any folder depth. Probing
+    -- each one at login would play thousands of files (muted), so they are trusted as listed.
+    if allowUnverified ~= "manifest" and not CanLoadSoundFile(normalizedPath) then
         if allowUnverified then
             BLU:PrintDebug("[UserSounds] Accepting unverified custom sound path '" .. tostring(normalizedPath) .. "'")
         else
@@ -288,10 +290,10 @@ local function CollectGeneratedManifestEntries(entries, seenPaths)
 
     for index, entry in ipairs(manifest) do
         if type(entry) == "string" then
-            AddEntry(entries, seenPaths, entry, nil, true, true, {entry})
+            AddEntry(entries, seenPaths, entry, nil, true, "manifest", {entry})
         elseif type(entry) == "table" then
             local filePath = entry.file or entry.path
-            AddEntry(entries, seenPaths, filePath, entry.name, true, true, entry.candidateFiles or {filePath})
+            AddEntry(entries, seenPaths, filePath, entry.name, true, "manifest", entry.candidateFiles or {filePath})
         else
             BLU:PrintDebug("[UserSounds] Skipped unsupported generated manifest entry at index " .. tostring(index))
         end

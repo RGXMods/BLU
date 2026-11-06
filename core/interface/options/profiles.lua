@@ -674,6 +674,7 @@ function BLU.CreateProfilesPanel(panel)
         local function forceListFrameWidth(levelToUse)
             Drops:ForceWidth(levelToUse, getMinWidthForLevel(levelToUse), getLeftInsetForLevel(levelToUse), {
                 inlineKeys = {"bluDeleteButton"},
+                skin = BLU.Modules.design.ListSkin,
                 compactRight = false,
             })
         end

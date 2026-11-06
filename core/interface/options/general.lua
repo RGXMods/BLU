@@ -185,6 +185,9 @@ function BLU.CreateGeneralPanel(panel)
     local function RefreshVolumeSlider()
         volumeSlider.SetValue(GetChannelVolume(profile))
     end
+    -- The channel volume lives in a WoW CVar that can change outside BLU (game
+    -- settings, other addons); re-read it whenever the page is shown.
+    content:HookScript("OnShow", RefreshVolumeSlider)
 
     local function SetSelectedChannel(channel)
         profile.soundChannel = channel or "Master"

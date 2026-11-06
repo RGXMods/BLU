@@ -19,3 +19,4 @@ test:combat-secret-aura:
     - apk add --no-cache lua5.1
     - lua5.1 tests/combat-secret-aura-test.lua
     - lua5.1 tests/collectibles-triggers-test.lua
+    - lua5.1 tests/loot-tab-appearance-test.lua

@@ -1,3 +1,8 @@
+# v8.2.0-beta.2 - 2026-11-05
+
+- New Loot tab with an Appearance Collected sound (plays when a new appearance is added to your collection).
+- The Test button on sound dropdowns goes back from Stop to Play when the sound ends.
+
 # v8.2.0-beta.1 - 2026-11-05
 
 - New sound pack: Warcraft III Music. 12 tracks from the game's soundtrack (Battle A and B, Battle Intense A to C, Alliance Battle March, Combat 1 to 3, Doom, Illidan's Theme, Arthas' Theme), each with Low, Medium and High volume variants.

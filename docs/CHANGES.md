@@ -1,3 +1,8 @@
+# v8.2.0-beta.3 - 2026-11-05
+
+- Volume sliders keep their position: the per-sound Low/Medium/High slider redraws from its current width whenever the page is shown or resized, instead of staying where it was first drawn.
+- The Channel Volume slider re-reads the WoW volume each time the General page is shown, so it matches the game's own setting after a reload.
+
 # v8.2.0-beta.2 - 2026-11-05
 
 - New Loot tab with an Appearance Collected sound (plays when a new appearance is added to your collection).

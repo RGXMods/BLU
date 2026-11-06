@@ -1,3 +1,8 @@
+# v8.2.2 - 2026-11-06
+
+- User sound packs can now be found at any folder depth. A WoW addon cannot list folders, so BLU could only guess a few fixed names one folder deep. The new tools/generate-user-sound-manifest.mjs walks your whole AddOns folder (unlimited depth) and writes the exact paths to a small companion addon, BLU_UserSounds, in its own folder, so BLU updates never overwrite it. Run: node tools/generate-user-sound-manifest.mjs --addons "<your Interface/AddOns folder>" (add --include <folder> to scan only some folders), then /reload. A brand-new file needs a full game restart before it can play.
+- Sounds found by the tool are trusted as listed instead of being test-played one by one at login, so large collections load quickly.
+
 # v8.2.1 - 2026-11-06
 
 - Combat music keeps playing for the whole fight: when a track ends while you are still in combat it starts again, and leaving combat stops it. Before, a long fight outlasted the track and the music just stopped. (Only music-length tracks are restarted.)

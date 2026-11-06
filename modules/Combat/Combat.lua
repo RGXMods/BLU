@@ -143,14 +143,24 @@ function CombatModule:StopCombatMusic()
     self:RestoreAmbientAfterCombatMusic()
 end
 
-function CombatModule:PlayCombatMusic()
+-- `isRestart` is the same fight's track starting over. A restart must be seamless: the ambience
+-- stays muted (toggling Sound_EnableAmbience off and on again around every restart makes the
+-- sound engine hitch) and the zone music is not stopped a second time.
+function CombatModule:PlayCombatMusic(isRestart)
     if not IsEnabled() then return end
 
     local combat = BLU.db and BLU.db.combat
     if not combat then return end
 
     -- A previous track must never stack with the new one.
-    self:StopCombatMusic()
+    if isRestart then
+        self.musicToken = (self.musicToken or 0) + 1
+        local finished = self.combatMusicHandle
+        self.combatMusicHandle = nil
+        if finished and StopSound then pcall(StopSound, finished) end
+    else
+        self:StopCombatMusic()
+    end
 
     local selected = combat.selectedSounds and combat.selectedSounds["combat_music_track"]
     if not selected or selected == "None" or selected == "none" then return end
@@ -160,12 +170,12 @@ function CombatModule:PlayCombatMusic()
 
     local volume = (combat.soundVolumes and combat.soundVolumes["combat_music_track"]) or "medium"
 
-    self:MuteAmbientForCombatMusic()
+    if not isRestart then self:MuteAmbientForCombatMusic() end
     local ok, handle = registry:PlaySound(selected, nil, {
         categoryOverride = "combat",
         volumeSettingOverride = volume,
         triggerIdOverride = "combat_music_track",
-        stopMusic = true, -- replace the zone music while the combat track plays
+        stopMusic = not isRestart, -- replace the zone music while the combat track plays
     })
     if ok then
         self.combatMusicHandle = handle
@@ -188,7 +198,7 @@ function CombatModule:ScheduleCombatMusicRestart(registry, soundId)
     after(RGX, duration + MUSIC_RESTART_GRACE_SECONDS, function()
         if self.musicToken ~= token or not self.combatMusicHandle then return end
         if not IsStillInCombat() then return end
-        self:PlayCombatMusic()
+        self:PlayCombatMusic(true)
     end)
 end
 

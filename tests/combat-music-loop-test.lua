@@ -14,7 +14,8 @@ local Combat = {
 local now = 10
 _G.GetTime = function() return now end
 _G.GetCVar = function() return "1" end
-_G.SetCVar = function() end
+local cvarWrites = 0
+_G.SetCVar = function() cvarWrites = cvarWrites + 1 end
 _G.StopSound = function(h) stopped[#stopped + 1] = h end
 _G.StopMusic = function() end
 _G.RGXFramework = {
@@ -46,6 +47,7 @@ timers[1].fn()
 musicStarts = 0
 for _, id in ipairs(played) do if id == "long" then musicStarts = musicStarts + 1 end end
 check(musicStarts == 2, "track restarts when it ends during combat")
+check(cvarWrites == 1, "a restart leaves the ambience muted instead of toggling the CVar again (writes: " .. cvarWrites .. ")")
 check(#timers == 2, "and the next restart is scheduled")
 
 -- Combat ends: a pending restart must do nothing.

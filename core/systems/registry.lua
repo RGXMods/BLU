@@ -235,6 +235,21 @@ function SoundRegistry:PreviewSound(soundId, options)
             key = previewKey,
         }
         self:NotifyPreviewChanged()
+        -- A sound file reports no end, so clear the preview state when its
+        -- duration has elapsed; otherwise the button stays on "Stop" forever.
+        local token = (self.previewToken or 0) + 1
+        self.previewToken = token
+        self.previewState.token = token
+        local previewSeconds = tonumber(sound.duration) or 8
+        if C_Timer and C_Timer.After then
+            C_Timer.After(previewSeconds + 0.25, function()
+                local state = self.previewState
+                if state and state.token == token then
+                    self.previewState = { soundId = nil, handle = nil, mode = nil, key = nil }
+                    self:NotifyPreviewChanged()
+                end
+            end)
+        end
         return true, "playing"
     end
 

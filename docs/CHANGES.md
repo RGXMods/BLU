@@ -1,3 +1,8 @@
+# v8.2.5 - 2026-11-06
+
+- Chat messages no longer show two BLU prefixes ("[BLU] BLU: Options cannot be opened in combat..."). Every BLU chat line now has exactly one.
+- Combat music restarts are seamless: when a long fight outlasts the track and it starts over, the ambience is left muted and the zone music is not stopped again, so the restart no longer hitches the sound engine.
+
 # v8.2.4 - 2026-11-06
 
 - BLU now finds your sounds where the documentation says it does. Files in BLU's own user folders (user\sounds and user) are picked up automatically when named custom01, sound01, usersound01 or blu_custom01 (up to 99).

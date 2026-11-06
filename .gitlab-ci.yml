@@ -20,3 +20,4 @@ test:combat-secret-aura:
     - lua5.1 tests/combat-secret-aura-test.lua
     - lua5.1 tests/collectibles-triggers-test.lua
     - lua5.1 tests/loot-tab-appearance-test.lua
+    - lua5.1 tests/preview-autoreset-test.lua

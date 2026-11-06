@@ -1,5 +1,5 @@
 ## Interface: 120105
-## Version: v8.2.0-beta.4
+## Version: v8.2.0
 ## X-WoWI-ID: 26465
 ## Title:  |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel-|r|cff05dffaU|r|cffffffffp|cff05dffa!|r
 ## Notes: |n|r  |cff05dffa/blu -|r Open options panel

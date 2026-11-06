@@ -100,12 +100,21 @@ function BLU.CreateGeneralPanel(panel)
         profile.showWelcomeMessage = self:GetChecked()
     end, "Shows BLU's startup message after login or reload.")
 
-    CreateCheckbox(coreSection.content, "Show minimap icon", 4, -58, profile.minimapIconEnabled ~= false, function(self)
-        profile.minimapIconEnabled = self:GetChecked()
+    local minimapBox = CreateCheckbox(coreSection.content, "Show minimap icon", 4, -58, profile.minimapIconEnabled ~= false, function(self)
+        local show = self:GetChecked()
         if BLU.Modules.minimap and BLU.Modules.minimap.SetIconVisible then
-            BLU.Modules.minimap:SetIconVisible(self:GetChecked())
+            BLU.Modules.minimap:SetIconVisible(show)
+        elseif BLU.db then
+            BLU.db.minimapIconEnabled = show
         end
     end, "Shows a BLU button on the minimap. Left-click opens the options panel; drag to reposition; Ctrl+Right-click hides it (/blu icon on restores it).")
+
+    -- Keep this checkbox in step with the icon: it can be hidden elsewhere (Ctrl+Right-click,
+    -- /blu icon) and the panel is built once, so also re-read the saved value whenever it is shown.
+    if BLU.Modules.minimap then BLU.Modules.minimap.optionCheckbox = minimapBox.check end
+    content:HookScript("OnShow", function()
+        minimapBox.check:SetChecked(BLU.db and BLU.db.minimapIconEnabled ~= false)
+    end)
 
     local behaviorSection = BLU.Modules.design:CreateSection(content, "Behavior", "Interface\\Icons\\INV_Misc_GroupLooking")
     behaviorSection:SetPoint("TOPLEFT", coreSection, "BOTTOMLEFT", 0, -12)

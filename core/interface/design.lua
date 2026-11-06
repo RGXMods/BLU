@@ -28,6 +28,19 @@ Design.Colors = {
     Text = {1.0, 1.0, 1.0},             -- White
 }
 
+-- Shared palette for dropdown menus so list frames and inline buttons match the
+-- rest of BLU (consumed by the framework dropdown skin).
+Design.ListSkin = {
+    surface = {0.08, 0.11, 0.15, 0.98},
+    border = {0.14, 0.20, 0.28},
+}
+Design.InlineButtonColors = {
+    surface = {0.08, 0.10, 0.13},
+    border = {0.14, 0.20, 0.28},
+    primary = Design.Colors.Primary,
+    text = Design.Colors.Primary,
+}
+
 -- Backdrop templates
 Design.Backdrops = {
     Dark = {
@@ -210,8 +223,10 @@ function Design:CreateSectionHeader(parent, text, icon)
     local header = CreateFrame("Frame", nil, parent, "BackdropTemplate")
     header:SetHeight(32)
     header:SetBackdrop(Design.Backdrops.Solid)
-    header:SetBackdropColor(0.09, 0.12, 0.16, 0.95)
-    header:SetBackdropBorderColor(unpack(Design.Colors.Accent))
+    -- Same fill and border as the card and controls around it; the old cyan accent
+    -- border read as a second, mismatched frame inside the card.
+    header:SetBackdropColor(0.06, 0.10, 0.16, 0.95)
+    header:SetBackdropBorderColor(0.14, 0.20, 0.28, 1)
 
     local leftInset = 10
     if icon then

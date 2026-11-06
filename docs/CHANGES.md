@@ -1,3 +1,8 @@
+# v8.2.0-beta.4 - 2026-11-05
+
+- Dropdown menus now use BLU's own colours: the list background and border, and the Play button, match the rest of BLU (needs RGX-Framework 2.14.2 for the menu background).
+- General page cards: the section header now uses the same fill and border as the card and controls instead of a separate cyan frame.
+
 # v8.2.0-beta.3 - 2026-11-05
 
 - Volume sliders keep their position: the per-sound Low/Medium/High slider redraws from its current width whenever the page is shown or resized, instead of staying where it was first drawn.

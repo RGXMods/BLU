@@ -12,6 +12,7 @@ BLU.Modules = BLU.Modules or {}
 BLU.Modules["sound_panel"] = SoundPanel
 
 local EVENT_MODULE_MAP = {
+	loot = "collectibles",
 	honorrank = "honor",
 	renownrank = "renown",
 	delvecompanion = "delve",
@@ -26,6 +27,7 @@ local EVENT_MODULE_MAP = {
 	housingleveledup = "housing",
 	housingrewardsreceived = "housing",
 	housingdecorcollected = "housing",
+	transmog = "collectibles",
 }
 
 local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
@@ -856,6 +858,7 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
 		honorrank = "Interface\\Icons\\PVPCurrency-Honor-Horde",
 		renownrank = "Interface\\Icons\\UI_MajorFaction_Centaur",
 		tradingpost = "Interface\\Icons\\INV_Misc_Coin_02",
+		loot = "Interface\\Icons\\INV_Misc_Coin_02",
 		delvecompanion = "Interface\\Icons\\INV_Misc_Map_01",
 	}
 
@@ -957,6 +960,8 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
 		CreateSoundDropdown(content, "quest", "Quest Accept Sound", dropY - 70, "questaccept")
 		CreateSoundDropdown(content, "quest", "Quest Complete Sound", dropY - 140, "questcomplete")
 		CreateSoundDropdown(content, "quest", "Quest Progress Sound", dropY - 210, "questprogress")
+	elseif eventType == "loot" then
+		CreateSoundDropdown(content, "loot", "Appearance Collected Sound", dropY, "transmog")
 	elseif eventType == "delvecompanion" then
 		CreateSoundDropdown(content, eventType, "Companion Level-Up Sound", dropY)
 		CreateSoundDropdown(content, eventType, "Delve Life Lost Sound", dropY - 70, "delvelifelost")

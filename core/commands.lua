@@ -123,12 +123,10 @@ SlashCmdList["BLU"] = function(msg)
         BLU:PrintDebug("[Commands] Handling minimap icon command: " .. tostring(rest))
         local sub = (rest or ""):lower()
         if sub == "on" then
-            if BLU.db then BLU.db.minimapIconEnabled = true end
-            if BLU.Modules.minimap then BLU.Modules.minimap:SetIconVisible(true) end
+            if BLU.Modules.minimap then BLU.Modules.minimap:SetIconVisible(true) elseif BLU.db then BLU.db.minimapIconEnabled = true end
             BLU:Print("Minimap icon |cff00ff00shown|r")
         elseif sub == "off" then
-            if BLU.db then BLU.db.minimapIconEnabled = false end
-            if BLU.Modules.minimap then BLU.Modules.minimap:SetIconVisible(false) end
+            if BLU.Modules.minimap then BLU.Modules.minimap:SetIconVisible(false) elseif BLU.db then BLU.db.minimapIconEnabled = false end
             BLU:Print("Minimap icon |cffff0000hidden|r. Use |cffffffff/blu icon on|r to show it again.")
         else
             BLU:Print("Usage: |cffffff00/blu icon on|r or |cffffff00/blu icon off|r")

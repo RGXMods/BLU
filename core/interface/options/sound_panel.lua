@@ -102,32 +102,35 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 	volThumb:SetTexture("Interface\\Buttons\\WHITE8x8")
 	volThumb:SetVertexColor(1, 1, 1, 1)
 
+	-- The fill and thumb are placed in pixels, so they must be recomputed from the
+	-- control's CURRENT width. Doing it once at apply time left them at a stale
+	-- spot whenever the row was laid out or resized afterwards (tab first shown,
+	-- window rescaled, selection changing the row width).
+	local currentVolume = "medium"
+
+	local function updateVisuals()
+		local trackWidth = volButton:GetWidth() or 0
+		if trackWidth < 1 then return false end
+		local pct = 0.50
+		if currentVolume == "low" then
+			pct = 0.15
+		elseif currentVolume == "high" then
+			pct = 0.85
+		end
+		local fillW = math.max(4, trackWidth * pct)
+		volFill:SetWidth(fillW)
+		volThumb:ClearAllPoints()
+		volThumb:SetPoint("CENTER", volTrack, "LEFT", fillW, 0)
+		volLabel:SetText((currentVolume:gsub("^%l", string.upper)))
+		return true
+	end
+
 	local function applyVolume(volume)
-		if volume == "low" then
-			-- nothing
-		elseif volume == "high" then
-			-- nothing
-		else
+		if volume ~= "low" and volume ~= "high" then
 			volume = "medium"
 		end
+		currentVolume = volume
 		setVolume(volume)
-
-		local function updateVisuals()
-			local trackWidth = volTrack:GetWidth()
-			if trackWidth < 1 then return false end
-			local pct = 0.50
-			if volume == "low" then
-				pct = 0.15
-			elseif volume == "high" then
-				pct = 0.85
-			end
-			local fillW = math.max(4, trackWidth * pct)
-			volFill:SetWidth(fillW)
-			volThumb:ClearAllPoints()
-			volThumb:SetPoint("CENTER", volTrack, "LEFT", fillW, 0)
-			volLabel:SetText(volume:gsub("^%l", string.upper))
-			return true
-		end
 
 		if not updateVisuals() then
 			volumeControl:SetScript("OnUpdate", function()
@@ -137,6 +140,12 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 			end)
 		end
 	end
+
+	volButton:SetScript("OnSizeChanged", function() updateVisuals() end)
+	volumeControl:HookScript("OnShow", function()
+		currentVolume = getVolume()
+		updateVisuals()
+	end)
 
 	volButton:SetScript("OnMouseDown", function(self)
 		local cursorX = GetCursorPosition()

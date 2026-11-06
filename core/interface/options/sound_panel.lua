@@ -400,6 +400,7 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 			Drops:ForceWidth(levelToUse, getMinWidthForLevel(levelToUse), getLeftInsetForLevel(levelToUse), {
 				countKey = "bluCountLabel",
 				inlineKeys = {"bluPreviewButton"},
+				skin = BLU.Modules.design.ListSkin,
 				compactRight = shouldCompactRightControl(levelToUse),
 			})
 		end

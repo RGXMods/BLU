@@ -8,5 +8,4 @@
 -- do not commit personal entries back to the shared repo.
 --=====================================================================================
 
--- Keep a manifest that the companion addon BLU_UserSounds already defined (it loads first).
-BLU_UserCustomSoundManifest = BLU_UserCustomSoundManifest or {}
+BLU_UserCustomSoundManifest = {}

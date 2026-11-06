@@ -1,5 +1,5 @@
 ## Interface: 120105
-## Version: v8.2.2
+## Version: v8.2.3
 ## X-WoWI-ID: 26465
 ## Title:  |cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel-|r|cff05dffaU|r|cffffffffp|cff05dffa!|r
 ## Notes: |n|r  |cff05dffa/blu -|r Open options panel
@@ -7,7 +7,6 @@
 ## Category: RGX
 ## Group: RGX
 ## RequiredDeps: RGX-Framework
-## OptionalDeps: BLU_UserSounds
 ## X-RGX-Framework-MinVersion: 2.7.0
 ## SavedVariables: BLUDB
 ## IconTexture: Interface\AddOns\BLU\media\Textures\icon.tga

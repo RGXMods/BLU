@@ -79,24 +79,6 @@ local function NormalizeSearchToken(value)
     return token
 end
 
-local function IsSubsequence(needle, haystack)
-    if type(needle) ~= "string" or type(haystack) ~= "string" then
-        return false
-    end
-
-    local pos = 1
-    for i = 1, #needle do
-        local char = needle:sub(i, i)
-        pos = string.find(haystack, char, pos, true)
-        if not pos then
-            return false
-        end
-        pos = pos + 1
-    end
-
-    return true
-end
-
 local function HasSupportedExtension(soundPath)
     if type(soundPath) ~= "string" then
         return false
@@ -377,21 +359,10 @@ local function FindKnownCustomSoundMatch(soundInput)
                 if not token then
                     return
                 end
-                local startIndex = string.find(token, wanted, 1, true)
-                if startIndex then
-                    local score = (#token - #wanted) + startIndex
-                    if score < bestScore then
-                        bestScore = score
-                        bestPath = filePath
-                        bestCandidates = {filePath}
-                    end
-                elseif #wanted >= 4 and IsSubsequence(wanted, token) then
-                    local score = (#token - #wanted) + 50
-                    if score < bestScore then
-                        bestScore = score
-                        bestPath = filePath
-                        bestCandidates = {filePath}
-                    end
+                if token == wanted then
+                    bestScore = 0
+                    bestPath = filePath
+                    bestCandidates = {filePath}
                 end
             end
 
@@ -402,92 +373,6 @@ local function FindKnownCustomSoundMatch(soundInput)
     end
 
     return bestPath, bestCandidates
-end
-
--- ── Searching other addons' sound folders ────────────────────────────────────────
--- A WoW addon cannot list a folder, only test a path it already knows. So when a sound is
--- not in BLU's own documented folders, BLU asks the game which addons are installed and tests
--- the conventional sound folders inside each one (sound packs, media addons, other addons'
--- bundled sounds). Folders that look like sound packs are tried first, and the whole search is
--- bounded so a big addon list can never stall the game.
-local PACK_SUBFOLDERS = { "", "sounds", "sound", "media", "media\\sounds", "audio", "assets", "assets\\sounds", "resources\\sounds" }
-local PACK_LIKELY_PATTERNS = { "sound", "audio", "media", "voice", "music", "sfx", "pack" }
-local MAX_ADDON_SEARCH_PROBES = 6000
-
-local function GetInstalledAddonFolders()
-    local folders = {}
-    local getNum = (C_AddOns and C_AddOns.GetNumAddOns) or GetNumAddOns
-    local getInfo = (C_AddOns and C_AddOns.GetAddOnInfo) or GetAddOnInfo
-    if type(getNum) ~= "function" or type(getInfo) ~= "function" then
-        return folders
-    end
-
-    local okCount, count = pcall(getNum)
-    if not okCount or type(count) ~= "number" then
-        return folders
-    end
-
-    local ownFolder = string.lower(addonName)
-    for index = 1, count do
-        local okInfo, info = pcall(getInfo, index)
-        local name = okInfo and (type(info) == "table" and info.name or info) or nil
-        if type(name) == "string" and name ~= "" then
-            local lower = string.lower(name)
-            -- BLU's own folders are searched through the documented locations; Blizzard's are not sound packs.
-            if lower ~= ownFolder and not lower:find("^blizzard_") then
-                folders[#folders + 1] = name
-            end
-        end
-    end
-
-    -- Likely sound packs first (stable within each group).
-    local likely, others = {}, {}
-    for _, name in ipairs(folders) do
-        local lower = string.lower(name)
-        local isLikely = false
-        for _, pattern in ipairs(PACK_LIKELY_PATTERNS) do
-            if lower:find(pattern, 1, true) then
-                isLikely = true
-                break
-            end
-        end
-        table.insert(isLikely and likely or others, name)
-    end
-    for _, name in ipairs(others) do
-        likely[#likely + 1] = name
-    end
-    return likely
-end
-
--- Candidate paths for the given file names inside every installed addon, in search order.
-local function BuildInstalledAddonCandidates(candidateNames, folders, maxProbes)
-    local paths = {}
-    for _, folder in ipairs(folders) do
-        for _, sub in ipairs(PACK_SUBFOLDERS) do
-            for _, fileName in ipairs(candidateNames) do
-                if #paths >= maxProbes then
-                    return paths
-                end
-                local prefix = "Interface\\AddOns\\" .. folder .. "\\"
-                if sub ~= "" then
-                    prefix = prefix .. sub .. "\\"
-                end
-                paths[#paths + 1] = prefix .. fileName
-            end
-        end
-    end
-    return paths
-end
-
-local function FindInInstalledAddons(candidateNames)
-    local candidates = BuildInstalledAddonCandidates(candidateNames, GetInstalledAddonFolders(), MAX_ADDON_SEARCH_PROBES)
-    for _, candidatePath in ipairs(candidates) do
-        if CanLoadSoundFile(candidatePath) then
-            BLU:PrintDebug("[UserSounds] Found '" .. tostring(candidatePath) .. "' in an installed addon")
-            return candidatePath
-        end
-    end
-    return nil
 end
 
 ResolveCustomSoundPath = function(soundInput)
@@ -516,10 +401,30 @@ ResolveCustomSoundPath = function(soundInput)
         return nil
     end
 
+    local function findRegisteredSoundByName()
+        local registry = BLU.SoundRegistry
+        if not (registry and registry.GetAllSounds) then return nil end
+        local wanted = NormalizeSearchToken(filename)
+        if not wanted then return nil end
+        for soundId, data in pairs(registry:GetAllSounds()) do
+            if type(data) == "table" and data.packId ~= PACK_ID and type(data.file) == "string"
+                and NormalizeSearchToken(data.name) == wanted then
+                return data.file
+            end
+        end
+        return nil
+    end
+
     local knownPath, knownCandidates = FindKnownCustomSoundMatch(filename)
     if knownPath then
         BLU:PrintDebug("[UserSounds] Resolved fuzzy custom sound input '" .. tostring(soundInput) .. "' to known file '" .. tostring(knownPath) .. "'")
         return knownPath, knownCandidates
+    end
+
+    local registeredFile = findRegisteredSoundByName()
+    if registeredFile then
+        BLU:PrintDebug("[UserSounds] Resolved '" .. tostring(soundInput) .. "' to the registered sound named exactly that: '" .. registeredFile .. "'")
+        return registeredFile, {registeredFile}
     end
 
     if not explicitExtension then
@@ -557,13 +462,6 @@ ResolveCustomSoundPath = function(soundInput)
         end
     end
 
-    -- Not in BLU's documented folders: look through the installed addons' sound folders.
-    local addonPath = FindInInstalledAddons(candidateNames)
-    if addonPath then
-        BLU:PrintDebug("[UserSounds] Resolved '" .. tostring(soundInput) .. "' in another addon: '" .. tostring(addonPath) .. "'")
-        return addonPath, {addonPath}
-    end
-
     if not explicitExtension then
         for _, candidatePath in ipairs(candidatePaths) do
             if TryPlayableCandidate(candidatePath) then
@@ -573,24 +471,18 @@ ResolveCustomSoundPath = function(soundInput)
         end
     end
 
-    if explicitExtension then
-        for _, pathPattern in ipairs(CUSTOM_SOUND_SEARCH_PATHS) do
-            local candidatePath = string.format(pathPattern, filename)
-            BLU:PrintDebug("[UserSounds] Falling back to explicit-extension custom sound path '" .. tostring(candidatePath) .. "' for input '" .. tostring(soundInput) .. "'")
-            return candidatePath, {candidatePath}
-        end
-    end
-
     if explicitPath and not explicitExtension then
-        BLU:PrintDebug("[UserSounds] Falling back to explicit custom sound path without extension '" .. tostring(normalizedInput) .. "'")
+        for _, extension in ipairs(AUTO_SLOT_EXTENSIONS) do
+            local withExtension = normalizedInput .. "." .. extension
+            if CanLoadSoundFile(withExtension) then
+                return withExtension, {withExtension}
+            end
+        end
         return normalizedInput, {normalizedInput}
     end
 
-    if not explicitExtension and #candidatePaths > 0 then
-        BLU:PrintDebug("[UserSounds] Falling back to candidate custom sound paths for input '" .. tostring(soundInput) .. "'")
-        return candidatePaths[1], candidatePaths
-    end
-
+    -- A bare name that is not in any documented folder is NOT guessed at: report where we looked.
+    UserSounds.lastSearchedPaths = candidatePaths
     BLU:PrintDebug("[UserSounds] Failed to resolve custom sound input '" .. tostring(soundInput) .. "'")
     return nil
 end
@@ -718,7 +610,7 @@ function UserSounds:AddCustomSound(soundPath, displayName)
 
     local resolvedPath, candidateFiles = ResolveCustomSoundPath(soundPath)
     if not resolvedPath then
-        return false, "Could not find a compatible .ogg, .mp3, or .wav file for '" .. tostring(soundPath) .. "'"
+        return false, "Could not find '" .. tostring(soundPath) .. "'. Put the .ogg, .mp3 or .wav in Interface\\AddOns\\" .. addonName .. "\\user\\sounds\\ (then fully restart the game, a /reload is not enough for new files), or give the full path starting with Interface\\AddOns\\."
     end
 
     BLU.db.userCustomSounds = BLU.db.userCustomSounds or {}

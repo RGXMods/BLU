@@ -1,3 +1,7 @@
+# v8.2.6 - 2026-11-06
+
+- Adding a sound by name no longer searches other addons' folders or guesses at similar names. BLU looks in its own documented folders (user\sounds and friends), then at sounds already registered in BLU by exact name; anything else needs its full path. When a name cannot be found, BLU says where to put the file and that new files need a full game restart.
+
 # v8.2.5 - 2026-11-06
 
 - Chat messages no longer show two BLU prefixes ("[BLU] BLU: Options cannot be opened in combat..."). Every BLU chat line now has exactly one.

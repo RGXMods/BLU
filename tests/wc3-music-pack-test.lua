@@ -4,7 +4,7 @@ local function read(p) local f = assert(io.open(p, "rb")); local s = f:read("*a"
 local src = read("core/sounds/internal_sounds.lua")
 check(src:find('id = "warcraft_3_music"', 1, true), "the Warcraft III Music pack is declared")
 local ids, count = {}, 0
-for soundId, fileId, duration in src:gmatch('{soundId = "(wc3_music_[%w_]+)", name = "[^"]+", file_id = "([%w_]+)", duration = (%d+)}') do
+for soundId, fileId, duration in src:gmatch('{soundId = "(wc3_music_[%w_]+)", name = "[^"]+", file_id = "([%w_]+)", duration = ([%d.]+)}') do
   count = count + 1
   check(soundId == fileId, soundId .. ": soundId and file_id match")
   check(not ids[soundId], soundId .. ": declared once"); ids[soundId] = true

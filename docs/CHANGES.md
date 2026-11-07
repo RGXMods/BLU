@@ -1,3 +1,7 @@
+# v8.2.8 - 2026-11-07
+
+- Nine more Warcraft III soundtrack tracks join the Warcraft III Music pack, each with Low/Medium/High volume: The Lich King's Theme, Reign of Chaos Main Theme, Frozen Throne Main Theme, Blood Elf Theme, Heroic Victory, Dark Victory, Tragic Confrontation, Pursuit Theme and the Human Theme. They were picked as the most recognisable tracks of the game (no public play-count ranking exists); the pack now has 21 tracks.
+
 # v8.2.7 - 2026-11-07
 
 - Combat music restarts line up with the track now: the Warcraft III tracks used lengths rounded down by up to a second, so a long fight restarted the track early and cut its last moments off (or left a gap). They now use the exact length of each file, restart within a fraction of a second of the end, and let the finishing track end naturally instead of stopping it.

@@ -16,6 +16,6 @@ for soundId, fileId, duration in src:gmatch('{soundId = "(wc3_music_[%w_]+)", na
     check(head == "OggS" and size > 50000, fileId .. "_" .. variant .. ".ogg is a real Ogg file")
   end
 end
-check(count == 12, "all 12 tracks are declared (found " .. count .. ")")
+check(count == 21, "all 21 tracks are declared (found " .. count .. ")")
 check(src:find("duration = soundData.duration or 2.0", 1, true), "registration honours a per-sound duration")
 print("WC3 MUSIC PACK OK  (" .. count .. " tracks, 3 volume variants each)")

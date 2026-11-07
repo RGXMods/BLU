@@ -47,6 +47,7 @@ timers[1].fn()
 musicStarts = 0
 for _, id in ipairs(played) do if id == "long" then musicStarts = musicStarts + 1 end end
 check(musicStarts == 2, "track restarts when it ends during combat")
+check(#stopped == 0, "the finishing track is left to end on its own, not cut off by the restart")
 check(cvarWrites == 1, "a restart leaves the ambience muted instead of toggling the CVar again (writes: " .. cvarWrites .. ")")
 check(#timers == 2, "and the next restart is scheduled")
 

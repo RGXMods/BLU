@@ -128,7 +128,7 @@ local function IsStillInCombat()
     return type(UnitAffectingCombat) == "function" and UnitAffectingCombat("player") == true
 end
 
-local MUSIC_RESTART_GRACE_SECONDS = 0.5
+local MUSIC_RESTART_GRACE_SECONDS = 0.05
 -- Only music-length tracks are restarted. Most registered sounds carry a 2 second placeholder
 -- duration, which must never turn a short sound (or a track of unknown length) into a retrigger loop.
 local MUSIC_RESTART_MIN_SECONDS = 20
@@ -155,9 +155,9 @@ function CombatModule:PlayCombatMusic(isRestart)
     -- A previous track must never stack with the new one.
     if isRestart then
         self.musicToken = (self.musicToken or 0) + 1
-        local finished = self.combatMusicHandle
+        -- The finished track is left to end on its own: stopping it here cut its last moments
+        -- off, because the restart fires a hair before the audio actually ends.
         self.combatMusicHandle = nil
-        if finished and StopSound then pcall(StopSound, finished) end
     else
         self:StopCombatMusic()
     end

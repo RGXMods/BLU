@@ -1,3 +1,7 @@
+# v8.2.7 - 2026-11-07
+
+- Combat music restarts line up with the track now: the Warcraft III tracks used lengths rounded down by up to a second, so a long fight restarted the track early and cut its last moments off (or left a gap). They now use the exact length of each file, restart within a fraction of a second of the end, and let the finishing track end naturally instead of stopping it.
+
 # v8.2.6 - 2026-11-06
 
 - Adding a sound by name no longer searches other addons' folders or guesses at similar names. BLU looks in its own documented folders (user\sounds and friends), then at sounds already registered in BLU by exact name; anything else needs its full path. When a name cannot be found, BLU says where to put the file and that new files need a full game restart.

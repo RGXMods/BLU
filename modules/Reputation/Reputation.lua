@@ -72,7 +72,7 @@ function Reputation:OnUpdateFaction(event)
     end
 
     self.pendingScan = true
-    C_Timer.After(REPUTATION_SCAN_DELAY_SECONDS, function()
+    _G.RGXFramework:After(REPUTATION_SCAN_DELAY_SECONDS, function()
         self.pendingScan = false
         self:CheckReputationChanges()
     end)

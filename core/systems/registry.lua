@@ -241,8 +241,8 @@ function SoundRegistry:PreviewSound(soundId, options)
         self.previewToken = token
         self.previewState.token = token
         local previewSeconds = tonumber(sound.duration) or 8
-        if C_Timer and C_Timer.After then
-            C_Timer.After(previewSeconds + 0.25, function()
+        if _G.RGXFramework and _G.RGXFramework.After then
+            _G.RGXFramework:After(previewSeconds + 0.25, function()
                 local state = self.previewState
                 if state and state.token == token then
                     self.previewState = { soundId = nil, handle = nil, mode = nil, key = nil }
@@ -738,7 +738,7 @@ function BLU:TestAllSounds()
     
     for soundId, soundData in pairs(sounds) do
         count = count + 1
-        C_Timer.After(delay, function()
+        _G.RGXFramework:After(delay, function()
             self:Print(string.format("[%d] Playing: %s", count, soundData.name or soundId))
             BLU.Registry:PlaySound(soundId)
         end)

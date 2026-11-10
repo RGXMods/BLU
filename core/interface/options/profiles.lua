@@ -67,7 +67,7 @@ local function RefreshProfileUI(selectedProfile)
 end
 
 local function RefreshProfileUIDeferred(selectedProfile)
-    C_Timer.After(0.05, function()
+    _G.RGXFramework:After(0.05, function()
         RefreshProfileUI(selectedProfile)
     end)
 end

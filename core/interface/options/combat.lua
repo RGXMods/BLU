@@ -381,8 +381,8 @@ local function BuildSoundButtonMenu(dropdownFrame, getTriggerId, labelFontString
                         if dropdownFrame._refreshInlinePreviewButtons then
                             dropdownFrame:_refreshInlinePreviewButtons()
                         end
-                        if C_Timer and C_Timer.After then
-                            C_Timer.After(0, function()
+                        if _G.RGXFramework and _G.RGXFramework.After then
+                            _G.RGXFramework:After(0, function()
                                 if dropdownFrame and dropdownFrame._refreshInlinePreviewButtons then
                                     dropdownFrame:_refreshInlinePreviewButtons()
                                 end

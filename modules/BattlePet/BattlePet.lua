@@ -153,7 +153,7 @@ function BattlePet:SchedulePetLevelScan(delay)
     end
 
     self.pendingLevelScan = true
-    C_Timer.After(delay or 0.1, function()
+    _G.RGXFramework:After(delay or 0.1, function()
         self.pendingLevelScan = false
         self:CheckPetLevels()
     end)

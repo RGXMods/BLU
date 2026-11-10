@@ -81,7 +81,7 @@ function HonorRank:QueueHonorLevelCheck(triggerName, delaySeconds)
     end
 
     self.pendingCheck = true
-    C_Timer.After(delaySeconds or HONOR_CHECK_DELAY_SECONDS, function()
+    _G.RGXFramework:After(delaySeconds or HONOR_CHECK_DELAY_SECONDS, function()
         self.pendingCheck = false
         self:EvaluateHonorLevelChange(triggerName)
     end)

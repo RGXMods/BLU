@@ -128,7 +128,7 @@ function Utils:ProcessSoundQueue()
         end
         
         -- Play next sound after a short delay
-        C_Timer.After(0.1, function()
+        _G.RGXFramework:After(0.1, function()
             BLU:PrintDebug("[Utils] Advancing queued sound playback")
             self:ProcessSoundQueue()
         end)
@@ -164,7 +164,7 @@ function Utils:PlaySoundFile(soundFile, volume, callback)
         if callback then
             -- Estimate duration and call callback
             BLU:PrintDebug("[Utils] Scheduling playback callback")
-            C_Timer.After(2, callback)
+            _G.RGXFramework:After(2, callback)
         end
     else
         BLU:PrintDebug("[Utils] Failed to play sound: " .. SafeToString(soundFile))

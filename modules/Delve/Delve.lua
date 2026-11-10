@@ -281,7 +281,7 @@ function DelveCompanion:QueueLivesRefresh(delaySeconds)
     end
 
     self.pendingLivesRefresh = true
-    C_Timer.After(delaySeconds or DELVE_LIVES_RECHECK_DELAY_SECONDS, function()
+    _G.RGXFramework:After(delaySeconds or DELVE_LIVES_RECHECK_DELAY_SECONDS, function()
         self.pendingLivesRefresh = false
         if self:IsEnabled() then
             self:RefreshLivesState()

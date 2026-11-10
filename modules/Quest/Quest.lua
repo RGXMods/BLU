@@ -208,7 +208,7 @@ function Quest:OnQuestComplete(event)
     BLU:PlayCategorySound("questcomplete")
     
     -- Reset flag after a short delay
-    C_Timer.After(1, function()
+    _G.RGXFramework:After(1, function()
         self.atQuestGiver = false
     end)
 end

@@ -2,7 +2,8 @@
 local function check(cond, msg) if not cond then error("CHECK FAILED: " .. msg, 2) end end
 
 local timers = {}
-_G.C_Timer = { After = function(delay, fn) timers[#timers + 1] = { delay = delay, fn = fn } end }
+_G.RGXFramework = _G.RGXFramework or {}
+_G.RGXFramework.After = function(_, delay, fn) timers[#timers + 1] = { delay = delay, fn = fn } end
 _G.StopSound = function() end
 _G.BLU = { Modules = {}, db = {}, PrintDebug = function() end, PrintError = function() end }
 

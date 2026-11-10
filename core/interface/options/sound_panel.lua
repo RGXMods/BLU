@@ -470,8 +470,8 @@ local function CreateSoundDropdown(parent, eventType, label, yOffset, soundType)
 						if dropdown._refreshInlinePreviewButtons then
 							dropdown:_refreshInlinePreviewButtons()
 						end
-						if C_Timer and C_Timer.After then
-							C_Timer.After(0, function()
+						if _G.RGXFramework and _G.RGXFramework.After then
+							_G.RGXFramework:After(0, function()
 								if dropdown and dropdown._refreshInlinePreviewButtons then
 									dropdown:_refreshInlinePreviewButtons()
 								end
@@ -958,7 +958,7 @@ function BLU.CreateEventSoundPanel(panel, eventType, eventName)
 		else
 			if BLU.UnloadModule then BLU:UnloadModule(moduleLoadName) end
 		end
-		C_Timer.After(0, function()
+		_G.RGXFramework:After(0, function()
 			if toggle and toggle:IsVisible() then UpdateToggleState(IsModuleEnabled()) end
 		end)
 	end)
@@ -1071,7 +1071,7 @@ function BLU.CreateHousingPanel(panel)
 		else
 			if BLU.UnloadModule then BLU:UnloadModule("housing") end
 		end
-		C_Timer.After(0, function()
+		_G.RGXFramework:After(0, function()
 			if toggle and toggle:IsVisible() then UpdateToggleState(IsModuleEnabled()) end
 		end)
 	end)

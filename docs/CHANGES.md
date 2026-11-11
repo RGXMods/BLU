@@ -1,3 +1,7 @@
+# v8.2.9 - 2026-11-10
+
+- Internal: every timer now runs through the RGX-Framework timer API (RGX:After). No behaviour changes.
+
 # v8.2.8 - 2026-11-07
 
 - Nine more Warcraft III soundtrack tracks join the Warcraft III Music pack, each with Low/Medium/High volume: The Lich King's Theme, Reign of Chaos Main Theme, Frozen Throne Main Theme, Blood Elf Theme, Heroic Victory, Dark Victory, Tragic Confrontation, Pursuit Theme and the Human Theme. They were picked as the most recognisable tracks of the game (no public play-count ranking exists); the pack now has 21 tracks.

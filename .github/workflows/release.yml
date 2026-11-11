@@ -208,7 +208,7 @@ jobs:
 
         case "$release_type" in
         "release")
-        title="BLU | Better Level-Up! ${version}"
+        title="RGX | Better Level-Up! ${version}"
         color=385018
         footer="RGX Mods • Stable Release"
         description="A new stable release is live."
@@ -217,7 +217,7 @@ jobs:
         channel="Release"
         ;;
         "beta")
-        title="BLU | Better Level-Up! ${version} (Beta)"
+        title="RGX | Better Level-Up! ${version} (Beta)"
         color=16744448
         footer="RGX Mods • Beta Build"
         description="Beta build available for testing."
@@ -226,7 +226,7 @@ jobs:
         channel="Beta"
         ;;
         "alpha"|"alpha-branch")
-        title="BLU | Better Level-Up! ${version} (Alpha)"
+        title="RGX | Better Level-Up! ${version} (Alpha)"
         color=9109504
         footer="RGX Mods • Alpha Build"
         description="Alpha build available for testing."
@@ -235,7 +235,7 @@ jobs:
         channel="Alpha"
         ;;
         "dev")
-        title="BLU | Better Level-Up! ${version} (Dev)"
+        title="RGX | Better Level-Up! ${version} (Dev)"
         color=3447003
         footer="RGX Mods • Dev Build"
         description="Development build from the dev branch."
@@ -244,7 +244,7 @@ jobs:
         channel="Dev"
         ;;
         *)
-        title="BLU | Better Level-Up! ${version}"
+        title="RGX | Better Level-Up! ${version}"
         color=10000000
         footer="RGX Mods"
         description="Build completed."
@@ -255,14 +255,14 @@ jobs:
         esac
 
         jq -n \
-        --arg username "BLU Releases" \
-        --arg avatar_url "https://raw.githubusercontent.com/RGXMods/BLU/main/media/Textures/logo.png" \
+        --arg username "RGX Releases" \
+        --arg avatar_url "https://raw.githubusercontent.com/RGXMods/RGX-Framework/main/media/logo.png" \
         --arg title "$title" \
         --arg url "$release_url" \
         --arg description "$description" \
         --argjson color "$color" \
         --arg footer "$footer" \
-        --arg icon_url "https://raw.githubusercontent.com/RGXMods/SimpleQuestPlates/main/images/kiwi.gif" \
+        --arg icon_url "https://raw.githubusercontent.com/RGXMods/RGX-Framework/main/media/kiwi.gif" \
         --arg timestamp "${RELEASE_TIMESTAMP}" \
         --arg summary "$summary" \
         --arg downloads "$downloads" \
@@ -315,8 +315,8 @@ jobs:
         --arg run_id "${{ github.run_id }}" \
         --arg timestamp "${{ steps.version.outputs.timestamp }}" \
         '{
-        username: "BLU Build Failed",
-        avatar_url: "https://raw.githubusercontent.com/RGXMods/BLU/main/media/Textures/logo.png",
+        username: "RGX Build Failed",
+        avatar_url: "https://raw.githubusercontent.com/RGXMods/RGX-Framework/main/media/logo.png",
         embeds: [{
         title: "❌ BLU Build Failed",
         description: "The release workflow encountered an error",
@@ -328,7 +328,7 @@ jobs:
         ],
         footer: {
         "text": "RGX Mods - Build System",
-        "icon_url": "https://raw.githubusercontent.com/RGXMods/SimpleQuestPlates/main/images/kiwi.gif"
+        "icon_url": "https://raw.githubusercontent.com/RGXMods/RGX-Framework/main/media/kiwi.gif"
         },
         timestamp: $timestamp
         }]

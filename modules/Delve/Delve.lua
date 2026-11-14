@@ -16,27 +16,58 @@ local DELVE_LIVES_RECHECK_DELAY_SECONDS = 0.10
 -- Spell ID for the "Lives Remaining" delve aura (added patch 11.0.0 TWW)
 local DELVE_LIVES_SPELL_ID = 458103
 
+local RESTRICTED = "restricted"
+
+-- Retail 12.x can hand back secret aura data (GetPlayerAuraBySpellID is
+-- SecretWhenUnitAuraRestricted). Comparing a secret number throws, so every
+-- read goes through the framework access predicates first.
+local function CanAccessValue(value)
+    local api = RGX.API
+    if api and type(api.CanAccessValue) == "function" then
+        return api.CanAccessValue(value)
+    end
+    return true
+end
+
+local function CanAccessTable(tbl)
+    local api = RGX.API
+    if api and type(api.CanAccessTable) == "function" then
+        return api.CanAccessTable(tbl)
+    end
+    return type(tbl) == "table"
+end
+
+local function ReadCount(value)
+    if type(value) == "nil" then return nil end
+    if not CanAccessValue(value) then return RESTRICTED end
+    if type(value) == "number" then return value end
+    return nil
+end
+
 local function GetAuraStackCount(aura)
     if type(aura) ~= "table" then
         return nil
     end
-
-    if type(aura.applications) == "number" then
-        return aura.applications
+    if not CanAccessTable(aura) then
+        return RESTRICTED
     end
 
-    if type(aura.stackCount) == "number" then
-        return aura.stackCount
+    for _, field in ipairs({ "applications", "stackCount", "charges" }) do
+        local count = ReadCount(aura[field])
+        if count ~= nil then
+            return count
+        end
     end
 
-    if type(aura.charges) == "number" then
-        return aura.charges
-    end
-
-    if type(aura.points) == "table" then
-        for _, value in ipairs(aura.points) do
-            if type(value) == "number" then
-                return value
+    local points = aura.points
+    if type(points) == "table" then
+        if not CanAccessTable(points) then
+            return RESTRICTED
+        end
+        for _, value in ipairs(points) do
+            local count = ReadCount(value)
+            if count ~= nil then
+                return count
             end
         end
     end
@@ -224,24 +255,41 @@ function DelveCompanion:OnMajorFactionRenownLevelChanged(event, factionID, newLe
 end
 
 -- Get remaining lives from the "Lives Remaining" delve aura (spell 458103, added TWW patch 11.0.0)
+-- Returns the lives count, nil when the aura is absent, or nil, "restricted"
+-- when the client is withholding the aura data.
 function DelveCompanion:GetDelveLivesRemaining()
-    if not C_UnitAuras or not C_UnitAuras.GetPlayerAuraBySpellID then return nil end
-    local aura = C_UnitAuras.GetPlayerAuraBySpellID(DELVE_LIVES_SPELL_ID)
-    if aura then
-        return GetAuraStackCount(aura)
+    local api = RGX.API
+    local getter = api and api.GetPlayerAuraBySpellID
+    if type(getter) ~= "function" then
+        getter = C_UnitAuras and C_UnitAuras.GetPlayerAuraBySpellID
     end
-    return nil
+    if type(getter) ~= "function" then return nil end
+
+    local ok, aura = pcall(getter, DELVE_LIVES_SPELL_ID)
+    if not ok then return nil, RESTRICTED end
+    if type(aura) == "nil" then return nil end
+
+    local count = GetAuraStackCount(aura)
+    if count == RESTRICTED then return nil, RESTRICTED end
+    return count
 end
 
 function DelveCompanion:UpdateLivesCache()
-    self.cachedLivesRemaining = self:GetDelveLivesRemaining()
+    local current, status = self:GetDelveLivesRemaining()
+    if status == RESTRICTED then return end
+    self.cachedLivesRemaining = current
 end
 
 -- UNIT_AURA handler — tracks the "Lives Remaining" aura stack count
 -- Tracks the "Lives Remaining" aura stack count.
 function DelveCompanion:RefreshLivesState()
-    local current = self:GetDelveLivesRemaining()
+    local current, status = self:GetDelveLivesRemaining()
     local previous = self.cachedLivesRemaining
+
+    if status == RESTRICTED then
+        -- Data withheld this tick: keep the last known count and compare later.
+        return
+    end
 
     if current == nil then
         -- Aura gone (left delve or no aura active)

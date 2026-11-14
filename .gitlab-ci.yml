@@ -19,6 +19,16 @@ test:combat-secret-aura:
     - apk add --no-cache lua5.1
     - lua5.1 tests/combat-secret-aura-test.lua
     - lua5.1 tests/delve-secret-aura-test.lua
+    - lua5.1 tests/live-theme-test.lua
+    - lua5.1 tests/dropdown-palette-test.lua
+    - lua5.1 tests/minimap-sync-test.lua
+    - lua5.1 tests/slider-layout-test.lua
+    - lua5.1 tests/chat-prefix-test.lua
+    - lua5.1 tests/combat-music-loop-test.lua
+    - lua5.1 tests/combat-music-test.lua
+    - lua5.1 tests/no-raw-timers-test.lua
+    - lua5.1 tests/user-sounds-search-test.lua
+    - lua5.1 tests/wc3-music-pack-test.lua
     - lua5.1 tests/collectibles-triggers-test.lua
     - lua5.1 tests/loot-tab-appearance-test.lua
     - lua5.1 tests/preview-autoreset-test.lua

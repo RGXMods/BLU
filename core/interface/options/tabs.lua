@@ -53,8 +53,8 @@ local function CreateComingSoonPanel(panel, tabName)
     titleBar:SetPoint("RIGHT", 0, 0)
     titleBar:SetHeight(44)
     titleBar:SetBackdrop(BLU.Modules.design.Backdrops.Solid)
-    titleBar:SetBackdropColor(0.06, 0.10, 0.16, 0.95)
-    titleBar:SetBackdropBorderColor(0.10, 0.20, 0.28, 1)
+    titleBar:SetBackdropColor(BLU.Color("fill", 0.06, 0.10, 0.16, 0.95))
+    titleBar:SetBackdropBorderColor(BLU.Color("border", 0.10, 0.20, 0.28, 1))
 
     local icon = titleBar:CreateTexture(nil, "ARTWORK")
     icon:SetSize(24, 24)
@@ -63,7 +63,7 @@ local function CreateComingSoonPanel(panel, tabName)
 
     local title = titleBar:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     title:SetPoint("LEFT", icon, "RIGHT", 8, 0)
-    title:SetText("|cff05dffa" .. tabName .. "|r")
+    title:SetText(BLU.Hex() .. tabName .. "|r")
 
     local section = BLU.Modules.design:CreateSection(content, "Coming Soon", "Interface\\Icons\\INV_Misc_Note_05")
     section:SetPoint("TOPLEFT", titleBar, "BOTTOMLEFT", 0, -10)
@@ -74,7 +74,7 @@ local function CreateComingSoonPanel(panel, tabName)
     body:SetPoint("TOPLEFT", 4, -4)
     body:SetPoint("RIGHT", -8, 0)
     body:SetJustifyH("LEFT")
-    body:SetTextColor(0.82, 0.82, 0.82)
+    body:SetTextColor(BLU.Color("text", 0.82, 0.82, 0.82))
     body:SetText(cfg.body)
 end
 
@@ -133,7 +133,7 @@ function BLU.CreateTabButton(parent, text, index, row, col, panel, icon)
 
     local bg = button:CreateTexture(nil, "BACKGROUND")
     bg:SetAllPoints()
-    bg:SetColorTexture(0.08, 0.11, 0.15, 0.90)
+    bg:SetColorTexture(BLU.Color("fill", 0.08, 0.11, 0.15, 0.90))
     button.bg = bg
 
     local border = CreateFrame("Frame", nil, button, "BackdropTemplate")
@@ -142,7 +142,7 @@ function BLU.CreateTabButton(parent, text, index, row, col, panel, icon)
         edgeFile = "Interface\\Buttons\\WHITE8x8",
         edgeSize = 1,
     })
-    border:SetBackdropBorderColor(0.14, 0.20, 0.28, 1)
+    border:SetBackdropBorderColor(BLU.Color("border", 0.14, 0.20, 0.28, 1))
     button.border = border
 
     local buttonText = button:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
@@ -160,7 +160,7 @@ function BLU.CreateTabButton(parent, text, index, row, col, panel, icon)
         buttonText:SetPoint("CENTER", 0, 0)
     end
     buttonText:SetText(text)
-    buttonText:SetTextColor(0.8, 0.8, 0.8, 1)
+    buttonText:SetTextColor(BLU.Color("text", 0.8, 0.8, 0.8, 1))
     button.text = buttonText
 
     button:SetScript("OnClick", function(self)
@@ -179,8 +179,8 @@ function BLU.CreateTabButton(parent, text, index, row, col, panel, icon)
     button:SetScript("OnLeave", function(self)
         BLU:PrintDebug("[Tabs] Hover leave on tab '" .. tostring(text) .. "'")
         if not self.isActive then
-            self.border:SetBackdropBorderColor(0.3, 0.3, 0.3, 1)
-            self.text:SetTextColor(0.7, 0.7, 0.7, 1)
+            self.border:SetBackdropBorderColor(BLU.Color("border", 0.3, 0.3, 0.3, 1))
+            self.text:SetTextColor(BLU.Color("text", 0.7, 0.7, 0.7, 1))
         end
     end)
 
@@ -190,13 +190,13 @@ function BLU.CreateTabButton(parent, text, index, row, col, panel, icon)
         self.isActive = active
         if self.isPlaceholder then
             if active then
-                self.bg:SetColorTexture(0.07, 0.08, 0.10, 0.90)
-                self.text:SetTextColor(0.65, 0.72, 0.78, 1)
+                self.bg:SetColorTexture(BLU.Color("fill", 0.07, 0.08, 0.10, 0.90))
+                self.text:SetTextColor(BLU.Color("text", 0.65, 0.72, 0.78, 1))
                 self.border:SetBackdropBorderColor(unpack(BLU.Modules.design.Colors.Primary))
             else
-                self.bg:SetColorTexture(0.05, 0.06, 0.08, 0.55)
-                self.text:SetTextColor(0.42, 0.48, 0.52, 1)
-                self.border:SetBackdropBorderColor(0.10, 0.14, 0.18, 1)
+                self.bg:SetColorTexture(BLU.Color("fill", 0.05, 0.06, 0.08, 0.55))
+                self.text:SetTextColor(BLU.Color("text", 0.42, 0.48, 0.52, 1))
+                self.border:SetBackdropBorderColor(BLU.Color("border", 0.10, 0.14, 0.18, 1))
             end
             if self.icon then
                 self.icon:SetDesaturated(true)
@@ -205,7 +205,7 @@ function BLU.CreateTabButton(parent, text, index, row, col, panel, icon)
             return
         end
         if active then
-            self.bg:SetColorTexture(0.11, 0.18, 0.24, 1)
+            self.bg:SetColorTexture(BLU.Color("fill", 0.11, 0.18, 0.24, 1))
             self.text:SetTextColor(unpack(BLU.Modules.design.Colors.Primary))
             self.border:SetBackdropBorderColor(unpack(BLU.Modules.design.Colors.Primary))
             if self.icon then
@@ -213,9 +213,9 @@ function BLU.CreateTabButton(parent, text, index, row, col, panel, icon)
                 self.icon:SetAlpha(1)
             end
         else
-            self.bg:SetColorTexture(0.08, 0.11, 0.15, 0.90)
-            self.text:SetTextColor(0.7, 0.7, 0.7, 1)
-            self.border:SetBackdropBorderColor(0.14, 0.20, 0.28, 1)
+            self.bg:SetColorTexture(BLU.Color("fill", 0.08, 0.11, 0.15, 0.90))
+            self.text:SetTextColor(BLU.Color("text", 0.7, 0.7, 0.7, 1))
+            self.border:SetBackdropBorderColor(BLU.Color("border", 0.14, 0.20, 0.28, 1))
             if self.icon then
                 self.icon:SetDesaturated(false)
                 self.icon:SetAlpha(0.95)

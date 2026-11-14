@@ -37,7 +37,7 @@ local frames = {}
 function CreateFrame() local r = region(); frames[#frames + 1] = r; return r end
 
 local stored = { }
-local BLU = { db = { soundVolumes = stored }, PrintDebug = function() end, Modules = { design = { Colors = { Primary = { 0, 1, 1 } } } } }
+local BLU = { db = { soundVolumes = stored }, Color = function(_, r, g, b, a) return r, g, b, a end, Hex = function() return "|cff05dffa" end, PrintDebug = function() end, Modules = { design = { Colors = { Primary = { 0, 1, 1 } } } } }
 local chunk = assert(loadstring("local BLU, container, actualEventType, CreateFrame, unpack = ...\n" .. body .. "\nreturn volumeControl, volButton, volFill, volThumb, applyVolume"))
 local volumeControl, volButton, volFill, volThumb, applyVolume = chunk(BLU, region(), "levelup", CreateFrame, unpack)
 

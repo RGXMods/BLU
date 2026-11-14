@@ -7,7 +7,7 @@ local function check(cond, msg) if not cond then error("CHECK FAILED: " .. msg, 
 local design = read("core/interface/design.lua")
 check(design:find("Design.ListSkin = {", 1, true), "design defines ListSkin")
 check(design:find("Design.InlineButtonColors = {", 1, true), "design defines InlineButtonColors")
-check(design:find("header:SetBackdropBorderColor(0.14, 0.20, 0.28, 1)", 1, true), "card header border matches the card and controls")
+check(design:find('header:SetBackdropBorderColor(BLU.Color("border", 0.14, 0.20, 0.28, 1))', 1, true), "card header border matches the card and controls (through the theme colour helper)")
 check(not design:find("header:SetBackdropBorderColor(unpack(Design.Colors.Accent))", 1, true), "card header no longer uses the mismatched accent border")
 
 for _, path in ipairs({ "core/interface/options/sound_panel.lua", "core/interface/options/combat.lua", "core/interface/options/profiles.lua" }) do

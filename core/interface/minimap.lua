@@ -57,12 +57,12 @@ function Minimap:Init()
         angleKey = "minimapAngle",
         enabledKey = "minimapIconEnabled",
         tooltip = {
-            title = "|cff05dffaB|r|cffffffffetter|r |cff05dffaL|r|cffffffffevel-|r |cff05dffaU|r|cffffffffp|r|cff05dffa!|r",
+            title = BLU.Hex() .. "B|r|cffffffffetter|r " .. BLU.Hex() .. "L|r|cffffffffevel-|r " .. BLU.Hex() .. "U|r|cffffffffp|r" .. BLU.Hex() .. "!|r",
             getLines = function()
                 local enabled = BLU.db and BLU.db.enabled ~= false
                 return {
                     { left = "|cffffffffStatus|r", right = enabled and "|cff00ff00Enabled|r" or "|cffff0000Disabled|r" },
-                    { left = "|cff05dffaLeft-Click|r", right = "|cffffffffOpen options|r" },
+                    { left = BLU.Hex() .. "Left-Click|r", right = "|cffffffffOpen options|r" },
                     { left = "|cff4ecdc4Left-Drag|r", right = "|cffffffffMove around minimap|r" },
                     { left = "|cffe74c3cCtrl+Right-Click|r", right = "|cffffffffHide minimap icon|r" },
                 }

@@ -1,3 +1,7 @@
+# v8.2.11 - 2026-11-14
+
+- BLU follows the RGX-Framework theme override (beta, off by default): while it is on, BLU's options take the framework's main colour and palette, and change as soon as the theme changes, without a reload. With it off BLU looks exactly as before. Requires RGX-Framework 2.19.0.
+
 # v8.2.10 - 2026-11-14
 
 - Delve lives sounds no longer risk a Lua error in combat on Retail. When the game withholds the Lives Remaining aura data during combat, BLU keeps the last known count and checks again once the data is readable, so a life lost in a fight still plays its sound afterwards.

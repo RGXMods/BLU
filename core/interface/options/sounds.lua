@@ -84,8 +84,8 @@ function BLU.CreateSoundsPanel(panel)
     installedPanel:SetPoint("BOTTOMLEFT", panel, "BOTTOMLEFT", 6, 5)
     installedPanel:SetWidth(leftColumnWidth + 3)
     installedPanel:SetBackdrop(BLU.Modules.design.Backdrops.Dark)
-    installedPanel:SetBackdropColor(0.06, 0.06, 0.06, 0.95)
-    installedPanel:SetBackdropBorderColor(0.2, 0.2, 0.2, 1)
+    installedPanel:SetBackdropColor(BLU.Color("fill", 0.06, 0.06, 0.06, 0.95))
+    installedPanel:SetBackdropBorderColor(BLU.Color("border", 0.2, 0.2, 0.2, 1))
 
     local scrollFrame = CreateFrame("ScrollFrame", nil, installedPanel, "UIPanelScrollFrameTemplate")
     scrollFrame:SetPoint("TOPLEFT", 8, -8)
@@ -122,7 +122,7 @@ function BLU.CreateSoundsPanel(panel)
     headerNote:SetPoint("RIGHT", content, "RIGHT", -12, 0)
     headerNote:SetJustifyH("LEFT")
     headerNote:SetWordWrap(true)
-    headerNote:SetTextColor(0.78, 0.78, 0.78)
+    headerNote:SetTextColor(BLU.Color("text", 0.78, 0.78, 0.78))
     headerNote:SetText("BLU lists its built-in libraries, your manually added custom sounds, and any supported third-party sound packs detected from other addons.")
 
     local startY = -72
@@ -179,14 +179,14 @@ function BLU.CreateSoundsPanel(panel)
             id = "wow_default_blu",
             name = "wow default-blu",
             icon = ADDON_PATH .. "media\\Textures\\icon.tga",
-            status = "|cff05dffaBLU defaults|r",
+            status = BLU.Hex() .. "BLU defaults|r",
             soundCount = 0,
         },
         {
             id = "other_games_blu",
             name = "other games-blu",
             icon = ADDON_PATH .. "media\\Textures\\icon.tga",
-            status = "|cff05dffaBLU game library|r",
+            status = BLU.Hex() .. "BLU game library|r",
             soundCount = 0,
         },
         {
@@ -284,8 +284,8 @@ function BLU.CreateSoundsPanel(panel)
     managerPanel:SetPoint("TOPLEFT", installedPanel, "TOPRIGHT", 8, 0)
     managerPanel:SetPoint("BOTTOMRIGHT", -8, 5)
     managerPanel:SetBackdrop(BLU.Modules.design.Backdrops.Dark)
-    managerPanel:SetBackdropColor(0.06, 0.06, 0.06, 0.95)
-    managerPanel:SetBackdropBorderColor(0.2, 0.2, 0.2, 1)
+    managerPanel:SetBackdropColor(BLU.Color("fill", 0.06, 0.06, 0.06, 0.95))
+    managerPanel:SetBackdropBorderColor(BLU.Color("border", 0.2, 0.2, 0.2, 1))
 
     local managerHeader = BLU.Modules.design:CreateHeader(managerPanel, "User Custom Sounds", "Interface\\Icons\\INV_Misc_Coin_18")
     managerHeader:SetPoint("TOPLEFT", 8, -8)
@@ -296,7 +296,7 @@ function BLU.CreateSoundsPanel(panel)
     managerNote:SetPoint("RIGHT", managerPanel, "RIGHT", -12, 0)
     managerNote:SetJustifyH("LEFT")
     managerNote:SetWordWrap(true)
-    managerNote:SetTextColor(0.78, 0.78, 0.78)
+    managerNote:SetTextColor(BLU.Color("text", 0.78, 0.78, 0.78))
     managerNote:SetText("Add, review, and remove personal sound files for the active profile. BLU can resolve short file names or full AddOns paths and load the match into User Custom Sounds.")
 
     local addButton = BLU.Modules.design:CreateActionButton(
@@ -315,7 +315,7 @@ function BLU.CreateSoundsPanel(panel)
 
     local countLabel = managerPanel:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     countLabel:SetPoint("LEFT", addButton, "RIGHT", 10, 0)
-    countLabel:SetTextColor(0.7, 0.7, 0.7)
+    countLabel:SetTextColor(BLU.Color("text", 0.7, 0.7, 0.7))
     countLabel:SetText("Loaded: " .. tostring(customSoundCount))
 
     local listFrame = CreateFrame("ScrollFrame", nil, managerPanel, "UIPanelScrollFrameTemplate")
@@ -355,7 +355,7 @@ function BLU.CreateSoundsPanel(panel)
         emptyText:SetPoint("TOPLEFT", 4, -4)
         emptyText:SetPoint("RIGHT", -4, 0)
         emptyText:SetJustifyH("LEFT")
-        emptyText:SetTextColor(0.65, 0.65, 0.65)
+        emptyText:SetTextColor(BLU.Color("text", 0.65, 0.65, 0.65))
         emptyText:SetText("No user custom sounds are loaded.")
         listContent:SetHeight(40)
     else
@@ -366,8 +366,8 @@ function BLU.CreateSoundsPanel(panel)
             row:SetWidth(294)
             row:SetHeight(rowHeight)
             row:SetBackdrop(BLU.Modules.design.Backdrops.Solid)
-            row:SetBackdropColor(0.08, 0.11, 0.15, 0.90)
-            row:SetBackdropBorderColor(0.14, 0.20, 0.28, 1)
+            row:SetBackdropColor(BLU.Color("fill", 0.08, 0.11, 0.15, 0.90))
+            row:SetBackdropBorderColor(BLU.Color("border", 0.14, 0.20, 0.28, 1))
 
             local soundName = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
             soundName:SetPoint("TOPLEFT", 8, -6)
@@ -379,7 +379,7 @@ function BLU.CreateSoundsPanel(panel)
             soundPath:SetPoint("TOPLEFT", soundName, "BOTTOMLEFT", 0, -2)
             soundPath:SetPoint("RIGHT", -88, 0)
             soundPath:SetJustifyH("LEFT")
-            soundPath:SetTextColor(0.65, 0.65, 0.65)
+            soundPath:SetTextColor(BLU.Color("text", 0.65, 0.65, 0.65))
             local sourceLabel = entry.source and ("  |cff777777[" .. tostring(entry.source) .. "]|r") or ""
             soundPath:SetText((entry.file or "") .. sourceLabel)
 
@@ -389,7 +389,7 @@ function BLU.CreateSoundsPanel(panel)
                 removeButton:SetFrameStrata("HIGH")
                 removeButton:Show()
                 if removeButton.label then
-                    removeButton.label:SetTextColor(1.0, 0.35, 0.35)
+                    removeButton.label:SetTextColor(BLU.Color("text", 1.0, 0.35, 0.35))
                 end
                 removeButton:SetScript("OnClick", function()
                     local soundsModule = BLU.Modules and BLU.Modules["usersounds"]
@@ -408,7 +408,7 @@ function BLU.CreateSoundsPanel(panel)
             else
                 local loadedLabel = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
                 loadedLabel:SetPoint("TOPRIGHT", row, "TOPRIGHT", -8, -15)
-                loadedLabel:SetTextColor(0.36, 0.88, 0.52)
+                loadedLabel:SetTextColor(BLU.Color("text", 0.36, 0.88, 0.52))
                 loadedLabel:SetText("Loaded")
             end
         end

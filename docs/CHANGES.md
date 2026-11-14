@@ -1,3 +1,7 @@
+# v8.2.10 - 2026-11-14
+
+- Delve lives sounds no longer risk a Lua error in combat on Retail. When the game withholds the Lives Remaining aura data during combat, BLU keeps the last known count and checks again once the data is readable, so a life lost in a fight still plays its sound afterwards.
+
 # v8.2.9 - 2026-11-10
 
 - Internal: every timer now runs through the RGX-Framework timer API (RGX:After). No behaviour changes.

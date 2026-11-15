@@ -184,7 +184,7 @@ document the supported layouts and current API examples.
 Bug reports, translations, feature ideas, and sound suggestions are welcome. Keep reports focused and include reproduction steps when possible.
 
 Development is maintained in the
-[RGXMods GitLab repository](https://gitlab.dicematrix.cloud/rgxmods/warcraft/BLU),
+[RGXMods GitHub repository](https://github.com/RGXMods/BLU),
 the source of truth for code and CI/CD. Public packages and release notes are
 published through [RGXMods GitHub Releases](https://github.com/RGXMods/BLU/releases).
 

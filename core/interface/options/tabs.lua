@@ -145,6 +145,18 @@ function BLU.CreateTabButton(parent, text, index, row, col, panel, icon)
     border:SetBackdropBorderColor(BLU.Color("border", 0.14, 0.20, 0.28, 1))
     button.border = border
 
+    -- While the RGX-Framework theme override is on, the tab takes the framework's tab look for the chosen style
+    -- (the game's tab art in WoW Classic / WoW Forever, rounded chips in Material Round).
+    do
+        local D, UIfw = _G.RGXDesign, _G.RGXUI
+        if D and D.IsThemeOverride and D:IsThemeOverride() and UIfw and UIfw.SkinTab and UIfw.PaintTab then
+            bg:Hide()
+            border:Hide()
+            UIfw:SkinTab(button)
+            button._fwTab = true
+        end
+    end
+
     local buttonText = button:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     if icon then
         local iconTexture = button:CreateTexture(nil, "ARTWORK")
@@ -229,6 +241,29 @@ function BLU.CreateTabButton(parent, text, index, row, col, panel, icon)
         self:SetActive(false)
     end
 
+    if button._fwTab then
+        local UIfw = _G.RGXUI
+        local function Primary()
+            local design = BLU.Modules and BLU.Modules.design
+            return design and design.Colors and design.Colors.Primary
+        end
+        button:SetScript("OnEnter", function(self)
+            if not self.isActive then UIfw:PaintTab(self, "hover", Primary()) end
+        end)
+        button:SetScript("OnLeave", function(self)
+            if not self.isActive then UIfw:PaintTab(self, "idle") end
+        end)
+        function button:SetActive(active)
+            self.isActive = active
+            UIfw:PaintTab(self, active and "active" or "idle", Primary())
+            if self.text then self.text:SetAlpha((self.isPlaceholder and not active) and 0.6 or 1) end
+            if self.icon then
+                self.icon:SetDesaturated(self.isPlaceholder and true or false)
+                self.icon:SetAlpha(active and 1 or 0.9)
+            end
+        end
+        button:SetActive(false)
+    end
     return button
 end
 

@@ -51,4 +51,11 @@ check(Design.ListSkin.surface == nil and Design.ListSkin.border == nil, "overrid
 override = false
 listener()
 check(held[1] == 0.02 and Design.ListSkin.surface ~= nil and rebuilt == 2, "override off again: BLU's own look, rebuilt")
+
+-- Tabs take the framework's tab look while the override is on.
+do
+  local fh = assert(io.open("core/interface/options/tabs.lua")); local tabsSrc = fh:read("*a"); fh:close()
+  check(tabsSrc:find("D:IsThemeOverride() and UIfw and UIfw.SkinTab", 1, true) and tabsSrc:find("UIfw:SkinTab(button)", 1, true), "under the override the tabs use the framework's tab skin")
+  check(tabsSrc:find('UIfw:PaintTab(self, active and "active" or "idle", Primary())', 1, true), "the tab states are painted by the framework")
+end
 io.write("live-theme OK\n")

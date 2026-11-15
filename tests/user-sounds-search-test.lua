@@ -3,7 +3,7 @@
 local function check(cond, msg) if not cond then error("CHECK FAILED: " .. msg, 2) end end
 
 local files, probes = {}, 0
-local addons = { "Blizzard_Foo", "BLU", "WeakAuras", "MyVoicePack", "Details", "SoundsOfWar" }
+local addons = { "Blizzard_Foo", "BLU", "OtherAuraAddon", "MyVoicePack", "OtherMeterAddon", "SoundsOfWar" }
 _G.PlaySoundFile = function(path)
   probes = probes + 1
   if files[path:lower()] then return true, 1 end

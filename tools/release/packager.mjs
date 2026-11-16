@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// RGX in-house addon packager — deterministic, dependency-free replacement
-// for BigWigsMods/packager in the RGX Mods addon repos.
+// RGX in-house addon packager — deterministic and dependency-free, used by
+// every RGX Mods addon repo.
 //
 //   node tools/release/packager.mjs --toc BLU.toc [--out artifacts]
 //

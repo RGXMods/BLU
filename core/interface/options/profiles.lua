@@ -543,12 +543,12 @@ function BLU.CreateProfilesPanel(panel)
     activeHighlight:SetPoint("BOTTOMLEFT", 8, 8)
     activeHighlight:SetWidth(col2X - 24)
     activeHighlight:SetBackdrop(BLU.Modules.design.Backdrops.Dark)
-    activeHighlight:SetBackdropColor(0.1, 0.12, 0.16, 0.6)
-    activeHighlight:SetBackdropBorderColor(0.2, 0.3, 0.4, 0.5)
+    activeHighlight:SetBackdropColor(BLU.Color("fill", 0.1, 0.12, 0.16, 0.6))
+    activeHighlight:SetBackdropBorderColor(BLU.Color("border", 0.2, 0.3, 0.4, 0.5))
 
     local profileDropdownLabel = mainSection.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     profileDropdownLabel:SetPoint("TOPLEFT", col2X, -16)
-    profileDropdownLabel:SetText("|cff05dffaProfile|r")
+    profileDropdownLabel:SetText(BLU.Hex() .. "Profile|r")
 
     local profileDropdown = CreateFrame("Frame", "BLUProfilesDropdown", mainSection.content, "UIDropDownMenuTemplate")
     profileDropdown:SetPoint("TOPLEFT", profileDropdownLabel, "BOTTOMLEFT", -15, -4)
@@ -559,7 +559,7 @@ function BLU.CreateProfilesPanel(panel)
     profileCount:SetPoint("TOPLEFT", profileDropdown, "BOTTOMLEFT", 20, -4)
     profileCount:SetPoint("RIGHT", mainSection.content, "RIGHT", -10, 0)
     profileCount:SetJustifyH("LEFT")
-    profileCount:SetTextColor(0.72, 0.72, 0.72)
+    profileCount:SetTextColor(BLU.Color("text", 0.72, 0.72, 0.72))
 
     local currentProfileLabel = activeHighlight:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     currentProfileLabel:SetPoint("TOPLEFT", activeHighlight, "TOPLEFT", 12, -12)
@@ -575,7 +575,7 @@ function BLU.CreateProfilesPanel(panel)
     local characterProfileLabel = activeHighlight:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     characterProfileLabel:SetPoint("TOPLEFT", currentProfileValue, "BOTTOMLEFT", 0, -10)
     characterProfileLabel:SetPoint("RIGHT", activeHighlight, "RIGHT", -10, 0)
-    characterProfileLabel:SetTextColor(0.76, 0.76, 0.76)
+    characterProfileLabel:SetTextColor(BLU.Color("text", 0.76, 0.76, 0.76))
     characterProfileLabel:SetJustifyH("LEFT")
 
     local actionButtonWidth = 84
@@ -699,7 +699,7 @@ function BLU.CreateProfilesPanel(panel)
             for _, profileName in ipairs(GetOrderedProfiles()) do
                 local info = UIDropDownMenu_CreateInfo()
                 if profileName == activeProfileName then
-                    info.text = "|cff05dffa" .. profileName .. "|r"
+                    info.text = BLU.Hex() .. profileName .. "|r"
                 else
                     info.text = profileName
                 end
@@ -728,8 +728,8 @@ function BLU.CreateProfilesPanel(panel)
                                 deleteButton = CreateFrame("Button", nil, button, "BackdropTemplate")
                                 deleteButton:SetSize(18, 16)
                                 deleteButton:SetBackdrop(BLU.Modules.design.Backdrops.Button)
-                                deleteButton:SetBackdropColor(0.15, 0.05, 0.05, 0.95)
-                                deleteButton:SetBackdropBorderColor(0.3, 0.1, 0.1, 1)
+                                deleteButton:SetBackdropColor(BLU.Color("fill", 0.15, 0.05, 0.05, 0.95))
+                                deleteButton:SetBackdropBorderColor(BLU.Color("border", 0.3, 0.1, 0.1, 1))
                                 deleteButton:RegisterForClicks("LeftButtonUp")
                                 deleteButton:SetScript("OnClick", function(btn)
                                     if btn.profileName then
@@ -738,20 +738,20 @@ function BLU.CreateProfilesPanel(panel)
                                     end
                                 end)
                                 deleteButton:SetScript("OnEnter", function(btn)
-                                    btn:SetBackdropColor(0.2, 0.07, 0.07, 1)
+                                    btn:SetBackdropColor(BLU.Color("fill", 0.2, 0.07, 0.07, 1))
                                     GameTooltip:SetOwner(btn, "ANCHOR_RIGHT")
                                     GameTooltip:SetText("Delete Profile")
                                     GameTooltip:AddLine(btn.profileName or "", 0.82, 0.82, 0.82, true)
                                     GameTooltip:Show()
                                 end)
                                 deleteButton:SetScript("OnLeave", function(btn)
-                                    btn:SetBackdropColor(0.15, 0.05, 0.05, 0.95)
+                                    btn:SetBackdropColor(BLU.Color("fill", 0.15, 0.05, 0.05, 0.95))
                                     GameTooltip:Hide()
                                 end)
                                 local lbl = deleteButton:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
                                 lbl:SetPoint("CENTER", 0, 0)
                                 lbl:SetText("x")
-                                lbl:SetTextColor(1, 0.3, 0.3)
+                                lbl:SetTextColor(BLU.Color("text", 1, 0.3, 0.3))
                                 button.bluDeleteButton = deleteButton
                             end
                             deleteButton.profileName = profileName
@@ -783,7 +783,7 @@ function BLU.CreateProfilesPanel(panel)
         UIDropDownMenu_Initialize(profileDropdown, profileDropdown_OnInitialize)
 
         UIDropDownMenu_SetText(profileDropdown, tostring(selectedProfile))
-        currentProfileValue:SetText("|cff05dffa" .. tostring(activeProfileName) .. "|r")
+        currentProfileValue:SetText(BLU.Hex() .. tostring(activeProfileName) .. "|r")
         characterProfileLabel:SetText("Character: |cff95a5a6" .. tostring(characterProfileName) .. "|r")
         profileCount:SetText("Saved: |cffffd700" .. tostring(#profileNames) .. "|r")
     end

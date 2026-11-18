@@ -65,7 +65,7 @@ function BLU.CreateGeneralPanel(panel)
 
     local contentBg = content:CreateTexture(nil, "BACKGROUND")
     contentBg:SetAllPoints()
-    contentBg:SetColorTexture(0.04, 0.06, 0.08, 0.35)
+    contentBg:SetColorTexture(BLU.Color("fill", 0.04, 0.06, 0.08, 0.35))
 
     if not EnsureProfileDefaults() then
         local unavailable = content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
@@ -140,7 +140,7 @@ function BLU.CreateGeneralPanel(panel)
     soundDesc:SetPoint("RIGHT", soundSection.content, "RIGHT", -8, 0)
     soundDesc:SetJustifyH("LEFT")
     soundDesc:SetWordWrap(true)
-    soundDesc:SetTextColor(0.72, 0.78, 0.86)
+    soundDesc:SetTextColor(BLU.Color("text", 0.72, 0.78, 0.86))
     soundDesc:SetText("All BLU sounds play through the selected channel. Adjusting the volume here changes your in-game channel level.")
 
     local soundChannelLabel = soundSection.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
@@ -224,7 +224,7 @@ function BLU.CreateGeneralPanel(panel)
     SetSelectedChannel(profile.soundChannel or "Master")
 
     StaticPopupDialogs["BLU_ADD_CUSTOM_SOUND"] = {
-        text = "Add a custom sound file for BLU.",
+        text = "Add a custom sound file for BLU.\nPut your files in Interface\\AddOns\\BLU_Sounds\\ and restart the game once, then type the file name.\nNamed custom01 to custom99, they appear on their own.",
         subText = "Enter a short file name like myfile or myfile.ogg. You can also paste a full path like Interface\\AddOns\\myfile.ogg. BLU will try common AddOns folders automatically.",
         button1 = ADD,
         button2 = CANCEL,

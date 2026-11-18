@@ -10,7 +10,7 @@ for soundId, fileId, duration in src:gmatch('{soundId = "(wc3_music_[%w_]+)", na
   check(not ids[soundId], soundId .. ": declared once"); ids[soundId] = true
   check(tonumber(duration) >= 30, soundId .. ": music has a real duration")
   for _, variant in ipairs({ "low", "med", "high" }) do
-    local f = io.open("media/sounds/" .. fileId .. "_" .. variant .. ".ogg", "rb")
+    local f = io.open("sounds/game/" .. fileId .. "_" .. variant .. ".ogg", "rb")
     check(f, fileId .. "_" .. variant .. ".ogg exists")
     local head = f:read(4); local size = f:seek("end"); f:close()
     check(head == "OggS" and size > 50000, fileId .. "_" .. variant .. ".ogg is a real Ogg file")

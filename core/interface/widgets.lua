@@ -123,7 +123,7 @@ function Widgets:CreateColorPicker(parent, label, r, g, b, callback)
     
     local bg = swatch:CreateTexture(nil, "BACKGROUND")
     bg:SetAllPoints()
-    bg:SetColorTexture(1, 1, 1)
+    bg:SetColorTexture(BLU.Color("fill", 1, 1, 1))
     
     local tex = swatch:CreateTexture(nil, "OVERLAY")
     tex:SetAllPoints()
@@ -178,6 +178,6 @@ function Widgets:CreateDivider(parent, width)
     local divider = parent:CreateTexture(nil, "OVERLAY")
     divider:SetHeight(1)
     divider:SetWidth(width or 550)
-    divider:SetColorTexture(0.3, 0.3, 0.3, 0.5)
+    divider:SetColorTexture(BLU.Color("fill", 0.3, 0.3, 0.3, 0.5))
     return divider
 end

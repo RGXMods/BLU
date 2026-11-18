@@ -28,7 +28,7 @@ local function GetAddOnMetadataSafe(addonName, key)
 end
 
 local OPTIONS_PANEL_NAME = "Better Level-Up!"
-local OPTIONS_LIST_STYLED_NAME = "|T" .. ADDON_PATH .. "media\\Textures\\icon:16:16:0:0|t |cff05dffaB|r|cffffffffetter |cff05dffaL|r|cffffffffevel-|cff05dffaU|r|cffffffffp|cff05dffa!|r"
+local OPTIONS_LIST_STYLED_NAME = "|T" .. ADDON_PATH .. "media\\Textures\\icon:16:16:0:0|t " .. BLU.Hex() .. "B|r|cffffffffetter " .. BLU.Hex() .. "L|r|cffffffffevel-" .. BLU.Hex() .. "U|r|cffffffffp" .. BLU.Hex() .. "!|r"
 
 function Options:ResolveOptionsCategoryID()
     BLU:PrintDebug("[Options] ResolveOptionsCategoryID called")
@@ -86,212 +86,228 @@ function Options:CreateOptionsPanel()
     panel.settingsCategoryName = OPTIONS_LIST_STYLED_NAME
     BLU.OptionsPanel = panel
 
-    local container = CreateFrame("Frame", nil, panel, "BackdropTemplate")
-    container:SetPoint("TOPLEFT", 0, 0)
-    container:SetPoint("BOTTOMRIGHT", 0, 0)
-    container:SetBackdrop(BLU.Modules.design.Backdrops.Dark)
-    container:SetBackdropColor(0.05, 0.07, 0.10, 0.95)
-    container:SetBackdropBorderColor(0.10, 0.18, 0.24, 1)
+    -- Everything inside the panel is built into one container, in BLU's brand (its own colours, or the framework's
+    -- while the beta global theme override is on). The panel registered with the game settings stays; on a theme
+    -- change the container is built again in the new colours and the open tab is kept.
+    local function BuildBody()
+        local container = CreateFrame("Frame", nil, panel, "BackdropTemplate")
+        container:SetPoint("TOPLEFT", 0, 0)
+        container:SetPoint("BOTTOMRIGHT", 0, 0)
+        container:SetBackdrop(BLU.Modules.design.Backdrops.Dark)
+        container:SetBackdropColor(BLU.Color("fill", 0.05, 0.07, 0.10, 0.95))
+        container:SetBackdropBorderColor(BLU.Color("border", 0.10, 0.18, 0.24, 1))
 
-    local header = CreateFrame("Frame", nil, container, "BackdropTemplate")
-    header:SetHeight(52)
-    header:SetPoint("TOPLEFT", 8, -8)
-    header:SetPoint("TOPRIGHT", -8, -8)
-    header:SetBackdrop(BLU.Modules.design.Backdrops.Dark)
-    header:SetBackdropColor(0.07, 0.10, 0.14, 0.95)
-    header:SetBackdropBorderColor(0.12, 0.22, 0.30, 1)
+        local header = CreateFrame("Frame", nil, container, "BackdropTemplate")
+        header:SetHeight(52)
+        header:SetPoint("TOPLEFT", 8, -8)
+        header:SetPoint("TOPRIGHT", -8, -8)
+        header:SetBackdrop(BLU.Modules.design.Backdrops.Dark)
+        header:SetBackdropColor(BLU.Color("fill", 0.07, 0.10, 0.14, 0.95))
+        header:SetBackdropBorderColor(BLU.Color("border", 0.12, 0.22, 0.30, 1))
 
-    local headerAccent = header:CreateTexture(nil, "ARTWORK")
-    headerAccent:SetHeight(2)
-    headerAccent:SetPoint("BOTTOMLEFT", 8, 0)
-    headerAccent:SetPoint("BOTTOMRIGHT", -8, 0)
-    headerAccent:SetColorTexture(unpack(BLU.Modules.design.Colors.Primary))
+        local headerAccent = header:CreateTexture(nil, "ARTWORK")
+        headerAccent:SetHeight(2)
+        headerAccent:SetPoint("BOTTOMLEFT", 8, 0)
+        headerAccent:SetPoint("BOTTOMRIGHT", -8, 0)
+        headerAccent:SetColorTexture(unpack(BLU.Modules.design.Colors.Primary))
 
-    local logo = header:CreateTexture(nil, "ARTWORK")
-    logo:SetSize(28, 28)
-    logo:SetPoint("LEFT", 10, 0)
-    logo:SetTexture(ADDON_PATH .. "media\\Textures\\icon.tga")
+        local logo = header:CreateTexture(nil, "ARTWORK")
+        logo:SetSize(28, 28)
+        logo:SetPoint("LEFT", 10, 0)
+        logo:SetTexture(ADDON_PATH .. "media\\Textures\\icon.tga")
 
-    local leftX = 50
-    local rightX = -15
-    local rowOneY = -14
-    local rowTwoY = -26
-    local rowThreeY = -38
+        local leftX = 50
+        local rightX = -15
+        local rowOneY = -14
+        local rowTwoY = -26
+        local rowThreeY = -38
 
-    local title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    title:SetPoint("LEFT", header, "TOPLEFT", leftX, rowOneY)
-    title:SetText("|cff05dffaB|r|cffffffffetter |cff05dffaL|r|cffffffffevel-|cff05dffaU|r|cffffffffp|cff05dffa!|r")
-    title:SetJustifyV("MIDDLE")
+        local title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+        title:SetPoint("LEFT", header, "TOPLEFT", leftX, rowOneY)
+        title:SetText(BLU.Hex() .. "B|r|cffffffffetter " .. BLU.Hex() .. "L|r|cffffffffevel-" .. BLU.Hex() .. "U|r|cffffffffp" .. BLU.Hex() .. "!|r")
+        title:SetJustifyV("MIDDLE")
 
-    local subtitle = header:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    subtitle:SetPoint("LEFT", header, "TOPLEFT", leftX, rowTwoY)
-    subtitle:SetText("Iconic game sounds for World of Warcraft events")
-    subtitle:SetTextColor(0.7, 0.7, 0.7)
-    subtitle:SetJustifyV("MIDDLE")
+        local subtitle = header:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        subtitle:SetPoint("LEFT", header, "TOPLEFT", leftX, rowTwoY)
+        subtitle:SetText("Iconic game sounds for World of Warcraft events")
+        subtitle:SetTextColor(BLU.Color("text", 0.7, 0.7, 0.7))
+        subtitle:SetJustifyV("MIDDLE")
 
-    local discord = header:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    discord:SetPoint("LEFT", header, "TOPLEFT", leftX, rowThreeY)
-    discord:SetText("|cff7289daDiscord:|r |cffffd700discord.gg/N7kdKAHVVF|r")
-    discord:SetTextColor(0.85, 0.85, 0.85)
-    discord:SetJustifyV("MIDDLE")
+        local discord = header:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+        discord:SetPoint("LEFT", header, "TOPLEFT", leftX, rowThreeY)
+        discord:SetText("|cff7289daDiscord:|r |cffffd700discord.gg/N7kdKAHVVF|r")
+        discord:SetTextColor(BLU.Color("text", 0.85, 0.85, 0.85))
+        discord:SetJustifyV("MIDDLE")
 
-    local version = header:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    version:SetPoint("RIGHT", header, "TOPRIGHT", rightX, rowOneY)
-    local metadataVersion = GetAddOnMetadataSafe(addonName, "Version") or BLU.version or "v6.0.0"
-    version:SetText(metadataVersion)
-    version:SetTextColor(unpack(BLU.Modules.design.Colors.Primary))
-    version:SetJustifyH("RIGHT")
-    version:SetJustifyV("MIDDLE")
+        local version = header:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        version:SetPoint("RIGHT", header, "TOPRIGHT", rightX, rowOneY)
+        local metadataVersion = GetAddOnMetadataSafe(addonName, "Version") or BLU.version or "v6.0.0"
+        version:SetText(metadataVersion)
+        version:SetTextColor(unpack(BLU.Modules.design.Colors.Primary))
+        version:SetJustifyH("RIGHT")
+        version:SetJustifyV("MIDDLE")
 
-    local author = header:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    author:SetPoint("RIGHT", header, "TOPRIGHT", rightX, rowTwoY)
-    author:SetText("by donniedice")
-    author:SetTextColor(0.7, 0.7, 0.7)
-    author:SetJustifyH("RIGHT")
-    author:SetJustifyV("MIDDLE")
+        local author = header:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+        author:SetPoint("RIGHT", header, "TOPRIGHT", rightX, rowTwoY)
+        author:SetText("by donniedice")
+        author:SetTextColor(BLU.Color("text", 0.7, 0.7, 0.7))
+        author:SetJustifyH("RIGHT")
+        author:SetJustifyV("MIDDLE")
 
-    local branding = header:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    branding:SetPoint("RIGHT", header, "TOPRIGHT", rightX, rowThreeY)
-    branding:SetText("|cff8b4b5cRGX|r |cffffd700Mods|r")
-    branding:SetJustifyH("RIGHT")
-    branding:SetJustifyV("MIDDLE")
+        local branding = header:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        branding:SetPoint("RIGHT", header, "TOPRIGHT", rightX, rowThreeY)
+        branding:SetText("|cff8b4b5cRGX|r |cffffd700Mods|r")
+        branding:SetJustifyH("RIGHT")
+        branding:SetJustifyV("MIDDLE")
 
-    local tabContainer = CreateFrame("Frame", nil, container)
-    tabContainer:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -2)
-    tabContainer:SetPoint("TOPRIGHT", header, "BOTTOMRIGHT", 0, -2)
-    local tabContainerHeight = (Tabs and Tabs.GetContainerHeight and Tabs:GetContainerHeight()) or 62
-    tabContainer:SetHeight(tabContainerHeight)
+        local tabContainer = CreateFrame("Frame", nil, container)
+        tabContainer:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -2)
+        tabContainer:SetPoint("TOPRIGHT", header, "BOTTOMRIGHT", 0, -2)
+        local tabContainerHeight = (Tabs and Tabs.GetContainerHeight and Tabs:GetContainerHeight()) or 62
+        tabContainer:SetHeight(tabContainerHeight)
 
-    local tabBg = tabContainer:CreateTexture(nil, "BACKGROUND")
-    tabBg:SetAllPoints()
-    tabBg:SetColorTexture(0.03, 0.03, 0.03, 0.6)
+        local tabBg = tabContainer:CreateTexture(nil, "BACKGROUND")
+        tabBg:SetAllPoints()
+        tabBg:SetColorTexture(BLU.Color("fill", 0.03, 0.03, 0.03, 0.6))
 
-    local leftTabGroup = CreateFrame("Frame", nil, tabContainer, "BackdropTemplate")
-    leftTabGroup:SetPoint("TOPLEFT", tabContainer, "TOPLEFT", 5, -4)
-    leftTabGroup:SetSize(100, tabContainerHeight - 8)
-    leftTabGroup:SetBackdrop(BLU.Modules.design.Backdrops.Dark)
-    leftTabGroup:SetBackdropColor(0.06, 0.08, 0.12, 0.95)
-    leftTabGroup:SetBackdropBorderColor(0.15, 0.25, 0.35, 1)
+        local leftTabGroup = CreateFrame("Frame", nil, tabContainer, "BackdropTemplate")
+        leftTabGroup:SetPoint("TOPLEFT", tabContainer, "TOPLEFT", 5, -4)
+        leftTabGroup:SetSize(100, tabContainerHeight - 8)
+        leftTabGroup:SetBackdrop(BLU.Modules.design.Backdrops.Dark)
+        leftTabGroup:SetBackdropColor(BLU.Color("fill", 0.06, 0.08, 0.12, 0.95))
+        leftTabGroup:SetBackdropBorderColor(BLU.Color("border", 0.15, 0.25, 0.35, 1))
 
-    local leftSeparator = tabContainer:CreateTexture(nil, "OVERLAY")
-    leftSeparator:SetSize(2, tabContainerHeight - 12)
-    leftSeparator:SetPoint("TOPLEFT", leftTabGroup, "TOPRIGHT", 5, -2)
-    leftSeparator:SetColorTexture(0.12, 0.16, 0.22, 0.85)
+        local leftSeparator = tabContainer:CreateTexture(nil, "OVERLAY")
+        leftSeparator:SetSize(2, tabContainerHeight - 12)
+        leftSeparator:SetPoint("TOPLEFT", leftTabGroup, "TOPRIGHT", 5, -2)
+        leftSeparator:SetColorTexture(BLU.Color("fill", 0.12, 0.16, 0.22, 0.85))
 
-    panel.tabs = {}
-    panel.contents = {}
+        panel.tabs = {}
+        panel.contents = {}
 
-    local tabs = BLU.OptionsTabs
-    if not tabs then
-        BLU:PrintError("BLU.OptionsTabs not defined")
-        return panel
-    end
-
-    for i, tabInfo in ipairs(tabs) do
-        BLU:PrintDebug("[Options] Creating tab content for '" .. tostring(tabInfo.text) .. "'")
-        local tab = BLU.CreateTabButton(tabContainer, tabInfo.text, i, tabInfo.row, tabInfo.col, panel, tabInfo.icon)
-        if tabInfo.placeholder then
-            tab:SetPlaceholder(true)
+        local tabs = BLU.OptionsTabs
+        if not tabs then
+            BLU:PrintError("BLU.OptionsTabs not defined")
+            return container
         end
-        panel.tabs[i] = tab
 
-        local content = CreateFrame("Frame", nil, container, "BackdropTemplate")
-        content:SetPoint("TOPLEFT", tabContainer, "BOTTOMLEFT", 1, -8)
-        content:SetPoint("BOTTOMRIGHT", container, "BOTTOMRIGHT", -7, 8)
-        content:SetBackdrop(BLU.Modules.design.Backdrops.Dark)
-        content:SetBackdropColor(0.06, 0.06, 0.06, 0.95)
-        content:SetBackdropBorderColor(0.2, 0.2, 0.2, 1)
-        content:Hide()
+        for i, tabInfo in ipairs(tabs) do
+            BLU:PrintDebug("[Options] Creating tab content for '" .. tostring(tabInfo.text) .. "'")
+            local tab = BLU.CreateTabButton(tabContainer, tabInfo.text, i, tabInfo.row, tabInfo.col, panel, tabInfo.icon)
+            if tabInfo.placeholder then
+                tab:SetPlaceholder(true)
+            end
+            panel.tabs[i] = tab
 
-        if tabInfo.create then
-            local success, err = pcall(tabInfo.create, content)
-            if not success then BLU:PrintError("Error creating content for " .. tabInfo.text .. ": " .. tostring(err)) end
-        elseif tabInfo.eventType then
-            local success, err = pcall(BLU.CreateEventSoundPanel, content, tabInfo.eventType, tabInfo.text)
-            if not success then BLU:PrintError("Error creating event panel for " .. tabInfo.text .. ": " .. tostring(err)) end
-        elseif tabInfo.placeholder then
-            local placeholderMessage = content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-            placeholderMessage:SetPoint("TOPLEFT", 18, -18)
-            placeholderMessage:SetText("|cff778899Reserved for a future options panel.|r")
-            placeholderMessage:SetJustifyH("LEFT")
+            local content = CreateFrame("Frame", nil, container, "BackdropTemplate")
+            content:SetPoint("TOPLEFT", tabContainer, "BOTTOMLEFT", 1, -8)
+            content:SetPoint("BOTTOMRIGHT", container, "BOTTOMRIGHT", -7, 8)
+            content:SetBackdrop(BLU.Modules.design.Backdrops.Dark)
+            content:SetBackdropColor(BLU.Color("fill", 0.06, 0.06, 0.06, 0.95))
+            content:SetBackdropBorderColor(BLU.Color("border", 0.2, 0.2, 0.2, 1))
+            content:Hide()
+
+            if tabInfo.create then
+                local success, err = pcall(tabInfo.create, content)
+                if not success then BLU:PrintError("Error creating content for " .. tabInfo.text .. ": " .. tostring(err)) end
+            elseif tabInfo.eventType then
+                local success, err = pcall(BLU.CreateEventSoundPanel, content, tabInfo.eventType, tabInfo.text)
+                if not success then BLU:PrintError("Error creating event panel for " .. tabInfo.text .. ": " .. tostring(err)) end
+            elseif tabInfo.placeholder then
+                local placeholderMessage = content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+                placeholderMessage:SetPoint("TOPLEFT", 18, -18)
+                placeholderMessage:SetText("|cff778899Reserved for a future options panel.|r")
+                placeholderMessage:SetJustifyH("LEFT")
+            end
+            panel.contents[i] = content
         end
-        panel.contents[i] = content
-    end
 
-    -- Destroy all child frames/regions on a content panel so a clean rebuild won't stack widgets.
-    local function ClearTabContent(content)
-        for _, child in ipairs({content:GetChildren()}) do
-            child:Hide()
-            child:SetParent(nil)
+        -- Destroy all child frames/regions on a content panel so a clean rebuild won't stack widgets.
+        local function ClearTabContent(content)
+            for _, child in ipairs({content:GetChildren()}) do
+                child:Hide()
+                child:SetParent(nil)
+            end
+            -- Also clear any textures/fontstrings created directly on the frame
+            for _, region in ipairs({content:GetRegions()}) do
+                region:Hide()
+            end
+            -- Reset Refresh so a stale closure from the previous build doesn't fire
+            content.Refresh = nil
         end
-        -- Also clear any textures/fontstrings created directly on the frame
-        for _, region in ipairs({content:GetRegions()}) do
-            region:Hide()
-        end
-        -- Reset Refresh so a stale closure from the previous build doesn't fire
-        content.Refresh = nil
-    end
 
-    local function RebuildTab(content, tabInfo)
-        ClearTabContent(content)
-        content._bluDirty = nil
-        if tabInfo.create then
-            local ok, err = pcall(tabInfo.create, content)
-            if not ok then BLU:PrintError("Tab rebuild error: " .. tostring(err)) end
-        elseif tabInfo.eventType then
-            local ok, err = pcall(BLU.CreateEventSoundPanel, content, tabInfo.eventType, tabInfo.text)
-            if not ok then BLU:PrintError("Tab rebuild error: " .. tostring(err)) end
+        local function RebuildTab(content, tabInfo)
+            ClearTabContent(content)
+            content._bluDirty = nil
+            if tabInfo.create then
+                local ok, err = pcall(tabInfo.create, content)
+                if not ok then BLU:PrintError("Tab rebuild error: " .. tostring(err)) end
+            elseif tabInfo.eventType then
+                local ok, err = pcall(BLU.CreateEventSoundPanel, content, tabInfo.eventType, tabInfo.text)
+                if not ok then BLU:PrintError("Tab rebuild error: " .. tostring(err)) end
+            end
         end
-    end
 
-    function panel:SelectTab(index)
-        BLU:PrintDebug("[Options] Selecting tab index " .. tostring(index))
-        for i, tab in ipairs(self.tabs) do
-            if self.tabs[i] and self.contents[i] then
-                self.tabs[i]:SetActive(i == index)
-                self.contents[i]:SetShown(i == index)
-                if i == index then
-                    local content = self.contents[i]
+        function panel:SelectTab(index)
+            self._activeTab = index
+            BLU:PrintDebug("[Options] Selecting tab index " .. tostring(index))
+            for i, tab in ipairs(self.tabs) do
+                if self.tabs[i] and self.contents[i] then
+                    self.tabs[i]:SetActive(i == index)
+                    self.contents[i]:SetShown(i == index)
+                    if i == index then
+                        local content = self.contents[i]
+                        local tabInfo = BLU.OptionsTabs and BLU.OptionsTabs[i]
+                        if content._bluDirty and tabInfo then
+                            RebuildTab(content, tabInfo)
+                        elseif type(content.Refresh) == "function" then
+                            local ok, err = pcall(content.Refresh, content)
+                            if not ok then BLU:PrintError("Tab refresh error: " .. tostring(err)) end
+                        end
+                    end
+                end
+            end
+        end
+
+        if #panel.tabs > 0 then
+            panel:SelectTab(1)
+        end
+
+        -- Mark all tab content frames dirty so each will do a full rebuild on next view.
+        function BLU:InvalidateAllTabs()
+            if not panel or not panel.contents then return end
+            for _, content in ipairs(panel.contents) do
+                content._bluDirty = true
+            end
+        end
+
+        -- Rebuild every visible dirty tab; call Refresh on visible non-dirty tabs.
+        function BLU:RefreshOptions()
+            if not panel or not panel.contents then return end
+            for i, content in ipairs(panel.contents) do
+                if content:IsShown() then
                     local tabInfo = BLU.OptionsTabs and BLU.OptionsTabs[i]
                     if content._bluDirty and tabInfo then
                         RebuildTab(content, tabInfo)
                     elseif type(content.Refresh) == "function" then
                         local ok, err = pcall(content.Refresh, content)
-                        if not ok then BLU:PrintError("Tab refresh error: " .. tostring(err)) end
+                        if not ok then
+                            BLU:PrintDebug("RefreshOptions error: " .. tostring(err))
+                        end
                     end
                 end
             end
         end
+        return container
     end
-
-    if #panel.tabs > 0 then
-        panel:SelectTab(1)
-    end
-
-    -- Mark all tab content frames dirty so each will do a full rebuild on next view.
-    function BLU:InvalidateAllTabs()
-        if not panel or not panel.contents then return end
-        for _, content in ipairs(panel.contents) do
-            content._bluDirty = true
-        end
-    end
-
-    -- Rebuild every visible dirty tab; call Refresh on visible non-dirty tabs.
-    function BLU:RefreshOptions()
-        if not panel or not panel.contents then return end
-        for i, content in ipairs(panel.contents) do
-            if content:IsShown() then
-                local tabInfo = BLU.OptionsTabs and BLU.OptionsTabs[i]
-                if content._bluDirty and tabInfo then
-                    RebuildTab(content, tabInfo)
-                elseif type(content.Refresh) == "function" then
-                    local ok, err = pcall(content.Refresh, content)
-                    if not ok then
-                        BLU:PrintDebug("RefreshOptions error: " .. tostring(err))
-                    end
-                end
-            end
-        end
+    local Design = BLU.Modules.design
+    panel._body = Design and Design.Build and Design:Build(BuildBody) or BuildBody()
+    function BLU:RebuildOptionsBody()
+        if not panel._body then return end
+        local active = panel._activeTab or 1
+        panel._body:Hide()
+        panel._body = Design and Design.Build and Design:Build(BuildBody) or BuildBody()
+        if panel.SelectTab and panel.tabs and panel.tabs[active] then panel:SelectTab(active) end
     end
 
     local category

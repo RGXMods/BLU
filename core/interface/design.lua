@@ -117,8 +117,8 @@ function Design:CreateStyledFrame(parent, width, height, template)
     
     local backdrop = Design.Backdrops[template] or Design.Backdrops.Dark
     frame:SetBackdrop(backdrop)
-    frame:SetBackdropColor(unpack(Design.Colors.Surface))
-    frame:SetBackdropBorderColor(unpack(Design.Colors.Accent))
+    frame:SetBackdropColor(BLU.Color("fill", unpack(Design.Colors.Surface)))
+    frame:SetBackdropBorderColor(BLU.Color("border", unpack(Design.Colors.Accent)))
     
     return frame
 end
@@ -137,19 +137,19 @@ function Design:CreateActionButton(parent, text, width, height, tooltipTitle, to
 
     local bg = button:CreateTexture(nil, "BACKGROUND")
     bg:SetAllPoints()
-    bg:SetColorTexture(0.08, 0.11, 0.15, 0.90)
+    bg:SetColorTexture(BLU.Color("fill", 0.08, 0.11, 0.15, 0.90))
     button.bg = bg
 
     local border = CreateFrame("Frame", nil, button, "BackdropTemplate")
     border:SetAllPoints()
     border:SetBackdrop({ edgeFile = "Interface\\Buttons\\WHITE8x8", edgeSize = 1 })
-    border:SetBackdropBorderColor(0.14, 0.20, 0.28, 1)
+    border:SetBackdropBorderColor(BLU.Color("border", 0.14, 0.20, 0.28, 1))
     button.border = border
 
     local label = button:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     label:SetPoint("CENTER", 0, 0)
     label:SetText(text or "Button")
-    label:SetTextColor(0.80, 0.80, 0.80, 1)
+    label:SetTextColor(BLU.Color("text", 0.80, 0.80, 0.80, 1))
     button.label = label
 
     function button:SetText(value)
@@ -166,14 +166,14 @@ function Design:CreateActionButton(parent, text, width, height, tooltipTitle, to
     end
 
     local function applyHover(self)
-        self.bg:SetColorTexture(0.11, 0.18, 0.24, 1)
+        self.bg:SetColorTexture(BLU.Color("fill", 0.11, 0.18, 0.24, 1))
         self.border:SetBackdropBorderColor(unpack(Design.Colors.Primary))
         self.label:SetTextColor(unpack(Design.Colors.Primary))
     end
     local function applyIdle(self)
-        self.bg:SetColorTexture(0.08, 0.11, 0.15, 0.90)
-        self.border:SetBackdropBorderColor(0.14, 0.20, 0.28, 1)
-        self.label:SetTextColor(0.80, 0.80, 0.80, 1)
+        self.bg:SetColorTexture(BLU.Color("fill", 0.08, 0.11, 0.15, 0.90))
+        self.border:SetBackdropBorderColor(BLU.Color("border", 0.14, 0.20, 0.28, 1))
+        self.label:SetTextColor(BLU.Color("text", 0.80, 0.80, 0.80, 1))
     end
 
     button:SetScript("OnEnter", function(self)
@@ -225,8 +225,8 @@ function Design:CreateSectionHeader(parent, text, icon)
     header:SetBackdrop(Design.Backdrops.Solid)
     -- Same fill and border as the card and controls around it; the old cyan accent
     -- border read as a second, mismatched frame inside the card.
-    header:SetBackdropColor(0.06, 0.10, 0.16, 0.95)
-    header:SetBackdropBorderColor(0.14, 0.20, 0.28, 1)
+    header:SetBackdropColor(BLU.Color("fill", 0.06, 0.10, 0.16, 0.95))
+    header:SetBackdropBorderColor(BLU.Color("border", 0.14, 0.20, 0.28, 1))
 
     local leftInset = 10
     if icon then
@@ -250,7 +250,7 @@ end
 function Design:CreateDivider(parent)
     local divider = parent:CreateTexture(nil, "ARTWORK")
     divider:SetHeight(1)
-    divider:SetColorTexture(0.3, 0.3, 0.3, 0.8)
+    divider:SetColorTexture(BLU.Color("fill", 0.3, 0.3, 0.3, 0.8))
     return divider
 end
 
@@ -259,10 +259,10 @@ function Design:ApplyBackdrop(frame, template, bgColor, borderColor)
     local backdrop = self.Backdrops[template] or self.Backdrops.Dark
     frame:SetBackdrop(backdrop)
     if bgColor then
-        frame:SetBackdropColor(unpack(bgColor))
+        frame:SetBackdropColor(BLU.Color("fill", unpack(bgColor)))
     end
     if borderColor then
-        frame:SetBackdropBorderColor(unpack(borderColor))
+        frame:SetBackdropBorderColor(BLU.Color("border", unpack(borderColor)))
     end
 end
 
@@ -406,6 +406,93 @@ function Design:Init()
     -- Alias for backward compatibility
     Design.CreateButton = Design.CreateStyledButton
     Design.CreateHeader = Design.CreateSectionHeader
+end
+
+-- Theme: BLU's own look, or the framework's colours while its beta global theme override is on.
+-- BLU registers its brand with the framework (RGX-Framework 2.19+). Colours are read when something is drawn:
+-- BLU.Color(role, r, g, b[, a]) returns BLU's own colour unchanged while the override is off, and the
+-- framework's palette colour for that role (fill, border, text) while it is on; BLU's cyan is the brand primary
+-- and red, green and gold status colours keep their meaning. The options panel is rebuilt on a theme change.
+local OWN_PRIMARY, OWN_SECONDARY = { 0.02, 0.87, 0.98 }, { 1.0, 0.84, 0.0 }
+local OWN_PRIMARY_HEX = Design.Colors.PrimaryHex
+local OWN_LIST_SKIN = { surface = Design.ListSkin.surface, border = Design.ListSkin.border }
+
+local function Framework() return _G.RGXDesign end
+
+function Design:GetBrand()
+    local D = Framework()
+    if not self._brand and D and type(D.RegisterBrand) == "function" then
+        self._brand = D:RegisterBrand("BLU", { primary = OWN_PRIMARY, accent = OWN_SECONDARY }, "framework")
+        self._brand:OnChange(function()
+            Design:RefreshBrand()
+            if BLU.RebuildOptionsBody then BLU:RebuildOptionsBody() end
+        end)
+    end
+    return self._brand
+end
+
+function Design:IsOverride()
+    local D = Framework()
+    return D and type(D.IsThemeOverride) == "function" and D:IsThemeOverride() or false
+end
+
+-- Rewrite the live colours in place so every reference (Colors.Primary, PrimaryHex, ListSkin) follows.
+function Design:RefreshBrand()
+    local brand = self:GetBrand()
+    local theme = brand and brand:Resolve() or nil
+    local p = theme and theme.primary or OWN_PRIMARY
+    local a = theme and theme.accent or OWN_SECONDARY
+    local live = self.Colors
+    live.Primary[1], live.Primary[2], live.Primary[3] = p[1], p[2], p[3]
+    live.Secondary[1], live.Secondary[2], live.Secondary[3] = a[1], a[2], a[3]
+    if self:IsOverride() then
+        live.PrimaryHex = string.format("cff%02x%02x%02x", math.floor(p[1] * 255 + 0.5), math.floor(p[2] * 255 + 0.5), math.floor(p[3] * 255 + 0.5))
+        -- Let the framework colour the dropdown lists from the brand.
+        self.ListSkin.surface, self.ListSkin.border = nil, nil
+    else
+        live.PrimaryHex = OWN_PRIMARY_HEX
+        self.ListSkin.surface, self.ListSkin.border = OWN_LIST_SKIN.surface, OWN_LIST_SKIN.border
+    end
+end
+
+-- Build UI in BLU's brand (its colours and style, restored afterwards).
+function Design:Build(fn)
+    self:RefreshBrand()
+    local brand = self:GetBrand()
+    if brand then return brand:Build(fn) end
+    return fn()
+end
+
+local function Lum(r, g, b) return 0.299 * r + 0.587 * g + 0.114 * b end
+local function Near(r, g, b, c) return math.abs(r - c[1]) < 0.03 and math.abs(g - c[2]) < 0.03 and math.abs(b - c[3]) < 0.03 end
+
+function BLU.Color(role, r, g, b, a)
+    local D = Framework()
+    if not (Design:IsOverride() and D and D.GetColor) then
+        if a == nil then return r, g, b end
+        return r, g, b, a
+    end
+    local out
+    if Near(r, g, b, OWN_PRIMARY) then
+        out = Design.Colors.Primary
+    elseif (r > g * 1.6 and r > b * 1.6) or (g > r * 1.6 and g > b * 1.6) or (r > 0.8 and g > 0.6 and b < 0.35) then
+        out = { r, g, b }   -- status colours (red, green, gold) keep their meaning
+    elseif role == "border" then
+        out = D:GetColor("border")
+    elseif role == "text" then
+        local l = Lum(r, g, b)
+        out = D:GetColor(l > 0.75 and "text" or (l > 0.5 and "subtext" or "label"))
+    else
+        local l = Lum(r, g, b)
+        out = D:GetColor(l < 0.05 and "background" or (l < 0.1 and "surface" or (l < 0.16 and "panelAlt" or "hover")))
+    end
+    if a == nil then return out[1], out[2], out[3] end
+    return out[1], out[2], out[3], a
+end
+
+-- "|cffRRGGBB" for BLU's live primary.
+function BLU.Hex()
+    return "|" .. Design.Colors.PrimaryHex
 end
 
 -- Register module

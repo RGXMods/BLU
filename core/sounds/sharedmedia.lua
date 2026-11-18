@@ -1,6 +1,6 @@
 --=====================================================================================
 -- BLU - sharedmedia.lua
--- Thin bridge over RGXSharedMedia. All external sound scanning (DBM registrars,
+-- Thin bridge over RGXSharedMedia. All external sound scanning (sound-pack registrars,
 -- known-addon compatibility, generic addon-global scan) now lives in the shared
 -- framework module RGXSharedMedia. This file only imports the framework's scan
 -- results into BLU.SoundRegistry and re-exports BLU's public sound-bridge API.

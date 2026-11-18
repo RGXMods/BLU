@@ -363,8 +363,8 @@ local function BuildSoundButtonMenu(dropdownFrame, getTriggerId, labelFontString
                 previewButton = CreateFrame("Button", nil, button, "BackdropTemplate")
                 previewButton:SetSize(34, 16)
                 previewButton:SetBackdrop(BLU.Modules.design.Backdrops.Button)
-                previewButton:SetBackdropColor(0.08, 0.10, 0.13, 0.95)
-                previewButton:SetBackdropBorderColor(0.14, 0.20, 0.28, 1)
+                previewButton:SetBackdropColor(BLU.Color("fill", 0.08, 0.10, 0.13, 0.95))
+                previewButton:SetBackdropBorderColor(BLU.Color("border", 0.14, 0.20, 0.28, 1))
                 previewButton:RegisterForClicks("LeftButtonUp")
                 previewButton:SetScript("OnClick", function(btn)
                     if btn.soundId and BLU.SoundRegistry and BLU.SoundRegistry.PreviewSound then
@@ -391,7 +391,7 @@ local function BuildSoundButtonMenu(dropdownFrame, getTriggerId, labelFontString
                     end
                 end)
                 previewButton:SetScript("OnEnter", function(btn)
-                    btn:SetBackdropColor(0.12, 0.16, 0.22, 1)
+                    btn:SetBackdropColor(BLU.Color("fill", 0.12, 0.16, 0.22, 1))
                     btn:SetBackdropBorderColor(unpack(BLU.Modules.design.Colors.Primary))
                     GameTooltip:SetOwner(btn, "ANCHOR_RIGHT")
                     local isPlaying = BLU.SoundRegistry
@@ -402,8 +402,8 @@ local function BuildSoundButtonMenu(dropdownFrame, getTriggerId, labelFontString
                     GameTooltip:Show()
                 end)
                 previewButton:SetScript("OnLeave", function(btn)
-                    btn:SetBackdropColor(0.08, 0.10, 0.13, 0.95)
-                    btn:SetBackdropBorderColor(0.14, 0.20, 0.28, 1)
+                    btn:SetBackdropColor(BLU.Color("fill", 0.08, 0.10, 0.13, 0.95))
+                    btn:SetBackdropBorderColor(BLU.Color("border", 0.14, 0.20, 0.28, 1))
                     GameTooltip:Hide()
                 end)
 
@@ -473,7 +473,7 @@ local function BuildSoundButtonMenu(dropdownFrame, getTriggerId, labelFontString
             if not countLabel then
                 countLabel = button:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
                 countLabel:SetJustifyH("RIGHT")
-                countLabel:SetTextColor(0.72, 0.72, 0.72)
+                countLabel:SetTextColor(BLU.Color("text", 0.72, 0.72, 0.72))
                 button.bluCountLabel = countLabel
             end
 
@@ -686,7 +686,7 @@ end
 	button:SetHeight(18)
 
 	local label = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-	label:SetTextColor(0.70, 0.78, 0.86)
+	label:SetTextColor(BLU.Color("text", 0.70, 0.78, 0.86))
 	label:SetPoint("TOP", button, "BOTTOM", 0, -2)
 	label:Hide()
 
@@ -698,7 +698,7 @@ end
 	track:SetPoint("LEFT", button, "LEFT", 0, 0)
 	track:SetPoint("RIGHT", button, "RIGHT", 0, 0)
 	track:SetPoint("CENTER", button, "CENTER", 0, 0)
-	track:SetColorTexture(0.14, 0.20, 0.28, 1)
+	track:SetColorTexture(BLU.Color("fill", 0.14, 0.20, 0.28, 1))
 
 	local fill = frame:CreateTexture(nil, "ARTWORK")
 	fill:SetHeight(4)
@@ -800,35 +800,35 @@ end
 	local row = CreateFrame("Frame", nil, parent, "BackdropTemplate")
 	row:SetHeight(62)
 	row:SetBackdrop(BLU.Modules.design.Backdrops.Solid)
-	row:SetBackdropColor(0.08, 0.11, 0.15, 0.92)
-	row:SetBackdropBorderColor(0.14, 0.20, 0.28, 1)
+	row:SetBackdropColor(BLU.Color("fill", 0.08, 0.11, 0.15, 0.92))
+	row:SetBackdropBorderColor(BLU.Color("border", 0.14, 0.20, 0.28, 1))
 
 	local title = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	title:SetPoint("TOPLEFT", 8, -4)
 	title:SetPoint("RIGHT", -8, 0)
 	title:SetJustifyH("LEFT")
-	title:SetTextColor(1.0, 0.82, 0.18)
+	title:SetTextColor(BLU.Color("text", 1.0, 0.82, 0.18))
 
 	local dropdownButton = CreateFrame("Button", nil, row, "BackdropTemplate")
 	dropdownButton:SetPoint("TOPLEFT", row, "TOPLEFT", 8, -22)
 	dropdownButton:SetHeight(20)
 	dropdownButton:SetWidth(136)
     dropdownButton:SetBackdrop(BLU.Modules.design.Backdrops.Button)
-    dropdownButton:SetBackdropColor(0.10, 0.14, 0.19, 0.96)
-    dropdownButton:SetBackdropBorderColor(0.14, 0.20, 0.28, 1)
+    dropdownButton:SetBackdropColor(BLU.Color("fill", 0.10, 0.14, 0.19, 0.96))
+    dropdownButton:SetBackdropBorderColor(BLU.Color("border", 0.14, 0.20, 0.28, 1))
     dropdownButton:RegisterForClicks("LeftButtonUp")
 
     local dropdownLabel = dropdownButton:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     dropdownLabel:SetPoint("LEFT", 8, 0)
     dropdownLabel:SetPoint("RIGHT", -18, 0)
     dropdownLabel:SetJustifyH("LEFT")
-    dropdownLabel:SetTextColor(0.84, 0.84, 0.84, 1)
+    dropdownLabel:SetTextColor(BLU.Color("text", 0.84, 0.84, 0.84, 1))
     dropdownLabel:SetText("Select Sound")
 
     local dropdownArrow = dropdownButton:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     dropdownArrow:SetPoint("RIGHT", -6, 0)
     dropdownArrow:SetText("v")
-    dropdownArrow:SetTextColor(0.70, 0.78, 0.86, 1)
+    dropdownArrow:SetTextColor(BLU.Color("text", 0.70, 0.78, 0.86, 1))
 
 	local dropdownFrame = CreateFrame("Frame", nil, row, "UIDropDownMenuTemplate")
 	dropdownFrame.displayMode = "MENU"
@@ -850,7 +850,7 @@ end
         self:SetBackdropBorderColor(unpack(BLU.Modules.design.Colors.Primary))
     end)
     dropdownButton:SetScript("OnLeave", function(self)
-        self:SetBackdropBorderColor(0.14, 0.20, 0.28, 1)
+        self:SetBackdropBorderColor(BLU.Color("border", 0.14, 0.20, 0.28, 1))
     end)
 
     local volumeControl = CreateVolumeControl(row, function()
@@ -971,8 +971,8 @@ function BLU.CreateCombatPanel(panel)
     titleBar:SetPoint("TOPRIGHT", 0, 0)
     titleBar:SetHeight(44)
     titleBar:SetBackdrop(BLU.Modules.design.Backdrops.Solid)
-    titleBar:SetBackdropColor(0.06, 0.10, 0.16, 0.95)
-    titleBar:SetBackdropBorderColor(0.10, 0.20, 0.28, 1)
+    titleBar:SetBackdropColor(BLU.Color("fill", 0.06, 0.10, 0.16, 0.95))
+    titleBar:SetBackdropBorderColor(BLU.Color("border", 0.10, 0.20, 0.28, 1))
 
     local icon = titleBar:CreateTexture(nil, "ARTWORK")
     icon:SetSize(24, 24)
@@ -981,7 +981,7 @@ function BLU.CreateCombatPanel(panel)
 
     local title = titleBar:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     title:SetPoint("LEFT", icon, "RIGHT", 8, 0)
-    title:SetText("|cff05dffaCombat|r")
+    title:SetText(BLU.Hex() .. "Combat|r")
 
     local switchFrame = CreateFrame("Frame", nil, titleBar)
     switchFrame:SetSize(44, 20)
@@ -1035,8 +1035,8 @@ function BLU.CreateCombatPanel(panel)
     body:SetPoint("BOTTOMLEFT", content, "BOTTOMLEFT", 0, 0)
     body:SetPoint("BOTTOMRIGHT", content, "BOTTOMRIGHT", 0, 0)
     body:SetBackdrop(BLU.Modules.design.Backdrops.Panel)
-    body:SetBackdropColor(0.03, 0.03, 0.03, 0.6)
-    body:SetBackdropBorderColor(0.1, 0.1, 0.1, 1)
+    body:SetBackdropColor(BLU.Color("fill", 0.03, 0.03, 0.03, 0.6))
+    body:SetBackdropBorderColor(BLU.Color("border", 0.1, 0.1, 0.1, 1))
 
     local triggerArea = CreateFrame("Frame", nil, body)
     triggerArea:SetPoint("TOPLEFT", body, "TOPLEFT", 6, -6)

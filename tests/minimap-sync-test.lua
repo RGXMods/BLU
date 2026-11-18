@@ -8,7 +8,7 @@ function button:SetVisible(v) self.visible = v end
 local MM = { Create = function(_, opts) created = opts; return button end }
 _G.RGXFramework = { GetMinimap = function() return MM end }
 local printed = {}
-local BLU = { Modules = {}, db = { minimapIconEnabled = true }, Print = function(_, m) printed[#printed + 1] = m end, PrintDebug = function() end }
+local BLU = { Modules = {}, Color = function(_, r, g, b, a) return r, g, b, a end, Hex = function() return "|cff05dffa" end, db = { minimapIconEnabled = true }, Print = function(_, m) printed[#printed + 1] = m end, PrintDebug = function() end }
 _G.BLU = BLU
 
 local chunk = assert(loadfile("core/interface/minimap.lua"))

@@ -3,7 +3,7 @@
 local function check(cond, msg) if not cond then error("CHECK FAILED: " .. msg, 2) end end
 
 local files, probes = {}, 0
-local addons = { "Blizzard_Foo", "BLU", "WeakAuras", "MyVoicePack", "Details", "SoundsOfWar" }
+local addons = { "Blizzard_Foo", "BLU", "OtherAuraAddon", "MyVoicePack", "OtherMeterAddon", "SoundsOfWar" }
 _G.PlaySoundFile = function(path)
   probes = probes + 1
   if files[path:lower()] then return true, 1 end
@@ -66,5 +66,21 @@ check(resolve("alliance") == nil, "a partial name does not fuzzy-match")
 -- 6. A failed add explains where to put the file.
 local ok, err = US:AddCustomSound("nothere")
 check(ok == false and err:find("user\\sounds", 1, true) and err:lower():find("restart", 1, true), "failure message names the folder and the restart")
+
+-- 7. The designated BLU_Sounds folder: a plain folder next to BLU, so a BLU update never touches the files.
+local FOLDER = "Interface\\AddOns\\BLU_Sounds\\"
+check(US.FOLDER == FOLDER, "the designated folder is exposed")
+has(FOLDER .. "custom05.ogg")
+for k in pairs(registered) do registered[k] = nil end
+US:Register()
+local foundDesignated = false
+for _, r in ipairs(registered) do if r.file:lower():find("blu_sounds\\custom05.ogg", 1, true) then foundDesignated = true end end
+check(foundDesignated, "a slot-named file in BLU_Sounds is auto-detected")
+has(FOLDER .. "thunder.ogg")
+has("Interface\\AddOns\\" .. ADDON .. "\\user\\sounds\\thunder.ogg")
+check(resolve("thunder") == FOLDER .. "thunder.ogg", "a bare name resolves in BLU_Sounds before BLU's own folders")
+local missOk, missErr = US:AddCustomSound("nothere-either")
+check(missOk == false and missErr:find("BLU_Sounds", 1, true) and missErr:find("survives", 1, true) and missErr:lower():find("restart", 1, true),
+  "the failure message names the designated folder, that it survives updates, and the restart")
 
 print("user-sounds-search-test OK")

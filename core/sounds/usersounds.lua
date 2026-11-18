@@ -13,6 +13,15 @@ BLU.Modules["usersounds"] = UserSounds
 
 local PACK_ID   = "user_custom_sounds"
 local PACK_NAME = "User Custom Sounds"
+-- The designated folder for personal sounds: a plain folder next to BLU, not inside it, so a BLU update never
+-- touches the files. WoW only plays files under Interface\AddOns, and only sees files that existed when the game
+-- started (a /reload is not enough for new ones).
+local SOUND_FOLDER = "Interface\\AddOns\\BLU_Sounds\\"
+UserSounds.FOLDER = SOUND_FOLDER
+-- The user custom sounds folder that ships (empty) inside BLU: sounds\user\, beside sounds\wow_default\ and
+-- sounds\game\. Easy to find, but a BLU update replaces it, so BLU_Sounds above stays the one that survives updates.
+local ADDON_USER_FOLDER = "Interface\\AddOns\\" .. addonName .. "\\sounds\\user\\"
+UserSounds.ADDON_USER_FOLDER = ADDON_USER_FOLDER
 local AUTO_SLOT_COUNT = 99
 local AUTO_SLOT_EXTENSIONS = {"ogg", "mp3", "wav"}
 local AUTO_SLOT_NAME_PATTERNS = {
@@ -22,6 +31,9 @@ local AUTO_SLOT_NAME_PATTERNS = {
     "blu_custom%02d",
 }
 local AUTO_SLOT_PATH_PATTERNS = {
+    -- The designated folder comes first.
+    SOUND_FOLDER .. "%s.%s",
+    ADDON_USER_FOLDER .. "%s.%s",
     -- The documented personal-sound folders come first: files dropped here are picked up
     -- automatically when they use the slot names above (custom01.ogg, sound01.ogg, ...).
     "Interface\\AddOns\\" .. addonName .. "\\user\\sounds\\%s.%s",
@@ -33,7 +45,9 @@ local AUTO_SLOT_PATH_PATTERNS = {
     "Interface\\AddOns\\" .. addonName .. "\\media\\sounds\\%s.%s",
 }
 local CUSTOM_SOUND_SEARCH_PATHS = {
+    SOUND_FOLDER .. "%s",
     "Interface\\AddOns\\%s",
+    ADDON_USER_FOLDER .. "%s",
     "Interface\\AddOns\\sounds\\%s",
     "Interface\\AddOns\\" .. addonName .. "\\%s",
     "Interface\\AddOns\\" .. addonName .. "\\sounds\\%s",
@@ -42,6 +56,11 @@ local CUSTOM_SOUND_SEARCH_PATHS = {
     "Interface\\AddOns\\" .. addonName .. "\\media\\%s",
     "Interface\\AddOns\\" .. addonName .. "\\media\\sounds\\%s",
 }
+-- The same folders for the framework's resolver, which takes folders rather than patterns.
+local SEARCH_FOLDERS = {}
+for _, pattern in ipairs(CUSTOM_SOUND_SEARCH_PATHS) do
+    SEARCH_FOLDERS[#SEARCH_FOLDERS + 1] = (pattern:gsub("%%s$", ""))
+end
 local CanLoadSoundFile
 local ResolveCustomSoundPath
 
@@ -381,6 +400,21 @@ ResolveCustomSoundPath = function(soundInput)
         return nil
     end
 
+    -- The framework's resolver first: what the player typed, however they typed it (extension missing, wrong or
+    -- doubled; spaces, underscores or hyphens; a pasted path), in BLU_Sounds first, then BLU's own folders, then
+    -- one or two levels inside BLU_Sounds.
+    local frameworkSearched = false
+    local Sound = _G.RGXSound
+    if Sound and type(Sound.ResolveFile) == "function" then
+        local found, tried = Sound:ResolveFile(normalizedInput, { folders = SEARCH_FOLDERS, deep = true })
+        if found then
+            BLU:PrintDebug("[UserSounds] Framework resolved '" .. tostring(soundInput) .. "' to '" .. tostring(found) .. "'")
+            return found, {found}
+        end
+        UserSounds.lastSearchedPaths = tried
+        frameworkSearched = true
+    end
+
     local explicitPath = normalizedInput:lower():find("^interface\\addons\\") or normalizedInput:find("\\")
     local explicitExtension = HasSupportedExtension(normalizedInput)
 
@@ -427,6 +461,12 @@ ResolveCustomSoundPath = function(soundInput)
         return registeredFile, {registeredFile}
     end
 
+    -- The framework already searched every folder for a bare name: nothing more to guess.
+    if frameworkSearched and not explicitPath then
+        BLU:PrintDebug("[UserSounds] Failed to resolve custom sound input '" .. tostring(soundInput) .. "'")
+        return nil
+    end
+
     if not explicitExtension then
         BLU:PrintDebug("[UserSounds] Attempting supported extension resolution for '" .. tostring(filename) .. "' using .ogg/.mp3/.wav")
     end
@@ -462,7 +502,8 @@ ResolveCustomSoundPath = function(soundInput)
         end
     end
 
-    if not explicitExtension then
+    -- A muted probe can report "will not play" on some clients, so every candidate gets a plain stopped play too.
+    do
         for _, candidatePath in ipairs(candidatePaths) do
             if TryPlayableCandidate(candidatePath) then
                 BLU:PrintDebug("[UserSounds] Resolved shorthand custom sound '" .. tostring(soundInput) .. "' via active verify to '" .. tostring(candidatePath) .. "'")
@@ -610,7 +651,7 @@ function UserSounds:AddCustomSound(soundPath, displayName)
 
     local resolvedPath, candidateFiles = ResolveCustomSoundPath(soundPath)
     if not resolvedPath then
-        return false, "Could not find '" .. tostring(soundPath) .. "'. Put the .ogg, .mp3 or .wav in Interface\\AddOns\\" .. addonName .. "\\user\\sounds\\ (then fully restart the game, a /reload is not enough for new files), or give the full path starting with Interface\\AddOns\\."
+        return false, "Could not find '" .. tostring(soundPath) .. "'. Put the .ogg, .mp3 or .wav in Interface\\AddOns\\BLU_Sounds\\ (create that folder next to BLU: it survives BLU updates) or in Interface\\AddOns\\" .. addonName .. "\\user\\sounds\\ (then fully restart the game, a /reload is not enough for new files), or give the full path starting with Interface\\AddOns\\."
     end
 
     BLU.db.userCustomSounds = BLU.db.userCustomSounds or {}

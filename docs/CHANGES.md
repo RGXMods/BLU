@@ -1,3 +1,11 @@
+# v8.2.11 - 2026-11-18
+
+- Custom sounds have a folder updates never touch: create `Interface\AddOns\BLU_Sounds\` beside the addon folder and put your .ogg, .mp3 or .wav files there. Updates never touch it, files named custom01 to custom99 appear on their own, and a name you add is looked for there first. `/blu folder` shows the folder and what was found. The not-found message and the Add Custom Sound dialog say where to put files and that a full game restart is needed. Older folders keep working.
+- BLU's sounds are in folders: `sounds\wow_default` (the game's own sounds), `sounds\game` (sounds from other games) and an empty `sounds\user` for your own files. `BLU_Sounds` beside the addon stays the folder updates never touch; BLU looks in both.
+- Typing a custom sound's name is forgiving: the extension can be left off, wrong or doubled (Windows hides extensions), spaces, underscores and hyphens count as the same, files in subfolders of `BLU_Sounds` are found by name, and a pasted full path works.
+- Removing a custom sound updates every page at once, including each event's sound list.
+- BLU follows the RGX-Framework theme override (beta, off by default): while it is on, BLU's options take the framework's main colour and palette, and change as soon as the theme changes, without a reload. With it off BLU looks exactly as before. Requires RGX-Framework 2.19.0.
+
 # v8.2.10 - 2026-11-14
 
 - Delve lives sounds no longer risk a Lua error in combat on Retail. When the game withholds the Lives Remaining aura data during combat, BLU keeps the last known count and checks again once the data is readable, so a life lost in a fight still plays its sound afterwards.

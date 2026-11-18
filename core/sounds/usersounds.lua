@@ -394,6 +394,21 @@ ResolveCustomSoundPath = function(soundInput)
         return nil
     end
 
+    -- The framework's resolver first: what the player typed, however they typed it (extension missing, wrong or
+    -- doubled; spaces, underscores or hyphens; a pasted path), in BLU_Sounds first, then BLU's own folders, then
+    -- one or two levels inside BLU_Sounds.
+    local frameworkSearched = false
+    local Sound = _G.RGXSound
+    if Sound and type(Sound.ResolveFile) == "function" then
+        local found, tried = Sound:ResolveFile(normalizedInput, { folders = SEARCH_FOLDERS, deep = true })
+        if found then
+            BLU:PrintDebug("[UserSounds] Framework resolved '" .. tostring(soundInput) .. "' to '" .. tostring(found) .. "'")
+            return found, {found}
+        end
+        UserSounds.lastSearchedPaths = tried
+        frameworkSearched = true
+    end
+
     local explicitPath = normalizedInput:lower():find("^interface\\addons\\") or normalizedInput:find("\\")
     local explicitExtension = HasSupportedExtension(normalizedInput)
 
@@ -440,19 +455,10 @@ ResolveCustomSoundPath = function(soundInput)
         return registeredFile, {registeredFile}
     end
 
-    -- The framework's resolver: extension optional, spaces and underscores interchangeable, every folder in order.
-    local Sound = _G.RGXSound
-    if Sound and type(Sound.ResolveFile) == "function" then
-        local found, tried = Sound:ResolveFile(normalizedInput, { folders = SEARCH_FOLDERS })
-        if found then
-            BLU:PrintDebug("[UserSounds] Framework resolved '" .. tostring(soundInput) .. "' to '" .. tostring(found) .. "'")
-            return found, {found}
-        end
-        UserSounds.lastSearchedPaths = tried
-        if not explicitPath then
-            BLU:PrintDebug("[UserSounds] Failed to resolve custom sound input '" .. tostring(soundInput) .. "'")
-            return nil
-        end
+    -- The framework already searched every folder for a bare name: nothing more to guess.
+    if frameworkSearched and not explicitPath then
+        BLU:PrintDebug("[UserSounds] Failed to resolve custom sound input '" .. tostring(soundInput) .. "'")
+        return nil
     end
 
     if not explicitExtension then

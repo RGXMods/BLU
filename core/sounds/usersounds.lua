@@ -18,6 +18,10 @@ local PACK_NAME = "User Custom Sounds"
 -- started (a /reload is not enough for new ones).
 local SOUND_FOLDER = "Interface\\AddOns\\BLU_Sounds\\"
 UserSounds.FOLDER = SOUND_FOLDER
+-- The user custom sounds folder that ships (empty) inside BLU: sounds\user\, beside sounds\wow_default\ and
+-- sounds\game\. Easy to find, but a BLU update replaces it, so BLU_Sounds above stays the one that survives updates.
+local ADDON_USER_FOLDER = "Interface\\AddOns\\" .. addonName .. "\\sounds\\user\\"
+UserSounds.ADDON_USER_FOLDER = ADDON_USER_FOLDER
 local AUTO_SLOT_COUNT = 99
 local AUTO_SLOT_EXTENSIONS = {"ogg", "mp3", "wav"}
 local AUTO_SLOT_NAME_PATTERNS = {
@@ -29,6 +33,7 @@ local AUTO_SLOT_NAME_PATTERNS = {
 local AUTO_SLOT_PATH_PATTERNS = {
     -- The designated folder comes first.
     SOUND_FOLDER .. "%s.%s",
+    ADDON_USER_FOLDER .. "%s.%s",
     -- The documented personal-sound folders come first: files dropped here are picked up
     -- automatically when they use the slot names above (custom01.ogg, sound01.ogg, ...).
     "Interface\\AddOns\\" .. addonName .. "\\user\\sounds\\%s.%s",
@@ -42,6 +47,7 @@ local AUTO_SLOT_PATH_PATTERNS = {
 local CUSTOM_SOUND_SEARCH_PATHS = {
     SOUND_FOLDER .. "%s",
     "Interface\\AddOns\\%s",
+    ADDON_USER_FOLDER .. "%s",
     "Interface\\AddOns\\sounds\\%s",
     "Interface\\AddOns\\" .. addonName .. "\\%s",
     "Interface\\AddOns\\" .. addonName .. "\\sounds\\%s",

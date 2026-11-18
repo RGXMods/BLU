@@ -33,6 +33,8 @@ end
 
 function BLU.RefreshSoundPackUI()
     BLU:PrintDebug("[Options/Sounds] RefreshSoundPackUI called")
+    -- Every tab lists sounds (the per-event dropdowns), so mark them all stale; each rebuilds when next shown.
+    if BLU.InvalidateAllTabs then BLU:InvalidateAllTabs() end
     if not BLU.OptionsPanel or not BLU.OptionsPanel.contents then
         return false
     end
@@ -65,6 +67,7 @@ function BLU.RefreshSoundPackUI()
         BLU:PrintDebug("Failed to rebuild Sounds tab: " .. tostring(err))
         return false
     end
+    soundsContent._bluDirty = nil
 
     return true
 end

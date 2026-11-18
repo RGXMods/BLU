@@ -50,6 +50,11 @@ local CUSTOM_SOUND_SEARCH_PATHS = {
     "Interface\\AddOns\\" .. addonName .. "\\media\\%s",
     "Interface\\AddOns\\" .. addonName .. "\\media\\sounds\\%s",
 }
+-- The same folders for the framework's resolver, which takes folders rather than patterns.
+local SEARCH_FOLDERS = {}
+for _, pattern in ipairs(CUSTOM_SOUND_SEARCH_PATHS) do
+    SEARCH_FOLDERS[#SEARCH_FOLDERS + 1] = (pattern:gsub("%%s$", ""))
+end
 local CanLoadSoundFile
 local ResolveCustomSoundPath
 
@@ -435,6 +440,21 @@ ResolveCustomSoundPath = function(soundInput)
         return registeredFile, {registeredFile}
     end
 
+    -- The framework's resolver: extension optional, spaces and underscores interchangeable, every folder in order.
+    local Sound = _G.RGXSound
+    if Sound and type(Sound.ResolveFile) == "function" then
+        local found, tried = Sound:ResolveFile(normalizedInput, { folders = SEARCH_FOLDERS })
+        if found then
+            BLU:PrintDebug("[UserSounds] Framework resolved '" .. tostring(soundInput) .. "' to '" .. tostring(found) .. "'")
+            return found, {found}
+        end
+        UserSounds.lastSearchedPaths = tried
+        if not explicitPath then
+            BLU:PrintDebug("[UserSounds] Failed to resolve custom sound input '" .. tostring(soundInput) .. "'")
+            return nil
+        end
+    end
+
     if not explicitExtension then
         BLU:PrintDebug("[UserSounds] Attempting supported extension resolution for '" .. tostring(filename) .. "' using .ogg/.mp3/.wav")
     end
@@ -470,7 +490,8 @@ ResolveCustomSoundPath = function(soundInput)
         end
     end
 
-    if not explicitExtension then
+    -- A muted probe can report "will not play" on some clients, so every candidate gets a plain stopped play too.
+    do
         for _, candidatePath in ipairs(candidatePaths) do
             if TryPlayableCandidate(candidatePath) then
                 BLU:PrintDebug("[UserSounds] Resolved shorthand custom sound '" .. tostring(soundInput) .. "' via active verify to '" .. tostring(candidatePath) .. "'")

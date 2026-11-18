@@ -1,3 +1,7 @@
+## Unreleased
+
+- Custom sounds have one designated folder: create `Interface\AddOns\BLU_Sounds\` beside the addon folder and put your .ogg, .mp3 or .wav files there. Updates never touch it, files named custom01 to custom99 appear on their own, and a name you add is looked for there first. `/blu folder` shows the folder and what was found. The not-found message and the Add Custom Sound dialog say where to put files and that a full game restart is needed. Older folders keep working.
+
 # v8.2.11 - 2026-11-14
 
 - BLU follows the RGX-Framework theme override (beta, off by default): while it is on, BLU's options take the framework's main colour and palette, and change as soon as the theme changes, without a reload. With it off BLU looks exactly as before. Requires RGX-Framework 2.19.0.

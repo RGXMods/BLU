@@ -224,7 +224,7 @@ function BLU.CreateGeneralPanel(panel)
     SetSelectedChannel(profile.soundChannel or "Master")
 
     StaticPopupDialogs["BLU_ADD_CUSTOM_SOUND"] = {
-        text = "Add a custom sound file for BLU.",
+        text = "Add a custom sound file for BLU.\nPut your files in Interface\\AddOns\\BLU_Sounds\\ and restart the game once, then type the file name.\nNamed custom01 to custom99, they appear on their own.",
         subText = "Enter a short file name like myfile or myfile.ogg. You can also paste a full path like Interface\\AddOns\\myfile.ogg. BLU will try common AddOns folders automatically.",
         button1 = ADD,
         button2 = CANCEL,

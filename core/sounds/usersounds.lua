@@ -13,6 +13,11 @@ BLU.Modules["usersounds"] = UserSounds
 
 local PACK_ID   = "user_custom_sounds"
 local PACK_NAME = "User Custom Sounds"
+-- The designated folder for personal sounds: a plain folder next to BLU, not inside it, so a BLU update never
+-- touches the files. WoW only plays files under Interface\AddOns, and only sees files that existed when the game
+-- started (a /reload is not enough for new ones).
+local SOUND_FOLDER = "Interface\\AddOns\\BLU_Sounds\\"
+UserSounds.FOLDER = SOUND_FOLDER
 local AUTO_SLOT_COUNT = 99
 local AUTO_SLOT_EXTENSIONS = {"ogg", "mp3", "wav"}
 local AUTO_SLOT_NAME_PATTERNS = {
@@ -22,6 +27,8 @@ local AUTO_SLOT_NAME_PATTERNS = {
     "blu_custom%02d",
 }
 local AUTO_SLOT_PATH_PATTERNS = {
+    -- The designated folder comes first.
+    SOUND_FOLDER .. "%s.%s",
     -- The documented personal-sound folders come first: files dropped here are picked up
     -- automatically when they use the slot names above (custom01.ogg, sound01.ogg, ...).
     "Interface\\AddOns\\" .. addonName .. "\\user\\sounds\\%s.%s",
@@ -33,6 +40,7 @@ local AUTO_SLOT_PATH_PATTERNS = {
     "Interface\\AddOns\\" .. addonName .. "\\media\\sounds\\%s.%s",
 }
 local CUSTOM_SOUND_SEARCH_PATHS = {
+    SOUND_FOLDER .. "%s",
     "Interface\\AddOns\\%s",
     "Interface\\AddOns\\sounds\\%s",
     "Interface\\AddOns\\" .. addonName .. "\\%s",
@@ -610,7 +618,7 @@ function UserSounds:AddCustomSound(soundPath, displayName)
 
     local resolvedPath, candidateFiles = ResolveCustomSoundPath(soundPath)
     if not resolvedPath then
-        return false, "Could not find '" .. tostring(soundPath) .. "'. Put the .ogg, .mp3 or .wav in Interface\\AddOns\\" .. addonName .. "\\user\\sounds\\ (then fully restart the game, a /reload is not enough for new files), or give the full path starting with Interface\\AddOns\\."
+        return false, "Could not find '" .. tostring(soundPath) .. "'. Put the .ogg, .mp3 or .wav in Interface\\AddOns\\BLU_Sounds\\ (create that folder next to BLU: it survives BLU updates) or in Interface\\AddOns\\" .. addonName .. "\\user\\sounds\\ (then fully restart the game, a /reload is not enough for new files), or give the full path starting with Interface\\AddOns\\."
     end
 
     BLU.db.userCustomSounds = BLU.db.userCustomSounds or {}

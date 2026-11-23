@@ -52,7 +52,7 @@ end
 if not BLU then
     BLU = {
         name = addonName,
-        version = "v8.0.11",
+        version = "v8.2.12",
         Modules = {},
         LoadedModules = {},
         events = {},

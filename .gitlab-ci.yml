@@ -28,6 +28,7 @@ test:combat-secret-aura:
     - lua5.1 tests/combat-music-test.lua
     - lua5.1 tests/no-raw-timers-test.lua
     - lua5.1 tests/user-sounds-search-test.lua
+    - lua5.1 tests/sound-layout-test.lua
     - lua5.1 tests/wc3-music-pack-test.lua
     - lua5.1 tests/collectibles-triggers-test.lua
     - lua5.1 tests/loot-tab-appearance-test.lua

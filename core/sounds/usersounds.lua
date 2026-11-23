@@ -651,7 +651,7 @@ function UserSounds:AddCustomSound(soundPath, displayName)
 
     local resolvedPath, candidateFiles = ResolveCustomSoundPath(soundPath)
     if not resolvedPath then
-        return false, "Could not find '" .. tostring(soundPath) .. "'. Put the .ogg, .mp3 or .wav in Interface\\AddOns\\BLU_Sounds\\ (create that folder next to BLU: it survives BLU updates) or in Interface\\AddOns\\" .. addonName .. "\\user\\sounds\\ (then fully restart the game, a /reload is not enough for new files), or give the full path starting with Interface\\AddOns\\."
+        return false, "Could not find '" .. tostring(soundPath) .. "'. Put the .ogg, .mp3 or .wav in Interface\\AddOns\\BLU_Sounds\\ (create that folder next to BLU: it survives BLU updates) or in " .. ADDON_USER_FOLDER .. " (the shipped folder). The legacy Interface\\AddOns\\" .. addonName .. "\\user\\sounds\\ folder also works. Then fully restart the game, a /reload is not enough for new files, or give the full path starting with Interface\\AddOns\\."
     end
 
     BLU.db.userCustomSounds = BLU.db.userCustomSounds or {}

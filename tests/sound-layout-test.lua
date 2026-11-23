@@ -46,4 +46,6 @@ US:Register()
 local slot = false
 for _, r in ipairs(registered) do if r.file == USER .. "custom07.ogg" then slot = true end end
 check(slot, "a slot-named file in sounds\\user is picked up on its own")
+local ok, message = US:AddCustomSound("missing-sound-file")
+check(ok == false and message:find(USER, 1, true), "a missing sound points at the actual shipped user folder")
 print("sound-layout-test OK")

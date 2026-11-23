@@ -1,3 +1,8 @@
+# v8.2.12 - 2026-11-22
+
+- Fresh installs now include `sounds\user` for custom audio. The release workflow uses the corrected framework packager.
+- The missing-file message points at that same shipped folder. The separate `BLU_Sounds` folder and legacy paths keep working.
+
 # v8.2.11 - 2026-11-18
 
 - Custom sounds have a folder updates never touch: create `Interface\AddOns\BLU_Sounds\` beside the addon folder and put your .ogg, .mp3 or .wav files there. Updates never touch it, files named custom01 to custom99 appear on their own, and a name you add is looked for there first. `/blu folder` shows the folder and what was found. The not-found message and the Add Custom Sound dialog say where to put files and that a full game restart is needed. Older folders keep working.
